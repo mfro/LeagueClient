@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="LeagueClient.ClientUI.Controls.TeambuilderOther"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+  <Grid Width="400">
+    <Grid Height="auto">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="8"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="8"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="8"/>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="5"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="8"/>
+      </Grid.ColumnDefinitions>
+      <Grid Name="Images" Grid.Row="1" Grid.Column="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="68"/>
+          <ColumnDefinition Width="4"/>
+          <ColumnDefinition Width="32"/>
+        </Grid.ColumnDefinitions>
+        <Border Name="ChampBorder" BorderBrush="{StaticResource ForeColor}"
+              BorderThickness="2" Height="68">
+          <Image Name="ChampImage"/>
+        </Border>
+        <Border Name="Spell1Border" BorderBrush="{StaticResource ForeColor}"
+              BorderThickness="2" Grid.Column="2" VerticalAlignment="Top"
+              Height="32">
+          <Image Name="Spell1Image"/>
+        </Border>
+        <Border Name="Spell2Border" BorderBrush="{StaticResource ForeColor}"
+              BorderThickness="2" Grid.Column="2" VerticalAlignment="Bottom"
+              Height="32">
+          <Image Name="Spell2Image"/>
+        </Border>
+      </Grid>
+      <TextBlock Name="SummonerText" Grid.Row="1" Grid.Column="3" Margin="0 0 0 22"
+               FontSize="16" VerticalAlignment="Center">Stupendous Man</TextBlock>
+      <TextBlock Name="RoleText" Grid.Row="1" Grid.Column="3" Margin="0 20 0 0"
+               FontSize="13" VerticalAlignment="Center">Middle Lane / Assassin</TextBlock>
+    </Grid>
+  </Grid>
+</UserControl>

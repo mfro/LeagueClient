@@ -1,0 +1,39 @@
+﻿<Page x:Class="LeagueClient.ClientUI.PatcherPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
+  <Page.Resources>
+    <Style x:Key="LabelStyle" TargetType="TextBlock" BasedOn="{StaticResource Control}">
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="FontFamily" Value="Arial"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="8 0"/>
+    </Style>
+  </Page.Resources>
+  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="35"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="35"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="35"/>
+      <RowDefinition Height="40"/>
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="1" FontSize="42" FontFamily="Arial" Margin="40 0">Patching...</TextBlock>
+    <my:MyProgressBar x:Name="OverallStatusBar" Grid.Row="3" Grid.Column="1" Value=".47"
+                      IndeterminateAnimationTime="1.8" IndeterminateBarWidth="90"/>
+    <TextBlock FontSize="18" Name="OverallStatusText" Grid.Row="2" Grid.Column="1"
+               HorizontalAlignment="Center">Patching Custom Client</TextBlock>
+
+    <my:MyProgressBar x:Name="CurrentStatusBar" Grid.Row="5" Grid.Column="1" Value=".8"
+                      IndeterminateAnimationTime="1.8" IndeterminateBarWidth="90"/>
+    <TextBlock FontSize="16" Name="CurrentStatusText" Grid.Row="5" Grid.Column="1"
+               Margin="8 0" VerticalAlignment="Center"
+               HorizontalAlignment="Left">Downloading DataDragon</TextBlock>
+    <TextBlock FontSize="16" Name="CurrentStatusProgress" Grid.Row="5" Grid.Column="1"
+               Margin="8 0" VerticalAlignment="Center"
+               HorizontalAlignment="Right">80%</TextBlock>
+  </Grid>
+</Page>

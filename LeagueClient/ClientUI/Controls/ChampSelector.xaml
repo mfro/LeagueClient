@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="LeagueClient.ClientUI.Controls.ChampSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+  <Grid Name="parentGrid" Width="650">
+    <Grid Name="ChampSelect" Visibility="Visible">
+      <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <ItemsControl Name="ChampsGrid">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border BorderBrush="{StaticResource ForeColor}" BorderThickness="2" Width="60"
+                  Margin="0 0 4 4" Cursor="Hand" ToolTip="{Binding Name}" MouseUp="Champion_Select">
+                <Image Source="{Binding Image}"/>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Margin="0 0 0 -4" HorizontalAlignment="Left"/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+    <Grid Name="SkinSelect" Visibility="Collapsed">
+      <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" Name="SkinScroll">
+        <Grid MouseWheel="SkinGrid_Scroll" Background="Transparent">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Button Name="BackButton" Width="190" Margin="50" Height="35"
+                  Click="BackButton_Click">Back to Champions</Button>
+          <Path Data="M 18 6 L 0 6 L 6 0 M 0 6 L 6 12" Stroke="{StaticResource FontColor}"
+                    Height="12" Width="18" HorizontalAlignment="Center" Margin="0 0 145 0"/>
+          <ItemsControl Name="SkinsGrid" Grid.Column="1">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border BorderBrush="{StaticResource ForeColor}" BorderThickness="2"
+                  Margin="0 0 4 0" Cursor="Hand" ToolTip="{Binding Name}" MouseUp="Skin_Select">
+                  <Image Source="{Binding Image}"/>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Margin="4 0 -4 0" Background="Transparent" MinWidth="650"
+                          Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </Grid>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
+</UserControl>

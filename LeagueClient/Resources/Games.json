@@ -1,0 +1,107 @@
+{
+  "Games": {
+    "Casual": {
+      "Name": "Casual",
+      "Details": "Play against other summoners.",
+      "Games": [
+        {
+          "Name": "Classic 5v5",
+          "Info": "Summoner's Rift",
+          "Mode": "CLASSIC",
+          "Queues": [
+            { "Name": "Team Builder", "Id": 61, "Type": 3 },
+            { "Name": "Blind Pick", "Id": 2 },
+            { "Name": "Draft Pick", "Id": 14 }
+          ]
+        },
+        {
+          "Name": "Classic 3v3",
+          "Info": "Twisted Treeline",
+          "Mode": "CLASSIC",
+          "Queues": [
+            { "Name": "Blind Pick", "Id": 8 }
+          ]
+        },
+        {
+          "Name": "Dominion",
+          "Info": "The Crystal Scar",
+          "Mode": "ODIN",
+          "Queues": [
+            { "Name": "Blind Pick", "Id": 16 },
+            { "Name": "Draft Pick", "Id": 17 }
+          ]
+        },
+        {
+          "Name": "ARAM",
+          "Info": "Howling Abyss",
+          "Mode": "ARAM",
+          "Queues": [
+            { "Name": "All Random", "Id": 65 }
+          ]
+        }
+      ]
+    },
+    "Ranked": {
+      "Name": "Ranked",
+      "Details": "Play competitively agains other summoners.",
+      "Games": [
+        {
+          "Name": "Classic 5v5",
+          "Info": "Summoner's Rift",
+          "Mode": "CLASSIC",
+          "Queues": [
+            { "Name": "Solo / Duo Queue", "Id": 4, "Type": 1 },
+            { "Name": "Teams", "Id": 42, "Type": 2 }
+          ]
+        },
+        {
+          "Name": "Classic 3v3",
+          "Info": "Twisted Treeline",
+          "Mode": "CLASSIC",
+          "Queues": [
+            { "Name": "Teams", "Id": 41, "Type": 2 }
+          ]
+        }
+      ]
+    },
+    "Bots": {
+      "Name": "Bots",
+      "Details": "Play against computers.",
+      "Games": [
+        {
+          "Name": "Classic 5v5",
+          "Info": "Summoner's Rift",
+          "Mode": "CLASSIC",
+          "Queues": [
+            { "Name": "Intro", "Id": 31, "BotDifficulty": "INTRO" },
+            { "Name": "Beginner", "Id": 32, "BotDifficulty": "EASY" },
+            { "Name": "Intermediate", "Id": 33, "BotDifficulty": "MEDIUM" }
+          ]
+        },
+        {
+          "Name": "Classic 3v3",
+          "Info": "Twisted Treeline",
+          "Mode": "CLASSIC",
+          "Queues": [
+            { "Name": "Beginner", "Id": 52, "BotDifficulty": "EASY" },
+            { "Name": "Intermediate", "Id": 52, "BotDifficulty": "MEDIUM" }
+          ]
+        },
+        {
+          "Name": "Dominion",
+          "Info": "The Crystal Scar",
+          "Mode": "ODIN",
+          "Queues": [
+            { "Name": "Beginner", "Id": 25, "BotDifficulty": "EASY" },
+            { "Name": "Intermediate", "Id": 25, "BotDifficulty": "MEDIUM" }
+          ]
+        }
+      ]
+    }
+  },
+  "Modes": {
+    "CLASSIC": "Work with your team to destroy the enemy nexus.",
+    "ODIN": "Work with your team to capture points and control the map.",
+    "ARAM": "Work with your team all together in one lane to destroy the enemy nexus"
+  }
+}

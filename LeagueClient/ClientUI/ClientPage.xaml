@@ -1,0 +1,88 @@
+﻿<Page x:Class="LeagueClient.ClientUI.ClientPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+      DataContext="{Binding RelativeSource={RelativeSource Self}}">
+  <Page.Resources>
+    <sys:Double x:Key="ChatButtonWidth">60</sys:Double>
+  </Page.Resources>
+  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="55"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="25"/>
+    </Grid.RowDefinitions>
+    <Frame Name="ClientContent" Grid.Row="1" NavigationUIVisibility="Hidden"/>
+    <Grid Name="Header" Style="{StaticResource Back1}" Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="240"/>
+      </Grid.ColumnDefinitions>
+      <Button Width="70" Height="35" HorizontalAlignment="Left" Margin="10 10"
+              Content="Home" Click="Home_Click" FontSize="14"/>
+      <UserControl Width="100" Height="40" Grid.ColumnSpan="2" Name="PlayControl"/>
+      <Grid Name="Profile" Style="{StaticResource Back1}" Grid.Column="1">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="19"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="55"/>
+          <ColumnDefinition Width="4"/>
+          <ColumnDefinition Width="70"/>
+          <ColumnDefinition Width="70"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Image Source="{Binding ProfileIcon}" Grid.RowSpan="3"/>
+        <TextBlock Text="{Binding SummonerName}" FontSize="14" Grid.Column="2" VerticalAlignment="Top" Padding="0 2 0 0" Grid.ColumnSpan="2"/>
+        <Image Source="{StaticResource IPIcon}" Grid.Column="2" Grid.Row="1" Width="15" HorizontalAlignment="Left" Margin="0 1 0 0"/>
+        <TextBlock FontSize="13" Name="IPAmount" Grid.Column="2" VerticalAlignment="Bottom" Grid.Row="1" Text="100000" Margin="17 0 0 0"/>
+        <Image Source="{StaticResource RPIcon}" Grid.Column="3" Grid.Row="1" Width="15" HorizontalAlignment="Left" Margin="0 1 0 0"/>
+        <TextBlock FontSize="13" Name="RPAmount" Grid.Column="3" VerticalAlignment="Bottom" Grid.Row="1" Text="100000" Margin="17 0 0 0"/>
+        <TextBlock FontSize="13" Name="CurrentStatus" Foreground="{StaticResource ChatColor}" Grid.Column="2" Grid.Row="2" Text="Online" Grid.ColumnSpan="2"/>
+      </Grid>
+    </Grid>
+    <Grid Name="Footer" Style="{StaticResource Back1}" Grid.Row="2">
+      <ItemsControl Name="OpenChatList" Margin="160 -310 0 0" FlowDirection="LeftToRight" HorizontalAlignment="Left">
+        <ItemsControl.ItemContainerStyle>
+          <Style TargetType="Control">
+            <Setter Property="Margin" Value="-160 0 0 0"/>
+          </Style>
+        </ItemsControl.ItemContainerStyle>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+      <Button Grid.Column="1" Margin="2" Click="ToggleChat" Padding="0"
+              HorizontalAlignment="Right" Width="{StaticResource ChatButtonWidth}">Chat</Button>
+    </Grid>
+    <Grid Name="ChatPanel" Grid.Row="1" HorizontalAlignment="Right" Width="243" Style="{StaticResource Back1}"
+          Grid.RowSpan="2" Visibility="Collapsed">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="25"/>
+      </Grid.RowDefinitions>
+      <my:HintedTextBox Hint="Status" x:Name="StatusBox" FontSize="12"
+                        Grid.Column="1" KeyUp="StatusBox_KeyUp"/>
+      <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Hidden"
+                    HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl Name="ChatList"/>
+      </ScrollViewer>
+      <Button Margin="0,2,2,2" Click="ToggleChat" Grid.Row="2"  Padding="0"
+              HorizontalAlignment="Right" Width="{StaticResource ChatButtonWidth}" Grid.Column="1">Chat</Button>
+      <Border BorderThickness="3 0 0 0" BorderBrush="{StaticResource Back1Color}" Grid.RowSpan="3">
+        <Border BorderThickness="1 0 0 0" BorderBrush="{StaticResource ForeColor}"/>
+      </Border>
+    </Grid>
+  </Grid>
+</Page>

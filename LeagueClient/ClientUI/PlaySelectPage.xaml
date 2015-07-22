@@ -1,0 +1,100 @@
+﻿<Page x:Class="LeagueClient.ClientUI.PlaySelectPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      DataContext="{Binding RelativeSource={RelativeSource Self}}">
+  <Page.Resources>
+    <Style TargetType="ListBoxItem" x:Key="ItemStyle">
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Border Name="_border" Padding="3 2">
+              <ContentPresenter/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="_border" Property="Background" Value="{StaticResource HighColor}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Page.Resources>
+  <Grid Width="{StaticResource Width}" Height="{StaticResource PageHeight}" Style="{StaticResource Back2}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="40"/>
+      <RowDefinition Height="190"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="40"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="150"/>
+      <ColumnDefinition Width="150"/>
+      <ColumnDefinition Width="150"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <UserControl Background="{StaticResource Back1Color}" Margin="-5" Grid.Row="1" Grid.RowSpan="2"
+                 Grid.Column="1" Grid.ColumnSpan="3"/>
+    <Image Grid.Row="1" Grid.RowSpan="2" Name="BackImage1"/>
+    <Image Grid.Row="1" Grid.RowSpan="2" Name="BackImage2" Grid.Column="4"/>
+    <!--Region Lists-->
+    <ListBox Grid.Column="1" Style="{StaticResource Back1}" BorderThickness="0" Grid.Row="1"
+             ItemsSource="{Binding GameGroups}" Name="GroupList" Loaded="ListBox_Loaded"
+             ItemContainerStyle="{StaticResource ItemStyle}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock FontSize="14" Text="{Binding Name}"/>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <ListBox Grid.Column="2" Style="{StaticResource Back1}" BorderThickness="0" Grid.Row="1"
+             ItemsSource="{Binding GameModes}" ItemContainerStyle="{StaticResource ItemStyle}"
+             Name="ModeList" Loaded="ListBox_Loaded">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="18"/>
+              <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock FontSize="14" Text="{Binding Name}"/>
+            <TextBlock Grid.Row="1" FontSize="12" Text="{Binding Info}"/>
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <ListBox Grid.Column="3" Style="{StaticResource Back1}" BorderThickness="0" Grid.Row="1"
+             ItemsSource="{Binding GameQueues}" ItemContainerStyle="{StaticResource ItemStyle}"
+             Name="QueueList" Loaded="ListBox_Loaded">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock FontSize="14" Height="20" Text="{Binding Name}"/>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <!--End Region-->
+    <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Background="{StaticResource Back1Color}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <TextBlock TextWrapping="Wrap" Padding="4" FontSize="16"  Name="ModeTitle"
+                 Background="{StaticResource ForeColor}" Visibility="Collapsed"/>
+      <TextBlock TextWrapping="Wrap" Padding="4" FontSize="16" HorizontalAlignment="Right" Name="QueueTitle"/>
+      <TextBlock FontSize="14" TextWrapping="Wrap" Grid.Row="1" Padding="4" Name="GroupDetails"/>
+      <TextBlock FontSize="14" TextWrapping="Wrap" Grid.Row="2" Padding="4" Name="ModeDetails"/>
+      <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Margin="0 0 155 0" Width="150" Grid.Row="3" Visibility="Collapsed" Name="Join1"
+              Click="Join1_Click"/>
+      <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Margin="0" Width="150" Grid.Row="3" Visibility="Collapsed" Name="Join2"
+              Click="Join2_Click"/>
+    </Grid>
+  </Grid>
+</Page>

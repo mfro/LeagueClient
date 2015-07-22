@@ -1,0 +1,53 @@
+﻿<Page x:Class="LeagueClient.ClientUI.LoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+      SnapsToDevicePixels="True">
+  <Grid Style="{StaticResource Back2}" Width="{StaticResource Width}" Height="{StaticResource Height}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="150"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="5"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="50"/>
+      <ColumnDefinition Width="200"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Image Name="BackStatic" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center"/>
+    <MediaElement Name="BackAnimation" Grid.RowSpan="50" Grid.ColumnSpan="50" MediaEnded="BackAnimation_MediaEnded"
+                  Stretch="UniformToFill" VerticalAlignment="Center" UnloadedBehavior="Manual"/>
+    <UserControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="10" Margin="-6 -5" Style="{StaticResource Back1}"/>
+    <TextBlock FontSize="14" Grid.Row="1" Grid.Column="1" Margin="0 0 0 4">Username:</TextBlock>
+    <TextBox TabIndex="0" Grid.Row="2" Grid.Column="1" Name="UserBox"/>
+    <TextBlock FontSize="14" Grid.Row="3" Grid.Column="1" Margin="0 8 0 4">Password:</TextBlock>
+    <PasswordBox TabIndex="1" Grid.Row="4" Grid.Column="1" Name="PassBox"/>
+    <Button TabIndex="3" Grid.Row="5" Grid.Column="1" Margin="0 8" Padding="10 1 10 2" HorizontalAlignment="Right"
+             IsDefault="True" Click="Button_Click" Name="LoginButt">Login</Button>
+    <CheckBox Name="AutoLoginToggle" Grid.Column="1" Grid.Row="5" FontSize="12"
+              Checked="AnimationToggled" Unchecked="AnimationToggled" TabIndex="2"/>
+    <TextBlock Grid.Column="1" Grid.Row="5" Margin="20 0 0 0" FontSize="12"
+               Text="Auto Login" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+    <Grid Name="Progress" Visibility="Hidden" Grid.Row="6" Grid.Column="1" Margin="0 10 0 0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <TextBlock Grid.Row="0" FontSize="12">Logging in...</TextBlock>
+      <my:MyProgressBar Grid.Row="1" Height="20" Background="Transparent" Margin="-6 4" x:Name="LoginBar"/>
+    </Grid>
+    <CheckBox Name="AnimationToggle" Grid.Column="1" Grid.Row="9" FontSize="12"
+              Checked="AnimationToggled" Unchecked="AnimationToggled" IsChecked="True"/>
+    <TextBlock Grid.Column="1" Grid.Row="9" Margin="20 0 0 0" FontSize="12"
+               Text="Background Animation"/>
+  </Grid>
+</Page>

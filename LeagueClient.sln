@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeagueClient", "LeagueClient\LeagueClient.csproj", "{76C6060D-BFC1-4741-B7E3-BAE09634CB64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rtmp-sharp", "rtmp-sharp\rtmp-sharp.csproj", "{AA1A4F5D-3BD4-4832-9F5D-90727007727E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{76C6060D-BFC1-4741-B7E3-BAE09634CB64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76C6060D-BFC1-4741-B7E3-BAE09634CB64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76C6060D-BFC1-4741-B7E3-BAE09634CB64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76C6060D-BFC1-4741-B7E3-BAE09634CB64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA1A4F5D-3BD4-4832-9F5D-90727007727E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA1A4F5D-3BD4-4832-9F5D-90727007727E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA1A4F5D-3BD4-4832-9F5D-90727007727E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA1A4F5D-3BD4-4832-9F5D-90727007727E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
