@@ -130,6 +130,7 @@
       <DependentUpon>TeambuilderSoloPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Media\CurrentGame.cs" />
+    <Compile Include="Alert.cs" />
     <Compile Include="RiotInterface\Chat\LeagueStatus.cs" />
     <Compile Include="RiotInterface\com\riotgames\kudos\dto\PendingKudosDTO.cs" />
     <Compile Include="RiotInterface\com\riotgames\leagues\pojo\LeagueItemDTO.cs" />
@@ -145,6 +146,9 @@
     <Compile Include="RiotInterface\com\riotgames\platform\catalog\runes\Rune.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\catalog\runes\RuneType.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\clientfacade\domain\LoginDataPacket.cs" />
+    <Compile Include="RiotInterface\com\riotgames\platform\client\dynamic\configuration\ClientDynamicConfigurationNotification.cs" />
+    <Compile Include="RiotInterface\com\riotgames\platform\Exception.cs" />
+    <Compile Include="RiotInterface\com\riotgames\platform\gameinvite\contract\error\AlreadyMemberOfInvitationLobbyException.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\gameinvite\contract\Invitee.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\gameinvite\contract\LobbyStatus.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\gameinvite\contract\Member.cs" />
@@ -170,6 +174,7 @@
     <Compile Include="RiotInterface\com\riotgames\platform\leagues\client\dto\SummonerLeagueItemsDTO.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\leagues\client\dto\SummonerLeaguesDTO.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\login\AuthenticationCredentials.cs" />
+    <Compile Include="RiotInterface\com\riotgames\platform\login\LoginFailedException.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\login\Session.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\matchmaking\GameQueueConfig.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\matchmaking\MatchingThrottleConfig.cs" />
@@ -222,6 +227,7 @@
     <Compile Include="RiotInterface\com\riotgames\platform\summoner\Summoner.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\summoner\SummonerCatalog.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\summoner\SummonerDefaultSpells.cs" />
+    <Compile Include="RiotInterface\com\riotgames\platform\summoner\SummonerGameModeSpells.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\summoner\SummonerLevel.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\summoner\SummonerLevelAndPoints.cs" />
     <Compile Include="RiotInterface\com\riotgames\platform\summoner\SummonerTalentsAndPoints.cs" />
