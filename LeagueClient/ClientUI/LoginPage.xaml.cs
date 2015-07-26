@@ -13,6 +13,9 @@ namespace LeagueClient.ClientUI {
   /// Interaction logic for LoginPage.xaml
   /// </summary>
   public partial class LoginPage : Page {
+    private int tries;
+    private string user;
+    private string pass;
 
     public LoginPage() {
       InitializeComponent();
@@ -37,18 +40,20 @@ namespace LeagueClient.ClientUI {
         var junk = "";
         for (int i = 0; i < decrypted.Length; i++) junk += " ";
         PassBox.Password = junk;
-        Login(Client.Settings.Username, Encoding.UTF8.GetString(decrypted));
+        tries = 3;
+        Login(user = Client.Settings.Username, pass = Encoding.UTF8.GetString(decrypted));
       }
     }
 
     private void Button_Click(object sender, RoutedEventArgs e) {
-      string user = UserBox.Text;
-      string pass = PassBox.Password;
+      user = UserBox.Text;
+      pass = PassBox.Password;
       Client.Settings.Username = user;
 
       if (AutoLoginToggle.IsChecked.HasValue && AutoLoginToggle.IsChecked.Value)
         SavePassword(pass);
 
+      tries = 3;
       Login(user, pass);
     }
 
@@ -67,12 +72,17 @@ namespace LeagueClient.ClientUI {
       new Thread(() => {
         Client.Initialize(user, pass).ContinueWith(t => {
           if (!t.IsFaulted && t.Result) Dispatcher.Invoke(Client.MainWindow.LoginComplete);
-          else throw t.Exception;//Dispatcher.Invoke(Reset);
+          else Dispatcher.Invoke(Reset);
         });
       }).Start();
     }
 
     private void Reset() {
+      if(tries > 0) {
+        tries--;
+        Login(user, pass);
+        return;
+      }
       if (Client.ChatManager != null)
         Client.ChatManager.Disconnect();
       Progress.Visibility = System.Windows.Visibility.Hidden;
@@ -80,6 +90,7 @@ namespace LeagueClient.ClientUI {
       PassBox.Password = "";
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled
         = AnimationToggle.IsEnabled = AutoLoginToggle.IsEnabled = true;
+      PassBox.Focus();
     }
 
     private void BackAnimation_MediaEnded(object sender, RoutedEventArgs e) {

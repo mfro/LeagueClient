@@ -13,11 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using jabber.protocol.client;
-using jabber.protocol.iq;
-using LeagueClient.RiotInterface;
-using LeagueClient.RiotInterface.Chat;
-using LeagueClient.RiotInterface.Riot;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic;
+using LeagueClient.Logic.Chat;
+using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
 
@@ -29,14 +28,14 @@ namespace LeagueClient.ClientUI.Controls {
     public string UserName { get; private set; }
     public string InGame { get; private set; }
     public LeagueStatus Status { get; private set; }
-    public Item User { get; private set; }
+    public jabber.protocol.iq.Item User { get; private set; }
     public ChatConversation Conversation { get; private set; }
 
-    public PlatformGameLifecycleDTO Game { get; private set; }
+    public GameDTO Game { get; private set; }
     public RiotAPI.CurrentGameAPI.CurrentGameInfo GameInfo { get; private set; }
     public PublicSummoner Summoner { get; private set; }
 
-    public Friend(Presence p, Item item, ChatConversation convo) {
+    public Friend(Presence p, jabber.protocol.iq.Item item, ChatConversation convo) {
       Status = new LeagueStatus(p.Status, p.Show);
       Conversation = convo;
       User = item;
@@ -48,8 +47,8 @@ namespace LeagueClient.ClientUI.Controls {
       if (Status.Message.Length > 0) MsgText.Text = Status.Message;
       else MsgText.Visibility = System.Windows.Visibility.Collapsed;
       InGameText.Text = InGame;
-      RiotCalls.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
-      RiotCalls.GetSummonerByName(UserName).ContinueWith(GotSummoner);
+      RiotCalls.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
+      RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
 
       switch (p.Show) {
         case "chat": InGameText.Foreground = App.ChatColor; break;
@@ -64,7 +63,7 @@ namespace LeagueClient.ClientUI.Controls {
         return;
       }
       if (t.Result == null) return;
-      Game = t.Result;
+      Game = t.Result.Game;
     }
 
     private void GotSummoner(Task<PublicSummoner> summ) {
@@ -97,14 +96,14 @@ namespace LeagueClient.ClientUI.Controls {
       if (GameInfo == null) {
         long time = Status.TimeStamp - Client.GetMilliseconds();
         InGameText.Text = string.Format("In {0} for ~{1}",
-          Strings.Queues[Game.Game.QueueTypeName],
+          Strings.Queues[Game.QueueTypeName],
           TimeSpan.FromMilliseconds(time).ToString("m\\:ss"));
       } else if (GameInfo.gameStartTime == 0) {
-        InGameText.Text = "Loading into " + Strings.Queues[Game.Game.QueueTypeName];
+        InGameText.Text = "Loading into " + Strings.Queues[Game.QueueTypeName];
       } else {
         long time = GameInfo.gameStartTime - Client.GetMilliseconds();
         InGameText.Text = string.Format("In {0} for {1}",
-          Strings.Queues[Game.Game.QueueTypeName],
+          Strings.Queues[Game.QueueTypeName],
           TimeSpan.FromMilliseconds(time).ToString("m\\:ss"));
       }
     }

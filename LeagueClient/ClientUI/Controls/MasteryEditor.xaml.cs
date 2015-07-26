@@ -6,8 +6,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using LeagueClient.RiotInterface.Riot;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 
@@ -42,11 +42,10 @@ namespace LeagueClient.ClientUI.Controls {
         if (icon.Points == 0) continue;
         page.TalentEntries.Add(new TalentEntry {
           Rank = icon.Points,
-          SummonerId = Client.LoginPacket.AllSummonerData.Summoner.SumId,
           TalentId = icon.Data.id
         });
       }
-      var book = await RiotCalls.SaveMasteryBook(Client.LoginPacket.AllSummonerData.MasteryBook);
+      var book = await RiotCalls.MasteryBookService.SaveMasteryBook(Client.LoginPacket.AllSummonerData.MasteryBook);
       Client.LoginPacket.AllSummonerData.MasteryBook = book;
       if (System.Threading.Thread.CurrentThread == Dispatcher.Thread)
         Changed.Text = "";
@@ -60,7 +59,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void LoadBook(MasteryBookDTO book) {
       PageList.ItemsSource = book.BookPages;
-      LoadPage(book.BookPages[0]);
+      LoadPage((MasteryBookPageDTO) book.BookPages[0]);
     }
 
     private void LoadPage(MasteryBookPageDTO page) {
@@ -68,8 +67,10 @@ namespace LeagueClient.ClientUI.Controls {
       this.page = page;
       foreach (var item in Icons.Values) item.Points = 0;
       PageNameBox.Text = page.Name;
-      foreach (var item in page.TalentEntries)
-        Icons[item.TalentId + ""].Points = item.Rank;
+      foreach (var item in page.TalentEntries) {
+        var talent = (TalentEntry) item;
+        Icons[talent.TalentId + ""].Points = talent.Rank;
+      }
       loading = false;
       UpdateMasteries();
       unsaved = false;

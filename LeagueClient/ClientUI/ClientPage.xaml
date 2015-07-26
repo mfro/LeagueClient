@@ -4,9 +4,67 @@
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+      KeyUp="Page_KeyUp"
       DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <Page.Resources>
     <sys:Double x:Key="ChatButtonWidth">60</sys:Double>
+    <Storyboard x:Key="AlertHover" Storyboard.TargetProperty="Color">
+      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
+                      To="#2E2E2E" Duration="0:0:0.2"/>
+    </Storyboard>
+    <Storyboard x:Key="AlertUnHover" Storyboard.TargetProperty="Color">
+      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
+                      To="#393939" Duration="0:0:0.2"/>
+    </Storyboard>
+    <Storyboard x:Key="AlertPress" Storyboard.TargetProperty="Color">
+      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
+                      To="#0076C9" Duration="0:0:0.08"/>
+      <ColorAnimation Storyboard.TargetProperty="Stroke.(SolidColorBrush.Color)" 
+                      To="#0076C9" Duration="0:0:0.08"/>
+    </Storyboard>
+    <Storyboard x:Key="AlertRelease" Storyboard.TargetProperty="Color">
+      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
+                      To="#D2D2D2" Duration="0:0:0.08"/>
+      <ColorAnimation Storyboard.TargetProperty="Stroke.(SolidColorBrush.Color)" 
+                      To="#D2D2D2" Duration="0:0:0.08"/>
+    </Storyboard>
+    <Style TargetType="Button" x:Key="CircleButton">
+      <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="BorderBrush" Value="{StaticResource ForeColor}"/>
+      <Setter Property="Background" Value="{StaticResource Back1Color}"/>
+      <Setter Property="Foreground" Value="{StaticResource FontColor}"/>
+      <Setter Property="Padding" Value="4 2"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Grid>
+              <Ellipse Stroke="{TemplateBinding BorderBrush}" Fill="{TemplateBinding Background}"/>
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Trigger.EnterActions>
+            <BeginStoryboard Storyboard="{StaticResource ButtonHover}"/>
+          </Trigger.EnterActions>
+          <Trigger.ExitActions>
+            <BeginStoryboard Storyboard="{StaticResource ButtonUnHover}"/>
+          </Trigger.ExitActions>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Trigger.EnterActions>
+            <BeginStoryboard Storyboard="{StaticResource ButtonPress}"/>
+          </Trigger.EnterActions>
+          <Trigger.ExitActions>
+            <BeginStoryboard Storyboard="{StaticResource ButtonRelease}"/>
+          </Trigger.ExitActions>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
   </Page.Resources>
   <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}">
     <Grid.RowDefinitions>
@@ -17,13 +75,23 @@
     <Frame Name="ClientContent" Grid.Row="1" NavigationUIVisibility="Hidden"/>
     <Grid Name="Header" Style="{StaticResource Back1}" Grid.Row="0">
       <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="90"/>
+        <ColumnDefinition Width="60"/>
+        <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="240"/>
       </Grid.ColumnDefinitions>
-      <Button Width="70" Height="35" HorizontalAlignment="Left" Margin="10 10"
-              Content="Home" Click="Home_Click" FontSize="14"/>
-      <UserControl Width="100" Height="40" Grid.ColumnSpan="2" Name="PlayControl"/>
-      <Grid Name="Profile" Style="{StaticResource Back1}" Grid.Column="1">
+      <Button Margin="10 10" Content="Home" Click="Home_Click" FontSize="14"/>
+      <Button Grid.Column="2" Style="{StaticResource CircleButton}" Height="30" Width="30"
+              Click="AlertButton_Click" Visibility="Hidden" Opacity="0" Name="AlertButton">
+        <Path Fill="{StaticResource FontColor}" Stroke="{StaticResource FontColor}"
+              Data="M 13 5 L 17 5 17 19 13 19 Z M 13 22 L 17 22 L 17 25 L 13 25 Z"
+              Name="AlertExclamation" IsHitTestVisible="False" Width="30" Height="30"/>
+      </Button>
+      <Border Width="150" Height="40" Grid.Column="3" HorizontalAlignment="Left"
+              Margin="50 0" Name="StatusPanel"/>
+      <Border Width="100" Height="40" Grid.ColumnSpan="5" Name="PlayControl"/>
+      <Grid Name="Profile" Style="{StaticResource Back1}" Grid.Column="4">
         <Grid.RowDefinitions>
           <RowDefinition Height="19"/>
           <RowDefinition Height="*"/>
@@ -84,5 +152,56 @@
         <Border BorderThickness="1 0 0 0" BorderBrush="{StaticResource ForeColor}"/>
       </Border>
     </Grid>
+
+    <Grid Margin="65 50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Height="300"
+          Name="AlertPopup" Grid.RowSpan="3" Visibility="Collapsed" Opacity="0">
+      <Border BorderBrush="{StaticResource ForeColor}" BorderThickness="1" Margin="3"/>
+      <Border BorderBrush="{StaticResource Back1Color}" BorderThickness="3 0 3 3"/>
+      <ScrollViewer Margin="4" VerticalScrollBarVisibility="Hidden">
+        <ItemsControl Name="AlertHistory" Background="{StaticResource Back1Color}"
+                    ItemsSource="{Binding Alerts}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="20"/>
+                  <RowDefinition Height="72"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Teambuilder Invite" Background="{StaticResource ForeColor}" FontSize="14" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding Message}" Grid.Row="1" TextWrapping="Wrap" Margin="2 0"/>
+                <Button Name="AlertYes" Grid.Row="1" Width="20" Height="20" Style="{StaticResource CircleButton}"
+                        Grid.Column="1" VerticalAlignment="Top" Margin="3" Visibility="Collapsed"
+                        Click="AlertYes_Click">
+                  <Path Width="20" Height="20" Stroke="{StaticResource FontColor}" StrokeThickness="2"
+                  StrokeEndLineCap="Round" StrokeStartLineCap="Round" StrokeLineJoin="Round"
+                  Data="M 4 11 L 8 15 16 6"/>
+                </Button>
+                <Button Name="AlertNo" Grid.Row="1" Width="20" Height="20" Style="{StaticResource CircleButton}"
+                        Grid.Column="1" VerticalAlignment="Top" Margin="3 26" Visibility="Collapsed"
+                        Click="AlertNo_Click">
+                  <Path Width="20" Height="20" Stroke="{StaticResource FontColor}" StrokeThickness="2"
+                  StrokeEndLineCap="Round" StrokeStartLineCap="Round" StrokeLineJoin="Round"
+                  Data="M 5 5 L 15 15 M 15 5 L 5 15"/>
+                </Button>
+              </Grid>
+              <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Type}" Value="YesNo">
+                  <Setter TargetName="AlertYes" Property="Visibility" Value="Visible"/>
+                  <Setter TargetName="AlertNo" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+              </DataTemplate.Triggers>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+      <Path Margin="0 -5" VerticalAlignment="Top" Data="M 91.5 8.5 L 100 0 108.5 8.5 Z"
+            Fill="{StaticResource ForeColor}"
+            Stroke="{StaticResource ForeColor}"/>
+    </Grid>
+    <Border Grid.ColumnSpan="100" Grid.RowSpan="100" Name="PopupPanel" Background="#4F101010" Visibility="Collapsed"/>
   </Grid>
 </Page>

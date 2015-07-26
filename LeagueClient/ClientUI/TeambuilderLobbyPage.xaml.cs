@@ -12,9 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.RiotInterface.Chat;
-using LeagueClient.RiotInterface.Riot;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic.Chat;
+using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
+using MFroehlich.League.DataDragon;
+using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -22,30 +24,51 @@ namespace LeagueClient.ClientUI {
   /// </summary>
   public partial class TeambuilderLobbyPage : Page {
     public LobbyStatus Status { get; private set; }
+    public JSONObject GroupData { get; private set; }
 
-    public TeambuilderLobbyPage() {
+    public TeambuilderLobbyPage(bool captain) {
       InitializeComponent();
       Client.ChatManager.UpdateStatus(LeagueStatus.InTeamBuilder, StatusShow.Chat);
 
       Client.MessageReceived += MessageReceived;
-      RiotCalls.CreateGroupFinderLobby(61, "abc125-abc125-abc125-abc125").ContinueWith(GotLobbyStatus);
       //TODO Add control for me in teambuilder and add it to this
     }
 
-    private void GotLobbyStatus(Task<LobbyStatus> task) {
-      if (!task.IsFaulted) Status = task.Result;
-      Console.WriteLine(task.Result.GameData);
-    } 
+    public void GotLobbyStatus(LobbyStatus status) {
+      Status = status;
+    }
 
-    private void MessageReceived(object sender, RtmpSharp.Messaging.MessageReceivedEventArgs e) {
-      if(e.Body is LobbyStatus) {
-        Status = (LobbyStatus) e.Body;
-      }
-      Console.WriteLine(e.Body);
+    private async void MessageReceived(object sender, RtmpSharp.Messaging.MessageReceivedEventArgs e) {
+      var status = e.Body as LobbyStatus;
+      var response = e.Body as LcdsServiceProxyResponse;
+      if (status != null) {
+        GotLobbyStatus(status);
+      } else if (response != null) {
+        if (response.status.Equals("OK")) {
+          switch (response.methodName) {
+            case "groupCreatedV3":
+              GroupData = JSON.ParseObject(response.payload);
+              var data = await RiotCalls.GameInvitationService.CreateGroupFinderLobby(61, GroupData["groupId"]);
+              GotLobbyStatus(data);
+              break;
+            default:
+              Client.Log("Unhandled response to {0}, {1}", response.methodName, response.payload);
+              break;
+          }
+        } else if (!response.status.Equals("ACK")) Client.TryBreak(response.status);
+      } else { }
     }
 
     private void Invite_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.Invite(53026814);
+      RiotCalls.GameInvitationService.Invite(43221445);
     }
+  }
+
+  public class TeambuilderPlayer {
+    public ChampionDto Champ { get; set; }
+    public SpellDto Spell1 { get; set; }
+    public SpellDto Spell2 { get; set; }
+    public string Position { get; set; }
+    public string Role { get; set; }
   }
 }

@@ -14,11 +14,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MFroehlich.League.Assets;
 using LeagueClient.ClientUI;
-using LeagueClient.RiotInterface.Riot;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Net;
 using System.Security.Cryptography;
 using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic;
 
 namespace LeagueClient {
   /// <summary>
@@ -31,7 +32,7 @@ namespace LeagueClient {
       Client.Log(LeagueData.CurrentVersion);
 
       InitializeComponent();
-      ((App)App.Current).LoadResources();
+      ((App) App.Current).LoadResources();
       if (LeagueData.IsCurrent) {
         PatchComplete();
       } else
@@ -39,7 +40,6 @@ namespace LeagueClient {
     }
 
     public void LoginComplete() {
-      //Content = new MasteryEditor();
       Content = Client.MainPage = new ClientPage();
     }
 

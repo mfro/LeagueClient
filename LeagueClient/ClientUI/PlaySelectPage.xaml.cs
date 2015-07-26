@@ -13,8 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.RiotInterface;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic;
+using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI {
@@ -24,7 +24,7 @@ namespace LeagueClient.ClientUI {
   public partial class PlaySelectPage : Page {
     private static dynamic GameTypesRef = JSON.ParseObject(LeagueClient.Properties.Resources.Games);
     private static List<string> Order = new List<string> { "CLASSIC", "ODIN", "ARAM" };
-
+    
     public BindingList<dynamic> GameGroups { get; private set; }
     public BindingList<dynamic> GameModes { get; private set; }
     public BindingList<dynamic> GameQueues { get; private set; }
@@ -111,10 +111,10 @@ namespace LeagueClient.ClientUI {
       switch ((int) selected.Type) {
         case 0:
         case 1:
-          Client.JoinQueue(selected.Config, selected.Bots);
+          Client.MainPage.JoinQueue(selected.Config, selected.Bots);
           break;
         case 3:
-          Client.MainPage.JoinTeambuilder(false);
+          Client.MainPage.CreateTeambuilderSolo();
           break;
       }
     }
@@ -127,7 +127,7 @@ namespace LeagueClient.ClientUI {
           Client.MainPage.CreateLobby(selected.Config, selected.Bots);
           break;
         case 3:
-          Client.MainPage.JoinTeambuilder(true);
+          Client.MainPage.CreateTeambuilderLobby();
           break;
       }
     }

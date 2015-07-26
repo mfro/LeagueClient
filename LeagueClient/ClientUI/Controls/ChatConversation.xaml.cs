@@ -51,7 +51,7 @@ namespace LeagueClient.ClientUI.Controls {
           if (Unread) Unread = false;
           ChatDisplayPanel.BeginStoryboard(App.FadeIn);
           if (ChatOpened != null) ChatOpened(User);
-          FocusManager.SetFocusedElement(Client.MainWindow, this);
+          ChatSendBox.Focus();
         }
         open = value;
       }
@@ -64,6 +64,7 @@ namespace LeagueClient.ClientUI.Controls {
       this.UserName = name;
       this.User = user;
       this.ChatOpenButt.Content = name;
+      this.GotFocus += OnFocus;
     }
 
     private void ChatOpenButt_Click(object sender, RoutedEventArgs e) {
@@ -77,13 +78,13 @@ namespace LeagueClient.ClientUI.Controls {
       ChatSendBox.Text = "";
     }
 
-    private void Focused(object sender, RoutedEventArgs e) {
-      ChatSendBox.Focus();
-    }
-
     private void CloseButton_Click(object sender, RoutedEventArgs e) {
       ChatOpenButt.Background = CloseButton.Background = App.Back1Color;
       if (ChatClosed != null) ChatClosed(User);
+    }
+
+    private void OnFocus(object sender, RoutedEventArgs e) {
+      ChatSendBox.Focus();
     }
   }
 }

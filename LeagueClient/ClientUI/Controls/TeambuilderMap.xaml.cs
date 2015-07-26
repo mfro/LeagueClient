@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
+using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -59,21 +60,20 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     void Players_ListChanged(object sender, ListChangedEventArgs e) {
-      int topT = (from p in Players where p.Position == Position.Top select p).Count();
-      int midT = (from p in Players where p.Position == Position.Mid select p).Count();
-      int botT = (from p in Players where p.Position == Position.Bot select p).Count();
-      int jglT = (from p in Players where p.Position == Position.Jungle select p).Count();
+      int topT = (from p in Players where p.Position == Position.TOP select p).Count();
+      int midT = (from p in Players where p.Position == Position.MIDDLE select p).Count();
+      int botT = (from p in Players where p.Position == Position.BOTTOM select p).Count();
+      int jglT = (from p in Players where p.Position == Position.JUNGLE select p).Count();
       int top = 0, mid = 0, bot = 0, jgl = 0;
       Body.Children.Clear();
       foreach (var item in Players) {
         Point point;
-        switch (item.Position) {
-          case Position.Top: point = TopLane[topT - 1][top++]; break;
-          case Position.Mid: point = MidLane[midT - 1][mid++]; break;
-          case Position.Bot: point = BotLane[botT - 1][bot++]; break;
-          case Position.Jungle: point = Jungle[jglT - 1][jgl++]; break;
-          default: point = new Point(); break;
-        }
+        if (item.Position == Position.TOP) point = TopLane[topT - 1][top++];
+        else if (item.Position == Position.MIDDLE) point = MidLane[midT - 1][mid++];
+        else if (item.Position == Position.BOTTOM) point = BotLane[botT - 1][bot++];
+        else if (item.Position == Position.JUNGLE) point = Jungle[jglT - 1][jgl++];
+        else point = new Point();
+
         var img = new Image {
           Width = ActualWidth * .12, Height = ActualHeight * .12,
           Style = (Style) FindResource("Image"),
@@ -91,10 +91,6 @@ namespace LeagueClient.ClientUI.Controls {
     public class Player {
       public ChampionDto Champion { get; set; }
       public Position Position { get; set; }
-    }
-
-    public enum Position {
-      Top, Mid, Bot, Jungle
     }
 
     private class PointRef : List<Point> {

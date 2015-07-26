@@ -1,0 +1,87 @@
+﻿groupUpdatedV3: 
+  groupTtlSecs
+  groupId
+  slotId
+acceptedByGroupV2: 
+  candidateAutoQuitTimeout
+  groupId
+  slotId
+candidateAcceptedV1: 
+candidateDeclinedGroupV2: 
+candidateDeclinedV2: 
+  slotId
+candidateFoundV2: 
+  championId
+  role
+  slotId
+  autoDeclineCandidateTimeout
+candidateJoinedV1: 
+estimatedWaitTimeRetrievedV1: 
+  mmaEnabled
+  role
+  championId
+  estimatedWaitTime
+  position
+featureTogglesRetrieved: 
+  enabledFeatures
+gameStartFailedV1: 
+gatekeeperRestrictedV1: 
+groupCreatedV3: 
+  initialPosition
+  groupTtlSecs
+  initialRole
+  minPremadeSize
+  slotIds
+  soloSpecRoles
+  groupId
+  playerInfoRetrieved
+  initialChampionId
+groupNoLongerAvailableV1: 
+infoRetrievedV1: 
+  adjustedPositions
+  spellIds
+  areCaptainsStarved
+  skinIds
+  championIds
+  adjustedChampionIds
+  cprAdjustmentEnabled
+  demandInfo
+  adjustedRoles
+  initialSpellIds
+  solosInDemand
+infoRetrievedV2: 
+  lastPlayedRole
+  initialSpellIds
+  championIds
+  adjustedRoles
+  lastPlayedPosition
+  lastSelectedSkinIdByChampionIds
+  spellIds
+  areCaptainsStarved
+  cprAdjustmentEnabled
+  skinIds
+  demandInfo
+  adjustedChampionIds
+  solosInDemand
+  adjustedPositions
+  lastPlayedChampionId
+lastSelectedSkinForChampionUpdatedV1: 
+  championId
+  skinId
+leaverBusterLowPriorityQueueAbandonedV1: 
+matchMadeV1: 
+matchmakingPhaseStartedV1: 
+quitDeniedV1: 
+readinessIndicatedV1: 
+  ready
+  slotId
+removedFromServiceV1: 
+  reason
+slotPopulatedV1: 
+soloQueryCreatedV1: 
+soloSearchedForAnotherGroupV2: 
+  slotId
+  reason
+soloSpecPhaseStartedV2: 
+  initialSoloSpecRole
+groupBuildingPhaseStartedV1: 

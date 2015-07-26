@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using LeagueClient.RiotInterface.Chat;
-using LeagueClient.RiotInterface.Riot;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic.Chat;
+using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
 using LegendaryClient.Logic.SWF;
 using MFroehlich.League.Assets;
-using MFroehlich.Parsing.DynamicJSON;
 using RtmpSharp.IO;
 using RtmpSharp.Messaging;
 using RtmpSharp.Net;
@@ -33,32 +32,39 @@ namespace LeagueClient {
 
     internal static event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
-    internal static RtmpClient RtmpConn;
+    internal static RtmpClient RtmpConn { get; set; }
 
-    internal static Session UserSession;
+    internal static Session UserSession { get; set; }
 
-    internal static LoginDataPacket LoginPacket;
+    internal static LoginDataPacket LoginPacket { get; set; }
 
-    internal static string AirVersion;
+    internal static string AirVersion { get; set; }
 
-    internal static RiotChat ChatManager;
+    internal static RiotChat ChatManager { get; set; }
 
-    internal static string AirDirectory;
+    internal static string AirDirectory { get; set; }
 
-    internal static string LoginTheme;
+    internal static string LoginTheme { get; set; }
 
-    internal static MainWindow MainWindow;
+    internal static MainWindow MainWindow { get; set; }
 
-    internal static LeagueClient.ClientUI.ClientPage MainPage;
+    internal static LeagueClient.ClientUI.ClientPage MainPage { get; set; }
 
-    internal static GameQueueConfig[] AvailableQueues;
+    internal static GameQueueConfig[] AvailableQueues { get; set; }
 
-    internal static List<ChampionDTO> RiotChampions;
-    internal static List<MyChampDTO> AvailableChampions;
+    internal static List<ChampionDTO> RiotChampions { get; set; }
+    internal static List<MyChampDTO> AvailableChampions { get; set; }
 
-    internal static List<int> EnabledMaps;
+    internal static List<int> EnabledMaps { get; set; }
 
-    internal static Settings Settings;
+    internal static Settings Settings { get; set; }
+
+    internal static Dictionary<string, Action<LcdsServiceProxyResponse>> Delegates { get; set; }
+
+    public static void AddDelegate(Guid messageId, Action<LcdsServiceProxyResponse> del) {
+      if (Delegates == null) Delegates = new Dictionary<string, Action<LcdsServiceProxyResponse>>();
+      Delegates.Add(messageId.ToString(), del);
+    }
 
     public static long GetMilliseconds() {
       return (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
@@ -107,62 +113,51 @@ namespace LeagueClient {
     }
 
     public static async Task<bool> Initialize(string user, string pass) {
-      try {
-        var watch = new Stopwatch(); watch.Start();
-        var context = RiotCalls.RegisterObjects();
-        RtmpConn = new RtmpClient(new Uri("rtmps://" + Server + ":2099"),
-          context, RtmpSharp.IO.ObjectEncoding.Amf3);
-        RtmpConn.MessageReceived += RtmpConn_MessageReceived;
-        RtmpConn.CallbackException += CallbackException;
-        RiotCalls.OnInvocationError += CallbackException;
-        await RtmpConn.ConnectAsync();
+      var context = RiotCalls.RegisterObjects();
+      RtmpConn = new RtmpClient(new Uri("rtmps://" + Server + ":2099"),
+        context, RtmpSharp.IO.ObjectEncoding.Amf3);
+      RtmpConn.MessageReceived += RtmpConn_MessageReceived;
+      RtmpConn.CallbackException += CallbackException;
+      RiotCalls.OnInvocationError += CallbackException;
+      await RtmpConn.ConnectAsync();
 
-        var creds = new AuthenticationCredentials();
-        creds.Username = user;
-        creds.Password = pass;
-        creds.ClientVersion = AirVersion;
-        creds.IpAddress = await RiotCalls.GetIpAddress();
-        creds.Locale = Locale;
-        creds.Domain = "lolclient.lol.riotgames.com";
-        creds.AuthToken = await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue);
-        Client.ChatManager = new RiotInterface.Chat.RiotChat(user, pass);
+      var creds = new AuthenticationCredentials();
+      creds.Username = user;
+      creds.Password = pass;
+      creds.ClientVersion = AirVersion;
+      creds.Locale = Locale;
+      creds.Domain = "lolclient.lol.riotgames.com";
+      creds.AuthToken = await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue);
+      Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
 
-        UserSession = await RiotCalls.Login(creds);
-        await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
-          "bc", "bc-" + UserSession.AccountSummary.AccountId.ToString());
-        await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
-          "gn-" + UserSession.AccountSummary.AccountId.ToString(),
-          "gn-" + UserSession.AccountSummary.AccountId.ToString());
-        await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
-          "cn-" + UserSession.AccountSummary.AccountId.ToString(),
-          "cn-" + UserSession.AccountSummary.AccountId.ToString());
+      UserSession = await RiotCalls.LoginService.Login(creds);
+      await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
+        "bc", "bc-" + UserSession.AccountSummary.AccountId.ToString());
+      await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
+        "gn-" + UserSession.AccountSummary.AccountId.ToString(),
+        "gn-" + UserSession.AccountSummary.AccountId.ToString());
+      await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
+        "cn-" + UserSession.AccountSummary.AccountId.ToString(),
+        "cn-" + UserSession.AccountSummary.AccountId.ToString());
 
-        bool authed = await RtmpConn.LoginAsync(creds.Username.ToLower(), UserSession.Token);
-        LoginPacket = await RiotCalls.GetLoginDataPacketForUser();
-        string state = await RiotCalls.GetAccountState();
+      bool authed = await RtmpConn.LoginAsync(creds.Username.ToLower(), UserSession.Token);
+      LoginPacket = await RiotCalls.ClientFacadeService.GetLoginDataPacketForUser();
+      string state = await RiotCalls.AccountService.GetAccountState();
 
-        new System.Threading.Thread(() => {
-          RiotCalls.GetAvailableQueues()
-            .ContinueWith(q => AvailableQueues = q.Result);
-          RiotCalls.GetAvailableChampions()
-            .ContinueWith(GotChampions);
-        }).Start();
+      new System.Threading.Thread(() => {
+        RiotCalls.MatchmakerService.GetAvailableQueues()
+          .ContinueWith(q => AvailableQueues = q.Result);
+        RiotCalls.InventoryService.GetAvailableChampions()
+          .ContinueWith(GotChampions);
+      }).Start();
 
-        EnabledMaps = new List<int>();
-        foreach (var item in LoginPacket.ClientSystemStates.gameMapEnabledDTOList)
-          EnabledMaps.Add((int) item["gameMapId"]);
+      EnabledMaps = new List<int>();
+      foreach (var item in LoginPacket.ClientSystemStates.gameMapEnabledDTOList)
+        EnabledMaps.Add((int) item["gameMapId"]);
 
-        if (!state.Equals("ENABLED")) TryBreak("state is not ENABLED");
+      if (!state.Equals("ENABLED")) TryBreak("state is not ENABLED");
 
-        return state.Equals("ENABLED");
-      } catch (Exception x) {
-        TryBreak("Exception " + x.Message);
-        return false;
-      }
-    }
-
-    public static void JoinQueue(GameQueueConfig queue, string Bots) {
-      
+      return state.Equals("ENABLED");
     }
 
     public static void CallbackException(object sender, Exception e) {
@@ -170,10 +165,22 @@ namespace LeagueClient {
     }
 
     public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
-      Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
-      if(MessageReceived != null) MessageReceived(sender, e);
-      if (e.Body is AsObject) {
-        //var content = JSON.ParseObject((string) ((AsObject) e.Body)["configs"]);
+      if (MessageReceived != null) MessageReceived(sender, e);
+      var config = e.Body as ClientDynamicConfigurationNotification;
+      var response = e.Body as LcdsServiceProxyResponse;
+      if (config != null) {
+        Log("Received Configuration Notification");
+      } else if (response != null) {
+        if (response.status.Equals("ACK"))
+          Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
+        else if (Delegates.ContainsKey(response.messageId)) {
+          Delegates[response.messageId](response);
+          Delegates.Remove(response.messageId);
+        } else {
+          Log("Unhandled LCDS response of method {0} [{1}]", response.methodName, response.messageId);
+        }
+      } else {
+        Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
       }
     }
 

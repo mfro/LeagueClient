@@ -12,8 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.RiotInterface.Riot;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using MyChampDto = MFroehlich.League.DataDragon.ChampionDto;
@@ -83,14 +83,14 @@ namespace LeagueClient.ClientUI.Controls {
         SelectedChampion = data;
 
         var riotDto = (from c in Client.RiotChampions
-                       where c.ChampionId.ToString().Equals(data.key)
+                       where c.ChampionId.Equals(data.key)
                        select c).FirstOrDefault();
         skins.Clear();
         foreach (var item in SelectedChampion.skins) {
           var riot = (from s in riotDto.ChampionSkins
                      where s.SkinId.ToString().Equals(item.id)
                      select s).FirstOrDefault();
-          if(item.num == 0 ||  riot.Owned) skins.Add(item);
+          if(item.num == 0 || riot.Owned) skins.Add(item);
         }
         if (skins.Count == 1) {
           if(SkinSelected != null) SkinSelected(this, skins[0]);

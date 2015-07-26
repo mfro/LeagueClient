@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.Logic.Riot.Platform;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -21,8 +21,7 @@ namespace LeagueClient.ClientUI.Controls {
   public partial class TeambuilderOther : UserControl {
     public TeambuilderOther(Member member) {
       InitializeComponent();
-      SummonerText.Text = member.SummonerName;
-      //TODO Finish This
+
     }
   }
 }

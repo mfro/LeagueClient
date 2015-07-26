@@ -12,14 +12,17 @@
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="75"/>
+      <ColumnDefinition Width="400"/>
       <ColumnDefinition Width="*"/>
       <ColumnDefinition Width="auto"/>
       <ColumnDefinition Width="75"/>
     </Grid.ColumnDefinitions>
+    
+    <ItemsControl Name="PlayerList" Grid.Row="1" Grid.Column="1" Margin="0 -50"/>
 
-    <Button Grid.Column="2" Width="80" Height="20" Click="Invite_Click">Invite</Button>
+    <Button Grid.Column="3" Width="80" Height="20" Click="Invite_Click">Invite</Button>
 
-    <Border VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"
+    <Border VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"
             BorderBrush="{StaticResource Back1Color}" BorderThickness="4" Height="310">
       <my:TeambuilderMap x:Name="GameMap"/>
     </Border>

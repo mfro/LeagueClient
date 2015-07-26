@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +14,14 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.RiotInterface.Riot;
-using LeagueClient.RiotInterface.Riot.Platform;
+using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic;
+using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
+using MFroehlich.League.DataDragon;
+using MFroehlich.Parsing.DynamicJSON;
+using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -24,6 +30,7 @@ namespace LeagueClient.ClientUI {
   public partial class ClientPage : Page {
     public BitmapImage ProfileIcon { get; set; }
     public string SummonerName { get; set; }
+    public BindingList<Alert> Alerts { get; private set; }
     public bool ChatOpen {
       get { return chatOpen; }
       set {
@@ -34,25 +41,33 @@ namespace LeagueClient.ClientUI {
         chatOpen = value;
       }
     }
+    public bool AlertsOpen {
+      get { return alertsOpen; }
+      set {
+        if (value)
+          AlertPopup.BeginStoryboard(App.FadeIn);
+        else AlertPopup.BeginStoryboard(App.FadeOut);
+        alertsOpen = value;
+      }
+    }
+
     private bool chatOpen;
-    private Button PlayButton = new Button { Content = "Play" };
+    private bool alertsOpen;
+    private Button PlayButton = new Button { Content = "Play", FontSize = 18 };
 
     public ClientPage() {
-      PlayButton.FontSize = 18;
       PlayButton.Click += Play_Click;
-
+      
       int iconId = Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
       ProfileIcon = LeagueData.GetProfileIconImage(iconId);
       SummonerName = Client.LoginPacket.AllSummonerData.Summoner.Name;
+      Alerts = new BindingList<Alert>();
       InitializeComponent();
-      PlayControl.Content = PlayButton;
+      PlayControl.Child = PlayButton;
       ChatList.ItemsSource = Client.ChatManager.FriendList;
       OpenChatList.ItemsSource = Client.ChatManager.OpenChats;
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
-
-
-
     }
 
     public void JoinQueue(GameQueueConfig queue, string bots) {
@@ -67,12 +82,61 @@ namespace LeagueClient.ClientUI {
 
     }
 
-    public void JoinTeambuilder(bool group) {
-      if (group) {
-        ClientContent.Content = new TeambuilderLobbyPage();
-      } else {
-        ClientContent.Content = new TeambuilderSoloPage();
-      }
+    public void CreateTeambuilderSolo() {
+      var page = new TeambuilderSoloPage();
+      ClientContent.Content = page;
+    }
+
+    public void CreateTeambuilderLobby() {
+      var page = new TeambuilderLobbyPage(true);
+      ClientContent.Content = page;
+      RiotCalls.LcdsService.CreateGroup();
+    }
+
+    public void EnterTeambuilderSolo(ChampionDto champ, Position pos, Role role, SpellDto spell1, SpellDto spell2) {
+      var id = RiotCalls.LcdsService.CreateSoloQuery(champ, role, pos, spell1, spell2, "echidnagenitalia");
+      Client.AddDelegate(id, response => {
+        if (response.status.Equals("OK"))
+          Dispatcher.Invoke(() => ShowQueuer(new TeambuilderSoloQueuer()));
+      });
+      ClientContent.Content = null;
+    }
+
+    public void JoinTeambuilderLobby(string groupId, int slotId, int timeout) {
+
+    }
+
+    public void ShowQueuer(IQueuer Queuer) {
+      Queuer.Popped += ShowQueuePopPopup;
+      StatusPanel.Child = Queuer.GetControl();
+    }
+
+    public void ShowQueuePopPopup(object src, EventArgs arg) {
+      var popup = (src as IQueuer)?.GetPopup();
+      if (popup == null) throw new ArgumentException(src + "Is not a IQueuer");
+      popup.Accepted += QueueAccepted;
+      popup.Cancelled += QueueCancelled;
+      ShowPopup(popup.GetControl());
+    }
+
+    private void QueueCancelled(object src, EventArgs arg) {
+    }
+
+    private void QueueAccepted(object src, EventArgs arg) {
+      var queue = (src as IQueuePopup)?.GetQueue();
+      Client.Log(queue);
+    }
+
+    public void ShowNotification(Alert alert) {
+      Dispatcher.Invoke(() => Alerts.Add(alert));
+      AlertButton.BeginStoryboard(App.FadeIn);
+    }
+
+    private void ShowPopup(Control Contents) {
+      PopupPanel.Visibility = Visibility.Visible;
+      PopupPanel.Child = Contents;
+      Contents.Opacity = 0;
+      Contents.BeginStoryboard(App.FadeIn);
     }
 
     private void ToggleChat(object sender, RoutedEventArgs e) {
@@ -90,9 +154,37 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Home_Click(object sender, RoutedEventArgs e) {
-      PlayControl.Content = PlayButton;
+      PlayControl.Child = PlayButton;
       PlayButton.IsEnabled = true;
       ClientContent.Content = null;
+    }
+
+    private void Page_KeyUp(object sender, KeyEventArgs e) {
+      if(e.Key == Key.Escape) {
+        ChatOpen = false;
+        AlertsOpen = false;
+        Client.ChatManager.CloseAll();
+      }
+    }
+
+    private void AlertButton_Click(object sender, RoutedEventArgs e) {
+      AlertsOpen = !alertsOpen;
+    }
+
+    private void AlertYes_Click(object sender, RoutedEventArgs e) {
+      var alert = (sender as Button).DataContext as Alert;
+      alert.ReactYesNo(true);
+      Alerts.Remove(alert);
+      if(Alerts.Count == 0)
+        AlertButton.BeginStoryboard(App.FadeOut);
+    }
+
+    private void AlertNo_Click(object sender, RoutedEventArgs e) {
+      var alert = (sender as Button).DataContext as Alert;
+      alert.ReactYesNo(false);
+      Alerts.Remove(alert);
+      if (Alerts.Count == 0)
+        AlertButton.BeginStoryboard(App.FadeOut);
     }
   }
 }

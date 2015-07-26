@@ -10,12 +10,9 @@
     <sys:Double x:Key="PageHeight">460</sys:Double>
     <ScaleTransform x:Key="CheckboxScale" ScaleX="2" ScaleY="2"/>
     
-    <!--Region Sprites-->
     <BitmapImage x:Key="IPIcon" UriSource="Media/ip.png"/>
     <BitmapImage x:Key="RPIcon" UriSource="Media/rp.png"/>
-    <!--End Region-->
     
-    <!--Region Colors-->
     <Brush x:Key="FontColor">#D2D2D2</Brush>
     <Brush x:Key="HighColor">#007ACC</Brush>
     <Brush x:Key="ForeColor">#393939</Brush>
@@ -24,9 +21,7 @@
     <Brush x:Key="BusyColor">#C4B100</Brush>
     <Brush x:Key="AwayColor">#DD0000</Brush>
     <Brush x:Key="ChatColor">#00B350</Brush>
-    <!--End Region-->
 
-    <!--Region Button Animations-->
     <Storyboard x:Key="ButtonHover" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#181818" Duration="0:0:0.2"/>
@@ -47,9 +42,7 @@
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#181818" Duration="0:0:0.08"/>
     </Storyboard>
-    <!--End Region-->
 
-    <!--Region Other Animations-->
     <Storyboard x:Key="UnreadPulse" RepeatBehavior="Forever">
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)"
                       To="#0071CC" Duration="0:0:0.5"/>
@@ -86,9 +79,7 @@
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
                       To="#393939" Duration="0:0:0.2"/>
     </Storyboard>
-    <!--End Region-->
-    
-    <!--Region Styles-->
+
     <Style x:Key="Control">
       <Setter Property="Control.Background" Value="{StaticResource ForeColor}"/>
       <Setter Property="Control.Foreground" Value="{StaticResource FontColor}"/>
@@ -218,8 +209,6 @@
     <Style TargetType="TextBlock" BasedOn="{StaticResource Control}"/>
     <Style TargetType="Label" BasedOn="{StaticResource Control}"/>
 
-    <!--Region ScrollViewer-->
-
     <Style x:Key="ScrollThumb" TargetType="Thumb">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
       <Setter Property="Foreground" Value="{StaticResource ForeColor}"/>
@@ -235,10 +224,11 @@
     <Style x:Key="ScrollBar" TargetType="ScrollBar">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
       <Setter Property="Width" Value="10"/>
+      <Setter Property="Background" Value="{StaticResource Back1Color}"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate>
-            <Grid Background="{StaticResource Back1Color}">
+            <Grid Background="{TemplateBinding Background}">
               <Track Name="PART_Track" IsDirectionReversed="True" Focusable="False">
                 <Track.DecreaseRepeatButton>
                   <RepeatButton Background="Transparent" BorderThickness="0" Command="ScrollBar.PageUpCommand"/>
@@ -278,9 +268,6 @@
       </Setter>
     </Style>
 
-    <!--End Region-->
-
-    <!--Region ComboBox-->
     <Style TargetType="ComboBoxItem">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
       <Setter Property="Background" Value="{StaticResource ForeColor}"/>
@@ -305,7 +292,7 @@
         </Setter.Value>
       </Setter>
     </Style>
-    
+
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
       <Grid>
         <Grid.ColumnDefinitions>
@@ -322,7 +309,7 @@
     <ControlTemplate x:Key="ComboBoxTextBox" TargetType="TextBox">
       <Border Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
     </ControlTemplate>
-    
+
     <Style TargetType="ComboBox">
       <Setter Property="SnapsToDevicePixels" Value="true"/>
       <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -369,9 +356,5 @@
       </Setter>
     </Style>
 
-    <!--EndRegion-->
-
-    <!--End Region-->
-    
-   </Application.Resources>
+  </Application.Resources>
 </Application>
