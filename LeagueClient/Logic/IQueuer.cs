@@ -9,6 +9,5 @@ namespace LeagueClient.Logic {
     event EventHandler Popped;
 
     System.Windows.Controls.Control GetControl();
-    IQueuePopup GetPopup();
   }
 }

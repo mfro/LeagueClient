@@ -11,6 +11,5 @@ namespace LeagueClient.Logic {
     event EventHandler Cancelled;
 
     System.Windows.Controls.Control GetControl();
-    GameQueueConfig GetQueue();
   }
 }

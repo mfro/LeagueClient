@@ -102,29 +102,25 @@ namespace LeagueClient.ClientUI {
       ClientContent.Content = null;
     }
 
-    public void JoinTeambuilderLobby(string groupId, int slotId, int timeout) {
-
+    public void JoinTeambuilderLobby(string groupId, int slotId) {
+      var page = new TeambuilderLobbyPage(false);
+      ClientContent.Content = page;
+      RiotCalls.LcdsService.IndicateGroupAcceptanceAsCandidate(slotId, true, groupId);
     }
 
     public void ShowQueuer(IQueuer Queuer) {
-      Queuer.Popped += ShowQueuePopPopup;
+      //Queuer.Popped += ShowQueuePopPopup;
       StatusPanel.Child = Queuer.GetControl();
     }
 
-    public void ShowQueuePopPopup(object src, EventArgs arg) {
-      var popup = (src as IQueuer)?.GetPopup();
-      if (popup == null) throw new ArgumentException(src + "Is not a IQueuer");
-      popup.Accepted += QueueAccepted;
-      popup.Cancelled += QueueCancelled;
+    public void ShowQueuePopPopup(IQueuePopup popup) {
+      popup.Accepted += QueuePopupClose;
+      popup.Cancelled += QueuePopupClose;
       ShowPopup(popup.GetControl());
     }
 
-    private void QueueCancelled(object src, EventArgs arg) {
-    }
-
-    private void QueueAccepted(object src, EventArgs arg) {
-      var queue = (src as IQueuePopup)?.GetQueue();
-      Client.Log(queue);
+    private void QueuePopupClose(object src, EventArgs arg) {
+      PopupPanel.Visibility = Visibility.Collapsed;
     }
 
     public void ShowNotification(Alert alert) {
