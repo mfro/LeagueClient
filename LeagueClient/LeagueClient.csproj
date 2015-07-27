@@ -99,7 +99,11 @@
       <DependentUpon>Friend.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\HintedTextBox.cs" />
-    <Compile Include="Logic\IQueuePopup.cs" />
+    <Compile Include="ClientUI\TestPage.xaml.cs">
+      <DependentUpon>TestPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Logic\Queueing\CapPlayer.cs" />
+    <Compile Include="Logic\Queueing\IQueuePopup.cs" />
     <Compile Include="ClientUI\Controls\MasteryEditor.xaml.cs">
       <DependentUpon>MasteryEditor.xaml</DependentUpon>
     </Compile>
@@ -109,20 +113,20 @@
     <Compile Include="ClientUI\Controls\SpellSelector.xaml.cs">
       <DependentUpon>SpellSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\TeambuilderMap.xaml.cs">
-      <DependentUpon>TeambuilderMap.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\CapMap.xaml.cs">
+      <DependentUpon>CapMap.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\TeambuilderMe.xaml.cs">
-      <DependentUpon>TeambuilderMe.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\CapMePlayer.xaml.cs">
+      <DependentUpon>CapMePlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\TeambuilderOther.xaml.cs">
-      <DependentUpon>TeambuilderOther.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\CapOtherPlayer.xaml.cs">
+      <DependentUpon>CapOtherPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\TeambuilderSoloQueueHandler.xaml.cs">
-      <DependentUpon>TeambuilderSoloQueueHandler.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\CapSoloQueuer.xaml.cs">
+      <DependentUpon>CapSoloQueuer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\TeambuilderSoloQueuePopup.xaml.cs">
-      <DependentUpon>TeambuilderSoloQueuePopup.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\CapSoloQueuePopup.xaml.cs">
+      <DependentUpon>CapSoloQueuePopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
@@ -133,13 +137,14 @@
     <Compile Include="ClientUI\PlaySelectPage.xaml.cs">
       <DependentUpon>PlaySelectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\TeambuilderLobbyPage.xaml.cs">
-      <DependentUpon>TeambuilderLobbyPage.xaml</DependentUpon>
+    <Compile Include="ClientUI\CapLobbyPage.xaml.cs">
+      <DependentUpon>CapLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\TeambuilderSoloPage.xaml.cs">
-      <DependentUpon>TeambuilderSoloPage.xaml</DependentUpon>
+    <Compile Include="ClientUI\CapSoloPage.xaml.cs">
+      <DependentUpon>CapSoloPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Logic\IQueuer.cs" />
+    <Compile Include="Logic\Queueing\IQueuer.cs" />
+    <Compile Include="Logic\Queueing\IQueueManager.cs" />
     <Compile Include="Media\CurrentGame.cs" />
     <Compile Include="Alert.cs" />
     <Compile Include="Logic\Chat\LeagueStatus.cs" />
@@ -304,23 +309,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\TeambuilderMap.xaml">
+    <Page Include="ClientUI\Controls\CapMap.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\TeambuilderMe.xaml">
+    <Page Include="ClientUI\Controls\CapMePlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\TeambuilderOther.xaml">
+    <Page Include="ClientUI\Controls\CapOtherPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\TeambuilderSoloQueueHandler.xaml">
+    <Page Include="ClientUI\Controls\CapSoloQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\TeambuilderSoloQueuePopup.xaml">
+    <Page Include="ClientUI\Controls\CapSoloQueuePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -336,11 +341,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\TeambuilderLobbyPage.xaml">
+    <Page Include="ClientUI\CapLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\TeambuilderSoloPage.xaml">
+    <Page Include="ClientUI\CapSoloPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\TestPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -422,7 +431,9 @@
       <Name>rtmp-sharp</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Logic\Cap\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

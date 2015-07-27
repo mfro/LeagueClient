@@ -116,7 +116,7 @@ namespace LeagueClient.Logic.Chat {
       if (Friends.ContainsKey(bare.User))
         list.Remove(Friends[bare.User]);
       var s = Presence.GetAll(bare);
-      if (s.Length == 0)
+      if (s.Length == 0 || s[0]?.Status == null)
         App.Current.Dispatcher.Invoke((Action<List<Friend>>)ResetList, list);
       else {
         App.Current.Dispatcher.Invoke(() => {

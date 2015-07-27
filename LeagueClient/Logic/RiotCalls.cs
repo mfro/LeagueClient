@@ -16,6 +16,7 @@ using MFroehlich.Parsing.DynamicJSON;
 using LeagueClient.Logic.Riot.Kudos;
 using static LeagueClient.Logic.Strings;
 using MFroehlich.League.DataDragon;
+using LeagueClient.Logic.Cap;
 
 namespace LeagueClient.Logic.Riot {
   public class RiotCalls {
@@ -169,7 +170,7 @@ namespace LeagueClient.Logic.Riot {
       /// <param name="SummonerId">The summoner ID for the user</param>
       /// <returns>Returns the inventory for the user</returns>
       public static Task<SummonerRuneInventory> GetSummonerRuneInventory(Double SummonerId) {
-        return InvokeAsync<SummonerRuneInventory>("summonerRuneService", "getSummonerRuneInventory", SummonerId);
+        return InvokeAsync<SummonerRuneInventory>("summonerRuneService", "getSummonerRunes", SummonerId);
       }
 
       /// <summary>
@@ -709,6 +710,23 @@ namespace LeagueClient.Logic.Riot {
       public static Task<MasteryBookDTO> SaveMasteryBook(MasteryBookDTO MasteryBookPage) {
         return InvokeAsync<MasteryBookDTO>("masteryBookService", "saveMasteryBook", MasteryBookPage);
       }
+      /// <summary>
+      /// Saves the mastery book
+      /// </summary>
+      /// <param name="MasteryBookPage">The mastery book information</param>
+      /// <returns>Returns the mastery book</returns>
+      public static Task<MasteryBookDTO> GetMasteryBook(double summonerId) {
+        return InvokeAsync<MasteryBookDTO>("masteryBookService", "getMasteryBook", summonerId);
+      }
+
+      /// <summary>
+      /// Selects the default mastery book
+      /// </summary>
+      /// <param name="page">The mastery book to select</param>
+      /// <returns></returns>
+      public static Task<AsObject> SelectDefaultMasteryBookPage(MasteryBookPageDTO page) {
+        return InvokeAsync<AsObject>("masteryBookService", "selectDefaultMasteryBookPage", page);
+      }
     }
 
     public static class SummonerIconService {
@@ -779,11 +797,14 @@ namespace LeagueClient.Logic.Riot {
       public static Task CallLCDS(String UUID, String GameMode, String ProcedureCall, String Parameters) {
         return InvokeAsync<Object>("lcdsServiceProxy", "call", UUID, GameMode, ProcedureCall, Parameters);
       }
+    }
+
+    public static class CapService {
 
       private static Guid Invoke(string method, JSONObject args = null) {
         var str = (args == null) ? "{}" : JSON.Stringify(args);
         var id = Guid.NewGuid();
-        CallLCDS(id.ToString(), "cap", method, str);
+        LcdsService.CallLCDS(id.ToString(), "cap", method, str);
         return id;
       }
 
@@ -805,15 +826,16 @@ namespace LeagueClient.Logic.Riot {
         return Invoke("createGroupV3", json);
       }
 
-      public static Guid CreateSoloQuery(ChampionDto champ, Role role, Position position, SpellDto spell1, SpellDto spell2, string accessTokenStr) {
+      public static Guid CreateSoloQuery(CapPlayer player, string accessTokenStr = null) {
         var json = new JSONObject();
-        json["championId"] = champ.key;
-        json["role"] = role.Id;
-        json["position"] = position.Id;
-        json["spell1Id"] = spell1.key;
-        json["spell2Id"] = spell2.key;
+        json["championId"] = player.Champion.key;
+        json["role"] = player.Role.Id;
+        json["position"] = player.Position.Id;
+        json["spell1Id"] = player.Spell1.key;
+        json["spell2Id"] = player.Spell2.key;
         json["queueId"] = 61;
-        json["accessTokenStr"] = accessTokenStr;
+        if (accessTokenStr != null)
+          json["accessTokenStr"] = accessTokenStr;
         return Invoke("createSoloQueryV5", json);
       }
 

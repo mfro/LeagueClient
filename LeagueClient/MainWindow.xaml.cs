@@ -40,7 +40,9 @@ namespace LeagueClient {
     }
 
     public void LoginComplete() {
-      Content = Client.MainPage = new ClientPage();
+      var page = new ClientPage();
+      Client.QueueManager = page;
+      Content = page;
     }
 
     public void PatchComplete() {

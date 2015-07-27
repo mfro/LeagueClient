@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using LeagueClient.Logic.Chat;
+using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using LegendaryClient.Logic.SWF;
@@ -48,7 +49,7 @@ namespace LeagueClient {
 
     internal static MainWindow MainWindow { get; set; }
 
-    internal static LeagueClient.ClientUI.ClientPage MainPage { get; set; }
+    internal static IQueueManager QueueManager { get; set; }
 
     internal static GameQueueConfig[] AvailableQueues { get; set; }
 
