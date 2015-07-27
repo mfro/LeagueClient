@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
@@ -22,16 +23,23 @@ namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for TeambuilderLobbyPage.xaml
   /// </summary>
-  public partial class TeambuilderLobbyPage : Page {
+  public partial class CapLobbyPage : Page {
     public LobbyStatus Status { get; private set; }
     public JSONObject GroupData { get; private set; }
 
-    public TeambuilderLobbyPage(bool captain) {
+    public CapLobbyPage() {
       InitializeComponent();
       Client.ChatManager.UpdateStatus(LeagueStatus.InTeamBuilder, StatusShow.Chat);
 
       Client.MessageReceived += MessageReceived;
       //TODO Add control for me in teambuilder and add it to this
+    }
+
+    public CapLobbyPage(int slotId) {
+      InitializeComponent();
+      Client.ChatManager.UpdateStatus(LeagueStatus.InTeamBuilder, StatusShow.Chat);
+
+      Client.MessageReceived += MessageReceived;
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
@@ -58,11 +66,7 @@ namespace LeagueClient.ClientUI {
         } else if (!response.status.Equals("ACK")) Client.TryBreak(response.status);
       } else { }
     }
-
-    private void Invite_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameInvitationService.Invite(43221445);
-    }
-  }
+   }
 
   public class TeambuilderPlayer {
     public ChampionDto Champ { get; set; }

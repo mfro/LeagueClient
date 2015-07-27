@@ -22,12 +22,12 @@ namespace LeagueClient.ClientUI {
       BackAnimation.Source = new Uri(Client.LoginVideoPath);
       BackAnimation.Play();
       UserBox.Focus();
-      //BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory,
-      //  "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
+      BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory,
+        "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
       if ((AnimationToggle.IsChecked = Client.Settings.Animation).Value)
-        BackAnimation.Visibility = System.Windows.Visibility.Visible;
+        BackAnimation.Visibility = Visibility.Visible;
       else
-        BackAnimation.Visibility = System.Windows.Visibility.Collapsed;
+        BackAnimation.Visibility = Visibility.Collapsed;
 
       UserBox.Text = Client.Settings.Username;
       if (Client.Settings.Username.Length > 0) PassBox.Focus();

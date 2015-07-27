@@ -21,7 +21,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for TeambuilderMap.xaml
   /// </summary>
-  public partial class TeambuilderMap : UserControl {
+  public partial class CapMap : UserControl {
     public BindingList<Player> Players { get; private set; }
     private List<PointRef> TopLane = new List<PointRef> {
       new PointRef { { .083, .083 } },
@@ -52,7 +52,7 @@ namespace LeagueClient.ClientUI.Controls {
       new PointRef { { .190, .340 }, { .600, .560 }, { .320, .340 }, { .700, .640 }, { .255, .230 } },
     };
 
-    public TeambuilderMap() {
+    public CapMap() {
       Players = new BindingList<Player>();
       Players.ListChanged += Players_ListChanged;
       InitializeComponent();

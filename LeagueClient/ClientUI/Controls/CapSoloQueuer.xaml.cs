@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
+using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
 
@@ -21,14 +22,14 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for TeambuilderSoloQueueHandler.xaml
   /// </summary>
-  public partial class TeambuilderSoloQueuer : UserControl, IQueuer {
+  public partial class CapSoloQueuer : UserControl, IQueuer {
     public event EventHandler Popped;
 
     public int Elapsed { get; set; }
 
     private Timer timer;
 
-    public TeambuilderSoloQueuer() {
+    public CapSoloQueuer() {
       Client.MessageReceived += Client_MessageReceived;
       InitializeComponent();
       ElapsedText.Text = "" + (Elapsed = 0);
@@ -48,7 +49,7 @@ namespace LeagueClient.ClientUI.Controls {
           case "acceptedByGroupV2":
             if (Popped != null) Popped(this, new EventArgs());
             timer.Dispose();
-            Client.MainPage.ShowQueuePopPopup(new TeambuilderSoloQueuePopup(JSON.ParseObject(response.payload)));
+            Client.QueueManager.ShowQueuePopPopup(new CapSoloQueuePopup(JSON.ParseObject(response.payload)));
             break;
         }
       }

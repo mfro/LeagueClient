@@ -47,7 +47,7 @@
              ItemContainerStyle="{StaticResource ItemStyle}">
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <TextBlock FontSize="14" Text="{Binding Name}"/>
+          <TextBlock Style="{StaticResource Control}" FontSize="14" Text="{Binding Name}"/>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
@@ -61,8 +61,8 @@
               <RowDefinition Height="18"/>
               <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <TextBlock FontSize="14" Text="{Binding Name}"/>
-            <TextBlock Grid.Row="1" FontSize="12" Text="{Binding Info}"/>
+            <TextBlock Style="{StaticResource Control}" FontSize="14" Text="{Binding Name}"/>
+            <TextBlock Style="{StaticResource Control}" Grid.Row="1" FontSize="12" Text="{Binding Info}"/>
           </Grid>
         </DataTemplate>
       </ListBox.ItemTemplate>
@@ -72,7 +72,7 @@
              Name="QueueList" Loaded="ListBox_Loaded">
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <TextBlock FontSize="14" Height="20" Text="{Binding Name}"/>
+          <TextBlock Style="{StaticResource Control}" FontSize="14" Height="20" Text="{Binding Name}"/>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
@@ -84,11 +84,11 @@
         <RowDefinition Height="*"/>
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
-      <TextBlock TextWrapping="Wrap" Padding="4" FontSize="16"  Name="ModeTitle"
+      <TextBlock Style="{StaticResource Control}" TextWrapping="Wrap" Padding="4" FontSize="16"  Name="ModeTitle"
                  Background="{StaticResource ForeColor}" Visibility="Collapsed"/>
-      <TextBlock TextWrapping="Wrap" Padding="4" FontSize="16" HorizontalAlignment="Right" Name="QueueTitle"/>
-      <TextBlock FontSize="14" TextWrapping="Wrap" Grid.Row="1" Padding="4" Name="GroupDetails"/>
-      <TextBlock FontSize="14" TextWrapping="Wrap" Grid.Row="2" Padding="4" Name="ModeDetails"/>
+      <TextBlock Style="{StaticResource Control}" TextWrapping="Wrap" Padding="4" FontSize="16" HorizontalAlignment="Right" Name="QueueTitle"/>
+      <TextBlock Style="{StaticResource Control}" FontSize="14" TextWrapping="Wrap" Grid.Row="1" Padding="4" Name="GroupDetails"/>
+      <TextBlock Style="{StaticResource Control}" FontSize="14" TextWrapping="Wrap" Grid.Row="2" Padding="4" Name="ModeDetails"/>
       <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
               Margin="0 0 155 0" Width="150" Grid.Row="3" Visibility="Collapsed" Name="Join1"
               Click="Join1_Click"/>

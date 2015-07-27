@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,6 +33,10 @@ namespace LeagueClient.ClientUI.Controls {
       LoadMasteries(defense, LeagueData.MasteryData.Value.tree.Defense, 2);
       LoadMasteries(utility, LeagueData.MasteryData.Value.tree.Utility, 3);
 
+      Reset();
+    }
+
+    public void Reset() {
       LoadBook(Client.LoginPacket.AllSummonerData.MasteryBook);
     }
 
@@ -59,7 +64,11 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void LoadBook(MasteryBookDTO book) {
       PageList.ItemsSource = book.BookPages;
-      LoadPage((MasteryBookPageDTO) book.BookPages[0]);
+      var page = (from p in book.BookPages
+                  where p.Current
+                  select p).FirstOrDefault();
+      if (page == null) LoadPage((MasteryBookPageDTO) book.BookPages[0]);
+      else LoadPage(page);
     }
 
     private void LoadPage(MasteryBookPageDTO page) {
@@ -236,6 +245,7 @@ namespace LeagueClient.ClientUI.Controls {
                                        HorizontalSpace / 2, VerticalSpace / 2);
         Control.Child = grid;
         PointsLabel = new TextBlock { Text = "0/" + Data.ranks };
+        PointsLabel.Style = App.Control;
         PointsLabel.Background = App.ForeColor;
         PointsLabel.Margin = new Thickness(0, 0, -6, -10);
         PointsLabel.VerticalAlignment = VerticalAlignment.Bottom;

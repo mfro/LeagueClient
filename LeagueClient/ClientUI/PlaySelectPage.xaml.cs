@@ -111,10 +111,10 @@ namespace LeagueClient.ClientUI {
       switch ((int) selected.Type) {
         case 0:
         case 1:
-          Client.MainPage.JoinQueue(selected.Config, selected.Bots);
+          Client.QueueManager.JoinQueue(selected.Config, selected.Bots);
           break;
         case 3:
-          Client.MainPage.CreateTeambuilderSolo();
+          Client.QueueManager.CreateCapSolo();
           break;
       }
     }
@@ -124,10 +124,10 @@ namespace LeagueClient.ClientUI {
         case 0:
         case 1:
         case 2:
-          Client.MainPage.CreateLobby(selected.Config, selected.Bots);
+          Client.QueueManager.CreateLobby(selected.Config, selected.Bots);
           break;
         case 3:
-          Client.MainPage.CreateTeambuilderLobby();
+          Client.QueueManager.CreateCapLobby();
           break;
       }
     }

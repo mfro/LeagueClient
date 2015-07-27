@@ -33,6 +33,7 @@ namespace LeagueClient.ClientUI {
           return;
       }
       CurrentStatusText.Text = string.Format("{0} {1}...", status, detail);
+      CurrentStatusBar.Value = progress;
       if (progress < 0) {
         CurrentStatusProgress.Text = "";
         CurrentStatusBar.IsIndeterminate = true;
@@ -40,7 +41,6 @@ namespace LeagueClient.ClientUI {
         CurrentStatusProgress.Text = (progress * 100).ToString("f1") + "%";
         CurrentStatusBar.IsIndeterminate = false;
       }
-      CurrentStatusBar.Value = progress;
     }
 
     void CreateLoginPage() {

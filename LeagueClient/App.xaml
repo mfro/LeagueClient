@@ -22,7 +22,7 @@
     <Brush x:Key="AwayColor">#DD0000</Brush>
     <Brush x:Key="ChatColor">#00B350</Brush>
 
-    <Storyboard x:Key="ButtonHover" Storyboard.TargetProperty="Color">
+    <!--<Storyboard x:Key="ButtonHover" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#181818" Duration="0:0:0.2"/>
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" 
@@ -41,7 +41,7 @@
     <Storyboard x:Key="ButtonRelease" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#181818" Duration="0:0:0.08"/>
-    </Storyboard>
+    </Storyboard>-->
 
     <Storyboard x:Key="UnreadPulse" RepeatBehavior="Forever">
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)"
@@ -102,7 +102,7 @@
       <Setter Property="FontSize" Value="12"/>
       <Setter Property="BorderThickness" Value="0"/>
     </Style>
-    <Style TargetType="Button">
+    <!--<Style TargetType="Button">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="BorderBrush" Value="{StaticResource ForeColor}"/>
@@ -132,12 +132,6 @@
         </Setter.Value>
       </Setter>
       <Style.Triggers>
-        <!--<EventTrigger RoutedEvent="MouseEnter">
-          <BeginStoryboard Storyboard="{StaticResource ButtonHover}"/>
-        </EventTrigger>
-        <EventTrigger RoutedEvent="MouseLeave">
-          <BeginStoryboard Storyboard="{StaticResource ButtonUnHover}"/>
-        </EventTrigger>-->
         <Trigger Property="IsMouseOver" Value="True">
           <Trigger.EnterActions>
             <BeginStoryboard Storyboard="{StaticResource ButtonHover}"/>
@@ -154,6 +148,75 @@
             <BeginStoryboard Name="Release" Storyboard="{StaticResource ButtonRelease}"/>
           </Trigger.ExitActions>
         </Trigger>
+      </Style.Triggers>
+    </Style>-->
+    <Style TargetType="Button">
+      <Style.Resources>
+        <Color x:Key="BaseColor" R="5" G="125" B="200" A="255"/>
+        <Color x:Key="ShadowColor" R="5" G="75" B="125" A="255"/>
+        <Color x:Key="HoverColor" R="5" G="110" B="185" A="255"/>
+        <Color x:Key="ForeColor" R="210" G="210" B="210" A="255"/>
+        <SolidColorBrush x:Key="BaseBrush" Color="{StaticResource BaseColor}"/>
+        <SolidColorBrush x:Key="ShadowBrush" Color="{StaticResource ShadowColor}"/>
+        <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}"/>
+        <SolidColorBrush x:Key="ForeBrush" Color="{StaticResource ForeColor}"/>
+      </Style.Resources>
+      <Setter Property="SnapsToDevicePixels" Value="True"/>
+      <Setter Property="Background" Value="{StaticResource BaseBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource ShadowBrush}"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Padding" Value="4 2"/>
+      <Setter Property="Foreground" Value="{StaticResource ForeBrush}"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Name="border"  Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0 0 0 2" Margin="0">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" Margin="{TemplateBinding Padding}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsPressed" Value="True">
+                <Trigger.EnterActions>
+                  <BeginStoryboard>
+                    <Storyboard>
+                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Margin" To="0 2 0 0" Duration="0:0:0.05"/>
+                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" To="0" Duration="0:0:0.05"/>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                  <BeginStoryboard>
+                    <Storyboard>
+                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Margin" To="0 0 0 0" Duration="0:0:0.05"/>
+                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" To="0 0 0 2" Duration="0:0:0.05"/>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </Trigger.ExitActions>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="border" Property="Margin" Value="0 2 0 0"/>
+                <Setter TargetName="border" Property="BorderThickness" Value="0 0 0 0"/>
+                <Setter Property="Background" Value="{StaticResource ShadowBrush}"/>
+                <Setter Property="Foreground" Value="#33D2D2D2"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <EventTrigger RoutedEvent="MouseEnter">
+          <BeginStoryboard>
+            <Storyboard>
+              <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource HoverColor}" Duration="0:0:0.1"/>
+            </Storyboard>
+          </BeginStoryboard>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="MouseLeave">
+          <BeginStoryboard>
+            <Storyboard>
+              <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource BaseColor}" Duration="0:0:0.1"/>
+            </Storyboard>
+          </BeginStoryboard>
+        </EventTrigger>
       </Style.Triggers>
     </Style>
     <Style TargetType="CheckBox" BasedOn="{StaticResource Control}">
@@ -206,7 +269,7 @@
         </Trigger>
       </Style.Triggers>
     </Style>
-    <Style TargetType="TextBlock" BasedOn="{StaticResource Control}"/>
+    <!--<Style TargetType="TextBlock" BasedOn="{StaticResource Control}"/>-->
     <Style TargetType="Label" BasedOn="{StaticResource Control}"/>
 
     <Style x:Key="ScrollThumb" TargetType="Thumb">

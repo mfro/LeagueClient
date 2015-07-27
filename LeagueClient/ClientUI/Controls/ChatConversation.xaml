@@ -17,7 +17,7 @@
           <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
-          <TextBlock Name="ChatHistory" Background="{StaticResource Back1Color}"
+          <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource Back1Color}"
                      Padding="2 0" TextWrapping="Wrap" FontSize="12"/>
         </ScrollViewer>
         <TextBox Name="ChatSendBox" Grid.Row="1" KeyUp="ChatSendBox_KeyUp"/>

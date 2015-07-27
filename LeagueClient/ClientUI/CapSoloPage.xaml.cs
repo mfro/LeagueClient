@@ -21,46 +21,48 @@ namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for TeambuilderSoloPage.xaml
   /// </summary>
-  public partial class TeambuilderSoloPage : Page {
+  public partial class CapSoloPage : Page {
     private bool spell1;
 
-    public TeambuilderSoloPage() {
+    public CapSoloPage() {
       InitializeComponent();
       ChampSelector.Champions = Client.AvailableChampions;
       SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
                               where spell.modes.Contains("CLASSIC")
                               select spell);
 
+      Player.PlayerUpdate += PlayerUpdate;
       Player.ChampClicked += Champion_Click;
       Player.Spell1Clicked += Spell1_Click;
       Player.Spell2Clicked += Spell2_Click;
-      Player.ReadyStateChanged += Player_ReadyStateChanged;
       Player.MasteryClicked += Player_MasteryClicked;
-      Player.PositionChanged += Player_PositionChanged;
     }
 
-    private void Player_PositionChanged() {
+    private void PlayerUpdate(object sender, EventArgs e) {
       GameMap.Players.Clear();
-      GameMap.Players.Add(new Controls.TeambuilderMap.Player { Champion = Player.Champ, Position = Player.Position });
+      GameMap.Players.Add(new Controls.CapMap.Player { Champion = Player.State.Champion, Position = Player.State.Position });
+      if (Player.CanBeReady()) EnterQueueButt.BeginStoryboard(App.FadeIn);
+      else EnterQueueButt.BeginStoryboard(App.FadeOut);
     }
 
-    private void Player_MasteryClicked() {
+    private void Player_MasteryClicked(object src, EventArgs args) {
       ChampPopup.BeginStoryboard(App.FadeIn);
+      MasteryEditor.Reset();
       ChampSelector.Visibility = System.Windows.Visibility.Collapsed;
       MasteryEditor.Visibility = System.Windows.Visibility.Visible;
     }
 
-    private void Spell1_Click() {
+    private void Spell1_Click(object src, EventArgs args) {
       spell1 = true;
       SpellPopup.BeginStoryboard(App.FadeIn);
     }
 
-    private void Spell2_Click() {
+    private void Spell2_Click(object src, EventArgs args) {
       spell1 = false;
       SpellPopup.BeginStoryboard(App.FadeIn);
     }
 
-    private void Champion_Click() {
+    private void Champion_Click(object src, EventArgs args) {
       ChampSelector.UpdateChampList();
       ChampPopup.BeginStoryboard(App.FadeIn);
       ChampSelector.Visibility = System.Windows.Visibility.Visible;
@@ -74,27 +76,22 @@ namespace LeagueClient.ClientUI {
     }
 
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-      Player.Champ = ChampSelector.SelectedChampion;
-      Player.Skin = e;
+      Player.State.Champion = ChampSelector.SelectedChampion;
+      Player.State.Skin = e;
       ChampionPopup_Close(sender, null);
     }
 
     private void Spell_Select(object sender, SpellDto spell) {
       if (spell1) {
-        Player.Spell1 = spell;
+        Player.State.Spell1 = spell;
       } else {
-        Player.Spell2 = spell;
+        Player.State.Spell2 = spell;
       }
       SpellPopup.BeginStoryboard(App.FadeOut);
     }
 
-    private void Player_ReadyStateChanged(bool ready) {
-      if (ready) EnterQueueButt.BeginStoryboard(App.FadeIn);
-      else EnterQueueButt.BeginStoryboard(App.FadeOut);
-    }
-
     private void EnterQueue(object sender, RoutedEventArgs e) {
-      Client.MainPage.EnterTeambuilderSolo(Player.Champ, Player.Position, Player.Role, Player.Spell1, Player.Spell2);
+      Client.QueueManager.EnterCapSolo(Player.State);
     }
   }
 }

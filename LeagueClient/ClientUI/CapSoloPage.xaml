@@ -1,4 +1,4 @@
-﻿<Page x:Class="LeagueClient.ClientUI.TeambuilderSoloPage"
+﻿<Page x:Class="LeagueClient.ClientUI.CapSoloPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,11 +18,11 @@
       <ColumnDefinition Width="auto"/>
       <ColumnDefinition Width="75"/>
     </Grid.ColumnDefinitions>
-    <my:TeambuilderMe Grid.Column="1" Grid.Row="1" x:Name="Player"/>
+    <my:CapMePlayer Grid.Column="1" Grid.Row="1" x:Name="Player"/>
 
     <Border Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Top"
             BorderBrush="{StaticResource Back1Color}" BorderThickness="4" Height="310">
-      <my:TeambuilderMap x:Name="GameMap"/>
+      <my:CapMap x:Name="GameMap"/>
     </Border>
       
     <Button Name="EnterQueueButt" Grid.Row="2" Grid.Column="1" Margin="0 8" Click="EnterQueue"
@@ -42,7 +42,7 @@
       <Border Grid.RowSpan="2" Grid.ColumnSpan="2" BorderBrush="{StaticResource Back1Color}" BorderThickness="4" Margin="-4"/>
       <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{StaticResource ForeColor}" BorderThickness="1 0 1 1" Margin="-1"/>
       <Border Grid.ColumnSpan="2" BorderBrush="{StaticResource ForeColor}" BorderThickness="1" Margin="-1"/>
-      <TextBlock Padding="2 " Background="{StaticResource ForeColor}" Name="TitleBlock"/>
+      <TextBlock Style="{StaticResource Control}" Padding="2 " Background="{StaticResource ForeColor}" Name="TitleBlock"/>
       <Button Padding="3 1" BorderThickness="0" Click="ChampionPopup_Close" Grid.Column="1"/>
       <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" Stroke="{StaticResource FontColor}" IsHitTestVisible="False"
             HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"/>

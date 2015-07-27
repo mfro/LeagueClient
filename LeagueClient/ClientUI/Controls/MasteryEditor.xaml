@@ -42,10 +42,10 @@
         <RowDefinition Height="auto"/>
         <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
-      <TextBlock Grid.Row="1" Margin="8 3">Mastery Page Name:</TextBlock>
+      <TextBlock Style="{StaticResource Control}" Grid.Row="1" Margin="8 3">Mastery Page Name:</TextBlock>
       <TextBox Name="PageNameBox" Width="150" Grid.Row="2" Margin="8 0"/>
-      <TextBlock Name="Changed" Grid.Row="3" HorizontalAlignment="Center" Grid.RowSpan="5">*Unsaved*</TextBlock>
-      <TextBlock Name="PointStatus" Grid.Row="4" HorizontalAlignment="Center" Grid.RowSpan="5">Points Available: 30</TextBlock>
+      <TextBlock Style="{StaticResource Control}" Name="Changed" Grid.Row="3" HorizontalAlignment="Center" Grid.RowSpan="5">*Unsaved*</TextBlock>
+      <TextBlock Style="{StaticResource Control}" Name="PointStatus" Grid.Row="4" HorizontalAlignment="Center" Grid.RowSpan="5">Points Available: 30</TextBlock>
       <Button Name="SaveButt" Grid.Row="5" Margin="10 4" Click="SaveButt_Click">Save Mastery Page</Button>
       <Button Name="ResetButt" Grid.Row="6" Margin="10 4" Click="ResetButt_Click">Reset Points</Button>
       <Button Name="DeleteButt" Grid.Row="7" Margin="10 4" Click="DeleteButt_Click">Delete Mastery Page</Button>
@@ -60,11 +60,11 @@
     <Border Padding="4" Grid.Column="3" Margin="4 4 4 24" Background="{StaticResource Back1Color}" Grid.Row="1">
       <UniformGrid Name="UtilityTree" Columns="4"/>
     </Border>
-    <TextBlock Name="OffenseTotal" Grid.Column="1" VerticalAlignment="Bottom"
+    <TextBlock Style="{StaticResource Control}" Name="OffenseTotal" Grid.Column="1" VerticalAlignment="Bottom"
                FontSize="16" Margin="5,0,5,1" Grid.Row="1">Offense: 0</TextBlock>
-    <TextBlock Name="DefenseTotal" Grid.Column="2" VerticalAlignment="Bottom"
+    <TextBlock Style="{StaticResource Control}" Name="DefenseTotal" Grid.Column="2" VerticalAlignment="Bottom"
                FontSize="16" Margin="5,0,5,1" Grid.Row="1">Defense: 0</TextBlock>
-    <TextBlock Name="UtilityTotal" Grid.Column="3" VerticalAlignment="Bottom"
+    <TextBlock Style="{StaticResource Control}" Name="UtilityTotal" Grid.Column="3" VerticalAlignment="Bottom"
                FontSize="16" Margin="5,0,5,1" Grid.Row="1">Utility: 0</TextBlock>
   </Grid>
 </UserControl>

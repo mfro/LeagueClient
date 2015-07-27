@@ -16,6 +16,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
+using LeagueClient.Logic.Cap;
+using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
@@ -27,7 +29,7 @@ namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for ClientPage.xaml
   /// </summary>
-  public partial class ClientPage : Page {
+  public partial class ClientPage : Page, IQueueManager {
     public BitmapImage ProfileIcon { get; set; }
     public string SummonerName { get; set; }
     public BindingList<Alert> Alerts { get; private set; }
@@ -82,30 +84,30 @@ namespace LeagueClient.ClientUI {
 
     }
 
-    public void CreateTeambuilderSolo() {
-      var page = new TeambuilderSoloPage();
+    public void CreateCapSolo() {
+      var page = new CapSoloPage();
       ClientContent.Content = page;
     }
 
-    public void CreateTeambuilderLobby() {
-      var page = new TeambuilderLobbyPage(true);
+    public void CreateCapLobby() {
+      var page = new CapLobbyPage();
       ClientContent.Content = page;
-      RiotCalls.LcdsService.CreateGroup();
+      RiotCalls.CapService.CreateGroup();
     }
 
-    public void EnterTeambuilderSolo(ChampionDto champ, Position pos, Role role, SpellDto spell1, SpellDto spell2) {
-      var id = RiotCalls.LcdsService.CreateSoloQuery(champ, role, pos, spell1, spell2, "echidnagenitalia");
+    public void EnterCapSolo(Logic.Cap.CapPlayer player) {
+      var id = RiotCalls.CapService.CreateSoloQuery(player);
       Client.AddDelegate(id, response => {
         if (response.status.Equals("OK"))
-          Dispatcher.Invoke(() => ShowQueuer(new TeambuilderSoloQueuer()));
+          Dispatcher.Invoke(() => ShowQueuer(new CapSoloQueuer()));
       });
       ClientContent.Content = null;
     }
 
-    public void JoinTeambuilderLobby(string groupId, int slotId) {
-      var page = new TeambuilderLobbyPage(false);
+    public void JoinCapLobby(string groupId, int slotId) {
+      var page = new CapLobbyPage(slotId);
       ClientContent.Content = page;
-      RiotCalls.LcdsService.IndicateGroupAcceptanceAsCandidate(slotId, true, groupId);
+      RiotCalls.CapService.IndicateGroupAcceptanceAsCandidate(slotId, true, groupId);
     }
 
     public void ShowQueuer(IQueuer Queuer) {

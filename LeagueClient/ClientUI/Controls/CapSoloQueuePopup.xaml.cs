@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
+using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
 
@@ -21,13 +22,13 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for TeambuilderSoloQueuePopup.xaml
   /// </summary>
-  public partial class TeambuilderSoloQueuePopup : UserControl, IQueuePopup {
+  public partial class CapSoloQueuePopup : UserControl, IQueuePopup {
     public event EventHandler Accepted;
     public event EventHandler Cancelled;
     private JSONObject payload;
     private Timer timer;
 
-    public TeambuilderSoloQueuePopup(JSONObject payload) {
+    public CapSoloQueuePopup(JSONObject payload) {
       InitializeComponent();
       this.payload = payload;
       timer = new Timer(50);
@@ -43,7 +44,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
       if (Accepted != null) Accepted(this, new EventArgs());
-      Client.MainPage.JoinTeambuilderLobby((string) payload["groupId"], (int) payload["slotId"]);
+      Client.QueueManager.JoinCapLobby((string) payload["groupId"], (int) payload["slotId"]);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {

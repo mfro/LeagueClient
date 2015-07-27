@@ -18,10 +18,10 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for TeambuilderPlayer.xaml
   /// </summary>
-  public partial class TeambuilderOther : UserControl {
-    public TeambuilderOther(Member member) {
+  public partial class CapOtherPlayer : UserControl {
+    public CapOtherPlayer(Member member) {
       InitializeComponent();
-
+      //TODO
     }
   }
 }
