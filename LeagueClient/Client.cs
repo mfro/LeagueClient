@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -27,11 +28,13 @@ namespace LeagueClient {
       DataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MFro\LeagueClient\",
       SettingsFile = Path.Combine(DataPath, "settings.mfro"),
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
-      LoginVideoPath = Path.Combine(DataPath, "login.mp4");
+      LoginVideoPath = Path.Combine(DataPath, "login.mp4"),
+      LogFilePath = Path.Combine(DataPath, "log.txt");
 
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    internal static event EventHandler<MessageReceivedEventArgs> MessageReceived;
+
+    internal static event EventHandler<MessageHandlerArgs> MessageReceived;
 
     internal static RtmpClient RtmpConn { get; set; }
 
@@ -56,6 +59,11 @@ namespace LeagueClient {
     internal static List<ChampionDTO> RiotChampions { get; set; }
     internal static List<MyChampDTO> AvailableChampions { get; set; }
 
+    internal static SpellBookDTO Runes { get; private set; }
+    internal static MasteryBookDTO Masteries { get; private set; }
+    internal static SpellBookPageDTO SelectedRunePage { get; private set; }
+    internal static MasteryBookPageDTO SelectedMasteryPage { get; private set; }
+
     internal static List<int> EnabledMaps { get; set; }
 
     internal static Settings Settings { get; set; }
@@ -71,6 +79,7 @@ namespace LeagueClient {
       return (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
     }
 
+    #region Initailization
     public static void PreInitialize(MainWindow window) {
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
@@ -129,7 +138,6 @@ namespace LeagueClient {
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
       creds.AuthToken = await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue);
-      Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
 
       UserSession = await RiotCalls.LoginService.Login(creds);
       await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
@@ -150,6 +158,10 @@ namespace LeagueClient {
           .ContinueWith(q => AvailableQueues = q.Result);
         RiotCalls.InventoryService.GetAvailableChampions()
           .ContinueWith(GotChampions);
+        Runes = LoginPacket.AllSummonerData.SpellBook;
+        Masteries = LoginPacket.AllSummonerData.MasteryBook;
+        SelectedRunePage = Runes.BookPages.Where(p => p.Current).FirstOrDefault();
+        SelectedMasteryPage = Masteries.BookPages.Where(p => p.Current).FirstOrDefault();
       }).Start();
 
       EnabledMaps = new List<int>();
@@ -160,13 +172,33 @@ namespace LeagueClient {
 
       return state.Equals("ENABLED");
     }
+    #endregion
+
+    #region Client methods
+    public static void SelectMasteryPage(MasteryBookPageDTO page) {
+      RiotCalls.MasteryBookService.SelectDefaultMasteryBookPage(page);
+      foreach (var item in Masteries.BookPages) item.Current = false;
+      page.Current = true;
+      SelectedMasteryPage = page;
+    }
+
+    public static void SelectRunePage(SpellBookPageDTO page) {
+      RiotCalls.SpellBookService.SelectDefaultSpellBookPage(page);
+      foreach (var item in Runes.BookPages) item.Current = false;
+      page.Current = true;
+      SelectedRunePage = page;
+    }
+    #endregion
 
     public static void CallbackException(object sender, Exception e) {
       throw new NotImplementedException();
     }
 
     public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
-      if (MessageReceived != null) MessageReceived(sender, e);
+      var args = new MessageHandlerArgs(e);
+      if (MessageReceived != null) MessageReceived(sender, args);
+      if (args.Handled) return;
+
       var config = e.Body as ClientDynamicConfigurationNotification;
       var response = e.Body as LcdsServiceProxyResponse;
       if (config != null) {
@@ -190,8 +222,12 @@ namespace LeagueClient {
       if (Debugger.IsAttached) Debugger.Break();
     }
 
+    private static StreamWriter LogFile = new StreamWriter(File.Open(LogFilePath, FileMode.Append));
+
     public static void Log(object msg) {
       Console.WriteLine(msg);
+      LogFile.WriteLine(msg);
+      LogFile.Flush();
     }
 
     public static void Log(string msg, params object[] args) {
@@ -214,6 +250,15 @@ namespace LeagueClient {
       int start = str.IndexOf(prefix) + prefix.Length;
       int end = str.IndexOf(suffix, start);
       return str.Substring(start, end - start);
+    }
+  }
+
+  public class MessageHandlerArgs : EventArgs {
+    public bool Handled { get; set; }
+    public MessageReceivedEventArgs InnerEvent { get; private set; }
+
+    public MessageHandlerArgs(MessageReceivedEventArgs args){
+      InnerEvent = args;
     }
   }
 }

@@ -42,7 +42,7 @@
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
-      <TextBlock Grid.Row="0" FontSize="12">Logging in...</TextBlock>
+      <TextBlock Style="{StaticResource Control}" Grid.Row="0" FontSize="12">Logging in...</TextBlock>
       <my:MyProgressBar Grid.Row="1" Height="20" Background="Transparent" Margin="-6 4" x:Name="LoginBar"/>
     </Grid>
     <CheckBox Name="AnimationToggle" Grid.Column="1" Grid.Row="9" FontSize="12"

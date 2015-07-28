@@ -79,7 +79,6 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) {
-      ChatOpenButt.Background = CloseButton.Background = App.Back1Color;
       if (ChatClosed != null) ChatClosed(User);
     }
 

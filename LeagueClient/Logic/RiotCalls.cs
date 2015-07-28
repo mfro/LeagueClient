@@ -189,8 +189,8 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <param name="SummonerId">The summoner ID for the user</param>
       /// <returns>Returns the rune pages for a user</returns>
-      public static Task<SpellBookDTO> GetSpellBook(Double SummonerId) {
-        return InvokeAsync<SpellBookDTO>("spellBookService", "getSpellBook", SummonerId);
+      public static Task<Object> GetSpellBook(Double SummonerId) {
+        return InvokeAsync<Object>("spellBookService", "getSpellBook", SummonerId);
       }
 
       /// <summary>
@@ -198,8 +198,8 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <param name="SpellbookPage">The spellbook page the player wants to use</param>
       /// <returns>The selected spellbook page</returns>
-      public static Task<SpellBookPageDTO> SelectDefaultSpellBookPage(SpellBookPageDTO SpellbookPage) {
-        return InvokeAsync<SpellBookPageDTO>("spellBookService", "selectDefaultSpellBookPage", SpellbookPage);
+      public static Task<Object> SelectDefaultSpellBookPage(SpellBookPageDTO SpellbookPage) {
+        return InvokeAsync<object>("spellBookService", "selectDefaultSpellBookPage", SpellbookPage);
       }
 
       /// <summary>
@@ -724,8 +724,8 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <param name="page">The mastery book to select</param>
       /// <returns></returns>
-      public static Task<AsObject> SelectDefaultMasteryBookPage(MasteryBookPageDTO page) {
-        return InvokeAsync<AsObject>("masteryBookService", "selectDefaultMasteryBookPage", page);
+      public static Task<Object> SelectDefaultMasteryBookPage(MasteryBookPageDTO page) {
+        return InvokeAsync<Object>("masteryBookService", "selectDefaultMasteryBookPage", page);
       }
     }
 

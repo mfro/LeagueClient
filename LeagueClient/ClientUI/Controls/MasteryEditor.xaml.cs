@@ -37,7 +37,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public void Reset() {
-      LoadBook(Client.LoginPacket.AllSummonerData.MasteryBook);
+      LoadBook(Client.Masteries);
     }
 
     public async Task Save() {
@@ -50,10 +50,8 @@ namespace LeagueClient.ClientUI.Controls {
           TalentId = icon.Data.id
         });
       }
-      var book = await RiotCalls.MasteryBookService.SaveMasteryBook(Client.LoginPacket.AllSummonerData.MasteryBook);
-      Client.LoginPacket.AllSummonerData.MasteryBook = book;
-      if (System.Threading.Thread.CurrentThread == Dispatcher.Thread)
-        Changed.Text = "";
+      await RiotCalls.MasteryBookService.SaveMasteryBook(Client.Masteries);
+      if (System.Threading.Thread.CurrentThread == Dispatcher.Thread) Changed.Text = "";
       else Dispatcher.Invoke(() => Changed.Text = "");
       unsaved = false;
     }
@@ -84,6 +82,7 @@ namespace LeagueClient.ClientUI.Controls {
       UpdateMasteries();
       unsaved = false;
       Changed.Text = "";
+      Client.SelectMasteryPage(page);
     }
 
     private MasteryTree offense;
@@ -161,7 +160,7 @@ namespace LeagueClient.ClientUI.Controls {
                 + HorizontalSpace + ImageBorder + ImageSize / 2 + 4.5;
               var path = new Line() { X1 = srcX, Y1 = srcY, X2 = dstX, Y2 = dstY };
               path.SnapsToDevicePixels = true;
-              path.Stroke = App.FontColor;
+              path.Stroke = App.FontBrush;
               path.StrokeThickness = 7;
               BackGrid.Children.Add(path);
               Grid.SetRow(path, 1);
@@ -216,8 +215,8 @@ namespace LeagueClient.ClientUI.Controls {
           var old = points;
           points = value;
           PointsLabel.Text = points + "/" + Data.ranks;
-          if (points == Data.ranks) Control.BorderBrush = App.HighColor;
-          else Control.BorderBrush = App.ForeColor;
+          if (points == Data.ranks) Control.BorderBrush = App.FocusBrush;
+          else Control.BorderBrush = App.ForeBrush;
           if (PointChanged != null && old != value)
             PointChanged(this, value);
         }
@@ -239,14 +238,14 @@ namespace LeagueClient.ClientUI.Controls {
         var grid = new Grid();
         Control = new Border();
         Control.Width = Control.Height = ImageSize + ImageBorder * 2;
-        Control.BorderBrush = App.ForeColor;
+        Control.BorderBrush = App.ForeBrush;
         Control.BorderThickness = new Thickness(ImageBorder);
         Control.Margin = new Thickness(HorizontalSpace / 2, VerticalSpace / 2,
                                        HorizontalSpace / 2, VerticalSpace / 2);
         Control.Child = grid;
         PointsLabel = new TextBlock { Text = "0/" + Data.ranks };
         PointsLabel.Style = App.Control;
-        PointsLabel.Background = App.ForeColor;
+        PointsLabel.Background = App.ForeBrush;
         PointsLabel.Margin = new Thickness(0, 0, -6, -10);
         PointsLabel.VerticalAlignment = VerticalAlignment.Bottom;
         PointsLabel.HorizontalAlignment = HorizontalAlignment.Right;

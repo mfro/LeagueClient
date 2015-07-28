@@ -71,8 +71,10 @@ namespace LeagueClient.ClientUI {
 
       new Thread(() => {
         Client.Initialize(user, pass).ContinueWith(t => {
-          if (!t.IsFaulted && t.Result) Dispatcher.Invoke(Client.MainWindow.LoginComplete);
-          else Dispatcher.Invoke(Reset);
+          if (!t.IsFaulted && t.Result) {
+            Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
+            Dispatcher.Invoke(Client.MainWindow.LoginComplete);
+          } else Dispatcher.Invoke(Reset);
         });
       }).Start();
     }
@@ -83,8 +85,6 @@ namespace LeagueClient.ClientUI {
         Login(user, pass);
         return;
       }
-      if (Client.ChatManager != null)
-        Client.ChatManager.Disconnect();
       Progress.Visibility = System.Windows.Visibility.Hidden;
       LoginBar.IsIndeterminate = false;
       PassBox.Password = "";

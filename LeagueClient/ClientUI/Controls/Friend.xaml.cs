@@ -51,9 +51,9 @@ namespace LeagueClient.ClientUI.Controls {
       RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
 
       switch (p.Show) {
-        case "chat": InGameText.Foreground = App.ChatColor; break;
-        case "away": InGameText.Foreground = App.AwayColor; break;
-        case "dnd": InGameText.Foreground = App.BusyColor; break;
+        case "chat": InGameText.Foreground = App.ChatBrush; break;
+        case "away": InGameText.Foreground = App.AwayBrush; break;
+        case "dnd": InGameText.Foreground = App.BusyBrush; break;
       }
     }
 

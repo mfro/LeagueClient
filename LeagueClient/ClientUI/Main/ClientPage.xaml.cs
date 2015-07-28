@@ -25,7 +25,7 @@ using MFroehlich.League.DataDragon;
 using MFroehlich.Parsing.DynamicJSON;
 using static LeagueClient.Logic.Strings;
 
-namespace LeagueClient.ClientUI {
+namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for ClientPage.xaml
   /// </summary>
@@ -33,6 +33,7 @@ namespace LeagueClient.ClientUI {
     public BitmapImage ProfileIcon { get; set; }
     public string SummonerName { get; set; }
     public BindingList<Alert> Alerts { get; private set; }
+    public IClientSubPage CurrentPage { get; private set; }
     public bool ChatOpen {
       get { return chatOpen; }
       set {
@@ -86,32 +87,23 @@ namespace LeagueClient.ClientUI {
 
     public void CreateCapSolo() {
       var page = new CapSoloPage();
-      ClientContent.Content = page;
+      ShowSubPage(page);
     }
 
     public void CreateCapLobby() {
       var page = new CapLobbyPage();
-      ClientContent.Content = page;
+      ShowSubPage(page);
       RiotCalls.CapService.CreateGroup();
     }
 
-    public void EnterCapSolo(Logic.Cap.CapPlayer player) {
-      var id = RiotCalls.CapService.CreateSoloQuery(player);
-      Client.AddDelegate(id, response => {
-        if (response.status.Equals("OK"))
-          Dispatcher.Invoke(() => ShowQueuer(new CapSoloQueuer()));
-      });
-      ClientContent.Content = null;
-    }
-
-    public void JoinCapLobby(string groupId, int slotId) {
-      var page = new CapLobbyPage(slotId);
-      ClientContent.Content = page;
+    public void JoinCapLobby(string groupId, int slotId, CapMePlayer player) {
+      var page = new CapLobbyPage(slotId, player);
+      ShowSubPage(page);
       RiotCalls.CapService.IndicateGroupAcceptanceAsCandidate(slotId, true, groupId);
     }
 
     public void ShowQueuer(IQueuer Queuer) {
-      //Queuer.Popped += ShowQueuePopPopup;
+      Queuer.Popped += (src, e) => Dispatcher.Invoke(() => StatusPanel.Child = null);
       StatusPanel.Child = Queuer.GetControl();
     }
 
@@ -121,13 +113,27 @@ namespace LeagueClient.ClientUI {
       ShowPopup(popup.GetControl());
     }
 
-    private void QueuePopupClose(object src, EventArgs arg) {
-      PopupPanel.Visibility = Visibility.Collapsed;
+    public void ShowNotification(Alert alert) {
+      Dispatcher.Invoke(() => {
+        Alerts.Add(alert);
+        AlertButton.BeginStoryboard(App.FadeIn);
+      });
     }
 
-    public void ShowNotification(Alert alert) {
-      Dispatcher.Invoke(() => Alerts.Add(alert));
-      AlertButton.BeginStoryboard(App.FadeIn);
+    private void ShowSubPage(IClientSubPage page) {
+      Dispatcher.Invoke(() => {
+        PlayButton.IsEnabled = page == null || page.CanPlay();
+        SubPage.Content = page?.GetPage();
+      });
+      page.Close += (s, e) => Dispatcher.Invoke(CloseSubPage);
+    }
+
+    public void CloseSubPage() {
+      SubPage.Content = null;
+    }
+
+    private void QueuePopupClose(object src, EventArgs arg) {
+      Dispatcher.Invoke(() => PopupPanel.Visibility = Visibility.Collapsed);
     }
 
     private void ShowPopup(Control Contents) {
@@ -148,13 +154,13 @@ namespace LeagueClient.ClientUI {
 
     private void Play_Click(object sender, RoutedEventArgs e) {
       PlayButton.IsEnabled = false;
-      ClientContent.Content = new PlaySelectPage();
+      ShowSubPage(new PlaySelectPage());
     }
 
     private void Home_Click(object sender, RoutedEventArgs e) {
       PlayControl.Child = PlayButton;
       PlayButton.IsEnabled = true;
-      ClientContent.Content = null;
+      CloseSubPage();
     }
 
     private void Page_KeyUp(object sender, KeyEventArgs e) {
@@ -173,16 +179,20 @@ namespace LeagueClient.ClientUI {
       var alert = (sender as Button).DataContext as Alert;
       alert.ReactYesNo(true);
       Alerts.Remove(alert);
-      if(Alerts.Count == 0)
+      if(Alerts.Count == 0) {
         AlertButton.BeginStoryboard(App.FadeOut);
+        AlertsOpen = false;
+      }
     }
 
     private void AlertNo_Click(object sender, RoutedEventArgs e) {
       var alert = (sender as Button).DataContext as Alert;
       alert.ReactYesNo(false);
       Alerts.Remove(alert);
-      if (Alerts.Count == 0)
+      if (Alerts.Count == 0) {
         AlertButton.BeginStoryboard(App.FadeOut);
+        AlertsOpen = false;
+      }
     }
   }
 }

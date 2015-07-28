@@ -106,7 +106,8 @@ namespace LeagueClient.Logic {
         MARKSMAN = new Role("Marksman", "MARKSMAN"),
         ASSASSIN = new Role("Assassin", "ASSASSIN"),
         FIGHTER = new Role("Fighter", "FIGHTER"),
-        TANK = new Role("Tank", "TANK");
+        TANK = new Role("Tank", "TANK"),
+        ANY = new Role("Any", "ANY");
 
       private Role(string value, string key) {
         Id = key; Value = value;

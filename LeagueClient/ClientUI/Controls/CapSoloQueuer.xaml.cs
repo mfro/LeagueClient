@@ -25,31 +25,36 @@ namespace LeagueClient.ClientUI.Controls {
   public partial class CapSoloQueuer : UserControl, IQueuer {
     public event EventHandler Popped;
 
-    public int Elapsed { get; set; }
-
     private Timer timer;
+    private DateTime start;
+    private CapMePlayer player;
 
-    public CapSoloQueuer() {
+    public CapSoloQueuer(CapMePlayer player) {
+      this.player = player;
       Client.MessageReceived += Client_MessageReceived;
       InitializeComponent();
-      ElapsedText.Text = "" + (Elapsed = 0);
+      ElapsedText.Text = "0:00";
+      start = DateTime.Now;
       timer = new Timer(1000);
       timer.Elapsed += Time_Elapsed;
       timer.Start();
     }
 
     private void Time_Elapsed(object sender, ElapsedEventArgs e) {
-      Dispatcher.Invoke(() => ElapsedText.Text = "" + (++Elapsed));
+      var elapsed = DateTime.Now.Subtract(start);
+      Dispatcher.Invoke(() => ElapsedText.Text = "" + elapsed.ToString("m\\:ss"));
     }
 
-    private void Client_MessageReceived(object sender, RtmpSharp.Messaging.MessageReceivedEventArgs e) {
-      var response = e.Body as LcdsServiceProxyResponse;
-      if(response != null) {
+    private void Client_MessageReceived(object sender, MessageHandlerArgs e) {
+      if (e.Handled) return;
+      var response = e.InnerEvent.Body as LcdsServiceProxyResponse;
+      if (response != null) {
         switch (response.methodName) {
           case "acceptedByGroupV2":
             if (Popped != null) Popped(this, new EventArgs());
+            Client.MessageReceived -= Client_MessageReceived;
             timer.Dispose();
-            Client.QueueManager.ShowQueuePopPopup(new CapSoloQueuePopup(JSON.ParseObject(response.payload)));
+            Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopPopup(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player)));
             break;
         }
       }

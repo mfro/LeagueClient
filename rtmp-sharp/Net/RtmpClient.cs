@@ -98,12 +98,16 @@ namespace RtmpSharp.Net {
     }
 
     Task<object> QueueCommandAsTask(Command command, int streamId, int messageStreamId, bool requireConnected = true) {
-      if (requireConnected && IsDisconnected)
-        return CreateExceptedTask(new ClientDisconnectedException("disconnected"));
+      try {
+        if (requireConnected && IsDisconnected)
+          return CreateExceptedTask(new ClientDisconnectedException("disconnected"));
 
-      var task = callbackManager.Create(command.InvokeId);
-      writer.Queue(command, streamId, messageStreamId);
-      return task;
+        var task = callbackManager.Create(command.InvokeId);
+        writer.Queue(command, streamId, messageStreamId);
+        return task;
+      } catch {
+        return null;
+      }
     }
 
     public async Task ConnectAsync() {

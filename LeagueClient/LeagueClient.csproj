@@ -86,7 +86,7 @@
     <Compile Include="ClientUI\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\ClientPage.xaml.cs">
+    <Compile Include="ClientUI\Main\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\ChampSelector.xaml.cs">
@@ -99,9 +99,7 @@
       <DependentUpon>Friend.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\HintedTextBox.cs" />
-    <Compile Include="ClientUI\TestPage.xaml.cs">
-      <DependentUpon>TestPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ClientUI\Main\IClientSubPage.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
     <Compile Include="Logic\Queueing\IQueuePopup.cs" />
     <Compile Include="ClientUI\Controls\MasteryEditor.xaml.cs">
@@ -134,13 +132,13 @@
     <Compile Include="ClientUI\PatcherPage.xaml.cs">
       <DependentUpon>PatcherPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\PlaySelectPage.xaml.cs">
+    <Compile Include="ClientUI\Main\PlaySelectPage.xaml.cs">
       <DependentUpon>PlaySelectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\CapLobbyPage.xaml.cs">
+    <Compile Include="ClientUI\Main\CapLobbyPage.xaml.cs">
       <DependentUpon>CapLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\CapSoloPage.xaml.cs">
+    <Compile Include="ClientUI\Main\CapSoloPage.xaml.cs">
       <DependentUpon>CapSoloPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Queueing\IQueuer.cs" />
@@ -281,7 +279,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\ClientPage.xaml">
+    <Page Include="ClientUI\Main\ClientPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -337,19 +335,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\PlaySelectPage.xaml">
+    <Page Include="ClientUI\Main\PlaySelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\CapLobbyPage.xaml">
+    <Page Include="ClientUI\Main\CapLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\CapSoloPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ClientUI\TestPage.xaml">
+    <Page Include="ClientUI\Main\CapSoloPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -431,9 +425,7 @@
       <Name>rtmp-sharp</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Logic\Cap\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

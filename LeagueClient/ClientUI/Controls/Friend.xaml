@@ -5,7 +5,7 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave"
              MouseDown="UserControl_MouseDown" MouseUp="UserControl_MouseUp"
-             Background="{StaticResource Back1Color}" Cursor="Hand" BorderBrush="White">
+             Background="{StaticResource Back1Brush}" Cursor="Hand" BorderBrush="White">
   <Grid Width="240" Height="48">
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>

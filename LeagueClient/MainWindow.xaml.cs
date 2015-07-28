@@ -40,7 +40,7 @@ namespace LeagueClient {
     }
 
     public void LoginComplete() {
-      var page = new ClientPage();
+      var page = new ClientUI.Main.ClientPage();
       Client.QueueManager = page;
       Content = page;
     }

@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace LeagueClient {
   public class Alert {
+    public event EventHandler<bool> Reacted;
+
     public string Title { get; set; }
     public string Message { get; set; }
     public AlertType Type { get; set; }
-    private Action<bool> Action { get; set; }
 
     public Alert(string title, string message, AlertType type) {
       Title = title;
@@ -18,7 +19,7 @@ namespace LeagueClient {
     }
 
     public void ReactYesNo(bool yesno) {
-      Action(yesno);
+      if(Reacted != null) Reacted(this, yesno);
     }
 
     public enum Priority {
@@ -29,10 +30,18 @@ namespace LeagueClient {
       YesNo, Ok
     }
 
-    public static Alert Teambuilder(string user, Action<bool> OnReact) {
-      return new Alert("Teambuilder Invite",
+    public static Alert KickedFromCap() {
+      return new Alert("Kicked from Group",
+        "You have been kicked from a teambuilder group and returned to the queue.",
+        AlertType.Ok);
+    }
+
+    public static Alert Teambuilder(string user, EventHandler<bool> OnReact) {
+      var a = new Alert("Teambuilder Invite",
         user + " has invited you to a teambuilder game",
-        AlertType.YesNo) { Action = OnReact };
+        AlertType.YesNo);
+      a.Reacted += OnReact;
+      return a;
     }
   }
 }

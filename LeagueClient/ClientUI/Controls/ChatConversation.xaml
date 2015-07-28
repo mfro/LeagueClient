@@ -8,8 +8,8 @@
       <RowDefinition Height="25"/>
     </Grid.RowDefinitions>
     <Grid Name="ChatDisplayPanel" Opacity="0" Margin="-1 0 0 0 ">
-      <Border BorderThickness="3 3 3 0" BorderBrush="{StaticResource Back1Color}">
-        <Border BorderThickness="1 1 1 0" BorderBrush="{StaticResource ForeColor}"/>
+      <Border BorderThickness="3 3 3 0" BorderBrush="{StaticResource Back1Brush}">
+        <Border BorderThickness="1 1 1 0" BorderBrush="{StaticResource ForeBrush}"/>
       </Border>
       <Grid Margin="4 4 4 0">
         <Grid.RowDefinitions>
@@ -17,15 +17,17 @@
           <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
-          <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource Back1Color}"
+          <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource Back1Brush}"
                      Padding="2 0" TextWrapping="Wrap" FontSize="12"/>
         </ScrollViewer>
         <TextBox Name="ChatSendBox" Grid.Row="1" KeyUp="ChatSendBox_KeyUp"/>
       </Grid>
     </Grid>
     <Button Name="ChatOpenButt" Grid.Row="2" HorizontalAlignment="Left"
-            Margin="2" Padding="5 -1 5 1" Content="Wh1t3sp1d6r" Click="ChatOpenButt_Click" Width="136"/>
-    <Button Name="CloseButton" Grid.Row="2" HorizontalAlignment="Left" 
-            Margin="123 0" VerticalAlignment="Center" Padding="2 0" Click="CloseButton_Click" Content="x" BorderThickness="0"/>
+            Margin="2" Padding="5 1 5 2" Content="BorisTheMinstrel" Click="ChatOpenButt_Click" Width="112"/>
+    <Button Name="CloseButton" Grid.Row="2" HorizontalAlignment="Left" Width="20"
+            Margin="116 2" Padding="2 1 2 2" Click="CloseButton_Click">
+      <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+    </Button>
   </Grid>
 </UserControl>

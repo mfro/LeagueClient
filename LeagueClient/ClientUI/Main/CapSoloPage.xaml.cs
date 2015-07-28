@@ -13,16 +13,20 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using static LeagueClient.Logic.Strings;
 
-namespace LeagueClient.ClientUI {
+namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for TeambuilderSoloPage.xaml
   /// </summary>
-  public partial class CapSoloPage : Page {
+  public partial class CapSoloPage : Page, IClientSubPage {
     private bool spell1;
+
+    public event EventHandler Close;
 
     public CapSoloPage() {
       InitializeComponent();
@@ -31,6 +35,7 @@ namespace LeagueClient.ClientUI {
                               where spell.modes.Contains("CLASSIC")
                               select spell);
 
+      Player.Editable = true;
       Player.PlayerUpdate += PlayerUpdate;
       Player.ChampClicked += Champion_Click;
       Player.Spell1Clicked += Spell1_Click;
@@ -40,7 +45,7 @@ namespace LeagueClient.ClientUI {
 
     private void PlayerUpdate(object sender, EventArgs e) {
       GameMap.Players.Clear();
-      GameMap.Players.Add(new Controls.CapMap.Player { Champion = Player.State.Champion, Position = Player.State.Position });
+      GameMap.Players.Add(Player.State);
       if (Player.CanBeReady()) EnterQueueButt.BeginStoryboard(App.FadeIn);
       else EnterQueueButt.BeginStoryboard(App.FadeOut);
     }
@@ -77,7 +82,7 @@ namespace LeagueClient.ClientUI {
 
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
       Player.State.Champion = ChampSelector.SelectedChampion;
-      Player.State.Skin = e;
+      Player.Skin = e;
       ChampionPopup_Close(sender, null);
     }
 
@@ -91,7 +96,20 @@ namespace LeagueClient.ClientUI {
     }
 
     private void EnterQueue(object sender, RoutedEventArgs e) {
-      Client.QueueManager.EnterCapSolo(Player.State);
+      var id = RiotCalls.CapService.CreateSoloQuery(Player.State);
+      Client.AddDelegate(id, response => {
+        if (response.status.Equals("OK"))
+          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player)));
+      });
+      if (Close != null) Close(this, new EventArgs());
+    }
+
+    public bool CanPlay() {
+      return false;
+    }
+
+    public Page GetPage() {
+      return this;
     }
   }
 }

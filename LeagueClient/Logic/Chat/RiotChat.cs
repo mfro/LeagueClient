@@ -99,11 +99,10 @@ namespace LeagueClient.Logic.Chat {
     }
 
     private void UpdateProc(object src, ElapsedEventArgs args) {
-      if (App.Current == null) timer.Stop();
       var list = new List<Friend>(Friends.Values);
       foreach (var friend in list)
         try { App.Current.Dispatcher.Invoke(friend.Update); } catch { timer.Stop(); }
-      App.Current.Dispatcher.Invoke(() => ResetList(list));
+      try { App.Current.Dispatcher.Invoke(() => ResetList(list)); } catch { timer.Stop(); }
     }
 
     #region Event Handlers
@@ -191,11 +190,6 @@ namespace LeagueClient.Logic.Chat {
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
       conn.Presence(PresenceType.available, status.ToXML(), Show.ToString().ToLower(), 1);
-    }
-
-    public void Disconnect() {
-      timer.Stop();
-      conn.Close();
     }
 
     public static double GetSummonerId(JID user) {

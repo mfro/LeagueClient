@@ -33,9 +33,6 @@
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>rtmp-sharp.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -140,11 +137,6 @@
     <Compile Include="Net\StatusAsObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RtmpSharp.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="rtmp-sharp.snk">
-      <Link>rtmp-sharp.snk</Link>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

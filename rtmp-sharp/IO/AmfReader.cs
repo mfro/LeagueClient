@@ -582,7 +582,7 @@ namespace RtmpSharp.IO {
           while ((fullname.IndexOf('.', pos)) > 0) pos = fullname.IndexOf('.', pos) + 1;
           var name = fullname.Substring(pos, fullname.Length - pos);
 
-          using (var save = File.CreateText(@"C:\Users\Max\Desktop\" + name + ".cs")) {
+          using (var save = File.CreateText(@"C:\Users\Bob\Desktop\" + name + ".cs")) {
             save.WriteLine("using System;");
             save.WriteLine("using System.Collections.Generic;");
             save.WriteLine("using RtmpSharp.IO;\n");

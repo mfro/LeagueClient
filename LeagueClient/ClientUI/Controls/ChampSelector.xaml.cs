@@ -75,30 +75,31 @@ namespace LeagueClient.ClientUI.Controls {
         foreach (var item in ChampsGrid.Items)
           VisualTreeHelper
             .GetChild(ChampsGrid.ItemContainerGenerator.ContainerFromItem(item), 0)
-            .SetValue(Border.BorderBrushProperty, App.ForeColor);
+            .SetValue(Border.BorderBrushProperty, App.ForeBrush);
 
-        src.BorderBrush = App.HighColor;
+        src.BorderBrush = App.FocusBrush;
         if (data == null) return;
         if (ChampSelected != null) ChampSelected(this, data);
         SelectedChampion = data;
-
-        var riotDto = (from c in Client.RiotChampions
-                       where c.ChampionId.Equals(data.key)
-                       select c).FirstOrDefault();
-        skins.Clear();
-        foreach (var item in SelectedChampion.skins) {
-          var riot = (from s in riotDto.ChampionSkins
-                     where s.SkinId.ToString().Equals(item.id)
-                     select s).FirstOrDefault();
-          if(item.num == 0 || riot.Owned) skins.Add(item);
-        }
-        if (skins.Count == 1) {
-          if(SkinSelected != null) SkinSelected(this, skins[0]);
-          SelectedSkin = skins[0];
-          return;
-        }
-        UpdateSkinList();
       }
+
+      var riotDto = (from c in Client.RiotChampions
+                     where c.ChampionId == data.key
+                     select c).FirstOrDefault();
+      skins.Clear();
+      foreach (var item in SelectedChampion.skins) {
+        var riot = (from s in riotDto.ChampionSkins
+                    where s.SkinId == item.id
+                    select s).FirstOrDefault();
+        if (item.num == 0 || riot.Owned) skins.Add(item);
+      }
+      if (skins.Count == 1) {
+        if (SkinSelected != null) SkinSelected(this, skins[0]);
+        SelectedSkin = skins[0];
+        return;
+      }
+      UpdateSkinList();
+
       ChampSelect.Visibility = System.Windows.Visibility.Collapsed;
       SkinSelect.Visibility = System.Windows.Visibility.Visible;
       SkinScroll.ScrollToHorizontalOffset(294);
@@ -110,14 +111,15 @@ namespace LeagueClient.ClientUI.Controls {
       foreach (var item in SkinsGrid.Items) {
         var child =
         VisualTreeHelper.GetChild(SkinsGrid.ItemContainerGenerator.ContainerFromItem(item), 0);
-        child.SetValue(Border.BorderBrushProperty, App.ForeColor);
+        child.SetValue(Border.BorderBrushProperty, App.ForeBrush);
       }
 
-      src.BorderBrush = App.HighColor;
+      src.BorderBrush = App.FocusBrush;
       var data = (((dynamic) src).DataContext).Data
         as MyChampDto.SkinDto;
       if (data == null) return;
       if (SkinSelected != null) SkinSelected(this, data);
+      RiotCalls.CapService.UpdateLastSelectedSkin(data.id, SelectedChampion.key);
       SelectedSkin = data;
     }
 

@@ -13,23 +13,23 @@ namespace LeagueClient {
   /// Interaction logic for App.xaml
   /// </summary>
   public partial class App : Application {
-    [Mine]
+    [Resource]
     public static Storyboard
       ButtonHover, ButtonUnHover, ButtonPress, ButtonRelease,
       FadeIn, FadeOut, ComboItemEnter, ComboItemLeave,
       UnreadPulse;
 
-    [Mine]
+    [Resource]
     public static SolidColorBrush
-      FontColor, HighColor, ForeColor, Back1Color, Back2Color,
-      BusyColor, AwayColor, ChatColor;
+      FontBrush, FocusBrush, ForeBrush, Back1Brush, Back2Brush,
+      BusyBrush, AwayBrush, ChatBrush;
 
-    [Mine]
+    [Resource]
     public static Style Control;
 
     public void LoadResources() {
       foreach (var field in typeof(App).GetFields())
-        if (Attribute.IsDefined(field, typeof(MineAttribute)))
+        if (Attribute.IsDefined(field, typeof(ResourceAttribute)))
           field.SetValue(this, FindResource(field.Name));
     }
 
@@ -58,5 +58,5 @@ namespace LeagueClient {
     }
   }
 
-  public class MineAttribute : Attribute { }
+  public class ResourceAttribute : Attribute { }
 }

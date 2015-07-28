@@ -23,8 +23,8 @@ namespace LeagueClient.ClientUI.Controls {
     public double Value {
       get { return value; }
       set {
-        if (!IsIndeterminate)
-          AnimateTo(ActualWidth * value);
+        if (!IsIndeterminate && value > 0)
+          Bar.Width = ActualWidth * value;
         this.value = value;
       }
     }
@@ -61,13 +61,16 @@ namespace LeagueClient.ClientUI.Controls {
       SizeChanged += (src, e) => IsIndeterminate = indeterminate;
       IndeterminateBarWidth = 40;
       IndeterminateAnimationTime = 1.5;
-      Foreground = App.HighColor;
+      Foreground = App.FocusBrush;
       InitializeComponent();
     }
 
-    private void AnimateTo(double width) {
-      var anim = new DoubleAnimation(width, new Duration(TimeSpan.FromSeconds(.1)));
-      Bar.BeginAnimation(UserControl.WidthProperty, anim);
+    public void AnimateProgress(double from, double to, Duration duration) {
+      IsIndeterminate = false;
+      Value = from;
+      var da = new DoubleAnimation(to, duration);
+      da.Completed += (src, e) => Value = to;
+      Bar.BeginAnimation(WidthProperty, da);
     }
   }
 }

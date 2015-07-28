@@ -3,406 +3,786 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
-  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="4"/>
-      <RowDefinition Height="26"/>
-      <RowDefinition Height="419"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="4"/>
-    </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="4"/>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="4"/>
-    </Grid.ColumnDefinitions>
-
-    <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource ForeColor}"
-            Margin="4 0 4 0" BorderBrush="{StaticResource Back1Color}" BorderThickness="4 4 4 0">
-      <Label Padding="0" Name="CurrentStatus" HorizontalAlignment="Center"
-             FontSize="16">Your turn to select a champion!</Label>
-    </Border>
-
-    <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource ForeColor}"
-            BorderBrush="{StaticResource Back1Color}" BorderThickness="4 4 4 0">
-      <Label Padding="0 1" HorizontalAlignment="Center">Your Team</Label>
-    </Border>
-    <Border Grid.Row="1" Grid.Column="3" Background="{StaticResource ForeColor}"
-            BorderBrush="{StaticResource Back1Color}" BorderThickness="4 4 4 0">
-      <Label Padding="0 1" HorizontalAlignment="Center">Enemy Team</Label>
-    </Border>
-
-    <Grid Grid.Row="2" Grid.Column="1" Background="{StaticResource Back1Color}">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-      </Grid.RowDefinitions>
-      <Grid Grid.Row="0" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+  <Border Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}" Padding="4">
+    <Grid>
+      <Grid.Resources>
+        <Style TargetType="Label" BasedOn="{StaticResource Control}">
+          <Setter Property="HorizontalAlignment" Value="Center"/>
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="Background" Value="Transparent"/>
+          <Setter Property="FontSize" Value="16"/>
+          <Setter Property="Padding" Value="0"/>
+        </Style>
+      </Grid.Resources>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid>
         <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 1</Label>
-      </Grid>
-      <Grid Grid.Row="1" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 2</Label>
-      </Grid>
-      <Grid Grid.Row="2" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 3</Label>
-      </Grid>
-      <Grid Grid.Row="3" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 4</Label>
-      </Grid>
-      <Grid Grid.Row="4" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 5</Label>
-      </Grid>
-    </Grid>
-    <Grid Grid.Row="2" Grid.Column="3" Background="{StaticResource Back1Color}">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-      </Grid.RowDefinitions>
-      <Grid Grid.Row="0" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 1</Label>
-      </Grid>
-      <Grid Grid.Row="1" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 2</Label>
-      </Grid>
-      <Grid Grid.Row="2" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 3</Label>
-      </Grid>
-      <Grid Grid.Row="3" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 4</Label>
-      </Grid>
-      <Grid Grid.Row="4" Margin="4 4 4 0" Background="{StaticResource ForeColor}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="56"/>
-          <ColumnDefinition Width="4"/>
-          <ColumnDefinition Width="26"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="4"/>
-          <RowDefinition Height="26"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
-               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
-               Grid.Row="1" Grid.Column="3"/>
-        <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
-               Grid.Row="3" Grid.Column="3"/>
-        <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
-               HorizontalAlignment="Center" FontSize="13">Summoner 5</Label>
-      </Grid>
-    </Grid>
-
-    <Border Name="MatchDetails" Grid.Row="3" Grid.Column="1" Background="{StaticResource ForeColor}"
-            BorderBrush="{StaticResource Back1Color}" BorderThickness="4">
-      <TextBlock Style="{StaticResource Control}" FontSize="14" Margin="4 1 4 1">
-        Classic - 5v5<LineBreak/>
-        Summoner's Rift<LineBreak/>
-        Blind Pick
-      </TextBlock>
-    </Border>
-    <Border Name="MatchDetails2" Grid.Row="3" Grid.Column="3" Background="{StaticResource ForeColor}"
-            BorderBrush="{StaticResource Back1Color}" BorderThickness="4">
-      <TextBlock Style="{StaticResource Control}" Margin="4 1 4 1">
-        Classic - 5v5<LineBreak/>
-        Summoner's Rift<LineBreak/>
-        Blind Pick
-      </TextBlock>
-    </Border>
-
-    <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Margin="4 0" Style="{StaticResource Back1}">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="300"/>
-        <RowDefinition Height="70"/>
-        <RowDefinition Height="*"/>
-      </Grid.RowDefinitions>
-      <my:ChampSelector Margin="0 4 4 4" x:Name="ChampsGrid"/>
-      <ScrollViewer MouseWheel="SkinScroller_MouseWheel" Visibility="Collapsed" 
-                    VerticalScrollBarVisibility="Disabled" Margin="4 4 4 0">
-        <ItemsControl Name="SkinsDisplay">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border BorderBrush="{StaticResource ForeColor}" BorderThickness="2" Margin="0 0 4 4">
-                <Image Source="{Binding}"/>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <StackPanel Orientation="Horizontal"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <BitmapImage>C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_0.jpg</BitmapImage>
-          <BitmapImage>C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_1.jpg</BitmapImage>
-          <BitmapImage>C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_2.jpg</BitmapImage>
-          <BitmapImage>C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_3.jpg</BitmapImage>
-          <BitmapImage>C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_4.jpg</BitmapImage>
-        </ItemsControl>
-      </ScrollViewer>
-      <Grid Grid.Row="1" Margin="4 0 4 4">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="220"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="auto"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="220"/>
-        </Grid.ColumnDefinitions>
-        <Grid Background="{StaticResource ForeColor}">
-          <Grid.RowDefinitions>
-            <RowDefinition Height="8"/>
-            <RowDefinition Height="18"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="18"/>
-            <RowDefinition Height="8"/>
-          </Grid.RowDefinitions>
-          <Label Padding="8 0" Grid.Row="1">Runes:</Label>
-          <Label Padding="8 0" Grid.Row="3">Masteries:</Label>
-          <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="1"/>
-          <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="3"/>
-        </Grid>
-        <Grid Grid.Column="2" Margin="4 0">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="66"/>
-            <ColumnDefinition Width="4"/>
-            <ColumnDefinition Width="66"/>
-          </Grid.ColumnDefinitions>
-          <Border BorderBrush="{StaticResource ForeColor}" BorderThickness="4" Cursor="Hand">
-            <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
-          </Border>
-          <Border Grid.Column="2" BorderBrush="{StaticResource ForeColor}" BorderThickness="4"
-                  Cursor="Hand">
-            <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"/>
-          </Border>
-        </Grid>
-        <Grid Grid.Column="4">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="4"/>
-            <ColumnDefinition Width="2*"/>
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="4"/>
-            <RowDefinition Height="*"/>
-          </Grid.RowDefinitions>
-
-          <my:HintedTextBox Grid.Row="0" Hint="Search"
-                            Grid.ColumnSpan="3"/>
-          <Button  Grid.Row="2">Choose a Skin</Button>
-          <Button 
-                  Grid.Row="2" Grid.Column="2">Lock In</Button>
-        </Grid>
-      </Grid>
-      <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Style="{StaticResource Back1}">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="*"/>
           <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="4"/>
+          <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource ForeColor}"/>
-        <TextBox Name="ChatBox" Grid.Row="1" Margin="0 4 60 4"/>
-        <Button Name="ChatButt" Grid.Row="1" Margin="0 4" Width="56"
+        <Border Background="{StaticResource ForeBrush}" Margin="0 0 0 4"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
+          <Label Padding="0 1" HorizontalAlignment="Center">Your Team</Label>
+        </Border>
+        <Border Background="{StaticResource Back1Brush}" Grid.Row="1" Grid.RowSpan="6"/>
+        <Grid Grid.Row="1" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+              HorizontalAlignment="Center" FontSize="13">Summoner 2</Label>
+        </Grid>
+        <Grid Grid.Row="2" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+              HorizontalAlignment="Center" FontSize="13">Summoner 3</Label>
+        </Grid>
+        <Grid Grid.Row="3" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+              HorizontalAlignment="Center" FontSize="13">Summoner 4</Label>
+        </Grid>
+        <Grid Grid.Row="4" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="56"/>
+              <ColumnDefinition Width="4"/>
+              <ColumnDefinition Width="26"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="4"/>
+              <RowDefinition Height="26"/>
+              <RowDefinition Height="4"/>
+              <RowDefinition Height="26"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+            <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+            <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+            <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 5</Label>
+        </Grid>
+        <Grid Grid.Row="5" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1" FontSize="13">Summoner 1</Label>
+        </Grid>
+
+        <Border Name="MatchDetails" Grid.Row="7" Background="{StaticResource ForeBrush}"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 4 0 0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition/>
+              <RowDefinition/>
+              <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Style="{StaticResource Control}" Name="Details1" VerticalAlignment="Center" Margin="4 1" Grid.Row="0"/>
+            <TextBlock Style="{StaticResource Control}" Name="Details2" VerticalAlignment="Center" Margin="4 1" Grid.Row="1"/>
+            <TextBlock Style="{StaticResource Control}" Name="Details3" VerticalAlignment="Center" Margin="4 1" Grid.Row="2"/>
+          </Grid>
+        </Border>
+      </Grid>
+      <Grid Grid.Column="2">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="4"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Background="{StaticResource ForeBrush}" Margin="0 0 0 4"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
+          <Label Padding="0 1" HorizontalAlignment="Center">Your Team</Label>
+        </Border>
+        <Border Background="{StaticResource Back1Brush}" Grid.Row="1" Grid.RowSpan="6"/>
+        <Grid Grid.Row="1" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+              HorizontalAlignment="Center" FontSize="13">Summoner 2</Label>
+        </Grid>
+        <Grid Grid.Row="2" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+              HorizontalAlignment="Center" FontSize="13">Summoner 3</Label>
+        </Grid>
+        <Grid Grid.Row="3" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+              HorizontalAlignment="Center" FontSize="13">Summoner 4</Label>
+        </Grid>
+        <Grid Grid.Row="4" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 5</Label>
+        </Grid>
+        <Grid Grid.Row="5" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+              Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+              Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+              Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1" FontSize="13">Summoner 1</Label>
+        </Grid>
+
+        <Border Name="MatchDetails2" Grid.Row="7" Background="{StaticResource ForeBrush}"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 4 0 0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition/>
+              <RowDefinition/>
+              <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Style="{StaticResource Control}" Name="Details4" VerticalAlignment="Center" Margin="4 1" Grid.Row="0"/>
+            <TextBlock Style="{StaticResource Control}" Name="Details5" VerticalAlignment="Center" Margin="4 1" Grid.Row="1"/>
+            <TextBlock Style="{StaticResource Control}" Name="Details6" VerticalAlignment="Center" Margin="4 1" Grid.Row="2"/>
+          </Grid>
+        </Border>
+      </Grid>
+
+      <Grid Grid.Column="1" Grid.RowSpan="2" Margin="4 0" Style="{StaticResource Back1}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="300"/>
+          <RowDefinition Height="70"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <my:ChampSelector Margin="4" x:Name="ChampsGrid"/>
+        <Grid Grid.Row="1" Margin="4 0 4 4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="220"/>
+          </Grid.ColumnDefinitions>
+          <Grid Background="{StaticResource ForeBrush}">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="8"/>
+              <RowDefinition Height="18"/>
+              <RowDefinition Height="*"/>
+              <RowDefinition Height="18"/>
+              <RowDefinition Height="8"/>
+            </Grid.RowDefinitions>
+            <Label Padding="8 0" Grid.Row="1" HorizontalAlignment="Left">Runes:</Label>
+            <Label Padding="8 0" Grid.Row="3" HorizontalAlignment="Left">Masteries:</Label>
+            <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="1"/>
+            <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="3"/>
+          </Grid>
+          <Grid Grid.Column="2" Margin="4 0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="66"/>
+              <ColumnDefinition Width="4"/>
+              <ColumnDefinition Width="66"/>
+            </Grid.ColumnDefinitions>
+            <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="4" Cursor="Hand">
+              <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
+            </Border>
+            <Border Grid.Column="2" BorderBrush="{StaticResource ForeBrush}" BorderThickness="4"
+                  Cursor="Hand">
+              <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"/>
+            </Border>
+          </Grid>
+          <Grid Grid.Column="4">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="auto"/>
+              <RowDefinition Height="4"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <my:HintedTextBox Hint="Search"/>
+            <Button Grid.Row="2" Width="80" Height="30">Lock In</Button>
+          </Grid>
+        </Grid>
+        <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Style="{StaticResource Back1}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+          </Grid.RowDefinitions>
+          <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource ForeBrush}"/>
+          <TextBox Name="ChatBox" Grid.Row="1" Margin="0 4 60 4"/>
+          <Button Name="ChatButt" Grid.Row="1" Margin="0 4 0 2" Width="56"
               HorizontalAlignment="Right" Padding="0 0">Send</Button>
+        </Grid>
       </Grid>
     </Grid>
-  </Grid>
+    <!--<Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="26"/>
+        <RowDefinition Height="419"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="4"/>
+      </Grid.ColumnDefinitions>
+
+      <Border Background="{StaticResource ForeBrush}"
+          Margin="4 0 4 0" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4 4 4 0" Grid.RowSpan="2">
+        <Label Name="CurrentStatus">Your turn to select a champion!</Label>
+      </Border>
+
+      <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource ForeBrush}"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4 4 4 0">
+        <Label Padding="0 1" HorizontalAlignment="Center">Your Team</Label>
+      </Border>
+      <Border Grid.Row="1" Grid.Column="3" Background="{StaticResource ForeBrush}"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4 4 4 0">
+        <Label Padding="0 3" HorizontalAlignment="Center">Enemy Team</Label>
+      </Border>
+
+      <Grid Grid.Row="2" Grid.Column="1" Background="{StaticResource Back1Brush}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 1</Label>
+        </Grid>
+        <Grid Grid.Row="1" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 2</Label>
+        </Grid>
+        <Grid Grid.Row="2" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 3</Label>
+        </Grid>
+        <Grid Grid.Row="3" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 4</Label>
+        </Grid>
+        <Grid Grid.Row="4" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 5</Label>
+        </Grid>
+      </Grid>
+      <Grid Grid.Row="2" Grid.Column="3" Background="{StaticResource Back1Brush}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 1</Label>
+        </Grid>
+        <Grid Grid.Row="1" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 2</Label>
+        </Grid>
+        <Grid Grid.Row="2" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 3</Label>
+        </Grid>
+        <Grid Grid.Row="3" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 4</Label>
+        </Grid>
+        <Grid Grid.Row="4" Margin="4 4 4 0" Background="{StaticResource ForeBrush}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="26"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\Draven.png"
+               Grid.RowSpan="3" Grid.Row="1" Grid.Column="1"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"
+               Grid.Row="1" Grid.Column="3"/>
+          <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"
+               Grid.Row="3" Grid.Column="3"/>
+          <Label Grid.Row="4" Grid.ColumnSpan="5" Padding="1"
+               HorizontalAlignment="Center" FontSize="13">Summoner 5</Label>
+        </Grid>
+      </Grid>
+
+      <Border Name="MatchDetails" Grid.Row="3" Grid.Column="1" Background="{StaticResource ForeBrush}"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
+        <TextBlock Style="{StaticResource Control}" FontSize="14" Margin="4 1 4 1">
+        Classic - 5v5<LineBreak/>
+        Summoner's Rift<LineBreak/>
+        Blind Pick
+        </TextBlock>
+      </Border>
+      <Border Name="MatchDetails2" Grid.Row="3" Grid.Column="3" Background="{StaticResource ForeBrush}"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
+        <TextBlock Style="{StaticResource Control}" Margin="4 1 4 1">
+        Classic - 5v5<LineBreak/>
+        Summoner's Rift<LineBreak/>
+        Blind Pick
+        </TextBlock>
+      </Border>
+
+      <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Margin="4 0" Style="{StaticResource Back1}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="300"/>
+          <RowDefinition Height="70"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <my:ChampSelector Margin="0 4 4 4" x:Name="ChampsGrid"/>
+        <ScrollViewer MouseWheel="SkinScroller_MouseWheel" Visibility="Collapsed" 
+                    VerticalScrollBarVisibility="Disabled" Margin="4 4 4 0">
+          <ItemsControl Name="SkinsDisplay">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2" Margin="0 0 4 4">
+                  <Image Source="{Binding}"/>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <BitmapImage>C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_0.jpg</BitmapImage>
+            <BitmapImage>C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_1.jpg</BitmapImage>
+            <BitmapImage>C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_2.jpg</BitmapImage>
+            <BitmapImage>C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_3.jpg</BitmapImage>
+            <BitmapImage>C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\champion\loading\Draven_4.jpg</BitmapImage>
+          </ItemsControl>
+        </ScrollViewer>
+        <Grid Grid.Row="1" Margin="4 0 4 4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="220"/>
+          </Grid.ColumnDefinitions>
+          <Grid Background="{StaticResource ForeBrush}">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="8"/>
+              <RowDefinition Height="18"/>
+              <RowDefinition Height="*"/>
+              <RowDefinition Height="18"/>
+              <RowDefinition Height="8"/>
+            </Grid.RowDefinitions>
+            <Label Padding="8 0" Grid.Row="1">Runes:</Label>
+            <Label Padding="8 0" Grid.Row="3">Masteries:</Label>
+            <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="1"/>
+            <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="3"/>
+          </Grid>
+          <Grid Grid.Column="2" Margin="4 0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="66"/>
+              <ColumnDefinition Width="4"/>
+              <ColumnDefinition Width="66"/>
+            </Grid.ColumnDefinitions>
+            <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="4" Cursor="Hand">
+              <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
+            </Border>
+            <Border Grid.Column="2" BorderBrush="{StaticResource ForeBrush}" BorderThickness="4"
+                  Cursor="Hand">
+              <Image Source="C:\Users\Bob\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"/>
+            </Border>
+          </Grid>
+          <Grid Grid.Column="4">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="3*"/>
+              <ColumnDefinition Width="4"/>
+              <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="auto"/>
+              <RowDefinition Height="4"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <my:HintedTextBox Grid.Row="0" Hint="Search"
+                            Grid.ColumnSpan="3"/>
+            <Button  Grid.Row="2">Choose a Skin</Button>
+            <Button 
+                  Grid.Row="2" Grid.Column="2">Lock In</Button>
+          </Grid>
+        </Grid>
+        <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Style="{StaticResource Back1}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+          </Grid.RowDefinitions>
+          <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource ForeBrush}"/>
+          <TextBox Name="ChatBox" Grid.Row="1" Margin="0 4 60 4"/>
+          <Button Name="ChatButt" Grid.Row="1" Margin="0 4" Width="56"
+              HorizontalAlignment="Right" Padding="0 0">Send</Button>
+        </Grid>
+      </Grid>
+    </Grid>-->
+  </Border>
 </Page>

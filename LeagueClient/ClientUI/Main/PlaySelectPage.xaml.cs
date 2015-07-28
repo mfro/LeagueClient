@@ -17,11 +17,11 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
 
-namespace LeagueClient.ClientUI {
+namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for PlaySelectPage.xaml
   /// </summary>
-  public partial class PlaySelectPage : Page {
+  public partial class PlaySelectPage : Page, IClientSubPage {
     private static dynamic GameTypesRef = JSON.ParseObject(LeagueClient.Properties.Resources.Games);
     private static List<string> Order = new List<string> { "CLASSIC", "ODIN", "ARAM" };
     
@@ -29,6 +29,8 @@ namespace LeagueClient.ClientUI {
     public BindingList<dynamic> GameModes { get; private set; }
     public BindingList<dynamic> GameQueues { get; private set; }
     private dynamic selected;
+
+    public event EventHandler Close;
 
     public PlaySelectPage() {
       GameGroups = new BindingList<dynamic>();
@@ -108,6 +110,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Join1_Click(object sender, RoutedEventArgs e) {
+      if (Close != null) Close(this, new EventArgs());
       switch ((int) selected.Type) {
         case 0:
         case 1:
@@ -120,6 +123,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Join2_Click(object sender, RoutedEventArgs e) {
+      if (Close != null) Close(this, new EventArgs());
       switch ((int) selected.Type) {
         case 0:
         case 1:
@@ -136,6 +140,14 @@ namespace LeagueClient.ClientUI {
       var box = sender as ListBox;
       var bd = box.Template.FindName("Bd", box) as Border;
       bd.Padding = new Thickness(0);
+    }
+
+    public bool CanPlay() {
+      return false;
+    }
+
+    public Page GetPage() {
+      return this;
     }
   }
 

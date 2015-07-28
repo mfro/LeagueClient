@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
+using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
 
@@ -26,29 +27,32 @@ namespace LeagueClient.ClientUI.Controls {
     public event EventHandler Accepted;
     public event EventHandler Cancelled;
     private JSONObject payload;
-    private Timer timer;
+    private CapMePlayer player;
 
-    public CapSoloQueuePopup(JSONObject payload) {
+    public CapSoloQueuePopup(JSONObject payload, CapMePlayer player) {
       InitializeComponent();
       this.payload = payload;
-      timer = new Timer(50);
-      timer.Elapsed += Timer_Elapsed;
-      timer.Start();
-      TimeoutBar.Value = 1;
+      this.player = player;
+
+      TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(payload["candidateAutoQuitTimeout"])));
+      var time = new Timer(payload["candidateAutoQuitTimeout"] * 1000);
+      time.Start();
+      time.Elapsed += Time_Elapsed;
     }
 
-    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
-      double elapsed = DateTime.Now.Subtract(e.SignalTime).TotalSeconds;
-      TimeoutBar.Value = 1 - (elapsed / (double) payload["candidateAutoQuitTimeout"]);
+    private void Time_Elapsed(object sender, ElapsedEventArgs e) {
+      (sender as IDisposable).Dispose();
+      if (Cancelled != null) Cancelled(this, new EventArgs());
     }
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
       if (Accepted != null) Accepted(this, new EventArgs());
-      Client.QueueManager.JoinCapLobby((string) payload["groupId"], (int) payload["slotId"]);
+      Client.QueueManager.JoinCapLobby((string) payload["groupId"], (int) payload["slotId"], player);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       if (Cancelled != null) Cancelled(this, new EventArgs());
+      RiotCalls.CapService.Quit();
     }
 
     public Control GetControl() {
