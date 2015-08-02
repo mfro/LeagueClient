@@ -45,7 +45,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void PlayerUpdate(object sender, EventArgs e) {
       GameMap.Players.Clear();
-      GameMap.Players.Add(Player.State);
+      GameMap.Players.Add(Player.CapPlayer);
       if (Player.CanBeReady()) EnterQueueButt.BeginStoryboard(App.FadeIn);
       else EnterQueueButt.BeginStoryboard(App.FadeOut);
     }
@@ -81,25 +81,25 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-      Player.State.Champion = ChampSelector.SelectedChampion;
+      Player.CapPlayer.Champion = ChampSelector.SelectedChampion;
       Player.Skin = e;
       ChampionPopup_Close(sender, null);
     }
 
     private void Spell_Select(object sender, SpellDto spell) {
       if (spell1) {
-        Player.State.Spell1 = spell;
+        Player.CapPlayer.Spell1 = spell;
       } else {
-        Player.State.Spell2 = spell;
+        Player.CapPlayer.Spell2 = spell;
       }
       SpellPopup.BeginStoryboard(App.FadeOut);
     }
 
     private void EnterQueue(object sender, RoutedEventArgs e) {
-      var id = RiotCalls.CapService.CreateSoloQuery(Player.State);
-      Client.AddDelegate(id, response => {
+      var id = RiotCalls.CapService.CreateSoloQuery(Player.CapPlayer);
+      RiotCalls.AddHandler(id, response => {
         if (response.status.Equals("OK"))
-          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player)));
+          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player.CapPlayer)));
       });
       if (Close != null) Close(this, new EventArgs());
     }

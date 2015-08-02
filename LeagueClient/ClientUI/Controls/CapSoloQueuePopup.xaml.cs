@@ -27,9 +27,9 @@ namespace LeagueClient.ClientUI.Controls {
     public event EventHandler Accepted;
     public event EventHandler Cancelled;
     private JSONObject payload;
-    private CapMePlayer player;
+    private Logic.Cap.CapPlayer player;
 
-    public CapSoloQueuePopup(JSONObject payload, CapMePlayer player) {
+    public CapSoloQueuePopup(JSONObject payload, Logic.Cap.CapPlayer player) {
       InitializeComponent();
       this.payload = payload;
       this.player = player;

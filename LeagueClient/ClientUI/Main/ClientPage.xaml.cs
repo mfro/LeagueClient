@@ -96,7 +96,7 @@ namespace LeagueClient.ClientUI.Main {
       RiotCalls.CapService.CreateGroup();
     }
 
-    public void JoinCapLobby(string groupId, int slotId, CapMePlayer player) {
+    public void JoinCapLobby(string groupId, int slotId, Logic.Cap.CapPlayer player) {
       var page = new CapLobbyPage(slotId, player);
       ShowSubPage(page);
       RiotCalls.CapService.IndicateGroupAcceptanceAsCandidate(slotId, true, groupId);

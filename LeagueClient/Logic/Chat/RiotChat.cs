@@ -181,17 +181,29 @@ namespace LeagueClient.Logic.Chat {
     }
     #endregion
 
+    /// <summary>
+    /// Minimizes any open chat conversations
+    /// </summary>
     public void CloseAll() {
       App.Current.Dispatcher.Invoke(() => {
         foreach (var item in OpenChats) item.Open = false;
       });
     }
 
+    /// <summary>
+    /// Updates the current status string
+    /// </summary>
+    /// <param name="message">The status message to display</param>
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
       conn.Presence(PresenceType.available, status.ToXML(), Show.ToString().ToLower(), 1);
     }
 
+    /// <summary>
+    /// Parses the internal summoner ID of a friend from the JID used in the XMPP chat service
+    /// </summary>
+    /// <param name="user">The summoner's JID</param>
+    /// <returns>The summoner ID</returns>
     public static double GetSummonerId(JID user) {
       double d;
       if (double.TryParse(user.User.Substring(3), out d)) return d;

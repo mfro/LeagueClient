@@ -66,13 +66,13 @@ namespace LeagueClient.ClientUI.Controls {
       switch (e.ListChangedType) {
         case ListChangedType.ItemAdded:
           if (!subscribed.Contains(Players[e.NewIndex])) {
-            Players[e.NewIndex].PlayerUpdate += CapMap_PlayerUpdate;
+            Players[e.NewIndex].PropertyChanged += CapMap_PlayerUpdate;
             subscribed.Add(Players[e.NewIndex]);
           }
           break;
         case ListChangedType.Reset:
           foreach (var item in Players.Where(p => !subscribed.Contains(p)))
-            item.PlayerUpdate += CapMap_PlayerUpdate;
+            item.PropertyChanged += CapMap_PlayerUpdate;
           break;
       }
       CapMap_PlayerUpdate(null, null);

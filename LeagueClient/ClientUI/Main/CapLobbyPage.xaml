@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
-      SnapsToDevicePixels="True">
+      SnapsToDevicePixels="True" Background="{StaticResource Back2Brush}">
   <Grid Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
     <Grid.RowDefinitions>
       <RowDefinition Height="75"/>
@@ -29,11 +29,7 @@
 
     <Button VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3" Grid.Row="2" Content="Find Another Group" Padding="20 2"
             Name="FindAnotherButt" Click="FindAnotherButt_Click"/>
-    <Button VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="3" Grid.Row="2" Content="Ready" Padding="20 2"
-            Name="ReadyButt" Click="ReadyButt_Click">
-      <Button.Effect>
-        <DropShadowEffect Color="{StaticResource FocusColor}" BlurRadius="30" ShadowDepth="00" x:Name="ReadyGlow"/>
-      </Button.Effect>
-    </Button>
+    <Button VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="3" Grid.Row="2" Content="Ready" Padding="0 2"
+            Name="ReadyButt" Click="ReadyButt_Click" Width="80"/>
   </Grid>
 </Page>

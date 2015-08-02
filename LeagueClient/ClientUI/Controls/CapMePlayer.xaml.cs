@@ -47,39 +47,43 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
-    public CapPlayer State { get; set; }
+    public CapPlayer CapPlayer { get; set; }
     public ChampionDto.SkinDto Skin { get; set; }
 
     private bool editable;
 
-    public CapMePlayer() {
+    public CapMePlayer() : this(null) { }
+
+    public CapMePlayer(CapPlayer player) {
+      CapPlayer = player ?? new CapPlayer();
+      CapPlayer.PropertyChanged += (s, e) => Dispatcher.Invoke(UpdateChild);
+
       InitializeComponent();
-      State = new CapPlayer();
-      State.Name = Client.LoginPacket.AllSummonerData.Summoner.Name;
-      State.PlayerUpdate += Child_PlayerUpdate;
       PositionBox.ItemsSource = Strings.Position.Values.Values; //new string[] { "Top Lane", "Middle Lane", "Bottom Lane", "Jungle" };
       RoleBox.ItemsSource = Strings.Role.Values.Values.Where(p => p != Role.ANY); //new string[] { "Assassin", "Fighter", "Mage", "Marksman", "Support", "Tank" };
       RunesBox.ItemsSource = Client.Runes.BookPages;
       RunesBox.SelectedItem = Client.SelectedRunePage;
       Check.Visibility = Visibility.Collapsed;
-      State.Status = CapStatus.Present;
+      CapPlayer.Status = CapStatus.Present;
       UpdateMasteries();
     }
 
-    private void Child_PlayerUpdate(object sender, EventArgs e) {
-      if (State.Champion != null) ChampionImage.Source = LeagueData.GetChampIconImage(State.Champion.id);
-      if (State.Spell1 != null) Spell1Image.Source = LeagueData.GetSpellImage(State.Spell1.id);
-      if (State.Spell2 != null) Spell2Image.Source = LeagueData.GetSpellImage(State.Spell2.id);
-      if (State.Position != null) {
-        PositionBox.SelectedItem = State.Position;
-        PositionText.Text = State.Position.Value;
-      }
-      if (State.Role != null) {
-        RoleBox.SelectedItem = State.Role;
-        RoleText.Text = State.Role.Value;
-      }
-      if (PlayerUpdate != null) PlayerUpdate(this, e);
-      Check.Visibility = (State.Status == CapStatus.Ready) ? Visibility.Visible : Visibility.Collapsed;
+    private void UpdateChild() {
+      Dispatcher.Invoke(() => {
+        if (CapPlayer.Champion != null) ChampionImage.Source = LeagueData.GetChampIconImage(CapPlayer.Champion.id);
+        if (CapPlayer.Spell1 != null) Spell1Image.Source = LeagueData.GetSpellImage(CapPlayer.Spell1.id);
+        if (CapPlayer.Spell2 != null) Spell2Image.Source = LeagueData.GetSpellImage(CapPlayer.Spell2.id);
+        if (CapPlayer.Position != null) {
+          PositionBox.SelectedItem = CapPlayer.Position;
+          PositionText.Text = CapPlayer.Position.Value;
+        }
+        if (CapPlayer.Role != null) {
+          RoleBox.SelectedItem = CapPlayer.Role;
+          RoleText.Text = CapPlayer.Role.Value;
+        }
+        if (PlayerUpdate != null) PlayerUpdate(this, new EventArgs());
+        Check.Visibility = (CapPlayer.Status == CapStatus.Ready) ? Visibility.Visible : Visibility.Collapsed;
+      });
     }
 
     public void UpdateMasteries() {
@@ -88,7 +92,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public bool CanBeReady() {
-      return State.CanBeReady() && RunesBox.SelectedIndex >= 0 && MasteriesBox.SelectedIndex >= 0;
+      return CapPlayer.CanBeReady() && RunesBox.SelectedIndex >= 0 && MasteriesBox.SelectedIndex >= 0;
     }
 
     private void Champion_Click(object src, EventArgs args) {
@@ -122,11 +126,11 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Position_Selected(object sender, SelectionChangedEventArgs e) {
-      State.Position = (Position) PositionBox.SelectedItem;
+      CapPlayer.Position = (Position) PositionBox.SelectedItem;
     }
 
     private void Role_Selected(object sender, SelectionChangedEventArgs e) {
-      State.Role = (Role) RoleBox.SelectedItem;
+      CapPlayer.Role = (Role) RoleBox.SelectedItem;
     }
   }
 }

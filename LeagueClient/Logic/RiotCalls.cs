@@ -24,6 +24,13 @@ namespace LeagueClient.Logic.Riot {
     public delegate void OnInvocationErrorHandler(object sender, Exception error);
     public static event OnInvocationErrorHandler OnInvocationError;
 
+    internal static Dictionary<string, Action<LcdsServiceProxyResponse>> Delegates { get; set; }
+
+    public static void AddHandler(Guid messageId, Action<LcdsServiceProxyResponse> del) {
+      if (Delegates == null) Delegates = new Dictionary<string, Action<LcdsServiceProxyResponse>>();
+      Delegates.Add(messageId.ToString(), del);
+    }
+
     public static class LoginService {
       /// <summary>
       /// Login to Riot's servers.
@@ -1056,7 +1063,7 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <param name="InvitationId">The id of the invitation to accept, looks like INVID158928100</param>
       /// <returns></returns>
-      public static Task Accept(string InvitationId) {
+      public static Task<LobbyStatus> Accept(string InvitationId) {
         return InvokeAsync<LobbyStatus>("lcdsGameInvitationService", "accept");
       }
 

@@ -27,9 +27,9 @@ namespace LeagueClient.ClientUI.Controls {
 
     private Timer timer;
     private DateTime start;
-    private CapMePlayer player;
+    private Logic.Cap.CapPlayer player;
 
-    public CapSoloQueuer(CapMePlayer player) {
+    public CapSoloQueuer(Logic.Cap.CapPlayer player) {
       this.player = player;
       Client.MessageReceived += Client_MessageReceived;
       InitializeComponent();
@@ -62,6 +62,14 @@ namespace LeagueClient.ClientUI.Controls {
 
     public Control GetControl() {
       return this;
+    }
+
+    private void Info_Enter(object sender, MouseEventArgs e) {
+
+    }
+
+    private void Info_Leave(object sender, MouseEventArgs e) {
+
     }
   }
 }

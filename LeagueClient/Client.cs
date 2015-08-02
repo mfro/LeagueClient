@@ -19,6 +19,7 @@ namespace LeagueClient {
   public static class Client {
     internal const string
       AirClientParentDir = @"C:\Riot Games\League of Legends\RADS\projects\lol_air_client",
+      GameClientParentDir = @"C:\Riot Games\League of Legends\RADS\projects\lol_game_client",
       Server = "prod.na2.lol.riotgames.com",
       LoginQueue = "https://lq.na2.lol.riotgames.com/",
       ChatServer = "chat.na2.lol.riotgames.com",
@@ -33,7 +34,6 @@ namespace LeagueClient {
 
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-
     internal static event EventHandler<MessageHandlerArgs> MessageReceived;
 
     internal static RtmpClient RtmpConn { get; set; }
@@ -47,6 +47,7 @@ namespace LeagueClient {
     internal static RiotChat ChatManager { get; set; }
 
     internal static string AirDirectory { get; set; }
+    internal static string GameDirectory { get; set; }
 
     internal static string LoginTheme { get; set; }
 
@@ -68,12 +69,7 @@ namespace LeagueClient {
 
     internal static Settings Settings { get; set; }
 
-    internal static Dictionary<string, Action<LcdsServiceProxyResponse>> Delegates { get; set; }
-
-    public static void AddDelegate(Guid messageId, Action<LcdsServiceProxyResponse> del) {
-      if (Delegates == null) Delegates = new Dictionary<string, Action<LcdsServiceProxyResponse>>();
-      Delegates.Add(messageId.ToString(), del);
-    }
+    internal static Process GameProcess { get; set; }
 
     public static long GetMilliseconds() {
       return (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
@@ -83,6 +79,8 @@ namespace LeagueClient {
     public static void PreInitialize(MainWindow window) {
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
+      Console.SetOut(TextWriter.Null);
+      Console.SetError(TextWriter.Null);
 
       MainWindow = window;
 
@@ -91,13 +89,20 @@ namespace LeagueClient {
 
       Settings = new Settings(SettingsFile);
 
-      var versions = Directory.EnumerateDirectories(Path.Combine(AirClientParentDir, "releases"));
-      Version newest = new Version(0, 0, 0, 0);
-      foreach (var dir in versions) {
-        Version parsed;
-        if (Version.TryParse(Path.GetFileName(dir), out parsed) && parsed > newest) newest = parsed;
+      var parents = new[] { AirClientParentDir, GameClientParentDir };
+
+      for(int i = 0; i < parents.Length; i++) {
+        var versions = Directory.EnumerateDirectories(Path.Combine(parents[i], "releases"));
+        Version newest = new Version(0, 0, 0, 0);
+        foreach (var dir in versions) {
+          Version parsed;
+          if (Version.TryParse(Path.GetFileName(dir), out parsed) && parsed > newest) newest = parsed;
+        }
+        switch (i) {
+          case 0: AirDirectory = Path.Combine(parents[i], "releases", newest.ToString(), "deploy"); break;
+          case 1: GameDirectory = Path.Combine(parents[i], "releases", newest.ToString(), "deploy"); break;
+        }
       }
-      AirDirectory = Path.Combine(AirClientParentDir, "releases", newest.ToString(), "deploy");
 
       var reader = new SWFReader(Path.Combine(AirDirectory, "lib", "ClientLibCommon.dat"));
       foreach (var tag in reader.Tags) {
@@ -175,13 +180,33 @@ namespace LeagueClient {
     #endregion
 
     #region Client methods
+    /// <summary>
+    /// Launches the league of legends client and joins an active game
+    /// </summary>
+    /// <param name="creds">The credentials for joining the game</param>
+    public static void JoinGame(PlayerCredentialsDto creds) {
+      //"8394" "LoLLauncher.exe" "" "ip port key id"
+      var info = new ProcessStartInfo(Path.Combine(GameClientParentDir, "League of Legends.exe"));
+      var str = string.Format("{0} {1} {2} {3}", creds.ServerIp, creds.ServerPort, creds.EncryptionKey, creds.SummonerId);
+      info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLLauncher.exe", "", str);
+      GameProcess = Process.Start(info);
+    }
+    /// <summary>
+    /// Selects a mastery page as the default selected page for your account and
+    /// updates the contents of the local and remote mastery books
+    /// </summary>
+    /// <param name="page">The page to select</param>
     public static void SelectMasteryPage(MasteryBookPageDTO page) {
       RiotCalls.MasteryBookService.SelectDefaultMasteryBookPage(page);
       foreach (var item in Masteries.BookPages) item.Current = false;
       page.Current = true;
       SelectedMasteryPage = page;
     }
-
+    /// <summary>
+    /// Selects a rune page as the default selected page for your account and
+    /// updates the contents of the local and remote spell books
+    /// </summary>
+    /// <param name="page"></param>
     public static void SelectRunePage(SpellBookPageDTO page) {
       RiotCalls.SpellBookService.SelectDefaultSpellBookPage(page);
       foreach (var item in Runes.BookPages) item.Current = false;
@@ -201,17 +226,22 @@ namespace LeagueClient {
 
       var config = e.Body as ClientDynamicConfigurationNotification;
       var response = e.Body as LcdsServiceProxyResponse;
+      var invite = e.Body as InvitationRequest;
       if (config != null) {
         Log("Received Configuration Notification");
       } else if (response != null) {
         if (response.status.Equals("ACK"))
           Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
-        else if (Delegates.ContainsKey(response.messageId)) {
-          Delegates[response.messageId](response);
-          Delegates.Remove(response.messageId);
+        else if (RiotCalls.Delegates.ContainsKey(response.messageId)) {
+          RiotCalls.Delegates[response.messageId](response);
+          RiotCalls.Delegates.Remove(response.messageId);
         } else {
           Log("Unhandled LCDS response of method {0} [{1}]", response.methodName, response.messageId);
         }
+      }else if(invite != null) {
+        RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => {
+          RiotCalls.CapService.JoinGroupAsInvitee("hi");
+        });
       } else {
         Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
       }
@@ -223,9 +253,10 @@ namespace LeagueClient {
     }
 
     private static StreamWriter LogFile = new StreamWriter(File.Open(LogFilePath, FileMode.Append));
+    private static TextWriter LogDebug = Console.Out;
 
     public static void Log(object msg) {
-      Console.WriteLine(msg);
+      LogDebug.WriteLine(msg);
       LogFile.WriteLine(msg);
       LogFile.Flush();
     }

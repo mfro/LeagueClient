@@ -28,24 +28,27 @@ namespace LeagueClient.ClientUI.Controls {
     public CapOtherPlayer(CapPlayer player) {
       InitializeComponent();
       State = player;
-      State.PlayerUpdate += (s, e) => Dispatcher.Invoke((EventHandler) State_PlayerUpdate, s, e);
+      State.PropertyChanged += (s, e) => Dispatcher.Invoke(PlayerUpdate);
       Unknown.Visibility = Visibility.Collapsed;
-      State_PlayerUpdate(State, null);
+      PlayerUpdate();
     }
 
-    private void State_PlayerUpdate(object sender, EventArgs e) {
-      RoleText.Text = "";
+    private void PlayerUpdate() {
+      if (State.Position != null) {
+        RoleText.Text = State.Position.Value;
+        if (State.Role != null) RoleText.Text += " / " + State.Role.Value;
+      } else if (State.Role != null) {
+        RoleText.Text = State.Role.Value;
+      } else RoleText.Text = "";
+
       ChampImage.Source = null;
       Spell1Image.Source = null;
       Spell2Image.Source = null;
-      UpdateText();
       Check.Visibility = Visibility.Collapsed;
       switch (State.Status) {
         case CapStatus.Ready:
           Check.Visibility = Visibility.Visible;
-          SummonerText.Text = State.Name;
-          UpdateImages();
-          break;
+          goto case CapStatus.Present;
         case CapStatus.Present:
           SummonerText.Text = State.Name;
           UpdateImages();
@@ -60,18 +63,12 @@ namespace LeagueClient.ClientUI.Controls {
           SummonerText.Text = "The player was not found, searching for another candidate...";
           break;
         case CapStatus.Maybe:
+          SummonerText.Text = "A candidate has been found.";
+          UpdateImages();
+          break;
         case CapStatus.Choosing:
           break;//TODO
       }
-    }
-
-    private void UpdateText() {
-      if (State.Position != null) {
-        RoleText.Text = State.Position.Value;
-        if (State.Role != null) RoleText.Text += " / " + State.Role.Value;
-      } else if (State.Role != null) {
-        RoleText.Text = State.Role.Value;
-      } else RoleText.Text = "";
     }
 
     private void UpdateImages() {

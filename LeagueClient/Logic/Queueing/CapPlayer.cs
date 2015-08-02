@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,8 +9,8 @@ using MFroehlich.League.DataDragon;
 using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.Logic.Cap {
-  public class CapPlayer {
-    public event EventHandler PlayerUpdate;
+  public class CapPlayer : System.ComponentModel.INotifyPropertyChanged {
+    public event PropertyChangedEventHandler PropertyChanged;
 
     #region Properties
     public int SlotId { get; set; }
@@ -19,7 +20,10 @@ namespace LeagueClient.Logic.Cap {
         return timeout;
       }
       set {
-        timeout = value;
+        if(timeout != value) {
+          timeout = value;
+          PropertyChanged(this, new PropertyChangedEventArgs(nameof(Timeout)));
+        }
         TimeoutStart = DateTime.Now;
       }
     }
@@ -28,45 +32,57 @@ namespace LeagueClient.Logic.Cap {
     public ChampionDto Champion {
       get { return champion; }
       set {
-        champion = value;
-        if(PlayerUpdate != null) PlayerUpdate(this, new EventArgs());
+        if(champion != value) {
+          champion = value;
+          PropertyChanged(this, new PropertyChangedEventArgs(nameof(champion)));
+        }
       }
     }
     public SpellDto Spell1 {
       get { return spell1; }
       set {
-        spell1 = value;
-        if (PlayerUpdate != null) PlayerUpdate(this, new EventArgs());
+        if (spell1 != value) {
+          spell1 = value;
+          PropertyChanged(this, new PropertyChangedEventArgs(nameof(spell1)));
+        }
       }
     }
     public SpellDto Spell2 {
       get { return spell2; }
       set {
-        spell2 = value;
-        if (PlayerUpdate != null) PlayerUpdate(this, new EventArgs());
+        if (spell2 != value) {
+          spell2 = value;
+          PropertyChanged(this, new PropertyChangedEventArgs(nameof(spell2)));
+        }
       }
     }
 
     public Position Position {
       get { return position; }
       set {
-        position = value;
-        if (PlayerUpdate != null) PlayerUpdate(this, new EventArgs());
+        if (position != value) {
+          position = value;
+          PropertyChanged(this, new PropertyChangedEventArgs(nameof(position)));
+        }
       }
     }
     public Role Role {
       get { return role; }
       set {
-        role = value;
-        if (PlayerUpdate != null) PlayerUpdate(this, new EventArgs());
+        if (role != value) {
+          role = value;
+          PropertyChanged(this, new PropertyChangedEventArgs(nameof(role)));
+        }
       }
     }
 
     public CapStatus Status {
       get { return status; }
       set {
-        status = value;
-        if (PlayerUpdate != null) PlayerUpdate(this, new EventArgs());
+        if (status != value) {
+          status = value;
+          PropertyChanged(this, new PropertyChangedEventArgs(nameof(status)));
+        }
       }
     }
     #endregion
