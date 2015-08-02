@@ -21,7 +21,6 @@ namespace LeagueClient.ClientUI {
       InitializeComponent();
       BackAnimation.Source = new Uri(Client.LoginVideoPath);
       BackAnimation.Play();
-      UserBox.Focus();
       BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory,
         "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
       if ((AnimationToggle.IsChecked = Client.Settings.Animation).Value)
@@ -30,8 +29,8 @@ namespace LeagueClient.ClientUI {
         BackAnimation.Visibility = Visibility.Collapsed;
 
       UserBox.Text = Client.Settings.Username;
-      if (Client.Settings.Username.Length > 0) PassBox.Focus();
-      else UserBox.Focus();
+      if (Client.Settings.Username.Length > 0) App.Focus(PassBox);
+      else App.Focus(UserBox);
 
       if (Client.Settings.AutoLogin) {
         AutoLoginToggle.IsChecked = true;

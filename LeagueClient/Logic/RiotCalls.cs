@@ -24,10 +24,9 @@ namespace LeagueClient.Logic.Riot {
     public delegate void OnInvocationErrorHandler(object sender, Exception error);
     public static event OnInvocationErrorHandler OnInvocationError;
 
-    internal static Dictionary<string, Action<LcdsServiceProxyResponse>> Delegates { get; set; }
+    internal static Dictionary<string, Action<LcdsServiceProxyResponse>> Delegates { get; } = new Dictionary<string, Action<LcdsServiceProxyResponse>>();
 
     public static void AddHandler(Guid messageId, Action<LcdsServiceProxyResponse> del) {
-      if (Delegates == null) Delegates = new Dictionary<string, Action<LcdsServiceProxyResponse>>();
       Delegates.Add(messageId.ToString(), del);
     }
 
@@ -58,6 +57,14 @@ namespace LeagueClient.Logic.Riot {
       /// <returns>Returns the store URL</returns>
       public static Task<String> GetStoreUrl() {
         return InvokeAsync<String>("loginService", "getStoreUrl");
+      }
+
+      /// <summary>
+      /// Log out of Riot's servers
+      /// </summary>
+      /// <returns></returns>
+      public static Task Logout() {
+        return InvokeAsync<object>("loginService", "logout");
       }
     }
 
@@ -836,8 +843,8 @@ namespace LeagueClient.Logic.Riot {
       public static Guid CreateSoloQuery(CapPlayer player, string accessTokenStr = null) {
         var json = new JSONObject();
         json["championId"] = player.Champion.key;
-        json["role"] = player.Role.Id;
-        json["position"] = player.Position.Id;
+        json["role"] = player.Role.Key;
+        json["position"] = player.Position.Key;
         json["spell1Id"] = player.Spell1.key;
         json["spell2Id"] = player.Spell2.key;
         json["queueId"] = 61;
@@ -885,8 +892,8 @@ namespace LeagueClient.Logic.Riot {
       public static Guid RetrieveWaitTime(int champId, Role role, Position pos) {
         var json = new JSONObject();
         json["championId"] = champId;
-        json["role"] = role.Id;
-        json["position"] = pos.Id;
+        json["role"] = role.Key;
+        json["position"] = pos.Key;
         json["queuId"] = 61;
         return Invoke("retrieveEstimatedWaitTimeV2", json);
       }
@@ -913,14 +920,14 @@ namespace LeagueClient.Logic.Riot {
 
       public static Guid SelectAdvertisedPosition(Position pos, int slotId) {
         var json = new JSONObject();
-        json["advertisedPosition"] = pos.Id;
+        json["advertisedPosition"] = pos.Key;
         json["slotId"] = slotId;
         return Invoke("specifyAdvertisedPositionV1", json);
       }
 
       public static Guid SelectAdvertisedRole(Role role, int slotId) {
         var json = new JSONObject();
-        json["advertisedRole"] = role.Id;
+        json["advertisedRole"] = role.Key;
         json["slotId"] = slotId;
         return Invoke("specifyAdvertisedRoleV1", json);
       }
@@ -933,14 +940,14 @@ namespace LeagueClient.Logic.Riot {
 
       public static Guid PickPosition(Position pos, int slotId) {
         var json = new JSONObject();
-        json["position"] = pos.Id;
+        json["position"] = pos.Key;
         json["slotId"] = slotId;
         return Invoke("specifyPositionV2", json);
       }
 
       public static Guid PickRole(Role role, int slotId) {
         var json = new JSONObject();
-        json["role"] = role.Id;
+        json["role"] = role.Key;
         json["slotId"] = slotId;
         return Invoke("specifyRoleV2", json);
       }

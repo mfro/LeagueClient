@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MFroehlich.Parsing.DynamicJSON;
+using System.Xml;
 using MFroehlich.Parsing;
+using MFroehlich.Parsing.DynamicJSON;
+using static System.Reflection.CustomAttributeExtensions;
 
 namespace LeagueClient {
   public class Settings {
@@ -25,82 +27,41 @@ namespace LeagueClient {
                   where Attribute.IsDefined(p, typeof(SettingAttribute))
                   select p;
       foreach (var prop in props) {
-        var setting = prop.GetCustomAttributes(typeof(SettingAttribute), true)[0];
-        prop.SetValue(this, ((SettingAttribute) setting).DefaultValue);
+        var setting = prop.GetCustomAttribute<SettingAttribute>();
+        prop.SetValue(this, setting.DefaultValue);
       }
-      settingsFile = settingsfile;
+      this.settingsFile = settingsfile;
       if (File.Exists(settingsfile)) Load();
     }
 
     public void Save() {
       var props = from p in typeof(Settings).GetProperties()
                   where Attribute.IsDefined(p, typeof(SettingAttribute))
-                  where p.GetValue(this) != ((SettingAttribute) p.GetCustomAttributes(typeof(SettingAttribute), true)[0]).DefaultValue
                   select p;
-      using (var save = new FileStream(settingsFile, FileMode.Create)) {
-        foreach (var prop in props) {
-          var key = prop.Name;
-          var type = GetType(prop.GetValue(this));
-          save.WriteByte((byte) key.Length);
-          save.WriteString(key);
+      var doc = new XmlDocument();
+      doc.LoadXml("<Settings/>");
 
-          save.WriteByte((byte) type);
-          switch (type) {
-            case SettingType.String:
-              var str = (string) prop.GetValue(this);
-              save.WriteInt(str.Length);
-              save.WriteString(str);
-              break;
-            case SettingType.True:
-            case SettingType.False: break;
-            case SettingType.Bytes:
-              var bytes = (byte[]) prop.GetValue(this);
-              save.WriteInt(bytes.Length);
-              save.Write(bytes);
-              break;
-          }
-        }
-        save.WriteByte(0);
+      foreach (var prop in props) {
+        var node = doc.CreateElement("Setting");
+        node.SetAttribute("Name", prop.Name);
+        var value = prop.GetValue(this);
+        if (value is bool || value is string) node.SetAttribute("Value", value.ToString());
+        else if(value is byte[]) node.SetAttribute("Value", Convert.ToBase64String((byte[]) value));
+        doc.DocumentElement.AppendChild(node);
       }
-      //var json = new JSONObject();
-      //var props = from p in typeof(Settings).GetProperties()
-      //            where Attribute.IsDefined(p, typeof(SettingAttribute))
-      //            select p;
-      //foreach (var prop in props) {
-      //  var setting = prop.GetCustomAttributes(typeof(SettingAttribute), true)[0];
-      //  if(prop.GetValue(this) != ((SettingAttribute) setting).DefaultValue)
-      //    json.Add(prop.Name, prop.GetValue(this));
-      //}
-      //File.WriteAllBytes(settingsFile, MFroFormat.Serialize(json));
+
+      doc.Save(settingsFile);
     }
 
     private void Load() {
-      using (var load = new FileStream(settingsFile, FileMode.Open)) {
-        int len;
-        while ((len = load.ReadByte()) > 0) {
-          var bytes = new byte[len];
-          load.ReadFully(bytes, 0, bytes.Length);
-          var key = Encoding.UTF8.GetString(bytes);
-          var prop = typeof(Settings).GetProperty(key);
-          if (prop == null) continue;
-          var type = (SettingType) load.ReadByte();
-          switch (type) {
-            case SettingType.String:
-              int length = load.ReadInt();
-              bytes = new byte[length];
-              load.ReadFully(bytes, 0, length);
-              prop.SetValue(this, Encoding.UTF8.GetString(bytes));
-              break;
-            case SettingType.True: prop.SetValue(this, true); break;
-            case SettingType.False: prop.SetValue(this, false); break;
-            case SettingType.Bytes:
-              length = load.ReadInt();
-              bytes = new byte[length];
-              load.ReadFully(bytes, 0, length);
-              prop.SetValue(this, bytes);
-              break;
-          }
-        }
+      var doc = new XmlDocument();
+      doc.Load(settingsFile);
+
+      foreach(XmlElement node in doc.DocumentElement.ChildNodes) {
+        var prop = GetType().GetProperty(node.Attributes["Name"].Value);
+        if (prop.PropertyType == typeof(string)) prop.SetValue(this, node.Attributes["Value"].Value);
+        else if (prop.PropertyType == typeof(bool)) prop.SetValue(this, bool.Parse(node.Attributes["Value"].Value));
+        else if (prop.PropertyType == typeof(byte[])) prop.SetValue(this, Convert.FromBase64String(node.Attributes["Value"].Value));
       }
     }
 

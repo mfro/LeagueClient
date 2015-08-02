@@ -144,15 +144,19 @@ namespace LeagueClient.Logic.Chat {
     void OnChatOpen(string user) {
       foreach (var chat in OpenChats)
         if (!chat.User.Equals(user)) chat.Open = false;
-        else FocusManager.SetFocusedElement(Client.MainWindow, chat);
+        else App.Focus(chat.ChatSendBox);
     }
 
     void OnChatClose(string user) {
-      Client.Log(OpenChats.Remove(Friends[user].Conversation));
+      Friends[user].Conversation.Open = false;
+      OpenChats.Remove(Friends[user].Conversation);
     }
 
     void OnReceiveMessage(object sender, Message msg) {
       string user = msg.From.User;
+      if (msg.From.User.Equals(msg.To.User)) {
+        return;
+      }
       App.Current.Dispatcher.Invoke(() => {
         var convo = Friends[user].Conversation;
         if (!OpenChats.Contains(convo)) {
@@ -162,15 +166,13 @@ namespace LeagueClient.Logic.Chat {
         if(!convo.Open){
           convo.Unread = true;
         }
-        convo.History +=
-        string.Format("[{0}]: {1}\n", Users[user].Nickname, msg.Body);
+        convo.History += $"[{Users[user].Nickname}]: {msg.Body}\n";
       });
     }
 
     void OnSendMessage(string user, string msg) {
       conn.Message(user + "@pvp.net", msg);
-      Friends[user].Conversation.History +=
-        string.Format("[{0}]: {1}\n", Client.LoginPacket.AllSummonerData.Summoner.Name, msg);
+      Friends[user].Conversation.History += $"[{Client.LoginPacket.AllSummonerData.Summoner.Name}]: {msg}\n";
     }
 
     void OnRosterItem(object sender, jabber.protocol.iq.Item item) {

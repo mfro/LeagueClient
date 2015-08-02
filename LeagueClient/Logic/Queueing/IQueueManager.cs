@@ -14,17 +14,12 @@ namespace LeagueClient.Logic.Queueing {
     /// </summary>
     /// <param name="queuer">The queue manager</param>
     void ShowQueuer(IQueuer queuer);
-    /// <summary>
-    /// Shows a queue alert popup in the modal dialog area
-    /// </summary>
-    /// <param name="popup">The queue alert</param>
-    void ShowQueuePopPopup(IQueuePopup popup);
-    /// <summary>
-    /// Enters a standard queue
-    /// </summary>
-    /// <param name="queue">The queue to join</param>
-    /// <param name="bots">Optional bot difficulty paramter</param>
-    void JoinQueue(GameQueueConfig queue, string bots = null);
+    ///// <summary>
+    ///// Enters a standard queue
+    ///// </summary>
+    ///// <param name="queue">The queue to join</param>
+    ///// <param name="bots">Optional bot difficulty paramter</param>
+    //void JoinQueue(GameQueueConfig queue, string bots = null);
     /// <summary>
     /// Creates a standard queue lobby
     /// </summary>

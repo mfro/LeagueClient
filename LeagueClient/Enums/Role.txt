@@ -1,0 +1,7 @@
+﻿SUPPORT = Support
+MAGE = Mage
+MARKSMAN = Marksman
+ASSASSIN = Assassin
+FIGHTER = Fighter
+TANK = Tank
+ANY = Any

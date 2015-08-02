@@ -23,7 +23,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for TeambuilderSoloQueueHandler.xaml
   /// </summary>
   public partial class CapSoloQueuer : UserControl, IQueuer {
-    public event EventHandler Popped;
+    public event QueuePoppedEventHandler Popped;
 
     private Timer timer;
     private DateTime start;
@@ -33,6 +33,9 @@ namespace LeagueClient.ClientUI.Controls {
       this.player = player;
       Client.MessageReceived += Client_MessageReceived;
       InitializeComponent();
+      QueryPane.DataContext = player;
+      PositionText.Text = player.Position.Value;
+      RoleText.Text = player.Role.Value;
       ElapsedText.Text = "0:00";
       start = DateTime.Now;
       timer = new Timer(1000);
@@ -51,10 +54,10 @@ namespace LeagueClient.ClientUI.Controls {
       if (response != null) {
         switch (response.methodName) {
           case "acceptedByGroupV2":
-            if (Popped != null) Popped(this, new EventArgs());
-            Client.MessageReceived -= Client_MessageReceived;
             timer.Dispose();
-            Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopPopup(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player)));
+            e.Handled = true;
+            Client.MessageReceived -= Client_MessageReceived;
+            Dispatcher.Invoke(() => Popped?.Invoke(this, new QueuePoppedEventArgs(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player))));
             break;
         }
       }
@@ -64,12 +67,21 @@ namespace LeagueClient.ClientUI.Controls {
       return this;
     }
 
-    private void Info_Enter(object sender, MouseEventArgs e) {
-
+    private void This_MouseEnter(object sender, MouseEventArgs e) {
+      QueryPane.BeginStoryboard(App.FadeIn);
+      QueuePane.BeginStoryboard(App.FadeOut);
     }
 
-    private void Info_Leave(object sender, MouseEventArgs e) {
+    private void This_MouseLeave(object sender, MouseEventArgs e) {
+      QueuePane.BeginStoryboard(App.FadeIn);
+      QueryPane.BeginStoryboard(App.FadeOut);
+    }
 
+    private void Cancel_Click(object sender, RoutedEventArgs e) {
+      timer.Dispose();
+      Client.MessageReceived -= Client_MessageReceived;
+      Logic.Riot.RiotCalls.CapService.Quit();
+      Popped?.Invoke(this, new QueuePoppedEventArgs(null));
     }
   }
 }

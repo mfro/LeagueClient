@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="LeagueClient.ClientUI.Controls.CapOtherPlayer"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <Grid Width="400" Height="56">
     <Grid Name="Filled" Height="auto">
       <Grid.ColumnDefinitions>
@@ -17,19 +18,19 @@
         </Grid.ColumnDefinitions>
         <Border Name="ChampBorder" BorderBrush="{StaticResource ForeBrush}"
               BorderThickness="2" Height="56">
-          <Image Name="ChampImage"/>
+          <Image Source="{Binding Player.ChampionImage}"/>
         </Border>
         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource Control}"
                    FontSize="50" Name="Unknown">?</TextBlock>
         <Border Name="Spell1Border" BorderBrush="{StaticResource ForeBrush}"
               BorderThickness="2" Grid.Column="2" VerticalAlignment="Top"
               Height="26">
-          <Image Name="Spell1Image"/>
+          <Image Source="{Binding Player.Spell1Image}"/>
         </Border>
         <Border Name="Spell2Border" BorderBrush="{StaticResource ForeBrush}"
               BorderThickness="2" Grid.Column="2" VerticalAlignment="Bottom"
               Height="26">
-          <Image Name="Spell2Image"/>
+          <Image Source="{Binding Player.Spell2Image}"/>
         </Border>
       </Grid>
       <TextBlock Style="{StaticResource Control}" Name="SummonerText" Grid.Column="3" Margin="0 0 0 22"

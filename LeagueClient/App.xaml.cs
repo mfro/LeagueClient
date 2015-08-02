@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing;
 
 namespace LeagueClient {
@@ -42,8 +43,16 @@ namespace LeagueClient {
       } catch { }
     }
 
+    public static void Focus(UIElement el) {
+      App.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, new Action(() => {
+        el.Focus();
+        System.Windows.Input.Keyboard.Focus(el);
+      }));
+    }
+
     private void Application_Exit(object sender, ExitEventArgs e) {
       Client.Settings.Save();
+      RiotCalls.LoginService.Logout();
     }
   }
 

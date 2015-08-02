@@ -30,10 +30,10 @@ namespace LeagueClient.ClientUI.Main {
 
     public CapSoloPage() {
       InitializeComponent();
-      ChampSelector.Champions = Client.AvailableChampions;
-      SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
-                              where spell.modes.Contains("CLASSIC")
-                              select spell);
+      Popup.ChampSelector.Champions = Client.AvailableChampions;
+      Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
+                                    where spell.modes.Contains("CLASSIC")
+                                    select spell);
 
       Player.Editable = true;
       Player.PlayerUpdate += PlayerUpdate;
@@ -41,6 +41,9 @@ namespace LeagueClient.ClientUI.Main {
       Player.Spell1Clicked += Spell1_Click;
       Player.Spell2Clicked += Spell2_Click;
       Player.MasteryClicked += Player_MasteryClicked;
+
+      Popup.SpellSelector.SpellSelected += Spell_Select;
+      Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
     }
 
     private void PlayerUpdate(object sender, EventArgs e) {
@@ -51,48 +54,43 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void Player_MasteryClicked(object src, EventArgs args) {
-      ChampPopup.BeginStoryboard(App.FadeIn);
-      MasteryEditor.Reset();
-      ChampSelector.Visibility = System.Windows.Visibility.Collapsed;
-      MasteryEditor.Visibility = System.Windows.Visibility.Visible;
+      Popup.BeginStoryboard(App.FadeIn);
+      Popup.CurrentSelector = PopupSelector.Selector.Masteries;
     }
 
     private void Spell1_Click(object src, EventArgs args) {
       spell1 = true;
-      SpellPopup.BeginStoryboard(App.FadeIn);
+      Popup.BeginStoryboard(App.FadeIn);
+      Popup.CurrentSelector = PopupSelector.Selector.Spells;
     }
 
     private void Spell2_Click(object src, EventArgs args) {
       spell1 = false;
-      SpellPopup.BeginStoryboard(App.FadeIn);
+      Popup.BeginStoryboard(App.FadeIn);
+      Popup.CurrentSelector = PopupSelector.Selector.Spells;
     }
 
     private void Champion_Click(object src, EventArgs args) {
-      ChampSelector.UpdateChampList();
-      ChampPopup.BeginStoryboard(App.FadeIn);
-      ChampSelector.Visibility = System.Windows.Visibility.Visible;
-      MasteryEditor.Visibility = System.Windows.Visibility.Collapsed;
+      Popup.BeginStoryboard(App.FadeIn);
+      Popup.CurrentSelector = PopupSelector.Selector.Champions;
     }
 
-    private void ChampionPopup_Close(object sender, RoutedEventArgs e) {
-      ChampPopup.BeginStoryboard(App.FadeOut);
-      MasteryEditor.Save().Wait();
-      Player.UpdateMasteries();
+    private void Popup_Close(object sender, EventArgs e) {
+      Popup.BeginStoryboard(App.FadeOut);
+      Popup.MasteryEditor.Save().Wait();
+      Player.UpdateBooks();
     }
 
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-      Player.CapPlayer.Champion = ChampSelector.SelectedChampion;
+      Player.CapPlayer.Champion = Popup.ChampSelector.SelectedChampion;
       Player.Skin = e;
-      ChampionPopup_Close(sender, null);
+      Popup_Close(sender, null);
     }
 
     private void Spell_Select(object sender, SpellDto spell) {
-      if (spell1) {
-        Player.CapPlayer.Spell1 = spell;
-      } else {
-        Player.CapPlayer.Spell2 = spell;
-      }
-      SpellPopup.BeginStoryboard(App.FadeOut);
+      if (spell1) Player.CapPlayer.Spell1 = spell;
+      else Player.CapPlayer.Spell2 = spell;
+      Popup.BeginStoryboard(App.FadeOut);
     }
 
     private void EnterQueue(object sender, RoutedEventArgs e) {

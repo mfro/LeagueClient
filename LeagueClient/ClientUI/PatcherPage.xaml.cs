@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using MFroehlich.League.Assets;
 
@@ -15,7 +16,8 @@ namespace LeagueClient.ClientUI {
 
       LeagueData.InitalizeProgressed += (s, d, p) =>
         Dispatcher.BeginInvoke(new LeagueData.ProgressHandler(LeagueData_Progress), new object[] { s, d, p });
-      LeagueData.Update();
+      if (!LeagueData.IsCurrent) LeagueData.Update();
+      else LoginPageUI();
     }
 
     void LeagueData_Progress(string status, string detail, double progress) {
@@ -24,15 +26,9 @@ namespace LeagueClient.ClientUI {
         case "Downloading": OverallStatusBar.Value = .0; break;
         case "Extracting": OverallStatusBar.Value = .25; break;
         case "Installing": OverallStatusBar.Value = .50; break;
-        case "done":
-          OverallStatusBar.Value = .75;
-          CurrentStatusText.Text = "Creating Login Animation...";
-          CurrentStatusProgress.Text = "";
-          CurrentStatusBar.IsIndeterminate = true;
-          new System.Threading.Thread(CreateLoginPage).Start();
-          return;
+        case "done": LoginPageUI(); return;
       }
-      CurrentStatusText.Text = string.Format("{0} {1}...", status, detail);
+      CurrentStatusText.Text = $"{status} {detail}...";
       CurrentStatusBar.Value = progress;
       if (progress < 0) {
         CurrentStatusProgress.Text = "";
@@ -41,6 +37,14 @@ namespace LeagueClient.ClientUI {
         CurrentStatusProgress.Text = (progress * 100).ToString("f1") + "%";
         CurrentStatusBar.IsIndeterminate = false;
       }
+    }
+
+    void LoginPageUI() {
+      OverallStatusBar.Value = .75;
+      CurrentStatusText.Text = "Creating Login Animation...";
+      CurrentStatusProgress.Text = "";
+      CurrentStatusBar.IsIndeterminate = true;
+      new System.Threading.Thread(CreateLoginPage).Start();
     }
 
     void CreateLoginPage() {
@@ -55,6 +59,10 @@ namespace LeagueClient.ClientUI {
         Process.Start(info).WaitForExit();
       }
       Dispatcher.Invoke(Client.MainWindow.PatchComplete);
+    }
+
+    public static bool NeedsPatch() {
+      return !File.Exists(Client.LoginVideoPath) || !LeagueData.IsCurrent;
     }
   }
 }

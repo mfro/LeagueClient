@@ -95,16 +95,12 @@ namespace LeagueClient.ClientUI.Controls {
       if (Game == null) return;
       if (GameInfo == null) {
         long time = Status.TimeStamp - Client.GetMilliseconds();
-        InGameText.Text = string.Format("In {0} for ~{1}",
-          Strings.Queues[Game.QueueTypeName],
-          TimeSpan.FromMilliseconds(time).ToString("m\\:ss"));
+        InGameText.Text = $"In {QueueType.Values[Game.QueueTypeName]} for ~{TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
       } else if (GameInfo.gameStartTime == 0) {
-        InGameText.Text = "Loading into " + Strings.Queues[Game.QueueTypeName];
+        InGameText.Text = "Loading into " + QueueType.Values[Game.QueueTypeName];
       } else {
         long time = GameInfo.gameStartTime - Client.GetMilliseconds();
-        InGameText.Text = string.Format("In {0} for {1}",
-          Strings.Queues[Game.QueueTypeName],
-          TimeSpan.FromMilliseconds(time).ToString("m\\:ss"));
+        InGameText.Text = $"In {QueueType.Values[Game.QueueTypeName]} for {TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
       }
     }
 

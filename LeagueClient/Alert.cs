@@ -19,7 +19,7 @@ namespace LeagueClient {
     }
 
     public void ReactYesNo(bool yesno) {
-      if(Reacted != null) Reacted(this, yesno);
+      Reacted?.Invoke(this, yesno);
     }
 
     public enum Priority {

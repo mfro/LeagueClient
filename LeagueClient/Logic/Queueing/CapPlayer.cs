@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using static LeagueClient.Logic.Strings;
 
@@ -16,14 +18,9 @@ namespace LeagueClient.Logic.Cap {
     public int SlotId { get; set; }
     public string Name { get; set; }
     public Duration Timeout {
-      get {
-        return timeout;
-      }
+      get { return timeout; }
       set {
-        if(timeout != value) {
-          timeout = value;
-          PropertyChanged(this, new PropertyChangedEventArgs(nameof(Timeout)));
-        }
+        SetField(ref timeout, value);
         TimeoutStart = DateTime.Now;
       }
     }
@@ -31,60 +28,34 @@ namespace LeagueClient.Logic.Cap {
 
     public ChampionDto Champion {
       get { return champion; }
-      set {
-        if(champion != value) {
-          champion = value;
-          PropertyChanged(this, new PropertyChangedEventArgs(nameof(champion)));
-        }
-      }
+      set { SetField(ref champion, value); }
     }
     public SpellDto Spell1 {
       get { return spell1; }
-      set {
-        if (spell1 != value) {
-          spell1 = value;
-          PropertyChanged(this, new PropertyChangedEventArgs(nameof(spell1)));
-        }
-      }
+      set { SetField(ref spell1, value); }
     }
     public SpellDto Spell2 {
       get { return spell2; }
-      set {
-        if (spell2 != value) {
-          spell2 = value;
-          PropertyChanged(this, new PropertyChangedEventArgs(nameof(spell2)));
-        }
-      }
+      set { SetField(ref spell2, value); }
     }
 
     public Position Position {
       get { return position; }
-      set {
-        if (position != value) {
-          position = value;
-          PropertyChanged(this, new PropertyChangedEventArgs(nameof(position)));
-        }
-      }
+      set { SetField(ref position, value); }
     }
     public Role Role {
       get { return role; }
-      set {
-        if (role != value) {
-          role = value;
-          PropertyChanged(this, new PropertyChangedEventArgs(nameof(role)));
-        }
-      }
+      set { SetField(ref role, value); }
     }
 
     public CapStatus Status {
       get { return status; }
-      set {
-        if (status != value) {
-          status = value;
-          PropertyChanged(this, new PropertyChangedEventArgs(nameof(status)));
-        }
-      }
+      set { SetField(ref status, value); }
     }
+
+    public BitmapImage ChampionImage => Champion != null ? LeagueData.GetChampIconImage(Champion.id) : null;
+    public BitmapImage Spell1Image => Spell1 != null ? LeagueData.GetSpellImage(Spell1.id) : null;
+    public BitmapImage Spell2Image => Spell2 != null ? LeagueData.GetSpellImage(Spell2.id) : null;
     #endregion
 
     private ChampionDto champion;
@@ -96,12 +67,19 @@ namespace LeagueClient.Logic.Cap {
     private CapStatus status;
     private Duration timeout;
 
+    private void SetField<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string name = null) {
+      field = value;
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+      if (GetType().GetProperty(name + "Image") != null)
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name + "Image"));
+    }
+
     public bool CanBeReady() {
       return !(Champion == null || Spell1 == null || Spell2 == null || Position == null || Role == null);
     }
   }
 
   public enum CapStatus {
-    Present, Ready, Searching, Choosing, Maybe, Penalty, SearchingDeclined
+    Present, Ready, Searching, Choosing, Found, Penalty, SearchingDeclined
   }
 }

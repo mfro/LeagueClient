@@ -33,7 +33,7 @@ namespace LeagueClient {
 
       InitializeComponent();
       ((App) App.Current).LoadResources();
-      if (LeagueData.IsCurrent) {
+      if (!PatcherPage.NeedsPatch()) {
         PatchComplete();
       } else
         Content = new PatcherPage();

@@ -27,7 +27,7 @@ namespace LeagueClient {
 
     internal static readonly string
       DataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MFro\LeagueClient\",
-      SettingsFile = Path.Combine(DataPath, "settings.mfro"),
+      SettingsFile = Path.Combine(DataPath, "settings.xml"),
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
       LoginVideoPath = Path.Combine(DataPath, "login.mp4"),
       LogFilePath = Path.Combine(DataPath, "log.txt");
@@ -91,7 +91,7 @@ namespace LeagueClient {
 
       var parents = new[] { AirClientParentDir, GameClientParentDir };
 
-      for(int i = 0; i < parents.Length; i++) {
+      for (int i = 0; i < parents.Length; i++) {
         var versions = Directory.EnumerateDirectories(Path.Combine(parents[i], "releases"));
         Version newest = new Version(0, 0, 0, 0);
         foreach (var dir in versions) {
@@ -121,10 +121,10 @@ namespace LeagueClient {
       var theme = File.ReadAllText(Path.Combine(AirDirectory, "theme.properties"));
       LoginTheme = theme.Substring("themeConfig=", ",");
 
-      if(!File.Exists(FFMpegPath))
-      using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
-        ffmpeg.Write(LeagueClient.Properties.Resources.ffmpeg, 0,
-          LeagueClient.Properties.Resources.ffmpeg.Length);
+      if (!File.Exists(FFMpegPath))
+        using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
+          ffmpeg.Write(LeagueClient.Properties.Resources.ffmpeg, 0,
+            LeagueClient.Properties.Resources.ffmpeg.Length);
     }
 
     public static async Task<bool> Initialize(string user, string pass) {
@@ -158,6 +158,9 @@ namespace LeagueClient {
       LoginPacket = await RiotCalls.ClientFacadeService.GetLoginDataPacketForUser();
       string state = await RiotCalls.AccountService.GetAccountState();
 
+      foreach (var item in LoginPacket.ClientSystemStates.observableGameModes)
+        Client.Log(item);
+
       new System.Threading.Thread(() => {
         RiotCalls.MatchmakerService.GetAvailableQueues()
           .ContinueWith(q => AvailableQueues = q.Result);
@@ -187,7 +190,7 @@ namespace LeagueClient {
     public static void JoinGame(PlayerCredentialsDto creds) {
       //"8394" "LoLLauncher.exe" "" "ip port key id"
       var info = new ProcessStartInfo(Path.Combine(GameClientParentDir, "League of Legends.exe"));
-      var str = string.Format("{0} {1} {2} {3}", creds.ServerIp, creds.ServerPort, creds.EncryptionKey, creds.SummonerId);
+      var str = $"{creds.ServerIp} {creds.ServerPort} {creds.EncryptionKey} {creds.SummonerId}";
       info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLLauncher.exe", "", str);
       GameProcess = Process.Start(info);
     }
@@ -224,27 +227,29 @@ namespace LeagueClient {
       if (MessageReceived != null) MessageReceived(sender, args);
       if (args.Handled) return;
 
-      var config = e.Body as ClientDynamicConfigurationNotification;
-      var response = e.Body as LcdsServiceProxyResponse;
-      var invite = e.Body as InvitationRequest;
-      if (config != null) {
-        Log("Received Configuration Notification");
-      } else if (response != null) {
-        if (response.status.Equals("ACK"))
-          Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
-        else if (RiotCalls.Delegates.ContainsKey(response.messageId)) {
-          RiotCalls.Delegates[response.messageId](response);
-          RiotCalls.Delegates.Remove(response.messageId);
+      ClientDynamicConfigurationNotification config;
+      LcdsServiceProxyResponse response;
+      InvitationRequest invite;
+      try {
+        if ((config = e.Body as ClientDynamicConfigurationNotification) != null) {
+          Log("Received Configuration Notification");
+        } else if ((response = e.Body as LcdsServiceProxyResponse) != null) {
+          if (response.status.Equals("ACK"))
+            Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
+          else if (response.messageId != null && RiotCalls.Delegates.ContainsKey(response.messageId)) {
+            RiotCalls.Delegates[response.messageId](response);
+            RiotCalls.Delegates.Remove(response.messageId);
+          } else {
+            Log("Unhandled LCDS response of method {0} [{1}]", response.methodName, response.messageId);
+          }
+        } else if ((invite = e.Body as InvitationRequest) != null) {
+          RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => {
+            RiotCalls.CapService.JoinGroupAsInvitee("hi");
+          });
         } else {
-          Log("Unhandled LCDS response of method {0} [{1}]", response.methodName, response.messageId);
+          Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
         }
-      }else if(invite != null) {
-        RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => {
-          RiotCalls.CapService.JoinGroupAsInvitee("hi");
-        });
-      } else {
-        Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
-      }
+      } catch (Exception x) { TryBreak(x.Message); }
     }
 
     public static void TryBreak(string reason) {
@@ -252,13 +257,13 @@ namespace LeagueClient {
       if (Debugger.IsAttached) Debugger.Break();
     }
 
-    private static StreamWriter LogFile = new StreamWriter(File.Open(LogFilePath, FileMode.Append));
     private static TextWriter LogDebug = Console.Out;
 
     public static void Log(object msg) {
-      LogDebug.WriteLine(msg);
-      LogFile.WriteLine(msg);
-      LogFile.Flush();
+      using (var log = new StreamWriter(File.Open(LogFilePath, FileMode.Append))) {
+        LogDebug.WriteLine(msg);
+        log.WriteLine(msg);
+      }
     }
 
     public static void Log(string msg, params object[] args) {

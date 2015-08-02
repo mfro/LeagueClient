@@ -57,6 +57,8 @@ namespace LeagueClient.ClientUI.Main {
     private bool chatOpen;
     private bool alertsOpen;
     private Button PlayButton = new Button { Content = "Play", FontSize = 18 };
+    private IQueuer CurrentQueuer;
+    private IQueuePopup CurrentPopup;
 
     public ClientPage() {
       PlayButton.Click += Play_Click;
@@ -71,14 +73,6 @@ namespace LeagueClient.ClientUI.Main {
       OpenChatList.ItemsSource = Client.ChatManager.OpenChats;
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
-    }
-
-    public void JoinQueue(GameQueueConfig queue, string bots) {
-      Client.Log("");
-      foreach (var field in queue.GetType().GetProperties()) {
-        Client.Log(field.Name + ": " + field.GetValue(queue));
-      }
-      //TODO Queueing
     }
 
     public void CreateLobby(GameQueueConfig queue, string bots) {
@@ -103,14 +97,9 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void ShowQueuer(IQueuer Queuer) {
-      Queuer.Popped += (src, e) => Dispatcher.Invoke(() => StatusPanel.Child = null);
+      CurrentQueuer = Queuer;
+      Queuer.Popped += Queue_Popped;
       StatusPanel.Child = Queuer.GetControl();
-    }
-
-    public void ShowQueuePopPopup(IQueuePopup popup) {
-      popup.Accepted += QueuePopupClose;
-      popup.Cancelled += QueuePopupClose;
-      ShowPopup(popup.GetControl());
     }
 
     public void ShowNotification(Alert alert) {
@@ -118,6 +107,19 @@ namespace LeagueClient.ClientUI.Main {
         Alerts.Add(alert);
         AlertButton.BeginStoryboard(App.FadeIn);
       });
+    }
+
+    private void Queue_Popped(object src, QueuePoppedEventArgs args) {
+      StatusPanel.Child = null;
+      CurrentQueuer = null;
+      CurrentPopup = args.QueuePopup;
+      if (CurrentPopup == null) {
+        PlayButton.IsEnabled = true;
+        return;
+      }
+      CurrentPopup.Accepted += QueuePopupClose;
+      CurrentPopup.Cancelled += QueuePopupClose;
+      Dispatcher.Invoke(() => ShowPopup(CurrentPopup.GetControl()));
     }
 
     private void ShowSubPage(IClientSubPage page) {
@@ -133,6 +135,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void QueuePopupClose(object src, EventArgs arg) {
+      CurrentPopup = null;
       Dispatcher.Invoke(() => PopupPanel.Visibility = Visibility.Collapsed);
     }
 
@@ -159,7 +162,8 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Home_Click(object sender, RoutedEventArgs e) {
       PlayControl.Child = PlayButton;
-      PlayButton.IsEnabled = true;
+      if (CurrentQueuer == null)
+        PlayButton.IsEnabled = true;
       CloseSubPage();
     }
 

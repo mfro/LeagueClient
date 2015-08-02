@@ -23,35 +23,31 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for TeambuilderPlayer.xaml
   /// </summary>
   public partial class CapOtherPlayer : UserControl {
-    public CapPlayer State { get; private set; }
+    public CapPlayer Player { get; private set; }
 
     public CapOtherPlayer(CapPlayer player) {
+      Player = player;
       InitializeComponent();
-      State = player;
-      State.PropertyChanged += (s, e) => Dispatcher.Invoke(PlayerUpdate);
+      Player.PropertyChanged += (s, e) => Dispatcher.Invoke(PlayerUpdate);
       Unknown.Visibility = Visibility.Collapsed;
       PlayerUpdate();
     }
 
     private void PlayerUpdate() {
-      if (State.Position != null) {
-        RoleText.Text = State.Position.Value;
-        if (State.Role != null) RoleText.Text += " / " + State.Role.Value;
-      } else if (State.Role != null) {
-        RoleText.Text = State.Role.Value;
+      if (Player.Position != null) {
+        RoleText.Text = Player.Position.Value;
+        if (Player.Role != null) RoleText.Text += " / " + Player.Role.Value;
+      } else if (Player.Role != null) {
+        RoleText.Text = Player.Role.Value;
       } else RoleText.Text = "";
 
-      ChampImage.Source = null;
-      Spell1Image.Source = null;
-      Spell2Image.Source = null;
       Check.Visibility = Visibility.Collapsed;
-      switch (State.Status) {
+      switch (Player.Status) {
         case CapStatus.Ready:
           Check.Visibility = Visibility.Visible;
           goto case CapStatus.Present;
         case CapStatus.Present:
-          SummonerText.Text = State.Name;
-          UpdateImages();
+          SummonerText.Text = Player.Name;
           break;
         case CapStatus.Penalty:
           SummonerText.Text = "Player kicked.";
@@ -62,19 +58,12 @@ namespace LeagueClient.ClientUI.Controls {
         case CapStatus.SearchingDeclined:
           SummonerText.Text = "The player was not found, searching for another candidate...";
           break;
-        case CapStatus.Maybe:
+        case CapStatus.Found:
           SummonerText.Text = "A candidate has been found.";
-          UpdateImages();
           break;
         case CapStatus.Choosing:
           break;//TODO
       }
-    }
-
-    private void UpdateImages() {
-      if (State.Champion != null) ChampImage.Source = LeagueData.GetChampIconImage(State.Champion.id);
-      if (State.Spell1 != null) Spell1Image.Source = LeagueData.GetSpellImage(State.Spell1.id);
-      if (State.Spell2 != null) Spell2Image.Source = LeagueData.GetSpellImage(State.Spell2.id);
     }
   }
 }
