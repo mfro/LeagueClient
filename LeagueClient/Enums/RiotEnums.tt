@@ -14,6 +14,8 @@ namespace LeagueClient.Logic {
 
 #>
 	public class <#= e #> {
+    public static readonly Dictionary<string, <#= e #>> Values = new Dictionary<string, <#= e #>>();
+
     public static readonly <#= e #>
 <#
 		var filename = this.Host.ResolvePath(e + ".txt");
@@ -26,8 +28,6 @@ namespace LeagueClient.Logic {
 			else WriteLine(";");
 		}
 #>
-
-    public static readonly Dictionary<string, <#= e #>> Values = new Dictionary<string, <#= e #>>();
 
     public string Key { get; private set; }
     public string Value { get; private set; }

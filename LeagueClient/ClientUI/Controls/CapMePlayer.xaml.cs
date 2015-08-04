@@ -61,8 +61,8 @@ namespace LeagueClient.ClientUI.Controls {
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
 
       CapPlayer.PropertyChanged += (s, e) => Dispatcher.Invoke((Action<string>) UpdateChild, e.PropertyName);
-      PositionBox.ItemsSource = Position.Values.Values; //new string[] { "Top Lane", "Middle Lane", "Bottom Lane", "Jungle" };
-      RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY); //new string[] { "Assassin", "Fighter", "Mage", "Marksman", "Support", "Tank" };
+      PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED); ; //new string[] { "Top Lane", "Middle Lane", "Bottom Lane", "Jungle" };
+      RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED); //new string[] { "Assassin", "Fighter", "Mage", "Marksman", "Support", "Tank" };
       UpdateBooks();
     }
 

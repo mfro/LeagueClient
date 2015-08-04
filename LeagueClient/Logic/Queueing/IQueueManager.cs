@@ -52,6 +52,10 @@ namespace LeagueClient.Logic.Queueing {
     /// <param name="groupId">The ID of the teambuilder group</param>
     /// <param name="slotId">The slot to join</param>
     /// <param name="player">The teambuilder information of the solo query</param>
-    void JoinCapLobby(string groupId, int slotId, CapPlayer player);
+    void JoinCapLobby(CapPlayer player);
+    /// <summary>
+    /// Joins a teambuilder lobby and displays it
+    /// </summary>
+    void JoinCapLobby();
   }
 }

@@ -14,6 +14,7 @@ using RtmpSharp.IO;
 using RtmpSharp.Messaging;
 using RtmpSharp.Net;
 using MyChampDTO = MFroehlich.League.DataDragon.ChampionDto;
+using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient {
   public static class Client {
@@ -158,9 +159,6 @@ namespace LeagueClient {
       LoginPacket = await RiotCalls.ClientFacadeService.GetLoginDataPacketForUser();
       string state = await RiotCalls.AccountService.GetAccountState();
 
-      foreach (var item in LoginPacket.ClientSystemStates.observableGameModes)
-        Client.Log(item);
-
       new System.Threading.Thread(() => {
         RiotCalls.MatchmakerService.GetAvailableQueues()
           .ContinueWith(q => AvailableQueues = q.Result);
@@ -240,12 +238,12 @@ namespace LeagueClient {
             RiotCalls.Delegates[response.messageId](response);
             RiotCalls.Delegates.Remove(response.messageId);
           } else {
-            Log("Unhandled LCDS response of method {0} [{1}]", response.methodName, response.messageId);
+            Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
           }
         } else if ((invite = e.Body as InvitationRequest) != null) {
-          RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => {
-            RiotCalls.CapService.JoinGroupAsInvitee("hi");
-          });
+          var payload = JSON.ParseObject(invite.GameMetaData);
+          RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
+          App.Current.Dispatcher.Invoke(() => QueueManager.JoinCapLobby());
         } else {
           Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
         }

@@ -5,3 +5,4 @@ ASSASSIN = Assassin
 FIGHTER = Fighter
 TANK = Tank
 ANY = Any
+UNSELECTED = Unselected

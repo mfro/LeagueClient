@@ -47,7 +47,8 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
       if (Accepted != null) Accepted(this, new EventArgs());
-      Client.QueueManager.JoinCapLobby((string) payload["groupId"], (int) payload["slotId"], player);
+      RiotCalls.CapService.IndicateGroupAcceptanceAsCandidate((int) payload["slotId"], true, (string) payload["groupId"]);
+      Client.QueueManager.JoinCapLobby(player);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {

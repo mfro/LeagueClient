@@ -42,7 +42,6 @@ namespace LeagueClient.ClientUI.Main {
 
     public CapLobbyPage() {
       InitializeComponent();
-      MySlotId = 0;
       me = new CapPlayer();
       me.Status = Logic.Cap.CapStatus.Choosing;
       meControl = new CapMePlayer(me);
@@ -51,9 +50,8 @@ namespace LeagueClient.ClientUI.Main {
       SharedInit();
     }
 
-    public CapLobbyPage(int slotId, CapPlayer solo) {
+    public CapLobbyPage(CapPlayer solo) {
       InitializeComponent();
-      MySlotId = slotId;
       me = solo;
       me.Status = Logic.Cap.CapStatus.Present;
       meControl = new CapMePlayer(me) { Editable = false };
@@ -82,6 +80,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public void GotGroupData(JSONObject data) {
       GroupData = data;
+      MySlotId = (int) data["slotId"];
 
       players.Clear();
       Dispatcher.Invoke(() => GameMap.Players.Clear());
@@ -216,7 +215,7 @@ namespace LeagueClient.ClientUI.Main {
           capp.Status = CapStatus.Present;
           capp.Role = Role.Values[player["role"]];
           capp.Position = Position.Values[player["position"]];
-          capp.Champion = LeagueData.GetChampData(player["championId"]);
+          if(player["championId"] > 0) capp.Champion = LeagueData.GetChampData(player["championId"]);
           capp.Spell1 = LeagueData.GetSpellData(player["spell1Id"]);
           capp.Spell2 = LeagueData.GetSpellData(player["spell2Id"]);
           capp.SlotId = player["slotId"];

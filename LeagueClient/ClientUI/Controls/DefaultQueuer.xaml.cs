@@ -27,7 +27,7 @@ namespace LeagueClient.ClientUI.Controls {
     private Timer timer;
     private DateTime start;
 
-    public DefaultQueuer(GameQueueConfig queue, string bots) {
+    public DefaultQueuer(GameQueueConfig queue) {
       InitializeComponent();
       Client.MessageReceived += Client_MessageReceived;
       QueueName.Text = QueueType.Values[queue.Type].Value;
@@ -49,6 +49,9 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Cancel_Click(object src, EventArgs args) {
+      timer.Dispose();
+      Client.MessageReceived -= Client_MessageReceived;
+      Logic.Riot.RiotCalls.MatchmakerService.CancelFromQueueIfPossible(Client.LoginPacket.AllSummonerData.Summoner.SumId);
       Popped?.Invoke(this, new QueuePoppedEventArgs(null));
     }
 

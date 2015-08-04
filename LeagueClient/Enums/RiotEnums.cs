@@ -2,13 +2,14 @@
 
 namespace LeagueClient.Logic {
 	public class Position {
+    public static readonly Dictionary<string, Position> Values = new Dictionary<string, Position>();
+
     public static readonly Position
       TOP = new Position("TOP", "Top Lane"),
       JUNGLE = new Position("JUNGLE", "Jungle"),
       MIDDLE = new Position("MIDDLE", "Middle Lane"),
-      BOTTOM = new Position("BOTTOM", "Bottom Lane");
-
-    public static readonly Dictionary<string, Position> Values = new Dictionary<string, Position>();
+      BOTTOM = new Position("BOTTOM", "Bottom Lane"),
+      UNSELECTED = new Position("UNSELECTED", "Unselected");
 
     public string Key { get; private set; }
     public string Value { get; private set; }
@@ -24,6 +25,8 @@ namespace LeagueClient.Logic {
 	}
 
 	public class Role {
+    public static readonly Dictionary<string, Role> Values = new Dictionary<string, Role>();
+
     public static readonly Role
       SUPPORT = new Role("SUPPORT", "Support"),
       MAGE = new Role("MAGE", "Mage"),
@@ -31,9 +34,8 @@ namespace LeagueClient.Logic {
       ASSASSIN = new Role("ASSASSIN", "Assassin"),
       FIGHTER = new Role("FIGHTER", "Fighter"),
       TANK = new Role("TANK", "Tank"),
-      ANY = new Role("ANY", "Any");
-
-    public static readonly Dictionary<string, Role> Values = new Dictionary<string, Role>();
+      ANY = new Role("ANY", "Any"),
+      UNSELECTED = new Role("UNSELECTED", "Unselected");
 
     public string Key { get; private set; }
     public string Value { get; private set; }
@@ -49,6 +51,8 @@ namespace LeagueClient.Logic {
 	}
 
 	public class QueueType {
+    public static readonly Dictionary<string, QueueType> Values = new Dictionary<string, QueueType>();
+
     public static readonly QueueType
       CUSTOM = new QueueType("CUSTOM", "Custom"),
       NONE = new QueueType("NONE", "None"),
@@ -88,9 +92,8 @@ namespace LeagueClient.Logic {
       ASCENSION = new QueueType("ASCENSION", "Ascension"),
       HEXAKILL = new QueueType("HEXAKILL", "Hexakill"),
       KING_PORO = new QueueType("KING_PORO", "King Poro"),
-      COUNTER_PICK = new QueueType("COUNTER_PICK", "Nemesis Draft");
-
-    public static readonly Dictionary<string, QueueType> Values = new Dictionary<string, QueueType>();
+      COUNTER_PICK = new QueueType("COUNTER_PICK", "Nemesis Draft"),
+      BILGEWATER = new QueueType("BILGEWATER", "Black Market Brawlers");
 
     public string Key { get; private set; }
     public string Value { get; private set; }

@@ -90,10 +90,14 @@ namespace LeagueClient.ClientUI.Main {
       RiotCalls.CapService.CreateGroup();
     }
 
-    public void JoinCapLobby(string groupId, int slotId, Logic.Cap.CapPlayer player) {
-      var page = new CapLobbyPage(slotId, player);
+    public void JoinCapLobby(Logic.Cap.CapPlayer player) {
+      var page = new CapLobbyPage(player);
       ShowSubPage(page);
-      RiotCalls.CapService.IndicateGroupAcceptanceAsCandidate(slotId, true, groupId);
+    }
+
+    public void JoinCapLobby() {
+      var page = new CapLobbyPage();
+      ShowSubPage(page);
     }
 
     public void ShowQueuer(IQueuer Queuer) {

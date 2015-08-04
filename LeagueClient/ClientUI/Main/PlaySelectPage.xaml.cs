@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
+using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
 
@@ -45,10 +46,6 @@ namespace LeagueClient.ClientUI.Main {
       GroupList.MouseUp += (src, e) => GroupSelected();
       ModeList.MouseUp += (src, e) => ModeSelected();
       QueueList.MouseUp += (src, e) => GameSelected();
-
-      foreach (var item in Client.AvailableQueues) {
-        Client.Log(item.Type + ":" + item.CacheName);
-      }
     }
 
     void GameSelected() {
@@ -119,7 +116,11 @@ namespace LeagueClient.ClientUI.Main {
       switch ((int) selected.Type) {
         case 0:
         case 1:
-          Client.QueueManager.ShowQueuer(new DefaultQueuer(selected.Config, selected.Bots));
+          var mmp = new MatchMakerParams();
+          mmp.BotDifficulty = selected.Bots;
+          mmp.QueueIds = new int[] { selected.Config.Id };
+          RiotCalls.MatchmakerService.AttachToQueue(mmp);
+          Client.QueueManager.ShowQueuer(new DefaultQueuer(selected.Config));
           break;
         case 3:
           Client.QueueManager.CreateCapSolo();
