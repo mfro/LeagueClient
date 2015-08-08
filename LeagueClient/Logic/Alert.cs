@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LeagueClient {
+namespace LeagueClient.Logic {
   public class Alert {
     public event EventHandler<bool> Reacted;
 
@@ -30,18 +30,22 @@ namespace LeagueClient {
       YesNo, Ok
     }
 
-    public static Alert KickedFromCap() {
-      return new Alert("Kicked from Group",
-        "You have been kicked from a teambuilder group and returned to the queue.",
-        AlertType.Ok);
-    }
+    public static Alert KickedFromCap { get; } = new Alert("Kicked from Group",
+      "You have been kicked from a teambuilder group and returned to the queue.", AlertType.Ok);
 
-    public static Alert Teambuilder(string user, EventHandler<bool> OnReact) {
+    public static Alert QueueDodger { get; } = new Alert("Unabled to join queue",
+      "You have cancelled too many queues recently and are temporarily unabled to queue for games", AlertType.Ok);
+
+    public static Alert GroupDisbanded { get; } = new Alert("Your group has disbanded",
+      "The group you were in was disbanded for an unknown reason", AlertType.Ok);
+
+    public static Alert TeambuilderInvite(string user, EventHandler<bool> OnReact) {
       var a = new Alert("Teambuilder Invite",
         user + " has invited you to a teambuilder game",
         AlertType.YesNo);
       a.Reacted += OnReact;
       return a;
     }
+
   }
 }

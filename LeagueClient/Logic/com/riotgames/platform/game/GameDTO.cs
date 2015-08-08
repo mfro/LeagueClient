@@ -33,7 +33,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public List<GameObserver> Observers { get; set; }
 
         [SerializedName("statusOfParticipants")]
-        public object StatusOfParticipants { get; set; }
+        public string StatusOfParticipants { get; set; }
 
         [SerializedName("glmSecurePort")]
         public Int32 GlmSecurePort { get; set; }

@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
+using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
@@ -39,8 +40,22 @@ namespace LeagueClient.ClientUI.Main {
       GameModes = new BindingList<dynamic>();
       GameQueues = new BindingList<dynamic>();
 
+      Func<dynamic, bool> GameCheck = g => g.Queues.Count == 0;
+      Func<dynamic, bool> QueueCheck = q => !Client.AvailableQueues.ContainsKey(q["Id"]);
+      foreach (var group in GameTypesRef.Games.Values) {
+        foreach (var game in group.Games) {
+          var queues = (IEnumerable<object>) Enumerable.Where(game.Queues.DynamicList, QueueCheck);
+          foreach (var queue in queues.ToList())
+            game.Queues.Remove(queue);
+        }
+        var games = (IEnumerable<object>) Enumerable.Where(group.Games.DynamicList, GameCheck);
+        foreach (var item in games.ToList())
+          group.Games.Remove(item);
+      }
+
       foreach (var item in GameTypesRef.Games)
-        GameGroups.Add(item.Value);
+        if (item.Value.Games.Count > 0)
+          GameGroups.Add(item.Value);
 
       InitializeComponent();
       GroupList.MouseUp += (src, e) => GroupSelected();
@@ -54,9 +69,7 @@ namespace LeagueClient.ClientUI.Main {
       if (QueueList.SelectedIndex < 0) return;
       var info = (dynamic) QueueList.SelectedItem;
       QueueTitle.Text = info.Name;
-      var config = (from qs in Client.AvailableQueues
-                    where qs.Id == info.Id
-                    select qs).FirstOrDefault();
+      var config = Client.AvailableQueues[info.Id];
       var bots = "";
       if(info.ContainsKey("BotDifficulty")) bots = info.BotDifficulty;
       int type = 0;
@@ -111,19 +124,28 @@ namespace LeagueClient.ClientUI.Main {
       GroupDetails.Text = ((dynamic) GroupList.SelectedItem).Details;
     }
 
-    private void Join1_Click(object sender, RoutedEventArgs e) {
+    private async void Join1_Click(object sender, RoutedEventArgs e) {
       if (Close != null) Close(this, new EventArgs());
       switch ((int) selected.Type) {
         case 0:
         case 1:
           var mmp = new MatchMakerParams();
           mmp.BotDifficulty = selected.Bots;
-          mmp.QueueIds = new int[] { selected.Config.Id };
-          RiotCalls.MatchmakerService.AttachToQueue(mmp);
-          Client.QueueManager.ShowQueuer(new DefaultQueuer(selected.Config));
+          mmp.QueueIds = new int[] { selected.Id };
+          var search = await RiotCalls.MatchmakerService.AttachToQueue(mmp);
+          if(search.PlayerJoinFailures?.Count > 0) {
+            switch (search.PlayerJoinFailures[0].ReasonFailed) {
+              case "QUEUE_DODGER":
+                Client.QueueManager.ShowNotification(Alert.QueueDodger);
+                Client.QueueManager.ShowQueuer(new BingeQueuer(search.PlayerJoinFailures[0].PenaltyRemainingTime));
+                break;
+            }
+          } else {
+            Client.QueueManager.ShowQueuer(new DefaultQueuer(mmp));
+          }
           break;
         case 3:
-          Client.QueueManager.CreateCapSolo();
+          Client.QueueManager.ShowPage(new CapSoloPage());
           break;
       }
     }
@@ -134,27 +156,28 @@ namespace LeagueClient.ClientUI.Main {
         case 0:
         case 1:
         case 2:
-          Client.QueueManager.CreateLobby(selected.Config, selected.Bots);
+          //TODO
+          //Client.QueueManager.CreateLobby(selected.Config, selected.Bots);
           break;
         case 3:
-          Client.QueueManager.CreateCapLobby();
+          Client.QueueManager.ShowPage(new CapLobbyPage());
+          RiotCalls.CapService.CreateGroup();
           break;
       }
     }
 
     private void ListBox_Loaded(object sender, RoutedEventArgs e) {
-      var box = sender as ListBox;
-      var bd = box.Template.FindName("Bd", box) as Border;
-      bd.Padding = new Thickness(0);
+      //var box = sender as ListBox;
+      //var bd = box.Template.FindName("Bd", box) as Border;
+      //bd.Padding = new Thickness(0);
     }
 
-    public bool CanPlay() {
-      return false;
-    }
+    public bool CanPlay() => false;
 
-    public Page GetPage() {
-      return this;
-    }
+    public Page GetPage() => this;
+
+    public void ForceClose() { }
+    public IQueuer HandleClose() => null;
   }
 
   public class GameInfo {

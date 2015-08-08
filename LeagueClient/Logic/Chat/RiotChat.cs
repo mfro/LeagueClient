@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Input;
@@ -22,12 +24,12 @@ namespace LeagueClient.Logic.Chat {
     public State ChatState { get; private set; }
     public BindingList<ChatConversation> OpenChats { get; private set; }
     public BindingList<Friend> FriendList { get; private set; }
+    public Dictionary<string, Item> Users { get; } = new Dictionary<string, Item>();
 
     private JabberClient conn;
     private RosterManager Roster = new RosterManager();
     private PresenceManager Presence = new PresenceManager();
     private ConferenceManager Conference = new ConferenceManager();
-    private Dictionary<string, Item> Users = new Dictionary<string, Item>();
     private Dictionary<string, Friend> Friends = new Dictionary<string, Friend>();
     private bool fullyAuthed;
     private Timer timer;
@@ -74,12 +76,6 @@ namespace LeagueClient.Logic.Chat {
       timer.Start();
     }
 
-    public void UpdateStatus(GameStatus status, StatusShow show) {
-      this.Status = status;
-      this.Show = show;
-      UpdateStatus(Message);
-    }
-
     private void ResetList(List<Friend> list) {
       list.Sort((f1, f2) => {
         if (f1.GameInfo != null && f2.GameInfo != null) {
@@ -105,9 +101,34 @@ namespace LeagueClient.Logic.Chat {
       try { App.Current.Dispatcher.Invoke(() => ResetList(list)); } catch { timer.Stop(); }
     }
 
+    private static string GetObfuscatedChatroomName(string Subject, string Type) {
+      int bitHack = 0;
+      byte[] data = System.Text.Encoding.UTF8.GetBytes(Subject);
+      byte[] result;
+      var sha = new SHA1CryptoServiceProvider();
+      result = sha.ComputeHash(data);
+      string obfuscatedName = "";
+      int incrementValue = 0;
+      while (incrementValue < result.Length) {
+        bitHack = result[incrementValue];
+        obfuscatedName = obfuscatedName + Convert.ToString(((uint) (bitHack & 240) >> 4), 16);
+        obfuscatedName = obfuscatedName + Convert.ToString(bitHack & 15, 16);
+        incrementValue = incrementValue + 1;
+      }
+      obfuscatedName = Regex.Replace(obfuscatedName, @"/\s+/gx", "");
+      obfuscatedName = Regex.Replace(obfuscatedName, @"/[^a-zA-Z0-9_~]/gx", "");
+      return Type + "~" + obfuscatedName;
+    }
+
+    private static string GetChatroomJID(string obfuscatedName, bool isPublic, string pass = null) {
+      if (!isPublic) return obfuscatedName + "@sec.pvp.net";
+      else if (pass == null) return obfuscatedName + "@lvl.pvp.net";
+      else return obfuscatedName + "@conference.pvp.net";
+    }
+
     #region Event Handlers
     void OnPrimarySessionChange(object sender, jabber.JID bare) {
-      if (bare.User.Equals(conn.JID.User)) return;
+      if (!Users.ContainsKey(bare.User)) return;
       var list = new List<Friend>(FriendList);
 
       var user = Users[bare.User];
@@ -153,6 +174,7 @@ namespace LeagueClient.Logic.Chat {
     }
 
     void OnReceiveMessage(object sender, Message msg) {
+      if (!Users.ContainsKey(msg.From.User)) return;
       string user = msg.From.User;
       if (msg.From.User.Equals(msg.To.User)) {
         return;
@@ -187,9 +209,7 @@ namespace LeagueClient.Logic.Chat {
     /// Minimizes any open chat conversations
     /// </summary>
     public void CloseAll() {
-      App.Current.Dispatcher.Invoke(() => {
-        foreach (var item in OpenChats) item.Open = false;
-      });
+      foreach (var item in OpenChats) item.Open = false;
     }
 
     /// <summary>
@@ -199,6 +219,22 @@ namespace LeagueClient.Logic.Chat {
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
       conn.Presence(PresenceType.available, status.ToXML(), Show.ToString().ToLower(), 1);
+    }
+
+    public void UpdateStatus(GameStatus status) {
+      this.Status = status;
+      UpdateStatus(Message);
+    }
+
+    public void UpdateStatus(StatusShow show) {
+      this.Show = show;
+      UpdateStatus(Message);
+    }
+
+    public Room GetTeambuilderRoom(string groupId, string pass) {
+      var room = Conference.GetRoom(new JID(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass)));
+      room.Nickname = Client.LoginPacket.AllSummonerData.Summoner.Name;
+      return room;
     }
 
     /// <summary>

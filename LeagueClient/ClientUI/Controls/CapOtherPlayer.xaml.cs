@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -25,6 +26,8 @@ namespace LeagueClient.ClientUI.Controls {
   public partial class CapOtherPlayer : UserControl {
     public CapPlayer Player { get; private set; }
 
+    private Timer timer;
+
     public CapOtherPlayer(CapPlayer player) {
       Player = player;
       InitializeComponent();
@@ -46,11 +49,18 @@ namespace LeagueClient.ClientUI.Controls {
         case CapStatus.Ready:
           Check.Visibility = Visibility.Visible;
           goto case CapStatus.Present;
+        case CapStatus.ChoosingAdvert:
+          SummonerText.Text = "Select Position and Role";
+          break;
+        case CapStatus.Choosing:
         case CapStatus.Present:
           SummonerText.Text = Player.Name;
           break;
         case CapStatus.Penalty:
-          SummonerText.Text = "Player kicked.";
+          SummonerText.Text = "Player kicked";
+          RoleText.Text = "Please wait " + Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + " seconds";
+          timer = new Timer { Interval = 1000, Enabled = true };
+          timer.Elapsed += Timer_Elapsed;
           break;
         case CapStatus.Searching:
           SummonerText.Text = "Searching for candidate...";
@@ -59,10 +69,18 @@ namespace LeagueClient.ClientUI.Controls {
           SummonerText.Text = "The player was not found, searching for another candidate...";
           break;
         case CapStatus.Found:
-          SummonerText.Text = "A candidate has been found.";
+          SummonerText.Text = "A candidate has been found";
           break;
-        case CapStatus.Choosing:
-          break;//TODO
+      }
+    }
+
+    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
+      var t = (int) Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds);
+      if(t > 0) {
+        Dispatcher.Invoke(() => RoleText.Text = "Please wait " + t + " seconds");
+      } else {
+        timer.Dispose();
+        Player.Status = CapStatus.Searching;
       }
     }
   }

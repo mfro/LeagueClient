@@ -21,7 +21,6 @@ namespace LeagueClient.ClientUI {
   public partial class ChampSelectPage : Page {
     public ChampSelectPage() {
       InitializeComponent();
-      ChampsGrid.Champions = Client.AvailableChampions;
     }
 
     private void SkinScroller_MouseWheel(object sender, MouseWheelEventArgs e) {

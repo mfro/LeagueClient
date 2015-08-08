@@ -29,11 +29,13 @@ namespace LeagueClient.ClientUI.Controls {
       defense = new MasteryTree(DefenseTree);
       utility = new MasteryTree(UtilityTree);
 
-      LoadMasteries(offense, LeagueData.MasteryData.Value.tree.Offense, 1);
-      LoadMasteries(defense, LeagueData.MasteryData.Value.tree.Defense, 2);
-      LoadMasteries(utility, LeagueData.MasteryData.Value.tree.Utility, 3);
+      if (Client.Connected) {
+        LoadMasteries(offense, LeagueData.MasteryData.Value.tree.Offense, 1);
+        LoadMasteries(defense, LeagueData.MasteryData.Value.tree.Defense, 2);
+        LoadMasteries(utility, LeagueData.MasteryData.Value.tree.Utility, 3);
 
-      Reset();
+        Reset();
+      }
     }
 
     public void Reset() {

@@ -6,31 +6,55 @@
       SnapsToDevicePixels="True" Background="{StaticResource Back2Brush}">
   <Grid Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="75"/>
+      <RowDefinition Height="30"/>
       <RowDefinition Height="*"/>
-      <RowDefinition Height="75"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="30"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="75"/>
-      <ColumnDefinition Width="400"/>
-      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="410"/>
       <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="*"/>
       <ColumnDefinition Width="75"/>
     </Grid.ColumnDefinitions>
-    
-    <ItemsControl Name="PlayerList" Grid.Row="1" Grid.Column="1" Margin="0 -45"/>
+
+    <ItemsControl Name="PlayerList" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0 0 10 0"/>
 
     <!--<Button Grid.Column="3" Width="80" Height="20" Click="Invite_Click">Invite</Button>-->
 
-    <Border Grid.Column="3" Grid.Row="1" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
+    <Border Grid.Column="2" Grid.Row="1" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
       <my:CapMap x:Name="GameMap"/>
     </Border>
 
-    <Button VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3" Grid.Row="2" Content="Find Another Group" Padding="20 2"
-            Name="FindAnotherButt" Click="FindAnotherButt_Click"/>
-    <Button VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="3" Grid.Row="2" Content="Ready" Padding="0 2"
-            Name="ReadyButt" Click="ReadyButt_Click" Width="80"/>
-    
+    <StackPanel Orientation="Vertical" Grid.Column="3" Grid.Row="1">
+      <StackPanel.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+          <Setter Property="OverridesDefaultStyle" Value="False"/>
+          <Setter Property="Margin" Value="10 0 10 10"/>
+          <Setter Property="Padding" Value="20 2"/>
+          <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+      </StackPanel.Resources>
+      <Button Content="Find Another Group" Name="FindAnotherButt" Click="FindAnotherButt_Click"/>
+      <Button Content="Ready" Name="ReadyButt" Click="ReadyButt_Click" Width="80"/>
+      <Button Content="Invite" Name="InviteButt" Click="InviteButt_Click"/>
+    </StackPanel>
+
+    <ScrollViewer Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" Margin="0 10 0 20" Name="ChatScroller">
+      <RichTextBox Name="ChatHistory" Style="{StaticResource Control}"  Background="{StaticResource Back1Brush}" BorderThickness="0" IsReadOnly="True">
+        <RichTextBox.Resources>
+          <Style TargetType="Paragraph">
+            <Setter Property="Margin" Value="0" />
+          </Style>
+        </RichTextBox.Resources>
+      </RichTextBox>
+    </ScrollViewer>
+    <Border>
+    </Border>
+    <TextBox Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" Margin="0 0 80 0" KeyUp="TextBox_KeyUp" Name="SendBox"/>
+    <Button  Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="80" Click="Button_Click">Send</Button>
+
     <my:PopupSelector Grid.RowSpan="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center"
                       x:Name="Popup" Close="Popup_Close" Visibility="Collapsed" Opacity="0"/>
   </Grid>

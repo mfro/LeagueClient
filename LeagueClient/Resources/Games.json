@@ -38,6 +38,22 @@
           "Queues": [
             { "Name": "All Random", "Id": 65 }
           ]
+        },
+        {
+          "Name": "ARAM",
+          "Info": "Butcher's Bridge",
+          "Mode": "ARAM",
+          "Queues": [
+            { "Name": "All Random", "Id": 100 }
+          ]
+        },
+        {
+          "Name": "Black Market Brawlers",
+          "Info": "Summoner's Rift",
+          "Mode": "CLASSIC",
+          "Queues": [
+            {"Name": "Blind Draft", "Id": 313 }
+          ]
         }
       ]
     },

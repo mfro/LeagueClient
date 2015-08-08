@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using RtmpSharp.IO;
+
+namespace LeagueClient.Logic.Riot.Platform {
+
+  [Serializable]
+  [SerializedName("com.riotgames.platform.gameinvite.contract.Inviter")]
+  public class Inviter {
+    [SerializedName("previousSeasonHighestTier")]
+    public System.String previousSeasonHighestTier { get; set; }
+    [SerializedName("summonerName")]
+    public System.String summonerName { get; set; }
+    [SerializedName("summonerId")]
+    public System.Double summonerId { get; set; }
+  }
+}

@@ -86,11 +86,20 @@
     <Compile Include="ClientUI\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\BingeQueuer.xaml.cs">
+      <DependentUpon>BingeQueuer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\DefaultQueuePopup.xaml.cs">
+      <DependentUpon>DefaultQueuePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\DefaultQueuer.xaml.cs">
       <DependentUpon>DefaultQueuer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\PopupSelector.xaml.cs">
       <DependentUpon>PopupSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\ReturnToLobbyQueuer.xaml.cs">
+      <DependentUpon>ReturnToLobbyQueuer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Main\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
@@ -105,12 +114,21 @@
       <DependentUpon>Friend.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\HintedTextBox.cs" />
+    <Compile Include="ClientUI\Main\DebugPage.xaml.cs">
+      <DependentUpon>DebugPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Main\IClientSubPage.cs" />
     <Compile Include="Enums\RiotEnums.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>RiotEnums.tt</DependentUpon>
     </Compile>
+    <Compile Include="Logic\com\riotgames\other\CapPlayerInfoData.cs" />
+    <Compile Include="Logic\com\riotgames\other\CapGroupData.cs" />
+    <Compile Include="Logic\com\riotgames\other\CapSlotData.cs" />
+    <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitePrivileges.cs" />
+    <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
+    <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
     <Compile Include="Logic\Queueing\IQueuePopup.cs" />
     <Compile Include="ClientUI\Controls\MasteryEditor.xaml.cs">
@@ -155,7 +173,7 @@
     <Compile Include="Logic\Queueing\IQueuer.cs" />
     <Compile Include="Logic\Queueing\IQueueManager.cs" />
     <Compile Include="Media\CurrentGame.cs" />
-    <Compile Include="Alert.cs" />
+    <Compile Include="Logic\Alert.cs" />
     <Compile Include="Logic\Chat\LeagueStatus.cs" />
     <Compile Include="Logic\com\riotgames\kudos\dto\PendingKudosDTO.cs" />
     <Compile Include="Logic\com\riotgames\leagues\pojo\LeagueItemDTO.cs" />
@@ -290,11 +308,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientUI\Controls\BingeQueuer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\DefaultQueuePopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Controls\DefaultQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\PopupSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\ReturnToLobbyQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -347,6 +377,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Main\DebugPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -454,6 +488,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

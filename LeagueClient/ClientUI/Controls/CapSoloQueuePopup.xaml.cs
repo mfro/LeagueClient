@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
@@ -28,6 +29,7 @@ namespace LeagueClient.ClientUI.Controls {
     public event EventHandler Cancelled;
     private JSONObject payload;
     private Logic.Cap.CapPlayer player;
+    private Timer time;
 
     public CapSoloQueuePopup(JSONObject payload, Logic.Cap.CapPlayer player) {
       InitializeComponent();
@@ -35,7 +37,7 @@ namespace LeagueClient.ClientUI.Controls {
       this.player = player;
 
       TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(payload["candidateAutoQuitTimeout"])));
-      var time = new Timer(payload["candidateAutoQuitTimeout"] * 1000);
+      time = new Timer(payload["candidateAutoQuitTimeout"] * 1000);
       time.Start();
       time.Elapsed += Time_Elapsed;
     }
@@ -48,11 +50,13 @@ namespace LeagueClient.ClientUI.Controls {
     private void Accept_Click(object sender, RoutedEventArgs e) {
       if (Accepted != null) Accepted(this, new EventArgs());
       RiotCalls.CapService.IndicateGroupAcceptanceAsCandidate((int) payload["slotId"], true, (string) payload["groupId"]);
-      Client.QueueManager.JoinCapLobby(player);
+      time.Dispose();
+      Client.QueueManager.ShowPage(new CapLobbyPage(player));
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       if (Cancelled != null) Cancelled(this, new EventArgs());
+      time.Dispose();
       RiotCalls.CapService.Quit();
     }
 

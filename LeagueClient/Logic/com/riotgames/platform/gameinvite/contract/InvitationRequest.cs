@@ -14,7 +14,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     public String InvitePayload { get; set; }
 
     [SerializedName("inviter")]
-    public object Inviter { get; set; }
+    public Inviter Inviter { get; set; }
 
     [SerializedName("inviteType")]
     public String InviteType { get; set; }

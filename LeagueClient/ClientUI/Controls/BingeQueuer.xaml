@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="LeagueClient.ClientUI.Controls.BingeQueuer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:local="clr-namespace:LeagueClient.ClientUI.Controls">
+  <Grid Name="QueuePane" Width="150" Height="40">
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <TextBlock Style="{StaticResource Control}" Grid.Row="0" VerticalAlignment="Center" Margin="3 0">Unabled to play</TextBlock>
+    <TextBlock Style="{StaticResource Control}" Grid.Row="1" VerticalAlignment="Center" Margin="3 0">Time Remaining:</TextBlock>
+    <TextBlock Style="{StaticResource Control}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3 0"
+               Name="ElapsedText"/>
+  </Grid>
+</UserControl>

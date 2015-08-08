@@ -56,7 +56,7 @@ namespace LeagueClient.ClientUI.Controls {
     public CapMePlayer() : this(null) { }
 
     public CapMePlayer(CapPlayer player) {
-      CapPlayer = player ?? new CapPlayer { Status = CapStatus.Present };
+      CapPlayer = player ?? new CapPlayer (-1) { Status = CapStatus.Present };
       InitializeComponent();
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
 

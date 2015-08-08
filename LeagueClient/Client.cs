@@ -15,18 +15,21 @@ using RtmpSharp.Messaging;
 using RtmpSharp.Net;
 using MyChampDTO = MFroehlich.League.DataDragon.ChampionDto;
 using MFroehlich.Parsing.DynamicJSON;
+using LeagueClient.Logic;
+using LeagueClient.ClientUI.Main;
 
 namespace LeagueClient {
   public static class Client {
     internal const string
-      AirClientParentDir = @"C:\Riot Games\League of Legends\RADS\projects\lol_air_client",
-      GameClientParentDir = @"C:\Riot Games\League of Legends\RADS\projects\lol_game_client",
+      RiotGamesDir = @"D:\Riot Games",
       Server = "prod.na2.lol.riotgames.com",
       LoginQueue = "https://lq.na2.lol.riotgames.com/",
       ChatServer = "chat.na2.lol.riotgames.com",
       Locale = "en_US";
 
     internal static readonly string
+      AirClientParentDir = Path.Combine(RiotGamesDir, @"League of Legends\RADS\projects\lol_air_client"),
+      GameClientParentDir = Path.Combine(RiotGamesDir, @"League of Legends\RADS\projects\lol_game_client"),
       DataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MFro\LeagueClient\",
       SettingsFile = Path.Combine(DataPath, "settings.xml"),
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
@@ -42,6 +45,7 @@ namespace LeagueClient {
     internal static Session UserSession { get; set; }
 
     internal static LoginDataPacket LoginPacket { get; set; }
+    internal static bool Connected { get; set; }
 
     internal static string AirVersion { get; set; }
 
@@ -56,7 +60,7 @@ namespace LeagueClient {
 
     internal static IQueueManager QueueManager { get; set; }
 
-    internal static GameQueueConfig[] AvailableQueues { get; set; }
+    internal static Dictionary<int, GameQueueConfig> AvailableQueues { get; set; }
 
     internal static List<ChampionDTO> RiotChampions { get; set; }
     internal static List<MyChampDTO> AvailableChampions { get; set; }
@@ -74,6 +78,10 @@ namespace LeagueClient {
 
     public static long GetMilliseconds() {
       return (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
+    }
+
+    static Client() {
+      if (!Directory.Exists(DataPath)) Directory.CreateDirectory(DataPath);
     }
 
     #region Initailization
@@ -158,10 +166,11 @@ namespace LeagueClient {
       bool authed = await RtmpConn.LoginAsync(creds.Username.ToLower(), UserSession.Token);
       LoginPacket = await RiotCalls.ClientFacadeService.GetLoginDataPacketForUser();
       string state = await RiotCalls.AccountService.GetAccountState();
+      Connected = true;
 
       new System.Threading.Thread(() => {
         RiotCalls.MatchmakerService.GetAvailableQueues()
-          .ContinueWith(q => AvailableQueues = q.Result);
+          .ContinueWith(GotQueues);
         RiotCalls.InventoryService.GetAvailableChampions()
           .ContinueWith(GotChampions);
         Runes = LoginPacket.AllSummonerData.SpellBook;
@@ -241,13 +250,23 @@ namespace LeagueClient {
             Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
           }
         } else if ((invite = e.Body as InvitationRequest) != null) {
-          var payload = JSON.ParseObject(invite.GameMetaData);
-          RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
-          App.Current.Dispatcher.Invoke(() => QueueManager.JoinCapLobby());
+          if (invite.InvitationState.Equals("ACTIVE")) {
+            var payload = JSON.ParseObject(invite.GameMetaData);
+            QueueManager.ShowNotification(Alert.TeambuilderInvite(invite.Inviter.summonerName, (s, b) => {
+              if (b) {
+                var lobby = new CapLobbyPage();
+                RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+                RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
+              }
+            }));
+          }
         } else {
           Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
         }
-      } catch (Exception x) { TryBreak(x.Message); }
+      } catch (Exception x) {
+        Log("Exception while dispatching message: " + x.Message);
+        TryBreak(x.Message);
+      }
     }
 
     public static void TryBreak(string reason) {
@@ -278,6 +297,11 @@ namespace LeagueClient {
       AvailableChampions = new List<MyChampDTO>();
       foreach (var item in Champs.Result)
         AvailableChampions.Add(LeagueData.GetChampData(item.ChampionId));
+    }
+
+    private static void GotQueues(Task<GameQueueConfig[]> Task) {
+      AvailableQueues = new Dictionary<int, GameQueueConfig>();
+      foreach (var item in Task.Result) AvailableQueues.Add((int) item.Id, item);
     }
 
     public static string Substring(this string str, string prefix, string suffix) {

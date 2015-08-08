@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic.Chat;
+using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
@@ -30,7 +32,6 @@ namespace LeagueClient.ClientUI.Main {
 
     public CapSoloPage() {
       InitializeComponent();
-      Popup.ChampSelector.Champions = Client.AvailableChampions;
       Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
                                     where spell.modes.Contains("CLASSIC")
                                     select spell);
@@ -44,6 +45,8 @@ namespace LeagueClient.ClientUI.Main {
 
       Popup.SpellSelector.SpellSelected += Spell_Select;
       Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
+
+      Client.ChatManager.UpdateStatus(LeagueStatus.InTeamBuilder);
     }
 
     private void PlayerUpdate(object sender, EventArgs e) {
@@ -97,17 +100,16 @@ namespace LeagueClient.ClientUI.Main {
       var id = RiotCalls.CapService.CreateSoloQuery(Player.CapPlayer);
       RiotCalls.AddHandler(id, response => {
         if (response.status.Equals("OK"))
-          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player.CapPlayer)));
+          Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player.CapPlayer));
       });
       if (Close != null) Close(this, new EventArgs());
     }
 
-    public bool CanPlay() {
-      return false;
-    }
+    public bool CanPlay() => false;
 
-    public Page GetPage() {
-      return this;
-    }
+    public Page GetPage() => this;
+
+    public void ForceClose() { }
+    public IQueuer HandleClose() => null;
   }
 }

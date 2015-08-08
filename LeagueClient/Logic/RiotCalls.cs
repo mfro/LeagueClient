@@ -1071,7 +1071,7 @@ namespace LeagueClient.Logic.Riot {
       /// <param name="InvitationId">The id of the invitation to accept, looks like INVID158928100</param>
       /// <returns></returns>
       public static Task<LobbyStatus> Accept(string InvitationId) {
-        return InvokeAsync<LobbyStatus>("lcdsGameInvitationService", "accept");
+        return InvokeAsync<LobbyStatus>("lcdsGameInvitationService", "accept", InvitationId);
       }
 
       /// <summary>
@@ -1080,7 +1080,7 @@ namespace LeagueClient.Logic.Riot {
       /// <param name="InvitationId">The id of the invitation to decline, looks like INVID158928100</param>
       /// <returns></returns>
       public static Task Decline(string InvitationId) {
-        return InvokeAsync<LobbyStatus>("lcdsGameInvitationService", "decline");
+        return InvokeAsync<LobbyStatus>("lcdsGameInvitationService", "decline", InvitationId);
       }
     }
 

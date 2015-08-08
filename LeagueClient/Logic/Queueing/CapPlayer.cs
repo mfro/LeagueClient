@@ -14,17 +14,19 @@ namespace LeagueClient.Logic.Cap {
   public class CapPlayer : System.ComponentModel.INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
+    public CapPlayer(int slotId) {
+      SlotId = slotId;
+    }
+
     #region Properties
     public int SlotId { get; set; }
     public string Name { get; set; }
-    public Duration Timeout {
-      get { return timeout; }
+    public DateTime TimeoutEnd {
+      get { return timeoutEnd; }
       set {
-        SetField(ref timeout, value);
-        TimeoutStart = DateTime.Now;
+        SetField(ref timeoutEnd, value);
       }
     }
-    public DateTime TimeoutStart { get; private set; }
 
     public ChampionDto Champion {
       get { return champion; }
@@ -65,13 +67,21 @@ namespace LeagueClient.Logic.Cap {
     private Position position;
     private Role role;
     private CapStatus status;
-    private Duration timeout;
+    private DateTime timeoutEnd;
+
+    public void ClearPlayerData() {
+      Champion = null;
+      Spell1 = Spell2 = null;
+      Name = null;
+    }
 
     private void SetField<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string name = null) {
-      field = value;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-      if (GetType().GetProperty(name + "Image") != null)
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name + "Image"));
+      if(!(field?.Equals(value) ?? false)) {
+        field = value;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        if (GetType().GetProperty(name + "Image") != null)
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name + "Image"));
+      }
     }
 
     public bool CanBeReady() {
@@ -80,6 +90,6 @@ namespace LeagueClient.Logic.Cap {
   }
 
   public enum CapStatus {
-    Present, Ready, Searching, Choosing, Found, Penalty, SearchingDeclined
+    Present, Ready, Searching, ChoosingAdvert, Choosing, Found, Penalty, SearchingDeclined
   }
 }

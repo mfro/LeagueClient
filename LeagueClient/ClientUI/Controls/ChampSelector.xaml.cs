@@ -23,37 +23,30 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for ChampSelector.xaml
   /// </summary>
   public partial class ChampSelector : UserControl {
-    public IEnumerable<MyChampDto> Champions {
-      get {
-        return _champs;
-      }
-      set {
-        _champs = value;
-        Dispatcher.Invoke(UpdateChampList);
-      }
-    }
-
     public event EventHandler<MyChampDto> ChampSelected;
     public event EventHandler<MyChampDto.SkinDto> SkinSelected;
     public MyChampDto SelectedChampion { get; set; }
     public MyChampDto.SkinDto SelectedSkin { get; set; }
 
-    private IEnumerable<MyChampDto> _champs = new List<MyChampDto>();
-
     private List<MyChampDto.SkinDto> skins = new List<MyChampDto.SkinDto>();
+
     public ChampSelector() {
       InitializeComponent();
       SkinScroll.ScrollToHorizontalOffset(290);
+      if (Client.Connected)
+        UpdateChampList();
     }
 
-    public void UpdateChampList() {
+    public async void UpdateChampList() {
+      ChampSelect.Visibility = System.Windows.Visibility.Visible;
+      SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
       var images = new List<object>();
-      foreach (var item in _champs) {
+      foreach (var riot in await RiotCalls.InventoryService.GetAvailableChampions()) {
+        if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
+        var item = LeagueData.GetChampData(riot.ChampionId);
         images.Add(new { Image = LeagueData.GetChampIconImage(item.id), Name = item.name, Data = item });
       }
       ChampsGrid.ItemsSource = images;
-      ChampSelect.Visibility = System.Windows.Visibility.Visible;
-      SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
     }
 
     private void UpdateSkinList() {
@@ -119,7 +112,6 @@ namespace LeagueClient.ClientUI.Controls {
         as MyChampDto.SkinDto;
       if (data == null) return;
       if (SkinSelected != null) SkinSelected(this, data);
-      RiotCalls.CapService.UpdateLastSelectedSkin(data.id, SelectedChampion.key);
       SelectedSkin = data;
     }
 

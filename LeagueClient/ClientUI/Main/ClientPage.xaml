@@ -8,26 +8,6 @@
       DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <Page.Resources>
     <sys:Double x:Key="ChatButtonWidth">60</sys:Double>
-    <Storyboard x:Key="AlertHover" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
-                      To="#2E2E2E" Duration="0:0:0.2"/>
-    </Storyboard>
-    <Storyboard x:Key="AlertUnHover" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
-                      To="#393939" Duration="0:0:0.2"/>
-    </Storyboard>
-    <Storyboard x:Key="AlertPress" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
-                      To="#0076C9" Duration="0:0:0.08"/>
-      <ColorAnimation Storyboard.TargetProperty="Stroke.(SolidColorBrush.Color)" 
-                      To="#0076C9" Duration="0:0:0.08"/>
-    </Storyboard>
-    <Storyboard x:Key="AlertRelease" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)" 
-                      To="#D2D2D2" Duration="0:0:0.08"/>
-      <ColorAnimation Storyboard.TargetProperty="Stroke.(SolidColorBrush.Color)" 
-                      To="#D2D2D2" Duration="0:0:0.08"/>
-    </Storyboard>
     <Style TargetType="Button" x:Key="CircleButton">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
       <Setter Property="Cursor" Value="Hand"/>
@@ -65,6 +45,9 @@
         </Trigger>
       </Style.Triggers>
     </Style>
+    <Storyboard x:Key="QuickAlertFade">
+      <DoubleAnimation Storyboard.TargetProperty="Opacity" BeginTime="0:0:3.0" Duration="0:0:1.0"/>
+    </Storyboard>
   </Page.Resources>
   <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}">
     <Grid.RowDefinitions>
@@ -81,8 +64,8 @@
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="240"/>
       </Grid.ColumnDefinitions>
-      <Button Margin="10 10" Content="Home" Click="Home_Click" FontSize="14">
-      </Button>
+      <Button Margin="10" Content="Home" Click="Home_Click" FontSize="14"/>
+      <Button Margin="12" Content="Debug" Click="Debug_Click" FontSize="14" Grid.Column="3" HorizontalAlignment="Right" Width="70"/>
       <Button Grid.Column="2" Style="{StaticResource CircleButton}" Height="30" Width="30"
               Click="AlertButton_Click" Visibility="Hidden" Opacity="0" Name="AlertButton">
         <Path Fill="{StaticResource FontBrush}" Stroke="{StaticResource FontBrush}"
@@ -154,11 +137,14 @@
       </Border>
     </Grid>
 
-    <Grid Margin="65 50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Height="300"
-          Name="AlertPopup" Grid.RowSpan="3" Visibility="Collapsed" Opacity="0">
+    <Grid Margin="45 50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="250" MaxHeight="300"
+          Name="AlertPopup" Grid.RowSpan="3">
       <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="1" Margin="3"/>
       <Border BorderBrush="{StaticResource Back1Brush}" BorderThickness="3 0 3 3"/>
-      <ScrollViewer Margin="4" VerticalScrollBarVisibility="Hidden">
+      <Border Background="{StaticResource ForeBrush}" Name="QuickAlertBack" Margin="4">
+        <TextBlock Name="QuickAlert" Style="{StaticResource Control}" Margin="4 1" FontSize="14"/>
+      </Border>
+      <ScrollViewer Margin="4" VerticalScrollBarVisibility="Hidden" Visibility="Collapsed" Name="AlertScroll">
         <ItemsControl Name="AlertHistory" Background="{StaticResource Back1Brush}"
                     ItemsSource="{Binding Alerts}">
           <ItemsControl.ItemTemplate>
@@ -169,10 +155,12 @@
                   <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                  <RowDefinition Height="20"/>
+                  <RowDefinition Height="auto"/>
                   <RowDefinition Height="72"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Title}" Background="{StaticResource ForeBrush}" FontSize="14" Grid.ColumnSpan="2"/>
+                <Border Background="{StaticResource ForeBrush}" Grid.ColumnSpan="2">
+                  <TextBlock Text="{Binding Title}" Style="{StaticResource Control}" Margin="4 1" FontSize="14"/>
+                </Border>
                 <TextBlock Style="{StaticResource Control}" Text="{Binding Message}" Grid.Row="1" TextWrapping="Wrap" Margin="2 0"/>
                 <Button Name="AlertYes" Grid.Row="1" Width="20" Height="20" Style="{StaticResource CircleButton}"
                         Grid.Column="1" VerticalAlignment="Top" Margin="3" Click="AlertYes_Click">
@@ -197,7 +185,7 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
       </ScrollViewer>
-      <Path Margin="0 -5" VerticalAlignment="Top" Data="M 91.5 8.5 L 100 0 108.5 8.5 Z"
+      <Path Margin="0 -5" VerticalAlignment="Top" Data="M 116.5 8.5 L 125 0 133.5 8.5 Z"
             Fill="{StaticResource ForeBrush}"
             Stroke="{StaticResource ForeBrush}"/>
     </Grid>

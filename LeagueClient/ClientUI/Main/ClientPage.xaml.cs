@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,6 +49,8 @@ namespace LeagueClient.ClientUI.Main {
     public bool AlertsOpen {
       get { return alertsOpen; }
       set {
+        QuickAlertBack.Visibility = Visibility.Collapsed;
+        AlertScroll.Visibility = Visibility.Visible;
         if (value)
           AlertPopup.BeginStoryboard(App.FadeIn);
         else AlertPopup.BeginStoryboard(App.FadeOut);
@@ -62,7 +66,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public ClientPage() {
       PlayButton.Click += Play_Click;
-      
+
       int iconId = Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
       ProfileIcon = LeagueData.GetProfileIconImage(iconId);
       SummonerName = Client.LoginPacket.AllSummonerData.Summoner.Name;
@@ -75,83 +79,145 @@ namespace LeagueClient.ClientUI.Main {
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
     }
 
-    public void CreateLobby(GameQueueConfig queue, string bots) {
+    #region IQueueManager
+    //public void CreateCapSolo() {
+    //  var page = new CapSoloPage();
+    //  ShowPage(page);
+    //}
 
+    //public void CreateCapLobby() {
+    //  var page = new CapLobbyPage();
+    //  ShowPage(page);
+    //  RiotCalls.CapService.CreateGroup();
+    //}
+
+    //public void JoinCapLobby(Logic.Cap.CapPlayer player) {
+    //  var page = new CapLobbyPage(player);
+    //  ShowPage(page);
+    //}
+
+    //public void JoinCapLobby(Task<LobbyStatus> pending) {
+    //  var page = new CapLobbyPage();
+    //  ShowPage(page);
+    //  pending.ContinueWith(t => page.GotLobbyStatus(t.Result));
+    //}
+
+    private bool CheckInvoke(Delegate callback, params object[] args) {
+      if (Thread.CurrentThread != Dispatcher.Thread) {
+        Dispatcher.Invoke(callback, args);
+        return true;
+      }
+      return false;
     }
 
-    public void CreateCapSolo() {
-      var page = new CapSoloPage();
-      ShowSubPage(page);
+    private bool CheckInvoke<T>(Action<T> callback, T t) {
+      if (Thread.CurrentThread != Dispatcher.Thread) {
+        Dispatcher.Invoke(callback, t);
+        return true;
+      }
+      return false;
     }
 
-    public void CreateCapLobby() {
-      var page = new CapLobbyPage();
-      ShowSubPage(page);
-      RiotCalls.CapService.CreateGroup();
-    }
-
-    public void JoinCapLobby(Logic.Cap.CapPlayer player) {
-      var page = new CapLobbyPage(player);
-      ShowSubPage(page);
-    }
-
-    public void JoinCapLobby() {
-      var page = new CapLobbyPage();
-      ShowSubPage(page);
+    private bool CheckInvoke<T1, T2>(Action<T1, T2> callback, T1 t1, T2 t2) {
+      if (Thread.CurrentThread != Dispatcher.Thread) {
+        Dispatcher.Invoke(callback, t1, t2);
+        return true;
+      }
+      return false;
     }
 
     public void ShowQueuer(IQueuer Queuer) {
+      if (CheckInvoke(ShowQueuer, Queuer)) return;
+
       CurrentQueuer = Queuer;
       Queuer.Popped += Queue_Popped;
       StatusPanel.Child = Queuer.GetControl();
+      UpdatePlayButton();
     }
 
     public void ShowNotification(Alert alert) {
-      Dispatcher.Invoke(() => {
-        Alerts.Add(alert);
-        AlertButton.BeginStoryboard(App.FadeIn);
+      if (CheckInvoke(ShowNotification, alert)) return;
+
+      Alerts.Add(alert);
+      AlertButton.BeginStoryboard(App.FadeIn);
+      AlertPopup.BeginStoryboard(App.FadeIn);
+      AlertScroll.Visibility = Visibility.Collapsed;
+      QuickAlertBack.Visibility = Visibility.Visible;
+      QuickAlert.Text = alert.Title;
+      Task.Run(() => {
+        System.Threading.Thread.Sleep(500);
+        Dispatcher.Invoke(() => AlertPopup.BeginStoryboard((Storyboard) AlertPopup.FindResource("QuickAlertFade")));
       });
     }
 
-    private void Queue_Popped(object src, QueuePoppedEventArgs args) {
-      StatusPanel.Child = null;
-      CurrentQueuer = null;
-      CurrentPopup = args.QueuePopup;
-      if (CurrentPopup == null) {
-        PlayButton.IsEnabled = true;
-        return;
+    public void ShowPage(IClientSubPage page) {
+      if (CheckInvoke(ShowPage, page)) return;
+
+      CloseSubPage(true);
+      page.Close += HandlePageClose;
+      CurrentPage = page;
+      SubPage.Content = page?.GetPage();
+      UpdatePlayButton();
+    }
+    #endregion
+
+    private void CloseSubPage(bool notifyPage) {
+      if (CheckInvoke(CloseSubPage, notifyPage)) return;
+
+      if (CurrentPage != null) {
+        CurrentPage.Close -= HandlePageClose;
+        if (notifyPage) {
+          var x = CurrentPage.HandleClose();
+          if (x != null) ShowQueuer(x);
+        }
+        SubPage.Content = null;
+        CurrentPage = null;
       }
-      CurrentPopup.Accepted += QueuePopupClose;
-      CurrentPopup.Cancelled += QueuePopupClose;
-      Dispatcher.Invoke(() => ShowPopup(CurrentPopup.GetControl()));
+      UpdatePlayButton();
     }
 
-    private void ShowSubPage(IClientSubPage page) {
-      Dispatcher.Invoke(() => {
-        PlayButton.IsEnabled = page == null || page.CanPlay();
-        SubPage.Content = page?.GetPage();
-      });
-      page.Close += (s, e) => Dispatcher.Invoke(CloseSubPage);
+    private void HandlePageClose(object source, EventArgs e) {
+      if (CheckInvoke(HandlePageClose, source, e)) return;
+
+      CloseSubPage(false);
     }
 
-    public void CloseSubPage() {
-      SubPage.Content = null;
-    }
+    private void ShowPopup(Control contents) {
+      if (CheckInvoke(ShowPopup, contents)) return;
 
-    private void QueuePopupClose(object src, EventArgs arg) {
-      CurrentPopup = null;
-      Dispatcher.Invoke(() => PopupPanel.Visibility = Visibility.Collapsed);
-    }
-
-    private void ShowPopup(Control Contents) {
       PopupPanel.Visibility = Visibility.Visible;
-      PopupPanel.Child = Contents;
-      Contents.Opacity = 0;
-      Contents.BeginStoryboard(App.FadeIn);
+      PopupPanel.Child = contents;
+      contents.Opacity = 0;
+      contents.BeginStoryboard(App.FadeIn);
     }
 
     private void ToggleChat(object sender, RoutedEventArgs e) {
+      if (CheckInvoke(ToggleChat, sender, e)) return;
+
       ChatOpen = !chatOpen;
+    }
+
+    #region Queue Related Event Listeners
+    private void Queue_Popped(object src, QueuePoppedEventArgs args) {
+      if (CheckInvoke(Queue_Popped, src, args)) return;
+
+      StatusPanel.Child = null;
+      CurrentQueuer = null;
+      UpdatePlayButton();
+      if (args.QueuePopup == null) return;
+      CurrentPopup = args.QueuePopup;
+      UpdatePlayButton();
+      CurrentPopup.Accepted += QueuePopupClose;
+      CurrentPopup.Cancelled += QueuePopupClose;
+      ShowPopup(CurrentPopup.GetControl());
+    }
+
+    private void QueuePopupClose(object src, EventArgs args) {
+      if (CheckInvoke(QueuePopupClose, src, args)) return;
+
+      CurrentPopup = null;
+      UpdatePlayButton();
+      PopupPanel.Visibility = Visibility.Collapsed;
     }
 
     private void StatusBox_KeyUp(object sender, KeyEventArgs e) {
@@ -161,16 +227,22 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Play_Click(object sender, RoutedEventArgs e) {
       PlayButton.IsEnabled = false;
-      ShowSubPage(new PlaySelectPage());
+      ShowPage(new PlaySelectPage());
     }
 
     private void Home_Click(object sender, RoutedEventArgs e) {
       PlayControl.Child = PlayButton;
       if (CurrentQueuer == null)
         PlayButton.IsEnabled = true;
-      CloseSubPage();
+      CloseSubPage(true);
+    }
+    #endregion
+
+    private void UpdatePlayButton() {
+      PlayButton.IsEnabled = (CurrentPage == null || CurrentPage.CanPlay()) && CurrentQueuer == null && CurrentPopup == null;
     }
 
+    #region Other Event Listeners
     private void Page_KeyUp(object sender, KeyEventArgs e) {
       if(e.Key == Key.Escape) {
         ChatOpen = false;
@@ -202,5 +274,10 @@ namespace LeagueClient.ClientUI.Main {
         AlertsOpen = false;
       }
     }
+
+    private void Debug_Click(object sender, RoutedEventArgs e) {
+      ShowPage(new DebugPage());
+    }
+    #endregion
   }
 }

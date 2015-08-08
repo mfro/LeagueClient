@@ -35,13 +35,13 @@
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#313131" Duration="0:0:0.2"/>
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" 
-                      To="#0071CC" Duration="0:0:0.2"/>
+                      To="{StaticResource FocusColor}" Duration="0:0:0.2"/>
     </Storyboard>
     <Storyboard x:Key="ButtonUnHover" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="{StaticResource Back1Color}" Duration="0:0:0.2"/>
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" 
-                      To="#393939" Duration="0:0:0.2"/>
+                      To="{StaticResource ForeColor}" Duration="0:0:0.2"/>
     </Storyboard>
     <Storyboard x:Key="ButtonPress" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
@@ -137,6 +137,17 @@
         <SolidColorBrush x:Key="BaseBrush" Color="{StaticResource BaseColor}"/>
         <SolidColorBrush x:Key="ShadowBrush" Color="{StaticResource ShadowColor}"/>
         <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}"/>
+        <Storyboard x:Key="PressStory">
+          <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Margin" To="0 2 0 0" Duration="0:0:0.05"/>
+          <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" To="0" Duration="0:0:0.05"/>
+        </Storyboard>
+        <Storyboard x:Key="ReleaseStory">
+          <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Margin" To="0 0 0 0" Duration="0:0:0.05"/>
+          <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" To="0 0 0 2" Duration="0:0:0.05"/>
+        </Storyboard>
+        <Storyboard x:Key="LeaveStory">
+          <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource BaseColor}" Duration="0:0:0.1"/>
+        </Storyboard>
       </Style.Resources>
       <Setter Property="SnapsToDevicePixels" Value="True"/>
       <Setter Property="Background" Value="{StaticResource BaseBrush}"/>
@@ -153,27 +164,26 @@
             <ControlTemplate.Triggers>
               <Trigger Property="IsPressed" Value="True">
                 <Trigger.EnterActions>
+                  <BeginStoryboard Storyboard="{StaticResource PressStory}"/>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                  <BeginStoryboard Storyboard="{StaticResource ReleaseStory}"/>
+                </Trigger.ExitActions>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="#33D2D2D2"/>
+                <Trigger.EnterActions>
+                  <BeginStoryboard Storyboard="{StaticResource PressStory}"/>
                   <BeginStoryboard>
                     <Storyboard>
-                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Margin" To="0 2 0 0" Duration="0:0:0.05"/>
-                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" To="0" Duration="0:0:0.05"/>
+                      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource ShadowColor}" Duration="0:0:0.1"/>
                     </Storyboard>
                   </BeginStoryboard>
                 </Trigger.EnterActions>
                 <Trigger.ExitActions>
-                  <BeginStoryboard>
-                    <Storyboard>
-                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Margin" To="0 0 0 0" Duration="0:0:0.05"/>
-                      <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" To="0 0 0 2" Duration="0:0:0.05"/>
-                    </Storyboard>
-                  </BeginStoryboard>
+                  <BeginStoryboard Storyboard="{StaticResource ReleaseStory}"/>
+                  <BeginStoryboard Storyboard="{StaticResource LeaveStory}"/>
                 </Trigger.ExitActions>
-              </Trigger>
-              <Trigger Property="IsEnabled" Value="False">
-                <Setter TargetName="border" Property="Margin" Value="0 2 0 0"/>
-                <Setter TargetName="border" Property="BorderThickness" Value="0 0 0 0"/>
-                <Setter Property="Background" Value="{StaticResource ShadowBrush}"/>
-                <Setter Property="Foreground" Value="#33D2D2D2"/>
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
@@ -188,11 +198,7 @@
           </BeginStoryboard>
         </EventTrigger>
         <EventTrigger RoutedEvent="MouseLeave">
-          <BeginStoryboard>
-            <Storyboard>
-              <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource BaseColor}" Duration="0:0:0.1"/>
-            </Storyboard>
-          </BeginStoryboard>
+          <BeginStoryboard Storyboard="{StaticResource LeaveStory}"/>
         </EventTrigger>
       </Style.Triggers>
     </Style>
@@ -333,22 +339,26 @@
     </Style>
 
     <Style TargetType="ScrollViewer">
-      <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Top" />
+      <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ScrollViewer">
-            <Grid>
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-              </Grid.ColumnDefinitions>
-              <ScrollContentPresenter/>
-              <ScrollBar Name="PART_VerticalScrollBar" Value="{TemplateBinding VerticalOffset}"
-                     Maximum="{TemplateBinding ScrollableHeight}" Style="{StaticResource ScrollBar}"
-                     ViewportSize="{TemplateBinding ViewportHeight}"
-                     Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Grid.Column="1">
-              </ScrollBar>
-            </Grid>
+            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+              <Grid Background="{TemplateBinding Background}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <ScrollContentPresenter Name="ScrollContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}"/>
+                <ScrollBar Name="PART_VerticalScrollBar" Value="{TemplateBinding VerticalOffset}"
+                         Orientation="Vertical" Minimum="0" Style="{StaticResource ScrollBar}"
+                         Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"
+                         Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Grid.Column="1">
+                </ScrollBar>
+              </Grid>
+            </Border>
           </ControlTemplate>
         </Setter.Value>
       </Setter>
