@@ -103,21 +103,5 @@ namespace LeagueClient.ClientUI.Controls {
         InGameText.Text = $"In {QueueType.Values[Game.QueueTypeName]} for {TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
       }
     }
-
-    private void UserControl_MouseEnter(object sender, MouseEventArgs e) {
-      BeginStoryboard(App.ButtonHover);
-    }
-
-    private void UserControl_MouseLeave(object sender, MouseEventArgs e) {
-      BeginStoryboard(App.ButtonUnHover);
-    }
-
-    private void UserControl_MouseDown(object sender, MouseButtonEventArgs e) {
-      BeginStoryboard(App.ButtonPress);
-    }
-
-    private void UserControl_MouseUp(object sender, MouseButtonEventArgs e) {
-      BeginStoryboard(App.ButtonRelease);
-    }
   }
 }

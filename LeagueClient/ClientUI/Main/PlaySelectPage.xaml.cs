@@ -28,18 +28,26 @@ namespace LeagueClient.ClientUI.Main {
     private static dynamic GameTypesRef = JSON.ParseObject(LeagueClient.Properties.Resources.Games);
     private static List<string> Order = new List<string> { "CLASSIC", "ODIN", "ARAM" };
     
-    public BindingList<dynamic> GameGroups { get; private set; }
-    public BindingList<dynamic> GameModes { get; private set; }
-    public BindingList<dynamic> GameQueues { get; private set; }
+    public BindingList<dynamic> GameGroups { get; } = new BindingList<dynamic>();
+    public BindingList<dynamic> GameModes { get; } = new BindingList<dynamic>();
+    public BindingList<dynamic> GameQueues { get; } = new BindingList<dynamic>();
     private dynamic selected;
 
     public event EventHandler Close;
 
     public PlaySelectPage() {
-      GameGroups = new BindingList<dynamic>();
-      GameModes = new BindingList<dynamic>();
-      GameQueues = new BindingList<dynamic>();
+      InitializeComponent();
 
+      foreach (var item in GameTypesRef.Games)
+        if (item.Value.Games.Count > 0)
+          GameGroups.Add(item.Value);
+
+      GroupList.MouseUp += (src, e) => GroupSelected();
+      ModeList.MouseUp += (src, e) => ModeSelected();
+      QueueList.MouseUp += (src, e) => GameSelected();
+    }
+
+    public static void Setup() {
       Func<dynamic, bool> GameCheck = g => g.Queues.Count == 0;
       Func<dynamic, bool> QueueCheck = q => !Client.AvailableQueues.ContainsKey(q["Id"]);
       foreach (var group in GameTypesRef.Games.Values) {
@@ -52,15 +60,6 @@ namespace LeagueClient.ClientUI.Main {
         foreach (var item in games.ToList())
           group.Games.Remove(item);
       }
-
-      foreach (var item in GameTypesRef.Games)
-        if (item.Value.Games.Count > 0)
-          GameGroups.Add(item.Value);
-
-      InitializeComponent();
-      GroupList.MouseUp += (src, e) => GroupSelected();
-      ModeList.MouseUp += (src, e) => ModeSelected();
-      QueueList.MouseUp += (src, e) => GameSelected();
     }
 
     void GameSelected() {
@@ -160,7 +159,7 @@ namespace LeagueClient.ClientUI.Main {
           //Client.QueueManager.CreateLobby(selected.Config, selected.Bots);
           break;
         case 3:
-          Client.QueueManager.ShowPage(new CapLobbyPage());
+          Client.QueueManager.ShowPage(new CapLobbyPage(true);
           RiotCalls.CapService.CreateGroup();
           break;
       }

@@ -35,10 +35,10 @@ namespace LeagueClient.ClientUI.Controls {
     public bool Unread {
       get { return unread; }
       set {
-        if (value)
-          (App.UnreadPulse).Begin(ChatOpenButt, true);
-        else
-          (App.UnreadPulse).Remove(ChatOpenButt);
+        //if (value)
+        //  (App.UnreadPulse).Begin(ChatOpenButt, true);
+        //else
+        //  (App.UnreadPulse).Remove(ChatOpenButt);
         unread = value;
       }
     }

@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
       SnapsToDevicePixels="True">
-  <Grid Style="{StaticResource Back2}" Width="{StaticResource Width}" Height="{StaticResource Height}">
+  <Grid Background="{StaticResource Back2Brush}" Width="{StaticResource Width}" Height="{StaticResource Height}">
     <Grid.RowDefinitions>
       <RowDefinition Height="150"/>
       <RowDefinition Height="auto"/>
@@ -26,7 +26,7 @@
     <Image Name="BackStatic" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center"/>
     <MediaElement Name="BackAnimation" Grid.RowSpan="50" Grid.ColumnSpan="50" MediaEnded="BackAnimation_MediaEnded"
                   Stretch="UniformToFill" VerticalAlignment="Center" UnloadedBehavior="Manual"/>
-    <UserControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="10" Margin="-6 -5" Style="{StaticResource Back1}"/>
+    <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="10" Margin="-6 -5" Background="{StaticResource Back1Brush}"/>
     <TextBlock Style="{StaticResource Control}" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="0 0 0 4">Username:</TextBlock>
     <TextBox TabIndex="0" Grid.Row="2" Grid.Column="1" Name="UserBox"/>
     <TextBlock Style="{StaticResource Control}" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="0 8 0 4">Password:</TextBlock>

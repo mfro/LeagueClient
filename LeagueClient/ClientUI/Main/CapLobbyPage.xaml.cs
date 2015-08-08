@@ -46,10 +46,10 @@ namespace LeagueClient.ClientUI.Main {
     public bool CanInvite { get; private set; }
     public event EventHandler Close;
 
-    public CapLobbyPage() {
+    public CapLobbyPage(bool isCreating) {
       InitializeComponent();
       var spells = ((AsObject) Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap)["CLASSIC"] as SummonerGameModeSpells;
-      me = new CapPlayer (0) { Spell1 = LeagueData.GetSpellData(spells.Spell1Id), Spell2 = LeagueData.GetSpellData(spells.Spell2Id) };
+      me = new CapPlayer (isCreating ? 0 : -1) { Spell1 = LeagueData.GetSpellData(spells.Spell1Id), Spell2 = LeagueData.GetSpellData(spells.Spell2Id) };
       me.Status = Logic.Cap.CapStatus.Choosing;
       me.PropertyChanged += Me_PropertyChanged;
       meControl = new CapMePlayer(me);
@@ -57,7 +57,7 @@ namespace LeagueClient.ClientUI.Main {
       state = CapLobbyState.Building;
 
       SharedInit();
-      CanInvite = true;
+      CanInvite = isCreating;
     }
 
     public CapLobbyPage(CapPlayer solo) {
@@ -181,6 +181,7 @@ namespace LeagueClient.ClientUI.Main {
         if (players[i].Status != CapStatus.Present && players[i].Status != CapStatus.Ready) canReady = false;
       }
       ReadyButt.Visibility = canReady ? Visibility.Visible : Visibility.Collapsed;
+      InviteButt.Visibility = CanInvite ? Visibility.Visible : Visibility.Collapsed;
       PlayerList.ItemsSource = list;
     }
 

@@ -20,6 +20,7 @@ using RtmpSharp.Net;
 using System.Security.Cryptography;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
+using System.Windows.Threading;
 
 namespace LeagueClient {
   /// <summary>
@@ -36,17 +37,25 @@ namespace LeagueClient {
       if (!PatcherPage.NeedsPatch()) {
         PatchComplete();
       } else
-        Content = new PatcherPage();
+        ContentFrame.Content = new PatcherPage();
     }
 
     public void LoginComplete() {
       var page = new ClientUI.Main.ClientPage();
       Client.QueueManager = page;
-      Content = page;
+      ContentFrame.Content = page;
     }
 
     public void PatchComplete() {
-      Content = new LoginPage();
+      ContentFrame.Content = new LoginPage();
+    }
+
+    private void Close_Click(object sender, RoutedEventArgs e) {
+      Close();
+    }
+
+    private void Minimize_Click(object sender, RoutedEventArgs e) {
+      WindowState = WindowState.Minimized;
     }
   }
 }

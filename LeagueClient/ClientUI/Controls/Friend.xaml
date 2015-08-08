@@ -3,10 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave"
-             MouseDown="UserControl_MouseDown" MouseUp="UserControl_MouseUp"
              Background="{StaticResource Back1Brush}" Cursor="Hand" BorderBrush="White">
-  <Grid Width="240" Height="48">
+  <Grid Width="280" Height="48">
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
       <RowDefinition Height="auto"/>
@@ -21,4 +19,18 @@
     <TextBlock Style="{StaticResource Control}" Name="MsgText" FontSize="11" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
     <TextBlock Style="{StaticResource Control}" Name="InGameText" FontSize="11" Grid.Column="1" Grid.Row="2" VerticalAlignment="Top"/>
   </Grid>
+  <UserControl.Triggers>
+    <EventTrigger RoutedEvent="MouseDown">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonPress}"/>
+    </EventTrigger>
+    <EventTrigger RoutedEvent="MouseUp">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonHover}"/>
+    </EventTrigger>
+    <EventTrigger RoutedEvent="MouseEnter">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonHover}"/>
+    </EventTrigger>
+    <EventTrigger RoutedEvent="MouseLeave">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonLeave}"/>
+    </EventTrigger>
+  </UserControl.Triggers>
 </UserControl>

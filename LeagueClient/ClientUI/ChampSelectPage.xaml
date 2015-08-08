@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
-  <Border Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}" Padding="4">
+  <Border Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}" Padding="4">
     <Grid>
       <Grid.Resources>
         <Style TargetType="Label" BasedOn="{StaticResource Control}">
@@ -320,7 +320,7 @@
         </Border>
       </Grid>
 
-      <Grid Grid.Column="1" Grid.RowSpan="2" Margin="4 0" Style="{StaticResource Back1}">
+      <Grid Grid.Column="1" Grid.RowSpan="2" Margin="4 0" Background="{StaticResource Back1Brush}">
         <Grid.RowDefinitions>
           <RowDefinition Height="300"/>
           <RowDefinition Height="70"/>
@@ -373,7 +373,7 @@
             <Button Grid.Row="2" Width="80" Height="30">Lock In</Button>
           </Grid>
         </Grid>
-        <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Style="{StaticResource Back1}">
+        <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Background="{StaticResource Back1Brush}">
           <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
@@ -689,7 +689,7 @@
         </TextBlock>
       </Border>
 
-      <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Margin="4 0" Style="{StaticResource Back1}">
+      <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Margin="4 0" Background="{StaticResource Back1Brush}">
         <Grid.RowDefinitions>
           <RowDefinition Height="300"/>
           <RowDefinition Height="70"/>
@@ -772,7 +772,7 @@
                   Grid.Row="2" Grid.Column="2">Lock In</Button>
           </Grid>
         </Grid>
-        <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Style="{StaticResource Back1}">
+        <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Background="{StaticResource Back1Brush}">
           <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>

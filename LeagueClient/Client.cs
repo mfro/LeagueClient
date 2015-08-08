@@ -17,6 +17,7 @@ using MyChampDTO = MFroehlich.League.DataDragon.ChampionDto;
 using MFroehlich.Parsing.DynamicJSON;
 using LeagueClient.Logic;
 using LeagueClient.ClientUI.Main;
+using System.Threading;
 
 namespace LeagueClient {
   public static class Client {
@@ -254,9 +255,10 @@ namespace LeagueClient {
             var payload = JSON.ParseObject(invite.GameMetaData);
             QueueManager.ShowNotification(Alert.TeambuilderInvite(invite.Inviter.summonerName, (s, b) => {
               if (b) {
-                var lobby = new CapLobbyPage();
+                var lobby = new CapLobbyPage(false);
                 RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
                 RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
+                QueueManager.ShowPage(lobby);
               }
             }));
           }
@@ -302,6 +304,7 @@ namespace LeagueClient {
     private static void GotQueues(Task<GameQueueConfig[]> Task) {
       AvailableQueues = new Dictionary<int, GameQueueConfig>();
       foreach (var item in Task.Result) AvailableQueues.Add((int) item.Id, item);
+      new Thread(PlaySelectPage.Setup).Start();
     }
 
     public static string Substring(this string str, string prefix, string suffix) {

@@ -37,7 +37,7 @@
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
 
-    <ListBox Name="ServiceList" Style="{StaticResource Back1}" BorderThickness="0"
+    <ListBox Name="ServiceList" Background="{StaticResource Back1Brush}" BorderThickness="0"
              ItemContainerStyle="{StaticResource ItemStyle}" ItemsSource="{Binding Services}">
       <ListBox.ItemTemplate>
         <DataTemplate>
@@ -46,7 +46,7 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <ListBox Name="MethodList" Style="{StaticResource Back1}" BorderThickness="0" Grid.Column="2"
+    <ListBox Name="MethodList" Background="{StaticResource Back1Brush}" BorderThickness="0" Grid.Column="2"
              ItemContainerStyle="{StaticResource ItemStyle}" ItemsSource="{Binding Methods}">
       <ListBox.ItemTemplate>
         <DataTemplate>

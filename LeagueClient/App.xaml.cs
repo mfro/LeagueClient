@@ -17,9 +17,8 @@ namespace LeagueClient {
   public partial class App : Application {
     [Resource]
     public static Storyboard
-      ButtonHover, ButtonUnHover, ButtonPress, ButtonRelease,
-      FadeIn, FadeOut, ComboItemEnter, ComboItemLeave,
-      UnreadPulse;
+      //ButtonHover, ButtonUnHover, ButtonPress, ButtonRelease,
+      FadeIn, FadeOut, ComboItemEnter, ComboItemLeave;
 
     [Resource]
     public static SolidColorBrush
@@ -36,12 +35,12 @@ namespace LeagueClient {
     }
 
     public void ButtonMouseLeave(object src, EventArgs args) {
-      var butt = (Button) src;
-      var release = ButtonRelease;
-      try {
-        release.GetCurrentState(butt);
-        release.Remove(butt);
-      } catch { }
+      //var butt = (Button) src;
+      //var release = ButtonRelease;
+      //try {
+      //  release.GetCurrentState(butt);
+      //  release.Remove(butt);
+      //} catch { }
     }
 
     public static void Focus(UIElement el) {

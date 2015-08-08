@@ -10,7 +10,7 @@
       <Setter Property="Margin" Value="8 0"/>
     </Style>
   </Page.Resources>
-  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}">
+  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="35"/>
       <RowDefinition Height="*"/>

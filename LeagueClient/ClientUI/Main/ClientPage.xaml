@@ -29,18 +29,18 @@
       <Style.Triggers>
         <Trigger Property="IsMouseOver" Value="True">
           <Trigger.EnterActions>
-            <BeginStoryboard Storyboard="{StaticResource ButtonHover}"/>
+            <!--<BeginStoryboard Storyboard="{StaticResource ButtonHover}"/>-->
           </Trigger.EnterActions>
           <Trigger.ExitActions>
-            <BeginStoryboard Storyboard="{StaticResource ButtonUnHover}"/>
+            <!--<BeginStoryboard Storyboard="{StaticResource ButtonUnHover}"/>-->
           </Trigger.ExitActions>
         </Trigger>
         <Trigger Property="IsPressed" Value="True">
           <Trigger.EnterActions>
-            <BeginStoryboard Storyboard="{StaticResource ButtonPress}"/>
+            <!--<BeginStoryboard Storyboard="{StaticResource ButtonPress}"/>-->
           </Trigger.EnterActions>
           <Trigger.ExitActions>
-            <BeginStoryboard Storyboard="{StaticResource ButtonRelease}"/>
+            <!--<BeginStoryboard Storyboard="{StaticResource ButtonRelease}"/>-->
           </Trigger.ExitActions>
         </Trigger>
       </Style.Triggers>
@@ -49,33 +49,34 @@
       <DoubleAnimation Storyboard.TargetProperty="Opacity" BeginTime="0:0:3.0" Duration="0:0:1.0"/>
     </Storyboard>
   </Page.Resources>
-  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Style="{StaticResource Back2}">
+  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="55"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="25"/>
     </Grid.RowDefinitions>
     <Frame Name="SubPage" Grid.Row="1" NavigationUIVisibility="Hidden"/>
-    <Grid Name="Header" Style="{StaticResource Back1}" Grid.Row="0">
+    <Grid Name="Header" Background="{StaticResource Back1Brush}" Grid.Row="0" MouseDown="Header_MouseDown">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="90"/>
         <ColumnDefinition Width="60"/>
         <ColumnDefinition Width="30"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="240"/>
+        <ColumnDefinition Width="40"/>
       </Grid.ColumnDefinitions>
       <Button Margin="10" Content="Home" Click="Home_Click" FontSize="14"/>
-      <Button Margin="12" Content="Debug" Click="Debug_Click" FontSize="14" Grid.Column="3" HorizontalAlignment="Right" Width="70"/>
+      <Button Margin="0,12,12,12" Content="Debug" Click="Debug_Click" FontSize="14" Grid.Column="3" HorizontalAlignment="Right" Width="70"/>
       <Button Grid.Column="2" Style="{StaticResource CircleButton}" Height="30" Width="30"
-              Click="AlertButton_Click" Visibility="Hidden" Opacity="0" Name="AlertButton">
+              Click="AlertButton_Click" Visibility="Hidden" Opacity="0" Name="AlertButton" Margin="0,12,0,13">
         <Path Fill="{StaticResource FontBrush}" Stroke="{StaticResource FontBrush}"
               Data="M 13 5 L 17 5 17 19 13 19 Z M 13 22 L 17 22 L 17 25 L 13 25 Z"
               Name="AlertExclamation" IsHitTestVisible="False" Width="30" Height="30"/>
       </Button>
       <Border Width="150" Height="40" Grid.Column="3" HorizontalAlignment="Left"
-              Margin="50 0" Name="StatusPanel"/>
-      <Border Width="100" Height="40" Grid.ColumnSpan="5" Name="PlayControl"/>
-      <Grid Name="Profile" Style="{StaticResource Back1}" Grid.Column="4">
+              Margin="50,8,0,7" Name="StatusPanel"/>
+      <Border Width="100" Height="40" Name="PlayControl" Grid.ColumnSpan="6"/>
+      <Grid Name="Profile" Grid.Column="4" Grid.ColumnSpan="2">
         <Grid.RowDefinitions>
           <RowDefinition Height="19"/>
           <RowDefinition Height="*"/>
@@ -97,7 +98,7 @@
         <TextBlock Style="{StaticResource Control}" FontSize="13" Name="CurrentStatus" Foreground="{StaticResource ChatBrush}" Grid.Column="2" Grid.Row="2" Text="Online" Grid.ColumnSpan="2"/>
       </Grid>
     </Grid>
-    <Grid Name="Footer" Style="{StaticResource Back1}" Grid.Row="2">
+    <Grid Name="Footer" Background="{StaticResource Back1Brush}" Grid.Row="2">
       <ItemsControl Name="OpenChatList" Margin="160 -310 0 0" FlowDirection="LeftToRight" HorizontalAlignment="Left">
         <ItemsControl.ItemContainerStyle>
           <Style TargetType="Control">
@@ -113,7 +114,7 @@
       <Button Grid.Column="1" Margin="2" Click="ToggleChat" Padding="0"
               HorizontalAlignment="Right" Width="{StaticResource ChatButtonWidth}">Chat</Button>
     </Grid>
-    <Grid Name="ChatPanel" Grid.Row="1" HorizontalAlignment="Right" Width="243" Style="{StaticResource Back1}"
+    <Grid Name="ChatPanel" Grid.Row="1" HorizontalAlignment="Right" Width="283" Background="{StaticResource Back1Brush}"
           Grid.RowSpan="2" Visibility="Collapsed">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="4"/>
@@ -138,7 +139,7 @@
     </Grid>
 
     <Grid Margin="45 50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="250" MaxHeight="300"
-          Name="AlertPopup" Grid.RowSpan="3">
+          Name="AlertPopup" Grid.RowSpan="3" Visibility="Collapsed" Opacity="0">
       <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="1" Margin="3"/>
       <Border BorderBrush="{StaticResource Back1Brush}" BorderThickness="3 0 3 3"/>
       <Border Background="{StaticResource ForeBrush}" Name="QuickAlertBack" Margin="4">

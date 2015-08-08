@@ -25,7 +25,6 @@ using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using MFroehlich.Parsing.DynamicJSON;
-using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -196,7 +195,7 @@ namespace LeagueClient.ClientUI.Main {
 
       ChatOpen = !chatOpen;
     }
-
+    
     #region Queue Related Event Listeners
     private void Queue_Popped(object src, QueuePoppedEventArgs args) {
       if (CheckInvoke(Queue_Popped, src, args)) return;
@@ -279,5 +278,9 @@ namespace LeagueClient.ClientUI.Main {
       ShowPage(new DebugPage());
     }
     #endregion
+
+    private void Header_MouseDown(object sender, MouseButtonEventArgs e) {
+      if (e.ChangedButton == MouseButton.Left) Client.MainWindow.DragMove();
+    }
   }
 }

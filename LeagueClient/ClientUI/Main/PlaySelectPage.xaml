@@ -22,8 +22,9 @@
         </Setter.Value>
       </Setter>
     </Style>
-    <Style TargetType="ListBox" BasedOn="{StaticResource Back1}">
+    <Style TargetType="ListBox">
       <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
       <Setter Property="ItemContainerStyle" Value="{StaticResource ItemStyle}"/>
       <Setter Property="ItemTemplate">
         <Setter.Value>
@@ -43,7 +44,7 @@
       </Setter>
     </Style>
   </Page.Resources>
-  <Grid Width="{StaticResource Width}" Height="{StaticResource PageHeight}" Style="{StaticResource Back2}">
+  <Grid Width="{StaticResource Width}" Height="{StaticResource PageHeight}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="40"/>
       <RowDefinition Height="190"/>
