@@ -95,6 +95,9 @@
     <Compile Include="ClientUI\Controls\DefaultQueuer.xaml.cs">
       <DependentUpon>DefaultQueuer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\InvitePopup.xaml.cs">
+      <DependentUpon>InvitePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\PopupSelector.xaml.cs">
       <DependentUpon>PopupSelector.xaml</DependentUpon>
     </Compile>
@@ -317,6 +320,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\DefaultQueuer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\InvitePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

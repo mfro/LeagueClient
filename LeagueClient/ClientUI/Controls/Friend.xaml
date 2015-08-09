@@ -14,10 +14,10 @@
       <ColumnDefinition Width="48"/>
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
-    <Image Name="ProfileIcon" Grid.Column="0" Margin="4" Grid.RowSpan="3" RenderOptions.BitmapScalingMode="HighQuality"/>
-    <TextBlock Style="{StaticResource Control}" Name="NameText" Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom"/>
+    <Image Source="{Binding SummonerIcon}" Grid.Column="0" Margin="4" Grid.RowSpan="3" RenderOptions.BitmapScalingMode="HighQuality"/>
+    <TextBlock Style="{StaticResource Control}" Text="{Binding UserName}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom"/>
     <TextBlock Style="{StaticResource Control}" Name="MsgText" FontSize="11" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
-    <TextBlock Style="{StaticResource Control}" Name="InGameText" FontSize="11" Grid.Column="1" Grid.Row="2" VerticalAlignment="Top"/>
+    <TextBlock Style="{StaticResource Control}" Text="{Binding InGame}" Name="InGameText" FontSize="11" Grid.Column="1" Grid.Row="2" VerticalAlignment="Top"/>
   </Grid>
   <UserControl.Triggers>
     <EventTrigger RoutedEvent="MouseDown">

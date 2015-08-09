@@ -159,7 +159,7 @@ namespace LeagueClient.ClientUI.Main {
           //Client.QueueManager.CreateLobby(selected.Config, selected.Bots);
           break;
         case 3:
-          Client.QueueManager.ShowPage(new CapLobbyPage(true);
+          Client.QueueManager.ShowPage(new CapLobbyPage(true));
           RiotCalls.CapService.CreateGroup();
           break;
       }

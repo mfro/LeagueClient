@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,8 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for Friend.xaml
   /// </summary>
-  public partial class Friend : UserControl {
+  public partial class Friend : UserControl, INotifyPropertyChanged {
+    public BitmapImage SummonerIcon { get; private set; }
     public string UserName { get; private set; }
     public string InGame { get; private set; }
     public LeagueStatus Status { get; private set; }
@@ -41,12 +43,10 @@ namespace LeagueClient.ClientUI.Controls {
       User = item;
       UserName = User.Nickname;
       InGame = Status.GameStatus.Name;
+      SummonerIcon = LeagueData.GetProfileIconImage(Status.ProfileIcon);
       InitializeComponent();
-      ProfileIcon.Source = LeagueData.GetProfileIconImage(Status.ProfileIcon);
-      NameText.Text = UserName;
       if (Status.Message.Length > 0) MsgText.Text = Status.Message;
       else MsgText.Visibility = System.Windows.Visibility.Collapsed;
-      InGameText.Text = InGame;
       RiotCalls.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
       RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
 
@@ -56,6 +56,8 @@ namespace LeagueClient.ClientUI.Controls {
         case "dnd": InGameText.Foreground = App.BusyBrush; break;
       }
     }
+
+    public event PropertyChangedEventHandler PropertyChanged;
 
     private void FoundSpectatorInfo(Task<PlatformGameLifecycleDTO> t) {
       if (t.IsFaulted) {
@@ -75,7 +77,8 @@ namespace LeagueClient.ClientUI.Controls {
       Summoner = summ.Result;
       if (Summoner.ProfileIconId != Status.ProfileIcon)
         Dispatcher.Invoke(new Action(() =>
-          ProfileIcon.Source = LeagueData.GetProfileIconImage(Summoner.ProfileIconId)));
+          SummonerIcon = LeagueData.GetProfileIconImage(Summoner.ProfileIconId)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SummonerIcon)));
       if(Status.GameStatus == LeagueStatus.InGame)
         RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", (long) Summoner.SummonerId)
           .ContinueWith(GotGameInfo);

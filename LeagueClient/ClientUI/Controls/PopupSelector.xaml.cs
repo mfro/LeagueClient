@@ -34,17 +34,20 @@ namespace LeagueClient.ClientUI.Controls {
             MasteryEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
             ChampSelector.Visibility = Visibility.Visible;
+            TitleBlock.Text = "Select a Champion";
             break;
           case Selector.Masteries:
             MasteryEditor.Reset();
             ChampSelector.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Visible;
+            TitleBlock.Text = "Select Masteries";
             break;
           case Selector.Spells:
             ChampSelector.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Visible;
+            TitleBlock.Text = "Select Summoner Spells";
             break;
         }
       }
