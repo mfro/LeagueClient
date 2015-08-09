@@ -6,7 +6,8 @@
       SnapsToDevicePixels="True">
   <Grid Background="{StaticResource Back2Brush}" Width="{StaticResource Width}" Height="{StaticResource Height}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="150"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="128"/>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="auto"/>
@@ -26,18 +27,18 @@
     <Image Name="BackStatic" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center"/>
     <MediaElement Name="BackAnimation" Grid.RowSpan="50" Grid.ColumnSpan="50" MediaEnded="BackAnimation_MediaEnded"
                   Stretch="UniformToFill" VerticalAlignment="Center" UnloadedBehavior="Manual"/>
-    <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="10" Margin="-6 -5" Background="{StaticResource Back1Brush}"/>
-    <TextBlock Style="{StaticResource Control}" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="0 0 0 4">Username:</TextBlock>
-    <TextBox TabIndex="0" Grid.Row="2" Grid.Column="1" Name="UserBox"/>
-    <TextBlock Style="{StaticResource Control}" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="0 8 0 4">Password:</TextBlock>
-    <PasswordBox TabIndex="1" Grid.Row="4" Grid.Column="1" Name="PassBox"/>
-    <Button TabIndex="3" Grid.Row="5" Grid.Column="1" Margin="0 8" Padding="10 1 10 2" HorizontalAlignment="Right"
+    <Border Grid.Row="2" Grid.Column="1" Grid.RowSpan="10" Margin="-6 -5" Background="{StaticResource Back1Brush}"/>
+    <TextBlock Style="{StaticResource Control}" FontSize="14" Grid.Row="2" Grid.Column="1" Margin="0 0 0 4">Username:</TextBlock>
+    <TextBox TabIndex="0" Grid.Row="3" Grid.Column="1" Name="UserBox"/>
+    <TextBlock Style="{StaticResource Control}" FontSize="14" Grid.Row="4" Grid.Column="1" Margin="0 8 0 4">Password:</TextBlock>
+    <PasswordBox TabIndex="1" Grid.Row="5" Grid.Column="1" Name="PassBox"/>
+    <Button TabIndex="3" Grid.Row="6" Grid.Column="1" Margin="0 8" Padding="10 1 10 2" HorizontalAlignment="Right"
              IsDefault="True" Click="Button_Click" Name="LoginButt">Login</Button>
-    <CheckBox Name="AutoLoginToggle" Grid.Column="1" Grid.Row="5" FontSize="12"
+    <CheckBox Name="AutoLoginToggle" Grid.Column="1" Grid.Row="6" FontSize="12"
               Checked="AnimationToggled" Unchecked="AnimationToggled" TabIndex="2"/>
-    <TextBlock Style="{StaticResource Control}" Grid.Column="1" Grid.Row="5" Margin="20 0 0 0" FontSize="12"
+    <TextBlock Style="{StaticResource Control}" Grid.Column="1" Grid.Row="6" Margin="20 0 0 0" FontSize="12"
                Text="Auto Login" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-    <Grid Name="Progress" Visibility="Hidden" Grid.Row="6" Grid.Column="1" Margin="0 10 0 0">
+    <Grid Name="Progress" Visibility="Hidden" Grid.Row="7" Grid.Column="1" Margin="0 10 0 0">
       <Grid.RowDefinitions>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
@@ -45,9 +46,10 @@
       <TextBlock Style="{StaticResource Control}" Grid.Row="0" FontSize="12">Logging in...</TextBlock>
       <my:MyProgressBar Grid.Row="1" Height="20" Background="Transparent" Margin="-6 4" x:Name="LoginBar"/>
     </Grid>
-    <CheckBox Name="AnimationToggle" Grid.Column="1" Grid.Row="9" FontSize="12"
+    <CheckBox Name="AnimationToggle" Grid.Column="1" Grid.Row="10" FontSize="12"
               Checked="AnimationToggled" Unchecked="AnimationToggled" IsChecked="True"/>
-    <TextBlock Style="{StaticResource Control}" Grid.Column="1" Grid.Row="9" Margin="20 0 0 0" FontSize="12"
+    <TextBlock Style="{StaticResource Control}" Grid.Column="1" Grid.Row="10" Margin="20 0 0 0" FontSize="12"
                Text="Background Animation"/>
+    <Border Background="{StaticResource Back1Brush}" Grid.ColumnSpan="10" MouseDown="Border_MouseDown"/>
   </Grid>
 </Page>

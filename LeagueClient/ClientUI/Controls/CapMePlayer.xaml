@@ -37,8 +37,8 @@
             HorizontalAlignment="Right" VerticalAlignment="Center" Margin="15 0" Grid.Column="2" Grid.RowSpan="2"
             Visibility="Collapsed"/>
 
-      <TextBlock Style="{StaticResource Control}" Name="SummonerName" FontSize="14">Stupendous Man</TextBlock>
-      <TextBlock Style="{StaticResource Control}" Name="ChampionName" FontSize="12" Grid.Row="1">Draaaaveen</TextBlock>
+      <TextBlock Style="{StaticResource Control}" Name="SummonerName" FontSize="14"/>
+      <TextBlock Style="{StaticResource Control}" Name="ChampionName" FontSize="12" Grid.Row="1"/>
       <TextBlock Style="{StaticResource Control}" VerticalAlignment="Bottom" FontSize="12" Grid.Row="2" Name="PositionLabel">Position</TextBlock>
       <TextBlock Style="{StaticResource Control}" VerticalAlignment="Bottom" Grid.Column="2" FontSize="12" Grid.Row="2" Name="RoleLabel">Role</TextBlock>
       <TextBlock Style="{StaticResource Control}" Grid.Row="3" FontSize="14" VerticalAlignment="Bottom" Text="{Binding CapPlayer.Position}"/>

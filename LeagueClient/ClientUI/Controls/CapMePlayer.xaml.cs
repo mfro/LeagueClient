@@ -61,14 +61,17 @@ namespace LeagueClient.ClientUI.Controls {
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
 
       CapPlayer.PropertyChanged += (s, e) => Dispatcher.Invoke((Action<string>) UpdateChild, e.PropertyName);
-      PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED); ; //new string[] { "Top Lane", "Middle Lane", "Bottom Lane", "Jungle" };
-      RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED); //new string[] { "Assassin", "Fighter", "Mage", "Marksman", "Support", "Tank" };
+      PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
+      RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED);
       UpdateBooks();
+      var spells = Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
+      CapPlayer.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
+      CapPlayer.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
     }
 
     private void UpdateChild(string property) {
       PlayerUpdate?.Invoke(this, new EventArgs());
-      if (property.Equals("Champion")) ChampionName.Text = CapPlayer.Champion.name;
+      ChampionName.Text = CapPlayer.Champion?.name;
       Check.Visibility = (CapPlayer.Status == CapStatus.Ready) ? Visibility.Visible : Visibility.Collapsed;
     }
 

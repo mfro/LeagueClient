@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RtmpSharp.IO;
 
 namespace LeagueClient.Logic.Riot.Platform
@@ -11,7 +12,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public object SummonerDefaultSpellsJson { get; set; }
 
         [SerializedName("summonerDefaultSpellMap")]
-        public object SummonerDefaultSpellMap { get; set; }
+        public Dictionary<string, SummonerGameModeSpells>  SummonerDefaultSpellMap { get; set; }
 
         [SerializedName("summonerId")]
         public Double SummonerId { get; set; }

@@ -48,13 +48,12 @@ namespace LeagueClient.ClientUI.Main {
 
     public CapLobbyPage(bool isCreating) {
       InitializeComponent();
-      var spells = ((AsObject) Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap)["CLASSIC"] as SummonerGameModeSpells;
-      me = new CapPlayer (isCreating ? 0 : -1) { Spell1 = LeagueData.GetSpellData(spells.Spell1Id), Spell2 = LeagueData.GetSpellData(spells.Spell2Id) };
+      me = new CapPlayer(isCreating ? 0 : -1);
       me.Status = Logic.Cap.CapStatus.Choosing;
       me.PropertyChanged += Me_PropertyChanged;
       meControl = new CapMePlayer(me);
       FindAnotherButt.Visibility = Visibility.Collapsed;
-      state = CapLobbyState.Building;
+      state = CapLobbyState.Inviting;
 
       SharedInit();
       CanInvite = isCreating;
@@ -102,6 +101,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void JoinChat() {
+      if (chatRoom != null) return;
       chatRoom = Client.ChatManager.GetTeambuilderRoom(GroupId, Status.ChatKey);
       chatRoom.OnJoin += room => Dispatcher.Invoke(() => ShowLobbyMessage("Joined chat lobby"));
       chatRoom.OnParticipantJoin += (s, e) => Dispatcher.Invoke(() => ShowLobbyMessage(e.Nick + " has joined the lobby"));
@@ -119,7 +119,7 @@ namespace LeagueClient.ClientUI.Main {
     private void ShowLobbyMessage(string message) {
       var tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
       tr.Text = message + '\n';
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Yellow);
+      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
       ChatScroller.ScrollToBottom();
     }
 
@@ -129,7 +129,7 @@ namespace LeagueClient.ClientUI.Main {
       tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.CornflowerBlue);
       tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
       tr.Text = message + '\n';
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.White);
+      tr.ApplyPropertyValue(TextElement.ForegroundProperty, App.FontBrush);
       ChatScroller.ScrollToBottom();
     }
 
@@ -167,7 +167,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void UpdateList() {
-      meControl.Editable = state == CapLobbyState.Building;
+      meControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
       bool canReady = true;
       var list = new List<Control>();
       for(int i = 0; i < players.Length; i++) {
@@ -180,21 +180,24 @@ namespace LeagueClient.ClientUI.Main {
         list.Add(c);
         if (players[i].Status != CapStatus.Present && players[i].Status != CapStatus.Ready) canReady = false;
       }
+      if (IsCaptain) ReadyButt.Content = "Start Matchmaking";
       ReadyButt.Visibility = canReady ? Visibility.Visible : Visibility.Collapsed;
       InviteButt.Visibility = CanInvite ? Visibility.Visible : Visibility.Collapsed;
+      SoloSearchButt.Visibility = IsCaptain && (state == CapLobbyState.Inviting || state == CapLobbyState.Selecting) ? Visibility.Visible : Visibility.Collapsed;
       PlayerList.ItemsSource = list;
     }
 
     private void MessageReceived(object sender, MessageHandlerArgs e) {
       if (e.Handled) return;
-      var status = e.InnerEvent.Body as LobbyStatus;
-      var response = e.InnerEvent.Body as LcdsServiceProxyResponse;
-      var invite = e.InnerEvent.Body as InvitationRequest;
-      var privelage = e.InnerEvent.Body as InvitePrivileges;
-      var removed = e.InnerEvent.Body as RemovedFromLobbyNotification;
-      if (status != null) {
+      LobbyStatus status;
+      LcdsServiceProxyResponse response;
+      InvitationRequest invite;
+      InvitePrivileges privelage;
+      RemovedFromLobbyNotification removed;
+      if ((status = e.InnerEvent.Body as LobbyStatus) != null) {
         GotLobbyStatus(status);
-      } else if (response != null) {
+        e.Handled = true;
+      } else if ((response = e.InnerEvent.Body as LcdsServiceProxyResponse) != null) {
         if (response.status.Equals("OK")) {
           JSONObject json = null;
           CapSlotData slot = null;
@@ -256,6 +259,7 @@ namespace LeagueClient.ClientUI.Main {
                 break;
               case "slotPopulatedV1":
                 slot.Status = "POPULATED";
+                if (players[slot.SlotId] == null) players[slot.SlotId] = new CapPlayer(slot.SlotId);
                 SetPlayerInfo(slot, players[slot.SlotId]);
                 Dispatcher.Invoke(UpdateList);
                 break;
@@ -294,7 +298,7 @@ namespace LeagueClient.ClientUI.Main {
                 break;
               case "soloSearchedForAnotherGroupV2":
                 if (slot.SlotId == me.SlotId) {
-                  Client.QueueManager.ShowQueuer(new CapSoloQueuer(me));
+                  Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(me)));
                   Client.MessageReceived -= MessageReceived;
                   if (Close != null) Close(this, new EventArgs());
                   if (json["reason"].Equals("KICKED"))
@@ -304,6 +308,9 @@ namespace LeagueClient.ClientUI.Main {
                 }
                 break;
               case "removedFromServiceV1":
+                if (state == CapLobbyState.Inviting)
+                  RiotCalls.GameInvitationService.Leave();
+                RiotCalls.CapService.Quit();
                 Client.MessageReceived -= MessageReceived;
                 Close?.Invoke(this, new EventArgs());
                 if (json["reason"].Equals("GROUP_DISBANDED"))
@@ -316,6 +323,20 @@ namespace LeagueClient.ClientUI.Main {
                     cap.Status = CapStatus.Searching;
                   }
                 }
+                Dispatcher.Invoke(UpdateList);
+                break;
+              case "soloSpecPhaseStartedV2":
+                state = CapLobbyState.Selecting;
+                for(int i = 0; i < players.Length; i++) {
+                  if(players[i] == null) {
+                    var cap = new CapPlayer(i);
+                    cap.Role = Role.Values[json["initialSoloSpecRole"]];
+                    cap.Position = Position.UNSELECTED;
+                    cap.Status = CapStatus.ChoosingAdvert;
+                    players[i] = cap;
+                  }
+                }
+                Dispatcher.Invoke(UpdateList);
                 break;
               default:
                 Client.Log("Unhandled response to {0}, {1}", response.methodName, response.payload);
@@ -335,18 +356,7 @@ namespace LeagueClient.ClientUI.Main {
         e.Handled = true;
       } else if((removed = e.InnerEvent.Body as RemovedFromLobbyNotification) != null) {
         switch (removed.removalReason) {
-          case "PROGRESSED":
-            for (int i = 0; i < players.Length; i++) {
-              if(players[i] == null) {
-                var cap = new CapPlayer(i);
-                cap.Status = CapStatus.ChoosingAdvert;
-                cap.Role = Role.ANY;
-                cap.Position = Position.UNSELECTED;
-                players[i] = cap;
-              }
-            }
-            Dispatcher.Invoke(UpdateList);
-            break;
+          case "PROGRESSED": break;
           default: break;
         }
         e.Handled = true;
@@ -402,8 +412,11 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void ReadyButt_Click(object sender, RoutedEventArgs e) {
-      bool ready = me.Status != CapStatus.Ready;
-      RiotCalls.CapService.IndicateReadyness(ready);
+      if (IsCaptain) {
+      } else {
+        bool ready = me.Status != CapStatus.Ready;
+        RiotCalls.CapService.IndicateReadyness(ready);
+      }
     }
 
     private void Me_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
@@ -461,15 +474,38 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void Spell_Select(object sender, SpellDto spell) {
-      if (spell1) me.Spell1 = spell;
-      else me.Spell2 = spell;
+      if (spell1) {
+        me.Spell1 = spell;
+        Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell1Id = spell.key;
+      } else {
+        me.Spell2 = spell;
+        Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell2Id = spell.key;
+      }
       RiotCalls.CapService.PickSpells(me.Spell1.key, me.Spell2.key);
       Popup.BeginStoryboard(App.FadeOut);
     }
     #endregion
 
-    private void InviteButt_Click(object sender, RoutedEventArgs e) {
+    private void SoloSearchButt_Click(object sender, RoutedEventArgs e) {
+      if (state == CapLobbyState.Inviting) {
+        RiotCalls.CapService.SpecCandidates();
 
+      } else
+        RiotCalls.CapService.SearchForCandidates();
+    }
+
+    private void InviteButt_Click(object sender, RoutedEventArgs e) {
+      InvitePopup.BeginStoryboard(App.FadeIn);
+    }
+
+    private void InvitePopup_Close(object sender, EventArgs e) {
+      InvitePopup.BeginStoryboard(App.FadeOut);
+      foreach(var user in InvitePopup.Users.Where(u => u.Value)) {
+        double id;
+        if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
+          RiotCalls.GameInvitationService.Invite(id);
+        } else Client.TryBreak("Cannot parse user " + user.Key);
+      }
     }
 
     public IQueuer HandleClose() {
@@ -483,6 +519,6 @@ namespace LeagueClient.ClientUI.Main {
   }
 
   public enum CapLobbyState {
-    Building, Searching, Matching
+    Inviting, Selecting, Searching, Matching
   }
 }

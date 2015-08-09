@@ -107,5 +107,9 @@ namespace LeagueClient.ClientUI {
         Client.Settings.Animation = false;
       }
     }
+
+    private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+      Client.MainWindow.DragMove();
+    }
   }
 }

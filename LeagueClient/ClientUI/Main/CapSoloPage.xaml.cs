@@ -100,7 +100,7 @@ namespace LeagueClient.ClientUI.Main {
       var id = RiotCalls.CapService.CreateSoloQuery(Player.CapPlayer);
       RiotCalls.AddHandler(id, response => {
         if (response.status.Equals("OK"))
-          Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player.CapPlayer));
+          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player.CapPlayer)));
       });
       if (Close != null) Close(this, new EventArgs());
     }

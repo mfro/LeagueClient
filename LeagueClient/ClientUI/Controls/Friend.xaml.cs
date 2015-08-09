@@ -26,38 +26,98 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for Friend.xaml
   /// </summary>
   public partial class Friend : UserControl, INotifyPropertyChanged {
-    public BitmapImage SummonerIcon { get; private set; }
-    public string UserName { get; private set; }
-    public string InGame { get; private set; }
-    public LeagueStatus Status { get; private set; }
-    public jabber.protocol.iq.Item User { get; private set; }
-    public ChatConversation Conversation { get; private set; }
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public BitmapImage SummonerIcon {
+      get { return summonerIcon; }
+      set { SetField(ref summonerIcon, value); }
+    }
+    public LeagueStatus Status {
+      get { return status; }
+      set { SetField(ref status, value); }
+    }
+    public string UserName {
+      get { return name; }
+      set { SetField(ref name, value); }
+    }
+    public string InGameString {
+      get { return inGameString; }
+      set { SetField(ref inGameString, value); }
+    }
+    public jabber.protocol.iq.Item User {
+      get { return user; }
+      set { SetField(ref user, value); }
+    }
+    public ChatConversation Conversation {
+      get { return conversation; }
+      set { SetField(ref conversation, value); }
+    }
+    public bool IsOffline {
+      get { return isOffline; }
+      set { SetField(ref isOffline, value); }
+    }
 
     public GameDTO Game { get; private set; }
-    public RiotAPI.CurrentGameAPI.CurrentGameInfo GameInfo { get; private set; }
     public PublicSummoner Summoner { get; private set; }
+    public RiotAPI.CurrentGameAPI.CurrentGameInfo GameInfo { get; private set; }
 
-    public Friend(Presence p, jabber.protocol.iq.Item item, ChatConversation convo) {
-      Status = new LeagueStatus(p.Status, p.Show);
+    private LeagueStatus status;
+    private string name;
+    private string inGameString;
+    private string statusMessage;
+    private jabber.protocol.iq.Item user;
+    private ChatConversation conversation;
+    private BitmapImage summonerIcon;
+    private bool isOffline;
+
+    public Friend(jabber.protocol.iq.Item item, ChatConversation convo) {
       Conversation = convo;
       User = item;
-      UserName = User.Nickname;
-      InGame = Status.GameStatus.Name;
-      SummonerIcon = LeagueData.GetProfileIconImage(Status.ProfileIcon);
+      UserName = item.Nickname;
+
       InitializeComponent();
-      if (Status.Message.Length > 0) MsgText.Text = Status.Message;
-      else MsgText.Visibility = System.Windows.Visibility.Collapsed;
+    }
+
+    public void Update(Presence p) {
+      Status = new LeagueStatus(p.Status, p.Show);
+      InGameString = Status.GameStatus.Name;
       RiotCalls.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
       RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
+      Dispatcher.Invoke(() => {
+        MsgText.Text = Status.Message;
+        if (string.IsNullOrWhiteSpace(Status.Message)) {
+          MsgText.Visibility = Visibility.Collapsed;
+        } else {
+          MsgText.Visibility = Visibility.Visible;
+        }
+        SummonerIcon = LeagueData.GetProfileIconImage(Status.ProfileIcon);
+        switch (p.Show) {
+          case "chat": InGameText.Foreground = App.ChatBrush; break;
+          case "away": InGameText.Foreground = App.AwayBrush; break;
+          case "dnd": InGameText.Foreground = App.BusyBrush; break;
+        }
+      });
+    }
 
-      switch (p.Show) {
-        case "chat": InGameText.Foreground = App.ChatBrush; break;
-        case "away": InGameText.Foreground = App.AwayBrush; break;
-        case "dnd": InGameText.Foreground = App.BusyBrush; break;
+    public void Update() {
+      if (Game == null) return;
+      if (GameInfo == null) {
+        long time = Status.TimeStamp - Client.GetMilliseconds();
+        InGameString = $"In {QueueType.Values[Game.QueueTypeName]} for ~{TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
+      } else if (GameInfo.gameStartTime == 0) {
+        InGameString = "Loading into " + QueueType.Values[Game.QueueTypeName];
+      } else {
+        long time = GameInfo.gameStartTime - Client.GetMilliseconds();
+        InGameString = $"In {QueueType.Values[Game.QueueTypeName]} for {TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
       }
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    private void SetField<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string name = null) {
+      if (!(field?.Equals(value) ?? false)) {
+        field = value;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+      }
+    }
 
     private void FoundSpectatorInfo(Task<PlatformGameLifecycleDTO> t) {
       if (t.IsFaulted) {
@@ -76,10 +136,9 @@ namespace LeagueClient.ClientUI.Controls {
       if (summ.Result == null) return;
       Summoner = summ.Result;
       if (Summoner.ProfileIconId != Status.ProfileIcon)
-        Dispatcher.Invoke(new Action(() =>
-          SummonerIcon = LeagueData.GetProfileIconImage(Summoner.ProfileIconId)));
+        App.Current.Dispatcher.Invoke(() => SummonerIcon = LeagueData.GetProfileIconImage(Status.ProfileIcon));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SummonerIcon)));
-      if(Status.GameStatus == LeagueStatus.InGame)
+      if (Status.GameStatus == LeagueStatus.InGame)
         RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", (long) Summoner.SummonerId)
           .ContinueWith(GotGameInfo);
     }
@@ -91,20 +150,6 @@ namespace LeagueClient.ClientUI.Controls {
       }
       if (game.Result == null) return;
       GameInfo = game.Result;
-      Dispatcher.Invoke(Update);
-    } 
-
-    public void Update() {
-      if (Game == null) return;
-      if (GameInfo == null) {
-        long time = Status.TimeStamp - Client.GetMilliseconds();
-        InGameText.Text = $"In {QueueType.Values[Game.QueueTypeName]} for ~{TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
-      } else if (GameInfo.gameStartTime == 0) {
-        InGameText.Text = "Loading into " + QueueType.Values[Game.QueueTypeName];
-      } else {
-        long time = GameInfo.gameStartTime - Client.GetMilliseconds();
-        InGameText.Text = $"In {QueueType.Values[Game.QueueTypeName]} for {TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
-      }
     }
   }
 }

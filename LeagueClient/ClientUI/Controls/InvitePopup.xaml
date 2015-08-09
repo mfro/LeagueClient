@@ -22,19 +22,37 @@
     <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" Name="ItemsList">
       <ItemsControl.ItemTemplate>
         <DataTemplate>
-          <Grid Height="48" Width="150">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="48"/>
-              <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Image Source="{Binding SummonerIcon}"/>
-            <TextBlock Style="{StaticResource Control}" Text="{Binding Name}" Grid.Column="1" VerticalAlignment="Center" Margin="4"/>
-          </Grid>
+          <UserControl Background="{StaticResource Back1Brush}" Height="48" Width="200" Margin="4 4 0 0">
+            <Grid MouseUp="Grid_MouseUp">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="48"/>
+                <ColumnDefinition/>
+              </Grid.ColumnDefinitions>
+              <Image Source="{Binding SummonerIcon}"/>
+              <TextBlock Style="{StaticResource Control}" Text="{Binding Name}" Grid.Column="1" VerticalAlignment="Center" Margin="4"/>
+              <Path Stroke="{StaticResource FocusBrush}" Data="M 0 10 L 10 20 L 28 0" StrokeThickness="5" Visibility="{Binding Visibility}"
+                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="15 0" Grid.Column="2"/>
+            </Grid>
+            <UserControl.Triggers>
+              <EventTrigger RoutedEvent="MouseDown">
+                <BeginStoryboard Storyboard="{StaticResource OldButtonPress}"/>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="MouseUp">
+                <BeginStoryboard Storyboard="{StaticResource OldButtonRelease}"/>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard Storyboard="{StaticResource OldButtonHover}"/>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard Storyboard="{StaticResource OldButtonLeave}"/>
+              </EventTrigger>
+            </UserControl.Triggers>
+          </UserControl>
         </DataTemplate>
       </ItemsControl.ItemTemplate>
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <UniformGrid VerticalAlignment="Top" Columns="3"></UniformGrid>
+          <UniformGrid VerticalAlignment="Top" Columns="3" Margin="0 0 4 4"></UniformGrid>
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
     </ItemsControl>

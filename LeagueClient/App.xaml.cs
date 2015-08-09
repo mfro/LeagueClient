@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -18,7 +21,7 @@ namespace LeagueClient {
     [Resource]
     public static Storyboard
       //ButtonHover, ButtonUnHover, ButtonPress, ButtonRelease,
-      FadeIn, FadeOut, ComboItemEnter, ComboItemLeave;
+      FadeIn, FadeOut;//, ComboItemEnter, ComboItemLeave;
 
     [Resource]
     public static SolidColorBrush
@@ -68,4 +71,25 @@ namespace LeagueClient {
   }
 
   public class ResourceAttribute : Attribute { }
+
+  public class MyBindingList<T> : BindingList<T> {
+    private bool adding;
+
+    public void ReplaceAll(IEnumerable<T> range) {
+      adding = true;
+      Clear();
+      AddRange(range);
+    }
+
+    protected override void OnListChanged(ListChangedEventArgs e) {
+      if (!adding) base.OnListChanged(e);
+    }
+
+    public void AddRange(IEnumerable<T> range) {
+      adding = true;
+      foreach (var item in range) Add(item);
+      adding = false;
+      OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
+    }
+  }
 }

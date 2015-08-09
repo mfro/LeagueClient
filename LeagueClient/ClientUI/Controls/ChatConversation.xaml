@@ -7,7 +7,7 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="25"/>
     </Grid.RowDefinitions>
-    <Grid Name="ChatDisplayPanel" Opacity="0" Margin="-1 0 0 0 ">
+    <Grid Name="ChatDisplayPanel" Opacity="0" Visibility="Collapsed">
       <Border BorderThickness="3 3 3 0" BorderBrush="{StaticResource Back1Brush}">
         <Border BorderThickness="1 1 1 0" BorderBrush="{StaticResource ForeBrush}"/>
       </Border>
@@ -16,7 +16,7 @@
           <RowDefinition Height="*"/>
           <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Hidden">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
           <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource Back1Brush}"
                      Padding="2 0" TextWrapping="Wrap" FontSize="12"/>
         </ScrollViewer>

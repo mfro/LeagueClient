@@ -72,10 +72,15 @@ namespace LeagueClient.ClientUI.Main {
       Alerts = new BindingList<Alert>();
       InitializeComponent();
       PlayControl.Child = PlayButton;
-      ChatList.ItemsSource = Client.ChatManager.FriendList;
       OpenChatList.ItemsSource = Client.ChatManager.OpenChats;
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
+
+      Client.ChatManager.ChatListUpdated += ChatManager_ChatListUpdated;
+    }
+
+    private void ChatManager_ChatListUpdated(object sender, List<Friend> e) {
+      ChatList.ItemsSource = e;
     }
 
     #region IQueueManager
@@ -226,6 +231,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Play_Click(object sender, RoutedEventArgs e) {
       PlayButton.IsEnabled = false;
+      CloseStuff();
       ShowPage(new PlaySelectPage());
     }
 
@@ -243,11 +249,7 @@ namespace LeagueClient.ClientUI.Main {
 
     #region Other Event Listeners
     private void Page_KeyUp(object sender, KeyEventArgs e) {
-      if(e.Key == Key.Escape) {
-        ChatOpen = false;
-        AlertsOpen = false;
-        Client.ChatManager.CloseAll();
-      }
+      if (e.Key == Key.Escape) { CloseStuff(); }
     }
 
     private void AlertButton_Click(object sender, RoutedEventArgs e) {
@@ -278,6 +280,12 @@ namespace LeagueClient.ClientUI.Main {
       ShowPage(new DebugPage());
     }
     #endregion
+
+    private void CloseStuff() {
+      ChatOpen = false;
+      AlertsOpen = false;
+      Client.ChatManager.CloseAll();
+    }
 
     private void Header_MouseDown(object sender, MouseButtonEventArgs e) {
       if (e.ChangedButton == MouseButton.Left) Client.MainWindow.DragMove();

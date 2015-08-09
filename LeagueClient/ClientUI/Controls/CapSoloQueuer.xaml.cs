@@ -57,7 +57,8 @@ namespace LeagueClient.ClientUI.Controls {
             timer.Dispose();
             e.Handled = true;
             Client.MessageReceived -= Client_MessageReceived;
-            Popped?.Invoke(this, new QueuePoppedEventArgs(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player)));
+            Dispatcher.Invoke(
+              () => Popped?.Invoke(this, new QueuePoppedEventArgs(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player))));
             break;
         }
       }

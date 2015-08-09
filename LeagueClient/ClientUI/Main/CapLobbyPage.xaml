@@ -21,8 +21,6 @@
 
     <ItemsControl Name="PlayerList" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0 0 10 0"/>
 
-    <!--<Button Grid.Column="3" Width="80" Height="20" Click="Invite_Click">Invite</Button>-->
-
     <Border Grid.Column="2" Grid.Row="1" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
       <my:CapMap x:Name="GameMap"/>
     </Border>
@@ -36,6 +34,7 @@
           <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
       </StackPanel.Resources>
+      <Button Content="Search for Solo Players" Name="SoloSearchButt" Click="SoloSearchButt_Click"/>
       <Button Content="Find Another Group" Name="FindAnotherButt" Click="FindAnotherButt_Click"/>
       <Button Content="Ready" Name="ReadyButt" Click="ReadyButt_Click" Width="80"/>
       <Button Content="Invite" Name="InviteButt" Click="InviteButt_Click"/>
@@ -50,11 +49,11 @@
         </RichTextBox.Resources>
       </RichTextBox>
     </ScrollViewer>
-    <Border>
-    </Border>
     <TextBox Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" Margin="0 0 80 0" KeyUp="TextBox_KeyUp" Name="SendBox"/>
     <Button  Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="80" Click="Button_Click">Send</Button>
 
+    <my:InvitePopup Grid.RowSpan="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>
     <my:PopupSelector Grid.RowSpan="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center"
                       x:Name="Popup" Close="Popup_Close" Visibility="Collapsed" Opacity="0"/>
   </Grid>

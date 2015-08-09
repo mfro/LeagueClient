@@ -912,9 +912,10 @@ namespace LeagueClient.Logic.Riot {
         return Invoke("searchForAnotherGroupV2");
       }
 
-      public static Guid SearchForCandidates(string accessTokenStr) {
+      public static Guid SearchForCandidates(string accessTokenStr = null) {
         var json = new JSONObject();
-        json["accessTokenStr"] = accessTokenStr;
+        if (accessTokenStr != null)
+          json["accessTokenStr"] = accessTokenStr;
         return Invoke("startGroupBuildingPhaseV2", json);
       }
 

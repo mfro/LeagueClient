@@ -18,7 +18,7 @@
     <Color x:Key="ForeColor" R="100" G="100" B="100" A="255"/>
     <Color x:Key="Back1Color" R="58" G="58" B="58" A="255"/>
     <Color x:Key="Back2Color" R="28" G="28" B="28" A="255"/>
-    <Color x:Key="BusyColor" R="196" G="177" B="0" A="255"/>
+    <Color x:Key="BusyColor" R="255" G="200" B="5" A="255"/>
     <Color x:Key="AwayColor" R="221" G="0" B="0" A="255"/>
     <Color x:Key="ChatColor" R="0" G="179" B="80" A="255"/>
 
@@ -30,6 +30,7 @@
     <SolidColorBrush x:Key="BusyBrush" Color="{StaticResource BusyColor}"/>
     <SolidColorBrush x:Key="AwayBrush" Color="{StaticResource AwayColor}"/>
     <SolidColorBrush x:Key="ChatBrush" Color="{StaticResource ChatColor}"/>
+    <SolidColorBrush x:Key="GlassBrush" Color="{x:Static SystemParameters.WindowGlassColor}"/>
 
     <Storyboard x:Key="OldButtonHover">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
@@ -47,7 +48,7 @@
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="{x:Static SystemColors.WindowColor}" Duration="0:0:0.2"/>
     </Storyboard>
-    <Storyboard x:Key="ButtonHover" Storyboard.TargetProperty="Color">
+    <!--<Storyboard x:Key="ButtonHover" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#313131" Duration="0:0:0.2"/>
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" 
@@ -66,7 +67,7 @@
     <Storyboard x:Key="ButtonRelease" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#363636" Duration="0:0:0.08"/>
-    </Storyboard>
+    </Storyboard>-->
 
     <!--<Storyboard x:Key="UnreadPulse" RepeatBehavior="Forever">
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)"
@@ -98,11 +99,11 @@
     </Storyboard>
     <Storyboard x:Key="ComboItemEnter" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
-                      To="#313131" Duration="0:0:0.2"/>
+                      To="{x:Static SystemColors.ControlLightColor}" Duration="0:0:0.2"/>
     </Storyboard>
     <Storyboard x:Key="ComboItemLeave" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
-                      To="{StaticResource ForeColor}" Duration="0:0:0.2"/>
+                      To="{x:Static SystemColors.WindowColor}" Duration="0:0:0.2"/>
     </Storyboard>
 
     <Style x:Key="Control">
@@ -375,7 +376,7 @@
 
     <Style TargetType="ComboBoxItem">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
-      <Setter Property="Background" Value="{StaticResource ForeBrush}"/>
+      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ComboBoxItem">
@@ -416,32 +417,31 @@
       <Setter Property="OverridesDefaultStyle" Value="true"/>
       <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
       <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-      <Setter Property="Background" Value="{StaticResource ForeBrush}"/>
+      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
       <Setter Property="MinWidth" Value="120"/>
       <Setter Property="MinHeight" Value="20"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ComboBox">
-            <Grid Background="{TemplateBinding Background}">
-              <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" 
-                            Focusable="false" ClickMode="Press"
-          IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"/>
-              <ContentPresenter Name="ContentSite" IsHitTestVisible="False" Margin="5 2 20 0"
-                                Content="{TemplateBinding SelectionBoxItem}" VerticalAlignment="Top"
-                                HorizontalAlignment="Left" Style="{StaticResource Control}"
-                                TextBlock.FontSize="12" ContentTemplate="{TemplateBinding ItemTemplate}"/>
-              <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
-                     AllowsTransparency="True"  Focusable="False" PopupAnimation="Slide">
-                <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}"
-                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                  <Border BorderBrush="{StaticResource Back1Brush}" BorderThickness="0 1 0 0">
-                    <ScrollViewer SnapsToDevicePixels="True">
+            <Border BorderThickness="1" BorderBrush="{StaticResource ForeBrush}">
+              <Grid Background="{TemplateBinding Background}">
+                <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" 
+                              Focusable="false" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"/>
+                <ContentPresenter Name="ContentSite" IsHitTestVisible="False" Margin="5 2 20 0"
+                                  Content="{TemplateBinding SelectionBoxItem}" VerticalAlignment="Top"
+                                  HorizontalAlignment="Left" Style="{StaticResource Control}"
+                                  TextBlock.FontSize="12" ContentTemplate="{TemplateBinding ItemTemplate}"/>
+                <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
+                       AllowsTransparency="True"  Focusable="False" PopupAnimation="Slide">
+                  <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}"
+                        MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                    <ScrollViewer SnapsToDevicePixels="True" VerticalScrollBarVisibility="Hidden">
                       <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
                     </ScrollViewer>
-                  </Border>
-                </Grid>
-              </Popup>
-            </Grid>
+                  </Grid>
+                </Popup>
+              </Grid>
+            </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="True">
                 <Trigger.EnterActions>

@@ -21,16 +21,18 @@ using LeagueClient.Logic.Riot;
 
 namespace LeagueClient.Logic.Chat {
   public class RiotChat {
+    public event EventHandler<List<Friend>> ChatListUpdated;
+
     public State ChatState { get; private set; }
     public BindingList<ChatConversation> OpenChats { get; private set; }
-    public BindingList<Friend> FriendList { get; private set; }
     public Dictionary<string, Item> Users { get; } = new Dictionary<string, Item>();
+
+    private Dictionary<string, Friend> Friends = new Dictionary<string, Friend>();
 
     private JabberClient conn;
     private RosterManager Roster = new RosterManager();
     private PresenceManager Presence = new PresenceManager();
     private ConferenceManager Conference = new ConferenceManager();
-    private Dictionary<string, Friend> Friends = new Dictionary<string, Friend>();
     private bool fullyAuthed;
     private Timer timer;
 
@@ -39,8 +41,10 @@ namespace LeagueClient.Logic.Chat {
     public string Message { get; private set; }
 
     public RiotChat(string user, string pass) {
-      FriendList = new BindingList<Friend>();
-      OpenChats = new BindingList<ChatConversation>();
+      App.Current.Dispatcher.Invoke(() => {
+        OpenChats = new BindingList<ChatConversation>();
+      });
+
       Status = LeagueStatus.Idle;
       Show = StatusShow.Chat;
       Message = "";
@@ -57,6 +61,7 @@ namespace LeagueClient.Logic.Chat {
       };
       conn.OnInvalidCertificate += (src, cert, poop, poo2) => true;
       conn.OnMessage += OnReceiveMessage;
+      conn.OnAuthenticate += s => UpdateStatus(Message);
       ChatState = State.Connecting;
       conn.Connect();
       Roster.Stream = conn;
@@ -76,7 +81,8 @@ namespace LeagueClient.Logic.Chat {
       timer.Start();
     }
 
-    private void ResetList(List<Friend> list) {
+    private void ResetList() {
+      var list = new List<Friend>(Friends.Values).Where(u => !u.IsOffline).ToList();
       list.Sort((f1, f2) => {
         if (f1.GameInfo != null && f2.GameInfo != null) {
           int score1 = (int) f1.GameInfo.gameStartTime;
@@ -90,15 +96,14 @@ namespace LeagueClient.Logic.Chat {
           return score1 - score2;
         }
       });
-      FriendList.Clear();
-      foreach (var item in list) FriendList.Add(item);
+      ChatListUpdated?.Invoke(this, list);
     }
 
     private void UpdateProc(object src, ElapsedEventArgs args) {
       var list = new List<Friend>(Friends.Values);
       foreach (var friend in list)
-        try { App.Current.Dispatcher.Invoke(friend.Update); } catch { timer.Stop(); }
-      try { App.Current.Dispatcher.Invoke(() => ResetList(list)); } catch { timer.Stop(); }
+        try { App.Current.Dispatcher.Invoke(friend.Update); } catch { timer.Dispose(); }
+      try { App.Current.Dispatcher.Invoke(ResetList); } catch { timer.Dispose(); }
     }
 
     private static string GetObfuscatedChatroomName(string Subject, string Type) {
@@ -128,30 +133,29 @@ namespace LeagueClient.Logic.Chat {
 
     #region Event Handlers
     void OnPrimarySessionChange(object sender, jabber.JID bare) {
-      if (!Users.ContainsKey(bare.User)) return;
-      var list = new List<Friend>(FriendList);
+      if (!Friends.ContainsKey(bare.User)) return;
 
       var user = Users[bare.User];
 
-      if (Friends.ContainsKey(bare.User))
-        list.Remove(Friends[bare.User]);
       var s = Presence.GetAll(bare);
       if (s.Length == 0 || s[0]?.Status == null)
-        App.Current.Dispatcher.Invoke((Action<List<Friend>>)ResetList, list);
+        Friends[bare.User].IsOffline = true;
       else {
-        App.Current.Dispatcher.Invoke(() => {
-          var convo = new ChatConversation(user.Nickname, user.JID.User);
-          convo.MessageSent += OnSendMessage;
-          convo.ChatOpened += OnChatOpen;
-          convo.ChatClosed += OnChatClose;
-
-          var friend = new Friend(s[0], user, convo);
-          friend.MouseUp += (src, e) => OnChatAdd(friend);
-          list.Add(friend);
-          ResetList(list);
-          Friends[bare.User] = friend;
-        });
+        Friends[bare.User].IsOffline = false;
+        Friends[bare.User].Update(s[0]);
       }
+      App.Current.Dispatcher.Invoke(ResetList);
+      //if (s.Length == 0 || s[0]?.Status == null)
+      //  App.Current?.Dispatcher.Invoke((Action<List<ChatUser>>)ResetList, list);
+      //else {
+      //  App.Current?.Dispatcher.Invoke(() => {
+      //    //var friend = new ChatUser(s[0], user, convo);
+      //    ////friend.MouseUp += (src, e) => OnChatAdd(friend);
+      //    //list.Add(friend);
+      //    //ResetList(list);
+      //    //Friends[bare.User] = friend;
+      //  });
+      //}
     }
 
     void OnChatAdd(Friend friend) {
@@ -198,12 +202,29 @@ namespace LeagueClient.Logic.Chat {
     }
 
     void OnRosterItem(object sender, jabber.protocol.iq.Item item) {
-      if (!Users.ContainsKey(item.JID.User))
+      if (!Users.ContainsKey(item.JID.User)) {
         Users.Add(item.JID.User, item);
+
+        App.Current.Dispatcher.Invoke(() => {
+          var convo = new ChatConversation(item.Nickname, item.JID.User);
+          convo.MessageSent += OnSendMessage;
+          convo.ChatOpened += OnChatOpen;
+          convo.ChatClosed += OnChatClose;
+          var friend = new Friend(item, convo);
+          friend.MouseUp += (src, e) => OnChatAdd(friend);
+          Friends.Add(item.JID.User, friend);
+        });
+      }
       if (!fullyAuthed)
         OnPrimarySessionChange(sender, item.JID);
     }
     #endregion
+
+    //var convo = new ChatConversation(item.Nickname, item.JID.User);
+    //convo.MessageSent += OnSendMessage;
+    //    convo.ChatOpened += OnChatOpen;
+    //    convo.ChatClosed += OnChatClose;
+
 
     /// <summary>
     /// Minimizes any open chat conversations
@@ -218,7 +239,7 @@ namespace LeagueClient.Logic.Chat {
     /// <param name="message">The status message to display</param>
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
-      conn.Presence(PresenceType.available, status.ToXML(), Show.ToString().ToLower(), 1);
+      conn.Presence(PresenceType.invisible, status.ToXML(), Show.ToString().ToLower(), 1);
     }
 
     public void UpdateStatus(GameStatus status) {
