@@ -126,6 +126,9 @@
     <Compile Include="ClientUI\Main\CustomCreatePage.xaml.cs">
       <DependentUpon>CustomCreatePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Main\CustomLobbyPage.xaml.cs">
+      <DependentUpon>CustomLobbyPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Main\DebugPage.xaml.cs">
       <DependentUpon>DebugPage.xaml</DependentUpon>
     </Compile>
@@ -408,6 +411,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientUI\Main\CustomLobbyPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Main\DebugPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -480,6 +487,7 @@
     <Resource Include="Enums\QueueType.txt" />
     <Resource Include="Enums\SpectatorState.txt" />
     <Resource Include="Enums\GameConfig.txt" />
+    <Resource Include="Enums\ChatStatus.txt" />
     <Content Include="Enums\RiotEnums.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>RiotEnums.cs</LastGenOutput>

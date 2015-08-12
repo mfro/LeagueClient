@@ -36,13 +36,13 @@ namespace LeagueClient.Logic.Chat {
     private bool fullyAuthed;
     private Timer timer;
 
-    public GameStatus Status { get; private set; }
+    public ChatStatus Status { get; private set; }
     public StatusShow Show { get; private set; }
     public string Message { get; private set; }
 
     public RiotChat(string user, string pass) {
 
-      Status = LeagueStatus.Idle;
+      Status = ChatStatus.outOfGame;
       Show = StatusShow.Chat;
       Message = "";
       conn = new JabberClient {
@@ -239,7 +239,7 @@ namespace LeagueClient.Logic.Chat {
       conn.Presence(PresenceType.available, status.ToXML(), Show.ToString().ToLower(), 1);
     }
 
-    public void UpdateStatus(GameStatus status) {
+    public void UpdateStatus(ChatStatus status) {
       this.Status = status;
       UpdateStatus(Message);
     }

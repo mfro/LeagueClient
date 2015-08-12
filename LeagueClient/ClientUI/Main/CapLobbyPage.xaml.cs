@@ -98,7 +98,7 @@ namespace LeagueClient.ClientUI.Main {
       chatRoom.OnParticipantJoin += (s, e) => Dispatcher.Invoke(() => ShowLobbyMessage(e.Nick + " has joined the lobby"));
       chatRoom.OnParticipantLeave += (s, e) => Dispatcher.Invoke(() => ShowLobbyMessage(e.Nick + " has left the lobby"));
       chatRoom.OnRoomMessage += (s, e) => Dispatcher.Invoke(() => ShowMessage(chatRoom.Participants[e.From].Nick, e.Body));
-      Client.ChatManager.UpdateStatus(LeagueStatus.InTeamBuilder);
+      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
       chatRoom.Join(Status.ChatKey);
     }
 
@@ -551,8 +551,8 @@ namespace LeagueClient.ClientUI.Main {
       if (IsCaptain) {
         RiotCalls.CapService.StartMatchmaking();
       } else {
-        bool ready = me.Status != CapStatus.Ready;
-        RiotCalls.CapService.IndicateReadyness(ready);
+        bool ready = !me.Status.Equals(CapStatus.Ready);
+        RiotCalls.CapService.IndicateReadyness(true);
       }
     }
 
@@ -588,7 +588,7 @@ namespace LeagueClient.ClientUI.Main {
       RiotCalls.CapService.Quit();
       Client.MessageReceived -= MessageReceived;
       chatRoom?.Leave("bye");
-      Client.ChatManager.UpdateStatus(LeagueStatus.Idle);
+      Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 
     public Page GetPage() => this;

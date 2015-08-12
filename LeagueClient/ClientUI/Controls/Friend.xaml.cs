@@ -79,7 +79,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public void Update(Presence p) {
       Status = new LeagueStatus(p.Status, p.Show);
-      InGameString = Status.GameStatus.Name;
+      InGameString = Status.GameStatus.Value;
       RiotCalls.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
       RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
       Dispatcher.Invoke(() => {
@@ -137,7 +137,7 @@ namespace LeagueClient.ClientUI.Controls {
       if (Summoner.ProfileIconId != Status.ProfileIcon)
         App.Current.Dispatcher.Invoke(() => SummonerIcon = LeagueData.GetProfileIconImage(Status.ProfileIcon));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SummonerIcon)));
-      if (Status.GameStatus == LeagueStatus.InGame)
+      if (Status.GameStatus == ChatStatus.inGame)
         RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", (long) Summoner.SummonerId)
           .ContinueWith(GotGameInfo);
     }

@@ -161,4 +161,34 @@ namespace LeagueClient.Logic {
     }
 	}
 
+	public class ChatStatus {
+    public static readonly Dictionary<string, ChatStatus> Values = new Dictionary<string, ChatStatus>();
+
+    public static readonly ChatStatus
+      championSelect = new ChatStatus("championSelect", "In Champion Select", 12),
+      tutorial = new ChatStatus("tutorial", "Tutorial", 11),
+      inGame = new ChatStatus("inGame", "In Game", 10),
+      inQueue = new ChatStatus("inQueue", "In Queue", 9),
+      spectating = new ChatStatus("spectating", "Spectating", 8),
+      teamSelect = new ChatStatus("teamSelect", "In Team Select", 7),
+      hostingNormalGame = new ChatStatus("hostingNormalGame", "Creating Normal Game", 6),
+      hostingCoopVsAIGame = new ChatStatus("hostingCoopVsAIGame", "Creating Bot Game", 5),
+      hostingRankedGame = new ChatStatus("hostingRankedGame", "Creating Ranked Game", 4),
+      hostingPracticeGame = new ChatStatus("hostingPracticeGame", "Creating Custom Game", 3),
+      inTeamBuilder = new ChatStatus("inTeamBuilder", "In Team Builder", 2),
+      outOfGame = new ChatStatus("outOfGame", "Out of Game", 1);
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+    public int Priority { get; private set; }
+
+		private ChatStatus(string key, string value, int priority) {
+			Key = key; Value = value; Priority = priority;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
 }

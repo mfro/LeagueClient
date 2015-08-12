@@ -44,7 +44,7 @@ namespace LeagueClient.Logic {
 
 <#
 
-}
+	}
 	
 	foreach(var e in new[] {"GameConfig"}) {
 
@@ -78,6 +78,42 @@ namespace LeagueClient.Logic {
     }
 	}
 
+<#
+	
+	}
+
+	foreach(var e in new[] {"ChatStatus"}) {
+
+#>
+	public class <#= e #> {
+    public static readonly Dictionary<string, <#= e #>> Values = new Dictionary<string, <#= e #>>();
+
+    public static readonly <#= e #>
+<#
+		var filename = this.Host.ResolvePath(e + ".txt");
+		var lines = File.ReadAllLines(filename);
+		for(int i = 0; i < lines.Count(); i++) {
+			var things = lines[i].Split('=');
+			Write(string.Format("      {0} = new {3}(\"{0}\", \"{1}\", {2})", things[0].Trim(), things[1].Trim(), lines.Count() - i, e));
+
+			if(i + 1 < lines.Count()) WriteLine(",");
+			else WriteLine(";");
+		}
+#>
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+    public int Priority { get; private set; }
+
+		private <#= e #>(string key, string value, int priority) {
+			Key = key; Value = value; Priority = priority;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
 <#
 
 }

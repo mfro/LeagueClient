@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
+using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 
 namespace LeagueClient.ClientUI.Main {
@@ -30,10 +31,10 @@ namespace LeagueClient.ClientUI.Main {
     public CustomCreatePage() {
       InitializeComponent();
       current = SummonersRift;
-      SummonersRift.DataContext = selected = GameMap.SummonersRift;
-      CrystalScar.DataContext = GameMap.TheCrystalScar;
-      TwistedTreeline.DataContext = GameMap.TheTwistedTreeline;
-      HowlingAbyss.DataContext = GameMap.HowlingAbyss;
+      SummonersRift.Tag = selected = GameMap.SummonersRift;
+      CrystalScar.Tag = GameMap.TheCrystalScar;
+      TwistedTreeline.Tag = GameMap.TheTwistedTreeline;
+      HowlingAbyss.Tag = GameMap.HowlingAbyss;
       foreach(var border in new[] { SummonersRift, CrystalScar, TwistedTreeline, HowlingAbyss }) {
         border.MouseEnter += Border_MouseEnter;
         border.MouseLeave += Border_MouseLeave;
@@ -59,11 +60,29 @@ namespace LeagueClient.ClientUI.Main {
       TeamSize.SelectedIndex = 0;
     }
 
-    private void CreateGame(object sender, RoutedEventArgs e) {
+    private async void CreateGame(object sender, RoutedEventArgs e) {
+      ErrorLabel.Visibility = Visibility.Collapsed;
       var config = new PracticeGameConfig();
       config.GameName = GameName.Text;
       config.GamePassword = GamePass.Text;
       config.MaxNumPlayers = ((int) TeamSize.SelectedItem) * 2;
+      config.GameTypeConfig = (GameType.SelectedItem as GameConfig).Key;
+      config.AllowSpectators = (Spectators.SelectedItem as SpectatorState).Key;
+      config.GameMap = selected;
+      switch (selected.MapId) {
+        case 8: config.GameMode = "ODIN"; break;
+        case 10:
+        case 11: config.GameMode = "CLASSIC"; break;
+        case 12:
+        case 14: config.GameMode = "ARAM"; break;
+      }
+      var game = await RiotCalls.GameService.CreatePracticeGame(config);
+      if(game.Name == null) {
+        ErrorLabel.Visibility = Visibility.Visible;
+        return;
+      } else {
+        Client.QueueManager.ShowPage(new CustomLobbyPage(game));
+      }
     }
 
     #region Border UI Listeners
@@ -105,7 +124,7 @@ namespace LeagueClient.ClientUI.Main {
 
       current.Effect = null;
       current = border;
-      selected = border.DataContext as GameMap;
+      selected = border.Tag as GameMap;
       MapSelected();
     }
     #endregion

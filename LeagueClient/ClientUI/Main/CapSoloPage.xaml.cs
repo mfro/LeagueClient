@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
@@ -46,7 +47,7 @@ namespace LeagueClient.ClientUI.Main {
       Popup.SpellSelector.SpellSelected += Spell_Select;
       Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
 
-      Client.ChatManager.UpdateStatus(LeagueStatus.InTeamBuilder);
+      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
     }
 
     private void PlayerUpdate(object sender, EventArgs e) {

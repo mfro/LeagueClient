@@ -1,0 +1,12 @@
+﻿championSelect = In Champion Select
+tutorial = Tutorial
+inGame = In Game
+inQueue = In Queue
+spectating = Spectating
+teamSelect = In Team Select
+hostingNormalGame = Creating Normal Game
+hostingCoopVsAIGame = Creating Bot Game
+hostingRankedGame = Creating Ranked Game
+hostingPracticeGame = Creating Custom Game
+inTeamBuilder = In Team Builder
+outOfGame = Out of Game

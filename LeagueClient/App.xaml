@@ -149,11 +149,13 @@
     <Style TargetType="TextBox" BasedOn="{StaticResource Control}">
       <Setter Property="Padding" Value="0 1"/>
       <Setter Property="FontSize" Value="12"/>
-      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="TextBox">
-            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
               <ScrollViewer Name="PART_ContentHost"/>
             </Border>
           </ControlTemplate>
@@ -346,6 +348,7 @@
     </Style>
     <Style TargetType="Label" BasedOn="{StaticResource Control}">
       <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Padding" Value="4 2"/>
     </Style>
 
     <Style x:Key="ScrollThumb" TargetType="Thumb">
@@ -388,7 +391,7 @@
     <Style TargetType="ScrollViewer">
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Top" />
-      <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+      <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ScrollViewer">
@@ -455,6 +458,8 @@
       <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
       <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
       <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="MinWidth" Value="120"/>
       <Setter Property="MinHeight" Value="20"/>
       <Setter Property="Template">
