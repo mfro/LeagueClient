@@ -33,7 +33,7 @@ namespace LeagueClient.ClientUI.Main {
   public partial class ClientPage : Page, IQueueManager {
     public BitmapImage ProfileIcon { get; set; }
     public string SummonerName { get; set; }
-    public BindingList<Alert> Alerts { get; private set; }
+    public List<Alert> Alerts { get; } = new List<Alert>();
     public IClientSubPage CurrentPage { get; private set; }
     public bool ChatOpen {
       get { return chatOpen; }
@@ -48,30 +48,29 @@ namespace LeagueClient.ClientUI.Main {
     public bool AlertsOpen {
       get { return alertsOpen; }
       set {
-        QuickAlertBack.Visibility = Visibility.Collapsed;
-        AlertScroll.Visibility = Visibility.Visible;
-        if (value)
-          AlertPopup.BeginStoryboard(App.FadeIn);
-        else AlertPopup.BeginStoryboard(App.FadeOut);
+        RecentAlert.Visibility = Visibility.Collapsed;
+        RecentAlert.Opacity = 0;
+        RecentAlert.Child = null;
+        if (value) {
+          PastAlerts.BeginStoryboard(App.FadeIn);
+          var alerts = new List<UIElement>();
+          foreach (var item in Alerts) alerts.Add(item.Control);
+          AlertHistory.ItemsSource = alerts;
+        } else PastAlerts.BeginStoryboard(App.FadeOut);
         alertsOpen = value;
       }
     }
 
     private bool chatOpen;
     private bool alertsOpen;
-    private Button PlayButton = new Button { Content = "Play", FontSize = 18 };
     private IQueuer CurrentQueuer;
     private IQueuePopup CurrentPopup;
 
     public ClientPage() {
-      PlayButton.Click += Play_Click;
-
       int iconId = Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
       ProfileIcon = LeagueData.GetProfileIconImage(iconId);
       SummonerName = Client.LoginPacket.AllSummonerData.Summoner.Name;
-      Alerts = new BindingList<Alert>();
       InitializeComponent();
-      PlayControl.Child = PlayButton;
       OpenChatList.ItemsSource = Client.ChatManager.OpenChats;
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
@@ -143,14 +142,14 @@ namespace LeagueClient.ClientUI.Main {
       if (CheckInvoke(ShowNotification, alert)) return;
 
       Alerts.Add(alert);
-      AlertButton.BeginStoryboard(App.FadeIn);
-      AlertPopup.BeginStoryboard(App.FadeIn);
-      AlertScroll.Visibility = Visibility.Collapsed;
-      QuickAlertBack.Visibility = Visibility.Visible;
-      QuickAlert.Text = alert.Title;
+      alert.Handled += Alert_Handled;
+      RecentAlert.Child = alert.Control;
+      AlertButt.BeginStoryboard(App.FadeIn);
+
+      RecentAlert.BeginStoryboard(App.FadeIn);
       Task.Run(() => {
-        System.Threading.Thread.Sleep(500);
-        Dispatcher.Invoke(() => AlertPopup.BeginStoryboard((Storyboard) AlertPopup.FindResource("QuickAlertFade")));
+        System.Threading.Thread.Sleep(3500);
+        Dispatcher.Invoke(() => RecentAlert.BeginStoryboard(App.FadeOut));
       });
     }
 
@@ -200,7 +199,17 @@ namespace LeagueClient.ClientUI.Main {
 
       ChatOpen = !chatOpen;
     }
-    
+
+    private void CloseStuff() {
+      ChatOpen = false;
+      AlertsOpen = false;
+      Client.ChatManager.CloseAll();
+    }
+
+    private void UpdatePlayButton() {
+      PlayButton.IsEnabled = (CurrentPage == null || CurrentPage.CanPlay()) && CurrentQueuer == null && CurrentPopup == null;
+    }
+
     #region Queue Related Event Listeners
     private void Queue_Popped(object src, QueuePoppedEventArgs args) {
       if (CheckInvoke(Queue_Popped, src, args)) return;
@@ -239,56 +248,32 @@ namespace LeagueClient.ClientUI.Main {
       PlayControl.Child = PlayButton;
       if (CurrentQueuer == null)
         PlayButton.IsEnabled = true;
-      CloseSubPage(true);
+      if (CurrentPage == null)
+        ShowPage(new DebugPage());
+      else CloseSubPage(true);
     }
     #endregion
-
-    private void UpdatePlayButton() {
-      PlayButton.IsEnabled = (CurrentPage == null || CurrentPage.CanPlay()) && CurrentQueuer == null && CurrentPopup == null;
-    }
 
     #region Other Event Listeners
     private void Page_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key == Key.Escape) { CloseStuff(); }
     }
 
-    private void AlertButton_Click(object sender, RoutedEventArgs e) {
+    private void AlertButt_Click(object sender, RoutedEventArgs e) {
       AlertsOpen = !alertsOpen;
     }
 
-    private void AlertYes_Click(object sender, RoutedEventArgs e) {
-      var alert = (sender as Button).DataContext as Alert;
-      alert.ReactYesNo(true);
-      Alerts.Remove(alert);
+    private void Alert_Handled(object sender, AlertEventArgs e) {
+      Alerts.Remove(sender as Alert);
       if(Alerts.Count == 0) {
-        AlertButton.BeginStoryboard(App.FadeOut);
         AlertsOpen = false;
+        AlertButt.BeginStoryboard(App.FadeOut);
       }
-    }
-
-    private void AlertNo_Click(object sender, RoutedEventArgs e) {
-      var alert = (sender as Button).DataContext as Alert;
-      alert.ReactYesNo(false);
-      Alerts.Remove(alert);
-      if (Alerts.Count == 0) {
-        AlertButton.BeginStoryboard(App.FadeOut);
-        AlertsOpen = false;
-      }
-    }
-
-    private void Debug_Click(object sender, RoutedEventArgs e) {
-      ShowPage(new DebugPage());
-    }
-    #endregion
-
-    private void CloseStuff() {
-      ChatOpen = false;
-      AlertsOpen = false;
-      Client.ChatManager.CloseAll();
     }
 
     private void Header_MouseDown(object sender, MouseButtonEventArgs e) {
       if (e.ChangedButton == MouseButton.Left) Client.MainWindow.DragMove();
     }
+    #endregion
   }
 }

@@ -93,6 +93,27 @@ namespace LeagueClient.ClientUI.Controls {
     private int usedPoints;
     private Dictionary<string, MasteryIcon> Icons = new Dictionary<string, MasteryIcon>();
 
+    private bool CanRemove(MasteryIcon src) {
+      var trees = new[] { offense, defense, utility };
+      MasteryTree tree = null;
+      foreach(var treeCheck in trees) {
+        var rowCheck = treeCheck.Rows.Where(r => r.Contains(src)).FirstOrDefault();
+        if (rowCheck != null) {
+          tree = treeCheck;
+          break;
+        }
+      }
+
+      for (int i = src.Row + 1; i < tree.Rows.Count; i++) {
+        foreach(var icon in tree.Rows[i]) {
+          if (icon.Points > 0 && (tree.PointsAboveRow(i) - 1 < 4 * i || icon.Data.prereq == src.Data.id.ToString()))
+            return false;
+        }
+      }
+
+      return true;
+    }
+
     private void UpdateMasteries() {
       if (loading) return;
       usedPoints = 0;
@@ -147,7 +168,7 @@ namespace LeagueClient.ClientUI.Controls {
           if (item == null) tree.Control.Children.Add(new Control());
           else {
             points.Add(item.masteryId, new Point(x, y));
-            var icon = new MasteryIcon(LeagueData.MasteryData.Value.data[item.masteryId]);
+            var icon = new MasteryIcon(LeagueData.MasteryData.Value.data[item.masteryId], y, CanRemove);
             row.Add(icon);
             Icons.Add(item.masteryId, icon);
             tree.Control.Children.Add(icon.Control);
@@ -231,12 +252,16 @@ namespace LeagueClient.ClientUI.Controls {
           if (!enabled && points > 0) Points = 0;
         }
       }
+      public int Row { get; private set; }
+
       private int points;
       private Image image;
       private bool enabled;
+      private Func<MasteryIcon, bool> CanRemove;
 
-      public MasteryIcon(MasteryDto dto) {
+      public MasteryIcon(MasteryDto dto, int row, Func<MasteryIcon, bool> CanRemove) {
         Data = dto;
+        Row = row;
         var grid = new Grid();
         Control = new Border();
         Control.Width = Control.Height = ImageSize + ImageBorder * 2;
@@ -255,11 +280,13 @@ namespace LeagueClient.ClientUI.Controls {
         grid.Children.Add(image = new Image());
         grid.Children.Add(PointsLabel);
 
+        this.CanRemove = CanRemove;
+
         Control.MouseWheel += Control_MouseWheel;
       }
 
       void Control_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e) {
-        if (!enabled) return;
+        if (!enabled || (e.Delta < 0  && points > 0 && !CanRemove(this))) return;
         int d = (e.Delta > 0) ? 1 : -1;
         if (points + d <= Data.ranks && points + d >= 0)
           Points += d;

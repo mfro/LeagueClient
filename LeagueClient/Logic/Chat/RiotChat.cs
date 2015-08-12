@@ -24,7 +24,7 @@ namespace LeagueClient.Logic.Chat {
     public event EventHandler<List<Friend>> ChatListUpdated;
 
     public State ChatState { get; private set; }
-    public BindingList<ChatConversation> OpenChats { get; private set; }
+    public BindingList<ChatConversation> OpenChats { get; } = new BindingList<ChatConversation>();
     public Dictionary<string, Item> Users { get; } = new Dictionary<string, Item>();
 
     private Dictionary<string, Friend> Friends = new Dictionary<string, Friend>();
@@ -41,9 +41,6 @@ namespace LeagueClient.Logic.Chat {
     public string Message { get; private set; }
 
     public RiotChat(string user, string pass) {
-      App.Current.Dispatcher.Invoke(() => {
-        OpenChats = new BindingList<ChatConversation>();
-      });
 
       Status = LeagueStatus.Idle;
       Show = StatusShow.Chat;
@@ -141,8 +138,8 @@ namespace LeagueClient.Logic.Chat {
       if (s.Length == 0 || s[0]?.Status == null)
         Friends[bare.User].IsOffline = true;
       else {
-        Friends[bare.User].IsOffline = false;
         Friends[bare.User].Update(s[0]);
+        Friends[bare.User].IsOffline = false;
       }
       App.Current.Dispatcher.Invoke(ResetList);
       //if (s.Length == 0 || s[0]?.Status == null)
@@ -239,7 +236,7 @@ namespace LeagueClient.Logic.Chat {
     /// <param name="message">The status message to display</param>
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
-      conn.Presence(PresenceType.invisible, status.ToXML(), Show.ToString().ToLower(), 1);
+      conn.Presence(PresenceType.available, status.ToXML(), Show.ToString().ToLower(), 1);
     }
 
     public void UpdateStatus(GameStatus status) {

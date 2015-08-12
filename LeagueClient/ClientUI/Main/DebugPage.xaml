@@ -26,8 +26,6 @@
   <Grid Width="{StaticResource Width}" Height="{StaticResource PageHeight}" Margin="10">
     <Grid.RowDefinitions>
       <RowDefinition/>
-      <RowDefinition Height="10"/>
-      <RowDefinition/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="200"/>
@@ -55,11 +53,7 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" Padding="0 0 5 0">
-      <TextBlock Name="Messages" Style="{StaticResource Control}" Background="{StaticResource Back1Brush}" Margin="0 0 0 10"/>
-    </ScrollViewer>
-
-    <Grid Grid.Column="4" Margin="0 0 10 0" Grid.RowSpan="3">
+    <Grid Grid.Column="4" Margin="0 0 10 0">
       <Grid.RowDefinitions>
         <RowDefinition Height="30"/>
         <RowDefinition Height="10"/>

@@ -90,6 +90,37 @@ namespace LeagueClient.Logic.Cap {
   }
 
   public enum CapStatus {
-    Present, Ready, Searching, ChoosingAdvert, Choosing, Found, Penalty, SearchingDeclined
+    /// <summary>
+    /// Empty slot that potentially has role and position filled with advertisements that is waiting to search
+    /// </summary>
+    ChoosingAdvert,
+    /// <summary>
+    /// Empty slot that has role and position filled with advertisements that is trying to be filled
+    /// </summary>
+    Searching,
+    /// <summary>
+    /// Kinda full slot that has champion, role, and position. Occurs when a candidate is found
+    /// </summary>
+    Found,
+    /// <summary>
+    /// After a candidate has been accepted, waiting for them to join the lobby
+    /// </summary>
+    Joining,
+    /// <summary>
+    /// Entirely in the lobby
+    /// </summary>
+    Present,
+    /// <summary>
+    /// Same as Present but ready
+    /// </summary>
+    Ready,
+    /// <summary>
+    /// Inactive slot that is disabled for a set amount of time before becoming searching
+    /// </summary>
+    Penalty,
+    /// <summary>
+    /// Same functionally as Searching but after a player has left the slot
+    /// </summary>
+    SearchingDeclined,
   }
 }

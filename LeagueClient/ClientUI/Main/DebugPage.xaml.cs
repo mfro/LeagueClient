@@ -29,6 +29,23 @@ namespace LeagueClient.ClientUI.Main {
     public List<string> IgnoredMethods { get; } = new List<string>();
     private Dictionary<VarInfo, TextBox> parameters = new Dictionary<VarInfo, TextBox>();
 
+    private Window msgWindow;
+    private ScrollViewer msgScroll;
+    private TextBox msgBox;
+
+    private Window resWindow;
+    private ScrollViewer resScroll;
+    private TextBox resBox;
+
+    private Window chatWindow;
+    private ScrollViewer chatScroll;
+    private TextBox chatBox;
+    
+    //<ScrollViewer Grid.Row="2" Grid.ColumnSpan= "3" Padding= "0 0 5 0" >
+    //  < TextBox Name= "Messages" Style= "{StaticResource Control}" Background= "{StaticResource Back1Brush}" Margin= "0 0 0 10"
+    //           BorderThickness= "0" IsReadOnly= "True" TextWrapping= "Wrap" />
+    //</ ScrollViewer >
+
     public DebugPage() {
       InitializeComponent();
       Client.MessageReceived += Client_MessageReceived;
@@ -39,15 +56,66 @@ namespace LeagueClient.ClientUI.Main {
         Services.Add(service);
       ServiceList.SelectionChanged += Service_Selected;
       MethodList.SelectionChanged += Method_Selected;
+
+      msgWindow = new Window { Title = "Incoming Messages" };
+      msgScroll = new ScrollViewer { Padding = new Thickness(0, 0, 5, 0) };
+      msgBox = new TextBox {
+        Style = App.Control,
+        Background = App.Back1Brush,
+        Margin = new Thickness(0, 0, 0, 10),
+        BorderThickness = new Thickness(),
+        IsReadOnly = true,
+        TextWrapping = TextWrapping.Wrap
+      };
+      msgWindow.Content = msgScroll;
+      msgScroll.Content = msgBox;
+
+      resWindow = new Window { Title = "Responses" };
+      resScroll = new ScrollViewer { Padding = new Thickness(0, 0, 5, 0) };
+      resBox = new TextBox {
+        Style = App.Control,
+        Background = App.Back1Brush,
+        Margin = new Thickness(0, 0, 0, 10),
+        BorderThickness = new Thickness(),
+        IsReadOnly = true,
+        TextWrapping = TextWrapping.Wrap
+      };
+      resWindow.Content = resScroll;
+      resScroll.Content = resBox;
+
+      chatWindow = new Window { Title = "Chat" };
+      chatScroll = new ScrollViewer { Padding = new Thickness(0, 0, 5, 0) };
+      chatBox = new TextBox {
+        Style = App.Control,
+        Background = App.Back1Brush,
+        Margin = new Thickness(0, 0, 0, 10),
+        BorderThickness = new Thickness(),
+        IsReadOnly = true,
+        TextWrapping = TextWrapping.Wrap
+      };
+      chatWindow.Content = chatScroll;
+      chatScroll.Content = chatBox;
+
+      msgWindow.Show();
+      resWindow.Show();
+      chatWindow.Show();
+
+      Client.ChatManager.ChatListUpdated += ChatManager_ChatListUpdated;
+    }
+
+    private void ChatManager_ChatListUpdated(object sender, List<Controls.Friend> e) {
+      var str = "";
+      foreach (var bud in e) str += $"{bud.UserName} [{bud.User.JID.User.Substring(3)}]: {bud.Status.Raw}\n\n";
+      if (!str.Equals(chatBox.Text)) Dispatcher.Invoke(() => chatBox.Text = str);
     }
 
     private void Client_MessageReceived(object sender, MessageHandlerArgs e) {
       e.Handled = true;
       LcdsServiceProxyResponse lcds;
       if ((lcds = e.InnerEvent.Body as LcdsServiceProxyResponse) != null) {
-        Dispatcher.Invoke(() => Messages.Text += $"[{lcds.status}] {lcds.methodName}: {lcds.payload}\n");
+        Dispatcher.Invoke(() => msgBox.Text += $"[{lcds.status}] {lcds.methodName}: {lcds.payload}\n\n");
       } else {
-        Dispatcher.Invoke(() => Messages.Text += e.InnerEvent.Body.GetType().Name+'\n');
+        Dispatcher.Invoke(() => msgBox.Text += e.InnerEvent.Body.GetType().Name + "\n\n");
       }
     }
 
@@ -77,7 +145,18 @@ namespace LeagueClient.ClientUI.Main {
 
       JSON.RequreStructureAttribute = true;
 
-      method.Invoke(null, args);
+      var task = method.Invoke(null, args);
+      if(task is Guid) {
+        Dispatcher.Invoke(() => resBox.Text += $"{method.Name} Guid: {task}\n\n");
+      } else if (task.GetType().IsGenericType && task.GetType().GetGenericTypeDefinition().Equals(typeof(Task<>))) {
+        GetType().GetMethod("GetResponse").MakeGenericMethod(task.GetType().GetGenericArguments()[0]).Invoke(this, new[] { method.Name, task });
+      }
+    }
+
+    public void GetResponse<T>(string name, Task<T> task) {
+      task.ContinueWith(t => {
+        Dispatcher.Invoke(() => resBox.Text += $"{name} returned: {t.Result?.GetType().Name}\n\n");
+      });
     }
 
     private void Method_Selected(object sender, SelectionChangedEventArgs e) {

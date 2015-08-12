@@ -96,7 +96,7 @@ namespace LeagueClient.Logic.Riot {
         return InvokeAsync<LcdsResponseString>("clientFacadeService", "callKudos", JSONInformation);
       }
 
-      //TODO
+      //TODO Finish riot calls
     }
 
     public static class MatchmakerService {
@@ -977,9 +977,10 @@ namespace LeagueClient.Logic.Riot {
         return Invoke("startSoloSpecPhaseV2");
       }
 
-      public static Guid StartMatchmaking(string accessTokenStr) {
+      public static Guid StartMatchmaking(string accessTokenStr = null) {
         var json = new JSONObject();
-        json["accessTokenStr"] = accessTokenStr;
+        if (accessTokenStr != null)
+          json["accessTokenStr"] = accessTokenStr;
         return Invoke("startMatchmakingPhaseV2", json);
       }
 
@@ -1121,9 +1122,7 @@ namespace LeagueClient.Logic.Riot {
 
       string Status = json.status;
 
-      if (Status == "QUEUE") {
-
-      }
+      if (Status == "QUEUE") { }
 
       if (json.ContainsKey("token"))
         return (string) json.token;

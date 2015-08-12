@@ -108,4 +108,57 @@ namespace LeagueClient.Logic {
     }
 	}
 
+	public class SpectatorState {
+    public static readonly Dictionary<string, SpectatorState> Values = new Dictionary<string, SpectatorState>();
+
+    public static readonly SpectatorState
+      ALL = new SpectatorState("ALL", "All"),
+      NONE = new SpectatorState("NONE", "None"),
+      LOBBYONLY = new SpectatorState("LOBBYONLY", "Lobby Only"),
+      DROPINONLY = new SpectatorState("DROPINONLY", "Friends Only");
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+
+		private SpectatorState(string key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
+	public class GameConfig {
+    public static readonly Dictionary<int, GameConfig> Values = new Dictionary<int, GameConfig>();
+
+    public static readonly GameConfig
+      Blind = new GameConfig(1, "Blind Pick"),
+      Draft = new GameConfig(2, "Draft Pick"),
+      DraftNoBan = new GameConfig(3, "Draft NoBan"),
+      AllRandom = new GameConfig(4, "All Random"),
+      OpenPick = new GameConfig(5, "Open Pick"),
+      BlindDraft = new GameConfig(7, "Blind Draft"),
+      ITBlindPick = new GameConfig(11, "Infinite Time Blind Pick"),
+      Cap = new GameConfig(12, "Team Builder"),
+      OneForAll = new GameConfig(14, "One for All"),
+      CrossDupe = new GameConfig(15, "Cross Dupe"),
+      BlindDraftST = new GameConfig(16, "Blind Draft ST"),
+      CounterPick = new GameConfig(17, "Counter Pick"),
+      CapDraft = new GameConfig(18, "Team Builder Draft");
+
+    public int Key { get; private set; }
+    public string Value { get; private set; }
+
+		private GameConfig(int key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
 }

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace LeagueClient.Logic {
 <#
 	
-	foreach(var e in new[] {"Position", "Role", "QueueType"}) {
+	foreach(var e in new[] {"Position", "Role", "QueueType", "SpectatorState"}) {
 
 #>
 	public class <#= e #> {
@@ -33,6 +33,42 @@ namespace LeagueClient.Logic {
     public string Value { get; private set; }
 
 		private <#= e #>(string key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
+<#
+
+}
+	
+	foreach(var e in new[] {"GameConfig"}) {
+
+#>
+	public class <#= e #> {
+    public static readonly Dictionary<int, <#= e #>> Values = new Dictionary<int, <#= e #>>();
+
+    public static readonly <#= e #>
+<#
+		var filename = this.Host.ResolvePath(e + ".txt");
+		var lines = File.ReadAllLines(filename);
+		for(int i = 0; i < lines.Count(); i++) {
+			var things = lines[i].Split('=');
+			Write(string.Format("      {0} = new {3}({1}, \"{2}\")", things[0].Trim(), things[1].Trim(), things[2].Trim(), e));
+
+			if(i + 1 < lines.Count()) WriteLine(",");
+			else WriteLine(";");
+		}
+#>
+
+    public int Key { get; private set; }
+    public string Value { get; private set; }
+
+		private <#= e #>(int key, string value) {
 			Key = key; Value = value;
 			Values.Add(key, this);
 		}

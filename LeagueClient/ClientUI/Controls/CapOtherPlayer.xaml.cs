@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LeagueClient.Logic;
 using LeagueClient.Logic.Cap;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
@@ -26,11 +27,19 @@ namespace LeagueClient.ClientUI.Controls {
   public partial class CapOtherPlayer : UserControl {
     public CapPlayer Player { get; private set; }
 
-    private Timer timer;
+    public event EventHandler<bool> CandidateReacted;
 
-    public CapOtherPlayer(CapPlayer player) {
+    private Timer timer;
+    public bool editable;
+
+    public CapOtherPlayer(CapPlayer player, bool editable = false) {
       Player = player;
+      this.editable = editable;
+
       InitializeComponent();
+      PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
+      RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.UNSELECTED);
+
       Player.PropertyChanged += (s, e) => Dispatcher.Invoke(PlayerUpdate);
       Unknown.Visibility = Visibility.Collapsed;
       PlayerUpdate();
@@ -45,31 +54,56 @@ namespace LeagueClient.ClientUI.Controls {
       } else RoleText.Text = "";
 
       Check.Visibility = Visibility.Collapsed;
+      if(editable && Player.Status == CapStatus.ChoosingAdvert) {
+        PositionBox.Visibility = Visibility.Visible;
+        RoleBox.Visibility = Visibility.Visible;
+      } else {
+        PositionBox.Visibility = Visibility.Collapsed;
+        RoleBox.Visibility = Visibility.Collapsed;
+      }
+
+      if(editable && Player.Status == CapStatus.Found) {
+        AcceptButt.Visibility = Visibility.Visible;
+        DeclineButt.Visibility = Visibility.Visible;
+      } else {
+        AcceptButt.Visibility = Visibility.Collapsed;
+        DeclineButt.Visibility = Visibility.Collapsed;
+      }
+
+      TimeoutText.Visibility = Visibility.Collapsed;
       switch (Player.Status) {
-        case CapStatus.Ready:
-          Check.Visibility = Visibility.Visible;
-          goto case CapStatus.Present;
         case CapStatus.ChoosingAdvert:
           SummonerText.Text = "Select Position and Role";
           break;
-        case CapStatus.Choosing:
-        case CapStatus.Present:
-          SummonerText.Text = Player.Name;
-          break;
-        case CapStatus.Penalty:
-          SummonerText.Text = "Player kicked";
-          RoleText.Text = "Please wait " + Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + " seconds";
-          timer = new Timer { Interval = 1000, Enabled = true };
-          timer.Elapsed += Timer_Elapsed;
-          break;
         case CapStatus.Searching:
+          Unknown.Visibility = Visibility.Visible;
           SummonerText.Text = "Searching for candidate...";
-          break;
-        case CapStatus.SearchingDeclined:
-          SummonerText.Text = "The player was not found, searching for another candidate...";
           break;
         case CapStatus.Found:
           SummonerText.Text = "A candidate has been found";
+          TimeoutText.Visibility = Visibility.Visible;
+          TimeoutText.Text = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
+          timer = new Timer { Interval = 1000, Enabled = true };
+          timer.Elapsed += Timer_Elapsed;
+          break;
+        case CapStatus.Joining:
+          SummonerText.Text = "Waiting for candidate to join group...";
+          break;
+        case CapStatus.Present:
+          SummonerText.Text = Player.Name;
+          break;
+        case CapStatus.Ready:
+          Check.Visibility = Visibility.Visible;
+          goto case CapStatus.Present;
+        case CapStatus.Penalty:
+          SummonerText.Text = "Player kicked";
+          TimeoutText.Visibility = Visibility.Visible;
+          TimeoutText.Text = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
+          timer = new Timer { Interval = 1000, Enabled = true };
+          timer.Elapsed += Timer_Elapsed;
+          break;
+        case CapStatus.SearchingDeclined:
+          SummonerText.Text = "The player was not found, searching for another candidate...";
           break;
       }
     }
@@ -77,11 +111,19 @@ namespace LeagueClient.ClientUI.Controls {
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       var t = (int) Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds);
       if(t > 0) {
-        Dispatcher.Invoke(() => RoleText.Text = "Please wait " + t + " seconds");
+        Dispatcher.Invoke(() => TimeoutText.Text = t + "");
       } else {
         timer.Dispose();
         Player.Status = CapStatus.Searching;
       }
+    }
+
+    private void Accept_Click(object sender, RoutedEventArgs e) {
+      CandidateReacted?.Invoke(this, true);
+    }
+
+    private void Decline_Click(object sender, RoutedEventArgs e) {
+      CandidateReacted?.Invoke(this, false);
     }
   }
 }

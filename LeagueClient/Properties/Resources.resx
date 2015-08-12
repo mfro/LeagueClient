@@ -124,4 +124,19 @@
   <data name="Games" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Games.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="BilgewaterImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BilgewaterImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CScarImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CScarImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HAbyssImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HAbyssImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SRiftImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SRiftImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TTImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TTImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

@@ -64,7 +64,6 @@ namespace LeagueClient.ClientUI.Controls {
     private LeagueStatus status;
     private string name;
     private string inGameString;
-    private string statusMessage;
     private jabber.protocol.iq.Item user;
     private ChatConversation conversation;
     private BitmapImage summonerIcon;

@@ -98,11 +98,17 @@
     <Compile Include="ClientUI\Controls\InvitePopup.xaml.cs">
       <DependentUpon>InvitePopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\OkAlert.xaml.cs">
+      <DependentUpon>OkAlert.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\PopupSelector.xaml.cs">
       <DependentUpon>PopupSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\ReturnToLobbyQueuer.xaml.cs">
       <DependentUpon>ReturnToLobbyQueuer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\YesNoAlert.xaml.cs">
+      <DependentUpon>YesNoAlert.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Main\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
@@ -117,6 +123,9 @@
       <DependentUpon>Friend.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\HintedTextBox.cs" />
+    <Compile Include="ClientUI\Main\CustomCreatePage.xaml.cs">
+      <DependentUpon>CustomCreatePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Main\DebugPage.xaml.cs">
       <DependentUpon>DebugPage.xaml</DependentUpon>
     </Compile>
@@ -327,11 +336,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientUI\Controls\OkAlert.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Controls\PopupSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\ReturnToLobbyQueuer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\YesNoAlert.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -384,6 +401,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Main\CustomCreatePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -451,13 +472,20 @@
     <Resource Include="Media\rp.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\TTImage.png" />
+    <Resource Include="Resources\SRiftImage.png" />
+    <Resource Include="Resources\HAbyssImage.png" />
     <Resource Include="Enums\Position.txt" />
     <Resource Include="Enums\Role.txt" />
     <Resource Include="Enums\QueueType.txt" />
+    <Resource Include="Enums\SpectatorState.txt" />
+    <Resource Include="Enums\GameConfig.txt" />
     <Content Include="Enums\RiotEnums.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>RiotEnums.cs</LastGenOutput>
     </Content>
+    <Resource Include="Resources\BilgewaterImage.png" />
+    <Resource Include="Resources\CScarImage.png" />
     <Content Include="Resources\ffmpeg.exe" />
     <Compile Include="Logic\com\riotgames\platform\serviceproxy\dispatch\LcdsServiceProxyResponse.cs" />
     <None Include="RiotLCDSResponses.txt" />

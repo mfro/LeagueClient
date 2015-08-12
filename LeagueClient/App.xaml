@@ -18,7 +18,7 @@
     <Color x:Key="ForeColor" R="100" G="100" B="100" A="255"/>
     <Color x:Key="Back1Color" R="58" G="58" B="58" A="255"/>
     <Color x:Key="Back2Color" R="28" G="28" B="28" A="255"/>
-    <Color x:Key="BusyColor" R="255" G="200" B="5" A="255"/>
+    <Color x:Key="BusyColor" R="255" G="150" B="5" A="255"/>
     <Color x:Key="AwayColor" R="221" G="0" B="0" A="255"/>
     <Color x:Key="ChatColor" R="0" G="179" B="80" A="255"/>
 
@@ -106,6 +106,41 @@
                       To="{x:Static SystemColors.WindowColor}" Duration="0:0:0.2"/>
     </Storyboard>
 
+    <Style TargetType="Button" x:Key="CircleButton">
+      <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
+      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
+      <Setter Property="Foreground" Value="{StaticResource FontBrush}"/>
+      <Setter Property="Padding" Value="4 2"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Grid>
+              <Ellipse Stroke="{TemplateBinding BorderBrush}" Fill="{TemplateBinding Background}"/>
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <EventTrigger RoutedEvent="MouseEnter">
+          <BeginStoryboard Storyboard="{StaticResource OldButtonHover}"/>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="MouseLeave">
+          <BeginStoryboard Storyboard="{StaticResource OldButtonLeave}"/>
+        </EventTrigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Trigger.EnterActions>
+            <BeginStoryboard Storyboard="{StaticResource OldButtonPress}"/>
+          </Trigger.EnterActions>
+          <Trigger.ExitActions>
+            <BeginStoryboard Storyboard="{StaticResource OldButtonRelease}"/>
+          </Trigger.ExitActions>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
     <Style x:Key="Control">
       <Setter Property="Control.Background" Value="{StaticResource ForeBrush}"/>
       <Setter Property="Control.FontSize" Value="12"/>
@@ -309,7 +344,9 @@
         </Trigger>
       </Style.Triggers>
     </Style>
-    <Style TargetType="Label" BasedOn="{StaticResource Control}"/>
+    <Style TargetType="Label" BasedOn="{StaticResource Control}">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
 
     <Style x:Key="ScrollThumb" TargetType="Thumb">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -423,7 +460,7 @@
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ComboBox">
-            <Border BorderThickness="1" BorderBrush="{StaticResource ForeBrush}">
+            <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource ForeBrush}">
               <Grid Background="{TemplateBinding Background}">
                 <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" 
                               Focusable="false" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"/>

@@ -26,7 +26,6 @@ namespace LeagueClient.ClientUI.Main {
   /// </summary>
   public partial class PlaySelectPage : Page, IClientSubPage {
     private static dynamic GameTypesRef = JSON.ParseObject(LeagueClient.Properties.Resources.Games);
-    private static List<string> Order = new List<string> { "CLASSIC", "ODIN", "ARAM" };
     
     public BindingList<dynamic> GameGroups { get; } = new BindingList<dynamic>();
     public BindingList<dynamic> GameModes { get; } = new BindingList<dynamic>();
@@ -49,7 +48,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public static void Setup() {
       Func<dynamic, bool> GameCheck = g => g.Queues.Count == 0;
-      Func<dynamic, bool> QueueCheck = q => !Client.AvailableQueues.ContainsKey(q["Id"]);
+      Func<dynamic, bool> QueueCheck = q => !Client.AvailableQueues.ContainsKey(q["Id"]) && q["Id"] >= 0;
       foreach (var group in GameTypesRef.Games.Values) {
         foreach (var game in group.Games) {
           var queues = (IEnumerable<object>) Enumerable.Where(game.Queues.DynamicList, QueueCheck);
@@ -68,13 +67,20 @@ namespace LeagueClient.ClientUI.Main {
       if (QueueList.SelectedIndex < 0) return;
       var info = (dynamic) QueueList.SelectedItem;
       QueueTitle.Text = info.Name;
-      var config = Client.AvailableQueues[info.Id];
+      GameQueueConfig config = null;
+      if (info.Id >= 0) config = Client.AvailableQueues[info.Id];
       var bots = "";
       if(info.ContainsKey("BotDifficulty")) bots = info.BotDifficulty;
       int type = 0;
       if (info.ContainsKey("Type")) type = info.Type;
       selected = new { Id = info.Id, Config = config, Bots = bots, Type = type };
       switch (type) {
+        case 3:
+        case 0:
+          Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Visible;
+          Join1.Content = "Enter Soloqueue";
+          Join2.Content = "Create Lobby";
+          break;
         case 1:
           Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Visible;
           Join1.Content = "Enter Soloqueue";
@@ -85,10 +91,10 @@ namespace LeagueClient.ClientUI.Main {
           Join2.Visibility = System.Windows.Visibility.Visible;
           Join2.Content = "Create Lobby";
           break;
-        default:
+        case 4:
           Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Visible;
-          Join1.Content = "Enter Soloqueue";
-          Join2.Content = "Create Lobby";
+          Join1.Content = "Create Lobby";
+          Join2.Content = "Join Lobby";
           break;
       }
     }
@@ -135,7 +141,7 @@ namespace LeagueClient.ClientUI.Main {
           if(search.PlayerJoinFailures?.Count > 0) {
             switch (search.PlayerJoinFailures[0].ReasonFailed) {
               case "QUEUE_DODGER":
-                Client.QueueManager.ShowNotification(Alert.QueueDodger);
+                Client.QueueManager.ShowNotification(AlertFactory.QueueDodger());
                 Client.QueueManager.ShowQueuer(new BingeQueuer(search.PlayerJoinFailures[0].PenaltyRemainingTime));
                 break;
             }
@@ -146,6 +152,10 @@ namespace LeagueClient.ClientUI.Main {
         case 3:
           Client.QueueManager.ShowPage(new CapSoloPage());
           break;
+        case 4:
+          //TODO Custom create page
+          Client.QueueManager.ShowPage(new CustomCreatePage());
+          break;
       }
     }
 
@@ -155,12 +165,16 @@ namespace LeagueClient.ClientUI.Main {
         case 0:
         case 1:
         case 2:
-          //TODO
+          //TODO Normal game lobby
           //Client.QueueManager.CreateLobby(selected.Config, selected.Bots);
           break;
         case 3:
           Client.QueueManager.ShowPage(new CapLobbyPage(true));
           RiotCalls.CapService.CreateGroup();
+          break;
+        case 4:
+          //TODO Custom game list page
+          //Client.QueueManager.ShowPage(new CustomListPage());
           break;
       }
     }

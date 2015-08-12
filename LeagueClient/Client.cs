@@ -18,6 +18,7 @@ using MFroehlich.Parsing.DynamicJSON;
 using LeagueClient.Logic;
 using LeagueClient.ClientUI.Main;
 using System.Threading;
+using System.Windows.Threading;
 
 namespace LeagueClient {
   public static class Client {
@@ -197,9 +198,10 @@ namespace LeagueClient {
     /// <param name="creds">The credentials for joining the game</param>
     public static void JoinGame(PlayerCredentialsDto creds) {
       //"8394" "LoLLauncher.exe" "" "ip port key id"
-      var info = new ProcessStartInfo(Path.Combine(GameClientParentDir, "League of Legends.exe"));
+      var info = new ProcessStartInfo(Path.Combine(GameDirectory, "League of Legends.exe"));
       var str = $"{creds.ServerIp} {creds.ServerPort} {creds.EncryptionKey} {creds.SummonerId}";
       info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLLauncher.exe", "", str);
+      info.WorkingDirectory = GameDirectory;
       GameProcess = Process.Start(info);
     }
     /// <summary>
@@ -224,6 +226,24 @@ namespace LeagueClient {
       page.Current = true;
       SelectedRunePage = page;
     }
+
+    private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
+    public static void ShowInvite(InvitationRequest invite) {
+      if (invite.InvitationState.Equals("ACTIVE")) {
+        var payload = JSON.ParseObject(invite.GameMetaData);
+        var alert = AlertFactory.TeambuilderInvite(invite.Inviter.summonerName);
+        alert.Handled += (src, e2) => {
+          if (e2.Data as bool? ?? false) {
+            var lobby = new CapLobbyPage(false);
+            RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+            RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
+            QueueManager.ShowPage(lobby);
+          }
+        };
+        invites[invite.InvitationId] = alert;
+        QueueManager.ShowNotification(alert);
+      }
+    }
     #endregion
 
     public static void CallbackException(object sender, Exception e) {
@@ -232,48 +252,50 @@ namespace LeagueClient {
 
     public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
       var args = new MessageHandlerArgs(e);
-      if (MessageReceived != null) MessageReceived(sender, args);
-      if (args.Handled) return;
+      try {
+        MessageReceived?.Invoke(sender, args);
+      } catch (Exception x) {
+        Log("Exception while dispatching message: " + x.Message);
+        TryBreak(x.Message);
+      }
 
       ClientDynamicConfigurationNotification config;
       LcdsServiceProxyResponse response;
+      PlayerCredentialsDto creds;
       InvitationRequest invite;
+
+      if ((response = e.Body as LcdsServiceProxyResponse) != null) {
+        if (response.status.Equals("ACK"))
+          Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
+        else if (response.messageId != null && RiotCalls.Delegates.ContainsKey(response.messageId)) {
+          RiotCalls.Delegates[response.messageId](response);
+          RiotCalls.Delegates.Remove(response.messageId);
+        } else if(!args.Handled) {
+          Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
+        }
+      }
+
+      if (args.Handled) return;
+
       try {
         if ((config = e.Body as ClientDynamicConfigurationNotification) != null) {
           Log("Received Configuration Notification");
-        } else if ((response = e.Body as LcdsServiceProxyResponse) != null) {
-          if (response.status.Equals("ACK"))
-            Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
-          else if (response.messageId != null && RiotCalls.Delegates.ContainsKey(response.messageId)) {
-            RiotCalls.Delegates[response.messageId](response);
-            RiotCalls.Delegates.Remove(response.messageId);
-          } else {
-            Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
-          }
         } else if ((invite = e.Body as InvitationRequest) != null) {
-          if (invite.InvitationState.Equals("ACTIVE")) {
-            var payload = JSON.ParseObject(invite.GameMetaData);
-            QueueManager.ShowNotification(Alert.TeambuilderInvite(invite.Inviter.summonerName, (s, b) => {
-              if (b) {
-                var lobby = new CapLobbyPage(false);
-                RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
-                RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
-                QueueManager.ShowPage(lobby);
-              }
-            }));
-          }
-        } else {
+          ShowInvite(invite);
+        } else if ((creds = e.Body as PlayerCredentialsDto) != null) {
+          JoinGame(creds);
+        } else if (response == null) {
           Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
         }
       } catch (Exception x) {
-        Log("Exception while dispatching message: " + x.Message);
+        Log("Exception while handling message: " + x.Message);
         TryBreak(x.Message);
       }
     }
 
     public static void TryBreak(string reason) {
       Log("Attempt Break: " + reason);
-      if (Debugger.IsAttached) Debugger.Break();
+      if (Debugger.IsAttached)  Debugger.Break();
     }
 
     private static TextWriter LogDebug = Console.Out;

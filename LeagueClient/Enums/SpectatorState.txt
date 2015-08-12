@@ -1,0 +1,4 @@
+﻿ALL = All
+NONE = None
+LOBBYONLY = Lobby Only
+DROPINONLY = Friends Only

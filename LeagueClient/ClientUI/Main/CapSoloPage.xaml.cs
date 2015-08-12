@@ -50,8 +50,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void PlayerUpdate(object sender, EventArgs e) {
-      GameMap.Players.Clear();
-      GameMap.Players.Add(Player.CapPlayer);
+      GameMap.UpdateList(new[] { Player.CapPlayer });
       if (Player.CanBeReady()) EnterQueueButt.BeginStoryboard(App.FadeIn);
       else EnterQueueButt.BeginStoryboard(App.FadeOut);
     }

@@ -1,0 +1,13 @@
+﻿Blind = 1 = Blind Pick
+Draft = 2 = Draft Pick
+DraftNoBan = 3 = Draft NoBan
+AllRandom = 4 = All Random
+OpenPick = 5 = Open Pick
+BlindDraft = 7 = Blind Draft
+ITBlindPick = 11 = Infinite Time Blind Pick
+Cap = 12 = Team Builder
+OneForAll = 14 = One for All
+CrossDupe = 15 = Cross Dupe
+BlindDraftST = 16 = Blind Draft ST
+CounterPick = 17 = Counter Pick
+CapDraft = 18 = Team Builder Draft

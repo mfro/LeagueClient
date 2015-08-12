@@ -56,7 +56,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Grid_MouseUp(object sender, MouseButtonEventArgs e) {
-      var item = (sender as Grid).DataContext as BuddyInfo;
+      var item = (sender as UserControl).DataContext as BuddyInfo;
       Users[item.User] = !Users[item.User];
       item.Visibility = Users[item.User] ? Visibility.Visible : Visibility.Collapsed;
     }

@@ -24,6 +24,11 @@ namespace LeagueClient {
       FadeIn, FadeOut;//, ComboItemEnter, ComboItemLeave;
 
     [Resource]
+    public static Color
+      FontColor, FocusColor, ForeColor, Back1Color, Back2Color,
+      BusyColor, AwayColor, ChatColor;
+
+    [Resource]
     public static SolidColorBrush
       FontBrush, FocusBrush, ForeBrush, Back1Brush, Back2Brush,
       BusyBrush, AwayBrush, ChatBrush;

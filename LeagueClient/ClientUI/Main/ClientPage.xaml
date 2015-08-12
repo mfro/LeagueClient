@@ -8,46 +8,6 @@
       DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <Page.Resources>
     <sys:Double x:Key="ChatButtonWidth">60</sys:Double>
-    <Style TargetType="Button" x:Key="CircleButton">
-      <Setter Property="OverridesDefaultStyle" Value="True"/>
-      <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
-      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
-      <Setter Property="Foreground" Value="{StaticResource FontBrush}"/>
-      <Setter Property="Padding" Value="4 2"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="Button">
-            <Grid>
-              <Ellipse Stroke="{TemplateBinding BorderBrush}" Fill="{TemplateBinding Background}"/>
-              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Grid>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-      <Style.Triggers>
-        <Trigger Property="IsMouseOver" Value="True">
-          <Trigger.EnterActions>
-            <!--<BeginStoryboard Storyboard="{StaticResource ButtonHover}"/>-->
-          </Trigger.EnterActions>
-          <Trigger.ExitActions>
-            <!--<BeginStoryboard Storyboard="{StaticResource ButtonUnHover}"/>-->
-          </Trigger.ExitActions>
-        </Trigger>
-        <Trigger Property="IsPressed" Value="True">
-          <Trigger.EnterActions>
-            <!--<BeginStoryboard Storyboard="{StaticResource ButtonPress}"/>-->
-          </Trigger.EnterActions>
-          <Trigger.ExitActions>
-            <!--<BeginStoryboard Storyboard="{StaticResource ButtonRelease}"/>-->
-          </Trigger.ExitActions>
-        </Trigger>
-      </Style.Triggers>
-    </Style>
-    <Storyboard x:Key="QuickAlertFade">
-      <DoubleAnimation Storyboard.TargetProperty="Opacity" BeginTime="0:0:3.0" Duration="0:0:1.0"/>
-    </Storyboard>
   </Page.Resources>
   <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
@@ -59,23 +19,24 @@
     <Grid Name="Header" Background="{StaticResource Back1Brush}" Grid.Row="0" MouseDown="Header_MouseDown">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="90"/>
-        <ColumnDefinition Width="60"/>
-        <ColumnDefinition Width="30"/>
+        <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="240"/>
       </Grid.ColumnDefinitions>
       <Button Margin="10" Content="Home" Click="Home_Click" FontSize="14"/>
-      <Button Margin="0,12,12,12" Content="Debug" Click="Debug_Click" FontSize="14" Grid.Column="3" HorizontalAlignment="Right" Width="70"/>
-      <Button Grid.Column="2" Style="{StaticResource CircleButton}" Height="30" Width="30"
-              Click="AlertButton_Click" Visibility="Hidden" Opacity="0" Name="AlertButton" Margin="0,12,0,13">
+      <Button Grid.Column="1" Style="{StaticResource CircleButton}" Height="30" Width="30"
+              Click="AlertButt_Click" Visibility="Hidden" Opacity="0" Name="AlertButt" Margin="0,12,0,13">
         <Path Fill="{StaticResource FontBrush}" Stroke="{StaticResource FontBrush}"
               Data="M 13 5 L 17 5 17 19 13 19 Z M 13 22 L 17 22 L 17 25 L 13 25 Z"
               Name="AlertExclamation" IsHitTestVisible="False" Width="30" Height="30"/>
       </Button>
-      <Border Width="150" Height="40" Grid.Column="3" HorizontalAlignment="Left"
-              Margin="50,8,0,7" Name="StatusPanel"/>
-      <Border Width="100" Height="40" Name="PlayControl" Grid.ColumnSpan="6"/>
-      <Grid Name="Profile" Grid.Column="4" Grid.ColumnSpan="2">
+      <Border Width="150" Height="40" Grid.Column="2" HorizontalAlignment="Right"
+              Margin="20 7.5" Name="StatusPanel">
+      </Border>
+      <Border Width="100" Height="40" Name="PlayControl" Grid.ColumnSpan="6">
+        <Button FontSize="18" Click="Play_Click" Content="Play" Name="PlayButton"/>
+      </Border>
+      <Grid Name="Profile" Grid.Column="3" Grid.ColumnSpan="2">
         <Grid.RowDefinitions>
           <RowDefinition Height="19"/>
           <RowDefinition Height="*"/>
@@ -137,58 +98,15 @@
       </Border>
     </Grid>
 
-    <Grid Margin="40 50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="250" MaxHeight="300"
-          Name="AlertPopup" Grid.RowSpan="3" Visibility="Collapsed" Opacity="0">
-      <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="1" Margin="3"/>
-      <Border BorderBrush="{StaticResource Back1Brush}" BorderThickness="3 0 3 3"/>
-      <Border Background="{StaticResource ForeBrush}" Name="QuickAlertBack" Margin="4">
-        <TextBlock Name="QuickAlert" Style="{StaticResource Control}" Margin="4 1" FontSize="14"/>
-      </Border>
-      <ScrollViewer Margin="4" VerticalScrollBarVisibility="Hidden" Visibility="Collapsed" Name="AlertScroll">
-        <ItemsControl Name="AlertHistory" Background="{StaticResource Back1Brush}"
-                    ItemsSource="{Binding Alerts}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*"/>
-                  <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="auto"/>
-                  <RowDefinition Height="72"/>
-                </Grid.RowDefinitions>
-                <Border Background="{StaticResource ForeBrush}" Grid.ColumnSpan="2">
-                  <TextBlock Text="{Binding Title}" Style="{StaticResource Control}" Margin="4 1" FontSize="14"/>
-                </Border>
-                <TextBlock Style="{StaticResource Control}" Text="{Binding Message}" Grid.Row="1" TextWrapping="Wrap" Margin="2 0"/>
-                <Button Name="AlertYes" Grid.Row="1" Width="20" Height="20" Style="{StaticResource CircleButton}"
-                        Grid.Column="1" VerticalAlignment="Top" Margin="3" Click="AlertYes_Click">
-                  <Path Width="20" Height="20" Stroke="{StaticResource FontBrush}" StrokeThickness="2"
-                  StrokeEndLineCap="Round" StrokeStartLineCap="Round" StrokeLineJoin="Round"
-                  Data="M 4 11 L 8 15 16 6"/>
-                </Button>
-                <Button Name="AlertNo" Grid.Row="1" Width="20" Height="20" Style="{StaticResource CircleButton}"
-                        Grid.Column="1" VerticalAlignment="Top" Margin="3 26" Visibility="Collapsed"
-                        Click="AlertNo_Click">
-                  <Path Width="20" Height="20" Stroke="{StaticResource FontBrush}" StrokeThickness="2"
-                  StrokeEndLineCap="Round" StrokeStartLineCap="Round" StrokeLineJoin="Round"
-                  Data="M 5 5 L 15 15 M 15 5 L 5 15"/>
-                </Button>
-              </Grid>
-              <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Type}" Value="YesNo">
-                  <Setter TargetName="AlertNo" Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-              </DataTemplate.Triggers>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+    <Grid Name="PastAlerts" Grid.Row="1" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5 5 0 0"
+          Visibility="Collapsed" Opacity="0">
+      <ScrollViewer VerticalScrollBarVisibility="Hidden" MinHeight="100" MaxHeight="300" Background="Red" Name="AlertScroll">
+        <ItemsControl Name="AlertHistory" Background="{StaticResource Back1Brush}" ItemsSource="{Binding Alerts}"/>
       </ScrollViewer>
-      <Path Margin="0 -5" VerticalAlignment="Top" Data="M 116.5 8.5 L 125 0 133.5 8.5 Z"
-            Fill="{StaticResource ForeBrush}"
-            Stroke="{StaticResource ForeBrush}"/>
     </Grid>
+    <Border Name="RecentAlert" Margin="5 5" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Row="1" Visibility="Collapsed" Opacity="0">
+      
+    </Border>
     <Border Grid.ColumnSpan="100" Grid.RowSpan="100" Name="PopupPanel" Background="#4F101010" Visibility="Collapsed"/>
   </Grid>
 </Page>

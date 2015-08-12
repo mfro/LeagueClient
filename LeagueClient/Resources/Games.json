@@ -113,7 +113,19 @@
           ]
         }
       ]
-    }
+    },
+		"Custom":{
+			"Name": "Custom",
+			"Details": "Create or join a custom lobby",
+			"Games": [
+				{
+					"Name": "Custom",
+					"Info": "Custom",
+					"Mode": "CLASSIC",
+					"Queues": [ { "Name": "Custom", "Id": -1, "Type": 4 } ]
+				}
+			]
+		}
   },
   "Modes": {
     "CLASSIC": "Work with your team to destroy the enemy nexus.",

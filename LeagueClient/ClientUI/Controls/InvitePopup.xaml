@@ -22,8 +22,8 @@
     <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" Name="ItemsList">
       <ItemsControl.ItemTemplate>
         <DataTemplate>
-          <UserControl Background="{StaticResource Back1Brush}" Height="48" Width="200" Margin="4 4 0 0">
-            <Grid MouseUp="Grid_MouseUp">
+          <UserControl Background="{StaticResource Back1Brush}" Height="48" Width="200" Margin="4 4 0 0" MouseUp="Grid_MouseUp">
+            <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="48"/>
                 <ColumnDefinition/>

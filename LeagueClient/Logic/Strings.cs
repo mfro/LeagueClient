@@ -27,25 +27,6 @@ namespace LeagueClient.Logic {
       {"The Crystal Scar", 8},
       {"Howling Abyss", 12}
     };
-
-    public static Dictionary<int, string> QueueModes = new Dictionary<int, string> {
-      {1, "Blind Pick"},
-      {2, "Draft Pick"},
-      {3, "Draft NoBan"},
-      {4, "All Random"},
-      {5, "Simultaneous"},
-      {6, "Draft Tournament"},
-      {7, "Simultaneous TD"},
-      {10, "Blind Random"},
-      {11, "Advanced Tutorial"},
-      {12, "Team Builder"},
-      {13, "Blind Random"},
-      {14, "Blind Dupe"},
-      {15, "Cross Dupe"},
-      {16, "Blind Draft ST"},
-      {17, "Counter Pick"},
-      {18, "Team Builder Draft"}
-    };
     #endregion
 
     public class ChampSelect {

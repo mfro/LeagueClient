@@ -51,45 +51,33 @@ namespace LeagueClient.ClientUI.Controls {
       new PointRef { { .200, .984 }, { .600, .560 }, { .300, .340 }, { .700, .640 } },
       new PointRef { { .190, .340 }, { .600, .560 }, { .320, .340 }, { .700, .640 }, { .255, .230 } },
     };
-    public BindingList<CapPlayer> Players { get; private set; }
-    private List<CapPlayer> subscribed = new List<CapPlayer>();
+    private List<CapPlayer> players = new List<CapPlayer>();
 
     public CapMap() {
-      Players = new BindingList<CapPlayer>();
-      Players.ListChanged += Players_ListChanged;
       InitializeComponent();
 
       GameMap.Source = LeagueData.GetMapImage(11); // Summoner's Rift
     }
 
-    void Players_ListChanged(object sender, ListChangedEventArgs e) {
-      switch (e.ListChangedType) {
-        case ListChangedType.ItemAdded:
-          if (!subscribed.Contains(Players[e.NewIndex])) {
-            Players[e.NewIndex].PropertyChanged += CapMap_PlayerUpdate;
-            subscribed.Add(Players[e.NewIndex]);
-          }
-          break;
-        case ListChangedType.Reset:
-          foreach (var item in Players.Where(p => !subscribed.Contains(p)))
-            item.PropertyChanged += CapMap_PlayerUpdate;
-          break;
-      }
-      CapMap_PlayerUpdate(null, null);
+    public void UpdateList(IEnumerable<CapPlayer> players) {
+      foreach (var player in this.players) player.PropertyChanged -= Cap_PlayerUpdate;
+      this.players = new List<CapPlayer>(players.Where(p => p != null));
+      foreach (var player in this.players) player.PropertyChanged += Cap_PlayerUpdate;
+      Reset();
     }
 
-    private void CapMap_PlayerUpdate(object sender, EventArgs e) {
+    private void Cap_PlayerUpdate(object sender, EventArgs e) {
       Dispatcher.Invoke(Reset);
     }
 
     private void Reset() {
-      int topT = (from p in Players where p.Position == Position.TOP && p.Champion != null select p).Count();
-      int midT = (from p in Players where p.Position == Position.MIDDLE && p.Champion != null select p).Count();
-      int botT = (from p in Players where p.Position == Position.BOTTOM && p.Champion != null select p).Count();
-      int jglT = (from p in Players where p.Position == Position.JUNGLE && p.Champion != null select p).Count();
+      int topT = (from p in players where p.Position == Position.TOP && p.Champion != null select p).Count();
+      int midT = (from p in players where p.Position == Position.MIDDLE && p.Champion != null select p).Count();
+      int botT = (from p in players where p.Position == Position.BOTTOM && p.Champion != null select p).Count();
+      int jglT = (from p in players where p.Position == Position.JUNGLE && p.Champion != null select p).Count();
       int top = 0, mid = 0, bot = 0, jgl = 0;
       Body.Children.Clear();
-      foreach (var item in Players.Where(p => p.Position != null && p.Champion != null)) {
+      foreach (var item in players.Where(p => p.Position != null && p.Champion != null)) {
         Point point;
         if (item.Position == Position.TOP) point = TopLane[topT - 1][top++];
         else if (item.Position == Position.MIDDLE) point = MidLane[midT - 1][mid++];

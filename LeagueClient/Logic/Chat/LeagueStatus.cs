@@ -19,6 +19,8 @@ namespace LeagueClient.Logic.Chat {
     public string Message { get; private set; }
     public string Champion { get; private set; }
 
+    public string Raw { get; private set; }
+
     public GameStatus GameStatus { get; private set; }
     public StatusShow Show { get; private set; }
 
@@ -30,6 +32,7 @@ namespace LeagueClient.Logic.Chat {
     public LeagueStatus(string status, string show) {
       var doc = new XmlDocument();
       doc.LoadXml(status);
+      Raw = status;
       foreach (XmlNode node in doc.SelectNodes("body/*")) {
         switch (node.Name) {
           case "profileIcon":
