@@ -152,7 +152,7 @@ namespace LeagueClient.ClientUI.Main {
             players[i] = me;
             continue;
           }
-          var player = data.Slots.Where(d => d.SlotId == i).FirstOrDefault();
+          var player = data.Slots.FirstOrDefault(d => d.SlotId == i);
           var capp = new CapPlayer(i);
           SetPlayerInfo(player, capp);
           players[i] = capp;

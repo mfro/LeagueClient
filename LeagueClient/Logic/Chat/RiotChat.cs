@@ -21,7 +21,7 @@ using LeagueClient.Logic.Riot;
 
 namespace LeagueClient.Logic.Chat {
   public class RiotChat {
-    public event EventHandler<List<Friend>> ChatListUpdated;
+    public event EventHandler<IEnumerable<Friend>> ChatListUpdated;
 
     public State ChatState { get; private set; }
     public BindingList<ChatConversation> OpenChats { get; } = new BindingList<ChatConversation>();
@@ -79,8 +79,9 @@ namespace LeagueClient.Logic.Chat {
     }
 
     private void ResetList() {
-      var list = new List<Friend>(Friends.Values).Where(u => !u.IsOffline).ToList();
+      var list = Friends.Values.Where(u => !u.IsOffline).ToList();
       list.Sort((f1, f2) => {
+        if (f1.IsOffline || f2.IsOffline) return 0;
         if (f1.GameInfo != null && f2.GameInfo != null) {
           int score1 = (int) f1.GameInfo.gameStartTime;
           int score2 = (int) f2.GameInfo.gameStartTime;
@@ -251,6 +252,12 @@ namespace LeagueClient.Logic.Chat {
 
     public Room GetTeambuilderRoom(string groupId, string pass) {
       var room = Conference.GetRoom(new JID(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass)));
+      room.Nickname = Client.LoginPacket.AllSummonerData.Summoner.Name;
+      return room;
+    }
+
+    public Room GetCustomRoom(string roomname, double roomId, string pass) {
+      var room = Conference.GetRoom(new JID(GetChatroomJID(GetObfuscatedChatroomName(roomname.ToLower() + (int) roomId, "ap"), false, pass)));
       room.Nickname = Client.LoginPacket.AllSummonerData.Summoner.Name;
       return room;
     }

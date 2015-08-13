@@ -64,9 +64,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void LoadBook(MasteryBookDTO book) {
       PageList.ItemsSource = book.BookPages;
-      var page = (from p in book.BookPages
-                  where p.Current
-                  select p).FirstOrDefault();
+      var page = book.BookPages.FirstOrDefault(p => p.Current);
       if (page == null) LoadPage((MasteryBookPageDTO) book.BookPages[0]);
       else LoadPage(page);
     }
@@ -97,7 +95,7 @@ namespace LeagueClient.ClientUI.Controls {
       var trees = new[] { offense, defense, utility };
       MasteryTree tree = null;
       foreach(var treeCheck in trees) {
-        var rowCheck = treeCheck.Rows.Where(r => r.Contains(src)).FirstOrDefault();
+        var rowCheck = treeCheck.Rows.FirstOrDefault(r => r.Contains(src));
         if (rowCheck != null) {
           tree = treeCheck;
           break;

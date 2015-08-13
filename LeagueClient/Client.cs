@@ -153,7 +153,7 @@ namespace LeagueClient {
       creds.ClientVersion = AirVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
-      creds.AuthToken = await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue);
+      creds.AuthToken = (await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue)).Token;
 
       UserSession = await RiotCalls.LoginService.Login(creds);
       await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
@@ -177,8 +177,8 @@ namespace LeagueClient {
           .ContinueWith(GotChampions);
         Runes = LoginPacket.AllSummonerData.SpellBook;
         Masteries = LoginPacket.AllSummonerData.MasteryBook;
-        SelectedRunePage = Runes.BookPages.Where(p => p.Current).FirstOrDefault();
-        SelectedMasteryPage = Masteries.BookPages.Where(p => p.Current).FirstOrDefault();
+        SelectedRunePage = Runes.BookPages.FirstOrDefault(p => p.Current);
+        SelectedMasteryPage = Masteries.BookPages.FirstOrDefault(p => p.Current);
       }).Start();
 
       EnabledMaps = new List<int>();
@@ -238,6 +238,8 @@ namespace LeagueClient {
             RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
             RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
             QueueManager.ShowPage(lobby);
+          } else {
+            RiotCalls.GameInvitationService.Decline(invite.InvitationId);
           }
         };
         invites[invite.InvitationId] = alert;

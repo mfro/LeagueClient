@@ -78,7 +78,7 @@ namespace LeagueClient.ClientUI.Main {
       Client.ChatManager.ChatListUpdated += ChatManager_ChatListUpdated;
     }
 
-    private void ChatManager_ChatListUpdated(object sender, List<Friend> e) {
+    private void ChatManager_ChatListUpdated(object sender, IEnumerable<Friend> e) {
       ChatList.ItemsSource = e;
     }
 

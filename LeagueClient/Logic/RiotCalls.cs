@@ -17,6 +17,7 @@ using LeagueClient.Logic.Riot.Kudos;
 using static LeagueClient.Logic.Strings;
 using MFroehlich.League.DataDragon;
 using LeagueClient.Logic.Cap;
+using LeagueClient.Logic.com.riotgames.other;
 
 namespace LeagueClient.Logic.Riot {
   public class RiotCalls {
@@ -1096,7 +1097,7 @@ namespace LeagueClient.Logic.Riot {
       }
     }
 
-    public static async Task<string> GetAuthKey(String Username, String Password, String LoginQueue) {
+    public static async Task<LoginQueueDto> GetAuthKey(String Username, String Password, String LoginQueue) {
       StringBuilder sb = new StringBuilder();
       string payload = "user=" + Username + ",password=" + Password;
       string query = "payload=" + payload;
@@ -1120,13 +1121,7 @@ namespace LeagueClient.Logic.Riot {
 
       dynamic json = MFroehlich.Parsing.DynamicJSON.JSON.ParseObject(sb.ToString());
 
-      string Status = json.status;
-
-      if (Status == "QUEUE") { }
-
-      if (json.ContainsKey("token"))
-        return (string) json.token;
-      else return null;
+      return (LoginQueueDto) json;
     }
 
     public static async Task<string> GetIpAddress() {

@@ -130,6 +130,27 @@ namespace LeagueClient.Logic {
     }
 	}
 
+	public class GameMode {
+    public static readonly Dictionary<string, GameMode> Values = new Dictionary<string, GameMode>();
+
+    public static readonly GameMode
+      CLASSIC = new GameMode("CLASSIC", "Classic"),
+      ARAM = new GameMode("ARAM", "ARAM"),
+      ODIN = new GameMode("ODIN", "Dominion");
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+
+		private GameMode(string key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
 	public class GameConfig {
     public static readonly Dictionary<int, GameConfig> Values = new Dictionary<int, GameConfig>();
 

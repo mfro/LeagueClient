@@ -103,7 +103,7 @@ namespace LeagueClient.ClientUI.Main {
       Client.ChatManager.ChatListUpdated += ChatManager_ChatListUpdated;
     }
 
-    private void ChatManager_ChatListUpdated(object sender, List<Controls.Friend> e) {
+    private void ChatManager_ChatListUpdated(object sender, IEnumerable<Controls.Friend> e) {
       var str = "";
       foreach (var bud in e) str += $"{bud.UserName} [{bud.User.JID.User.Substring(3)}]: {bud.Status.Raw}\n\n";
       if (!str.Equals(chatBox.Text)) Dispatcher.Invoke(() => chatBox.Text = str);

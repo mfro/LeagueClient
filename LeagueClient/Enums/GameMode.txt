@@ -1,0 +1,3 @@
+﻿CLASSIC = Classic
+ARAM = ARAM
+ODIN = Dominion

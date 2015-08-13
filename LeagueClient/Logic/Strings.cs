@@ -14,12 +14,6 @@ namespace LeagueClient.Logic {
     };
 
     #region Queues Maps and Game Modes
-    public static Map GameModes = new Map {
-      {"CLASSIC", "Classic"},
-      {"ODIN", "Dominion"},
-      {"ARAM", "ARAM"}
-    };
-
     public static Dictionary<int, string> Maps = new Dictionary<int, string> {
       {"Summoner's Rift", 1, 2, 11},
       {"The Proving Grounds", 3},

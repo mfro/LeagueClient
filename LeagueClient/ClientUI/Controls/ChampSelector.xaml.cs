@@ -76,14 +76,10 @@ namespace LeagueClient.ClientUI.Controls {
         SelectedChampion = data;
       }
 
-      var riotDto = (from c in Client.RiotChampions
-                     where c.ChampionId == data.key
-                     select c).FirstOrDefault();
+      var riotDto = Client.RiotChampions.FirstOrDefault(c => c.ChampionId == data.key);
       skins.Clear();
       foreach (var item in SelectedChampion.skins) {
-        var riot = (from s in riotDto.ChampionSkins
-                    where s.SkinId == item.id
-                    select s).FirstOrDefault();
+        var riot = riotDto.ChampionSkins.FirstOrDefault(s => s.SkinId == item.id);
         if (item.num == 0 || riot.Owned) skins.Add(item);
       }
       if (skins.Count == 1) {

@@ -89,6 +89,9 @@
     <Compile Include="ClientUI\Controls\BingeQueuer.xaml.cs">
       <DependentUpon>BingeQueuer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\DefaultPlayer.xaml.cs">
+      <DependentUpon>DefaultPlayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\DefaultQueuePopup.xaml.cs">
       <DependentUpon>DefaultQueuePopup.xaml</DependentUpon>
     </Compile>
@@ -141,6 +144,7 @@
     <Compile Include="Logic\com\riotgames\other\CapPlayerInfoData.cs" />
     <Compile Include="Logic\com\riotgames\other\CapGroupData.cs" />
     <Compile Include="Logic\com\riotgames\other\CapSlotData.cs" />
+    <Compile Include="Logic\com\riotgames\other\LoginQueueDto.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitePrivileges.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
@@ -327,6 +331,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientUI\Controls\DefaultPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Controls\DefaultQueuePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -488,6 +496,7 @@
     <Resource Include="Enums\SpectatorState.txt" />
     <Resource Include="Enums\GameConfig.txt" />
     <Resource Include="Enums\ChatStatus.txt" />
+    <Content Include="Enums\GameMode.txt" />
     <Content Include="Enums\RiotEnums.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>RiotEnums.cs</LastGenOutput>
