@@ -21,12 +21,14 @@ using System.Security.Cryptography;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
 using System.Windows.Threading;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient {
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class MainWindow : Window {
+    private IClientPage currentPage;
 
     public MainWindow() {
       Client.Log("Pre-Init");
@@ -37,18 +39,31 @@ namespace LeagueClient {
       ((App) App.Current).LoadResources();
       if (!PatcherPage.NeedsPatch()) {
         PatchComplete();
-      } else
+      } else {
         ContentFrame.Content = new PatcherPage();
+      }
     }
 
     public void LoginComplete() {
       var page = new ClientUI.Main.ClientPage();
       Client.QueueManager = page;
       ContentFrame.Content = page;
+      this.currentPage = page;
+    }
+
+    public bool HandleMessage(MessageReceivedEventArgs e) {
+      return currentPage?.HandleMessage(e) ?? false;
     }
 
     public void PatchComplete() {
       ContentFrame.Content = new LoginPage();
+    }
+
+    public void BeginChampSelect(GameDTO game) {
+      RiotCalls.GameService.StartChampionSelection(game.Id, game.OptimisticLock);
+      var page = new ChampSelectPage(game);
+      currentPage = page;
+      ContentFrame.Content = page;
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) {

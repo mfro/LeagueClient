@@ -5,14 +5,18 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using LeagueClient.Logic.Queueing;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Main {
   public interface IClientSubPage {
     event EventHandler Close;
 
-    bool CanPlay();
+    bool CanPlay { get; }
+    System.Windows.Controls.Page Page { get; }
+
     void ForceClose();
     IQueuer HandleClose();
-    System.Windows.Controls.Page GetPage();
+
+    bool HandleMessage(MessageReceivedEventArgs args);
   }
 }

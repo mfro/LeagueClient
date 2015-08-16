@@ -20,6 +20,7 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
+using RtmpSharp.Messaging;
 using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.ClientUI.Main {
@@ -105,11 +106,12 @@ namespace LeagueClient.ClientUI.Main {
       if (Close != null) Close(this, new EventArgs());
     }
 
-    public bool CanPlay() => false;
-
-    public Page GetPage() => this;
+    public Page Page => this;
+    public bool CanPlay => false;
 
     public void ForceClose() { }
     public IQueuer HandleClose() => null;
+
+    public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }
 }

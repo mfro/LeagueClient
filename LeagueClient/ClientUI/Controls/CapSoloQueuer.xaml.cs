@@ -17,6 +17,7 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -31,7 +32,6 @@ namespace LeagueClient.ClientUI.Controls {
 
     public CapSoloQueuer(Logic.Cap.CapPlayer player) {
       this.player = player;
-      Client.MessageReceived += Client_MessageReceived;
       InitializeComponent();
       QueryPane.DataContext = player;
       PositionText.Text = player.Position.Value;
@@ -48,25 +48,19 @@ namespace LeagueClient.ClientUI.Controls {
       Dispatcher.Invoke(() => ElapsedText.Text = "" + elapsed.ToString("m\\:ss"));
     }
 
-    private void Client_MessageReceived(object sender, MessageHandlerArgs e) {
-      if (e.Handled) return;
-      var response = e.InnerEvent.Body as LcdsServiceProxyResponse;
+    public bool HandleMessage(MessageReceivedEventArgs e) {
+      var response = e.Body as LcdsServiceProxyResponse;
       if (response != null) {
         switch (response.methodName) {
           case "acceptedByGroupV2":
             timer.Dispose();
-            e.Handled = true;
-            Client.MessageReceived -= Client_MessageReceived;
             Dispatcher.Invoke(() => Popped?.Invoke(this, new QueuePoppedEventArgs(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player))));
-            break;
+            return true;
         }
       } else {
 
       }
-    }
-
-    public Control GetControl() {
-      return this;
+      return false;
     }
 
     private void This_MouseEnter(object sender, MouseEventArgs e) {
@@ -81,9 +75,10 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       timer.Dispose();
-      Client.MessageReceived -= Client_MessageReceived;
       Logic.Riot.RiotCalls.CapService.Quit();
       Popped?.Invoke(this, new QueuePoppedEventArgs(null));
     }
+
+    public Control GetControl() => this;
   }
 }

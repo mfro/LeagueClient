@@ -27,7 +27,9 @@ namespace LeagueClient.Logic {
     public static Alert KickedFromCap() => Create<OkAlert>("Kicked from Group", "You have been kicked from a teambuilder group and returned to the queue.");
     public static Alert QueueDodger() => Create<OkAlert>("Unabled to join queue", "You have cancelled too many queues recently and are temporarily unabled to queue for games");
     public static Alert GroupDisbanded() => Create<OkAlert>("Your group has disbanded", "The group you were in was disbanded for an unknown reason");
-    public static Alert TeambuilderInvite(string user) => Create<YesNoAlert>("Teambuilder Invite", "You have been invited to a teambuilder game by " + user);
+
+    public static Alert TeambuilderInvite(string user) => Create<YesNoAlert>("Teambuilder Invite", "You have been invited to a teambuilder game lobby by " + user);
+    public static Alert CustomInvite(string user) => Create<YesNoAlert>("Custom Game Invite", "You have been invited to a custom game lobby by " + user);
   }
 
   public class AlertEventArgs : EventArgs {

@@ -157,7 +157,7 @@ namespace LeagueClient.Logic {
     public static readonly GameConfig
       Blind = new GameConfig(1, "Blind Pick"),
       Draft = new GameConfig(2, "Draft Pick"),
-      DraftNoBan = new GameConfig(3, "Draft NoBan"),
+      DraftNoBan = new GameConfig(3, "No Ban Draft Pick"),
       AllRandom = new GameConfig(4, "All Random"),
       OpenPick = new GameConfig(5, "Open Pick"),
       BlindDraft = new GameConfig(7, "Blind Draft"),

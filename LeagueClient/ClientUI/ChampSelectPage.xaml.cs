@@ -13,14 +13,23 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic.Riot;
+using LeagueClient.Logic.Riot.Platform;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for ChampSelect.xaml
   /// </summary>
-  public partial class ChampSelectPage : Page {
-    public ChampSelectPage() {
+  public partial class ChampSelectPage : Page, IClientPage {
+    public ChampSelectPage(GameDTO game) {
       InitializeComponent();
+    }
+
+    public bool HandleMessage(MessageReceivedEventArgs args) {
+
+
+
+      return false;
     }
 
     private void SkinScroller_MouseWheel(object sender, MouseWheelEventArgs e) {

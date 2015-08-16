@@ -23,17 +23,13 @@ namespace LeagueClient.ClientUI.Controls {
       set { SetValue(HintProperty, value); }
     }
 
-    public static readonly DependencyProperty HintProperty = DependencyProperty.Register("Watermark",
+    public static readonly DependencyProperty HintProperty = DependencyProperty.Register("Hint",
       typeof(string), typeof(HintedTextBox), new PropertyMetadata(new PropertyChangedCallback(OnWatermarkChanged)));
 
     private bool isHinted = false;
     private Binding _textBinding = null;
 
     public HintedTextBox() {
-      Style = App.Control;
-      Padding = new Thickness(0, 1, 0, 1);
-      FontSize = 12;
-      BorderThickness = new Thickness(0);
       Loaded += (s, ea) => ShowWatermark();
     }
 

@@ -19,13 +19,14 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for PlaySelectPage.xaml
   /// </summary>
   public partial class PlaySelectPage : Page, IClientSubPage {
-    private static dynamic GameTypesRef = JSON.ParseObject(LeagueClient.Properties.Resources.Games);
+    private static dynamic GameTypesRef = JSON.ParseObject(Properties.Resources.Games);
     
     public BindingList<dynamic> GameGroups { get; } = new BindingList<dynamic>();
     public BindingList<dynamic> GameModes { get; } = new BindingList<dynamic>();
@@ -153,7 +154,6 @@ namespace LeagueClient.ClientUI.Main {
           Client.QueueManager.ShowPage(new CapSoloPage());
           break;
         case 4:
-          //TODO Custom create page
           Client.QueueManager.ShowPage(new CustomCreatePage());
           break;
       }
@@ -185,12 +185,13 @@ namespace LeagueClient.ClientUI.Main {
       //bd.Padding = new Thickness(0);
     }
 
-    public bool CanPlay() => false;
-
-    public Page GetPage() => this;
+    public Page Page => this;
+    public bool CanPlay => false;
 
     public void ForceClose() { }
     public IQueuer HandleClose() => null;
+
+    public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }
 
   public class GameInfo {

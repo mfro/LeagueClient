@@ -18,6 +18,7 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -48,7 +49,6 @@ namespace LeagueClient.ClientUI.Main {
 
     public DebugPage() {
       InitializeComponent();
-      Client.MessageReceived += Client_MessageReceived;
       foreach (var method in typeof(object).GetMethods())
         IgnoredMethods.Add(method.Name);
 
@@ -109,14 +109,14 @@ namespace LeagueClient.ClientUI.Main {
       if (!str.Equals(chatBox.Text)) Dispatcher.Invoke(() => chatBox.Text = str);
     }
 
-    private void Client_MessageReceived(object sender, MessageHandlerArgs e) {
-      e.Handled = true;
+    public bool HandleMessage(MessageReceivedEventArgs e) {
       LcdsServiceProxyResponse lcds;
-      if ((lcds = e.InnerEvent.Body as LcdsServiceProxyResponse) != null) {
+      if ((lcds = e.Body as LcdsServiceProxyResponse) != null) {
         Dispatcher.Invoke(() => msgBox.Text += $"[{lcds.status}] {lcds.methodName}: {lcds.payload}\n\n");
       } else {
-        Dispatcher.Invoke(() => msgBox.Text += e.InnerEvent.Body.GetType().Name + "\n\n");
+        Dispatcher.Invoke(() => msgBox.Text += e.Body.GetType().Name + "\n\n");
       }
+      return true;
     }
 
     private void Method_Invoke(object sender, RoutedEventArgs e) {
@@ -229,12 +229,11 @@ namespace LeagueClient.ClientUI.Main {
     }
     public event EventHandler Close;
 
-    public bool CanPlay() => false;
-    public Page GetPage() => this;
+    public Page Page => this;
+    public bool CanPlay => false;
 
     public void ForceClose() { }
     public IQueuer HandleClose() {
-      Client.MessageReceived -= Client_MessageReceived;
       return null;
     }
 

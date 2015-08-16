@@ -26,6 +26,7 @@ using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using MFroehlich.Parsing.DynamicJSON;
 using RtmpSharp.IO;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -72,8 +73,6 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void SharedInit() {
-      Client.MessageReceived += MessageReceived;
-
       me.Status = Logic.Cap.CapStatus.Present;
       SoloSearchButt.Visibility = Visibility.Collapsed;
       ReadyButt.Visibility = Visibility.Collapsed;
@@ -211,17 +210,16 @@ namespace LeagueClient.ClientUI.Main {
       PlayerList.ItemsSource = list;
     }
 
-    private void MessageReceived(object sender, MessageHandlerArgs e) {
-      if (e.Handled) return;
+    public bool HandleMessage(MessageReceivedEventArgs e) {
       GameDTO game;
       LobbyStatus status;
       InvitePrivileges privelage;
       LcdsServiceProxyResponse response;
       RemovedFromLobbyNotification removed;
-      if ((status = e.InnerEvent.Body as LobbyStatus) != null) {
+      if ((status = e.Body as LobbyStatus) != null) {
         GotLobbyStatus(status);
-        e.Handled = true;
-      } else if ((response = e.InnerEvent.Body as LcdsServiceProxyResponse) != null) {
+        return true;
+      } else if ((response = e.Body as LcdsServiceProxyResponse) != null) {
         if (response.status.Equals("OK")) {
           JSONObject json = null;
           CapSlotData slot = null;
@@ -339,7 +337,6 @@ namespace LeagueClient.ClientUI.Main {
               case "soloSearchedForAnotherGroupV2":
                 if (slot.SlotId == me.SlotId) {
                   Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(me)));
-                  Client.MessageReceived -= MessageReceived;
                   if (Close != null) Close(this, new EventArgs());
                   if (json["reason"].Equals("KICKED"))
                     Client.QueueManager.ShowNotification(AlertFactory.KickedFromCap());
@@ -386,23 +383,26 @@ namespace LeagueClient.ClientUI.Main {
           } catch (Exception x) {
             Client.Log(x);
           }
-          e.Handled = true;
+          return true;
         } else if (!response.status.Equals("ACK")) Client.TryBreak(response.status + ": " + response.payload);
-      } else if ((privelage = e.InnerEvent.Body as InvitePrivileges) != null) {
+      } else if ((privelage = e.Body as InvitePrivileges) != null) {
         CanInvite = privelage.canInvite;
         Dispatcher.Invoke(UpdateList);
-        e.Handled = true;
-      } else if ((removed = e.InnerEvent.Body as RemovedFromLobbyNotification) != null) {
+        return true;
+      } else if ((removed = e.Body as RemovedFromLobbyNotification) != null) {
         switch (removed.removalReason) {
           case "PROGRESSED": break;
           default: break;
         }
-        e.Handled = true;
-      } else if ((game = e.InnerEvent.Body as GameDTO) != null) {
+        return true;
+      } else if ((game = e.Body as GameDTO) != null) {
 
+
+        return true;
       } else {
-        Client.Log("In lobby recieved message type [{0}]", e.InnerEvent.Body?.GetType());
+        Client.Log("In lobby recieved message type [{0}]", e.Body?.GetType());
       }
+      return false;
     }
 
     private void SetPlayerInfo(CapSlotData player, CapPlayer capp) {
@@ -586,13 +586,12 @@ namespace LeagueClient.ClientUI.Main {
     public void ForceClose() {
       RiotCalls.GameInvitationService.Leave();
       RiotCalls.CapService.Quit();
-      Client.MessageReceived -= MessageReceived;
       chatRoom?.Leave("bye");
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 
-    public Page GetPage() => this;
-    public bool CanPlay() => false;
+    public Page Page => this;
+    public bool CanPlay => false;
     public IQueuer HandleClose() => new ReturnToLobbyQueuer(this);
     #endregion
   }

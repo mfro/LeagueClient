@@ -40,8 +40,6 @@ namespace LeagueClient {
 
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    internal static event EventHandler<MessageHandlerArgs> MessageReceived;
-
     internal static RtmpClient RtmpConn { get; set; }
 
     internal static Session UserSession { get; set; }
@@ -227,21 +225,44 @@ namespace LeagueClient {
       SelectedRunePage = page;
     }
 
+    public static void Invoke<T1>(Action<T1> func, T1 t) => App.Current.Dispatcher.Invoke(func, t);
+    public static void Invoke<T1, T2>(Action<T1, T2> func, T1 t, T2 t1) => App.Current.Dispatcher.Invoke(func, t);
+    public static void Invoke<T1, T2, T3>(Action<T1, T2, T3> func, T1 t, T2 t1, T3 t2) => App.Current.Dispatcher.Invoke(func, t, t1, t2);
+    public static void Invoke<T1, T2, T3, T4>(Action<T1, T2, T3, T4> func, T1 t, T2 t1, T3 t2, T4 t3) => App.Current.Dispatcher.Invoke(func, t, t1, t2, t3);
+    public static R Invoke<T1, R>(Func<T1, R> func, T1 t) => (R) App.Current.Dispatcher.Invoke(func, t);
+    public static R Invoke<T1, T2, R>(Func<T1, T2, R> func, T1 t, T2 t1) => (R) App.Current.Dispatcher.Invoke(func, t);
+    public static R Invoke<T1, T2, T3, R>(Func<T1, T2, T3, R> func, T1 t, T2 t1, T3 t2) => (R) App.Current.Dispatcher.Invoke(func, t, t1, t2);
+    public static R Invoke<T1, T2, T3, T4, R>(Func<T1, T2, T3, T4, R> func, T1 t, T2 t1, T3 t2, T4 t3) => (R) App.Current.Dispatcher.Invoke(func, t, t1, t2, t3);
+
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
     public static void ShowInvite(InvitationRequest invite) {
       if (invite.InvitationState.Equals("ACTIVE")) {
         var payload = JSON.ParseObject(invite.GameMetaData);
-        var alert = AlertFactory.TeambuilderInvite(invite.Inviter.summonerName);
-        alert.Handled += (src, e2) => {
-          if (e2.Data as bool? ?? false) {
-            var lobby = new CapLobbyPage(false);
-            RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
-            RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
-            QueueManager.ShowPage(lobby);
-          } else {
-            RiotCalls.GameInvitationService.Decline(invite.InvitationId);
-          }
-        };
+        string type = payload["gameType"];
+        Alert alert;
+        switch (type) {
+          case "PRACTICE_GAME":
+            alert = AlertFactory.CustomInvite(invite.Inviter.summonerName);
+            alert.Handled += (src, e2) => {
+              if(e2.Data as bool? ?? false) {
+                var lobby = new CustomLobbyPage();
+                RiotCalls.GameInvitationService.Accept(invite.InvitationId);
+                QueueManager.ShowPage(lobby);
+              } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+            };
+            break;
+          default:
+            alert = AlertFactory.TeambuilderInvite(invite.Inviter.summonerName);
+            alert.Handled += (src, e2) => {
+              if (e2.Data as bool? ?? false) {
+                var lobby = new CapLobbyPage(false);
+                RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+                RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
+                QueueManager.ShowPage(lobby);
+              } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+            };
+            break;
+        }
         invites[invite.InvitationId] = alert;
         QueueManager.ShowNotification(alert);
       }
@@ -253,9 +274,8 @@ namespace LeagueClient {
     }
 
     public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
-      var args = new MessageHandlerArgs(e);
       try {
-        MessageReceived?.Invoke(sender, args);
+        if (MainWindow.HandleMessage(e)) return;
       } catch (Exception x) {
         Log("Exception while dispatching message: " + x.Message);
         TryBreak(x.Message);
@@ -266,21 +286,17 @@ namespace LeagueClient {
       PlayerCredentialsDto creds;
       InvitationRequest invite;
 
-      if ((response = e.Body as LcdsServiceProxyResponse) != null) {
-        if (response.status.Equals("ACK"))
-          Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
-        else if (response.messageId != null && RiotCalls.Delegates.ContainsKey(response.messageId)) {
-          RiotCalls.Delegates[response.messageId](response);
-          RiotCalls.Delegates.Remove(response.messageId);
-        } else if(!args.Handled) {
-          Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
-        }
-      }
-
-      if (args.Handled) return;
-
       try {
-        if ((config = e.Body as ClientDynamicConfigurationNotification) != null) {
+        if ((response = e.Body as LcdsServiceProxyResponse) != null) {
+          if (response.status.Equals("ACK"))
+            Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
+          else if (response.messageId != null && RiotCalls.Delegates.ContainsKey(response.messageId)) {
+            RiotCalls.Delegates[response.messageId](response);
+            RiotCalls.Delegates.Remove(response.messageId);
+          } else {
+            Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
+          }
+        } else if ((config = e.Body as ClientDynamicConfigurationNotification) != null) {
           Log("Received Configuration Notification");
         } else if ((invite = e.Body as InvitationRequest) != null) {
           ShowInvite(invite);

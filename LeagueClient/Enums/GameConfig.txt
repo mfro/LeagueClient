@@ -1,6 +1,6 @@
 ﻿Blind = 1 = Blind Pick
 Draft = 2 = Draft Pick
-DraftNoBan = 3 = Draft NoBan
+DraftNoBan = 3 = No Ban Draft Pick
 AllRandom = 4 = All Random
 OpenPick = 5 = Open Pick
 BlindDraft = 7 = Blind Draft

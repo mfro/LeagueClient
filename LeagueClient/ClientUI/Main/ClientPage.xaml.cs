@@ -25,12 +25,13 @@ using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using MFroehlich.Parsing.DynamicJSON;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for ClientPage.xaml
   /// </summary>
-  public partial class ClientPage : Page, IQueueManager {
+  public partial class ClientPage : Page, IQueueManager, IClientPage {
     public BitmapImage ProfileIcon { get; set; }
     public string SummonerName { get; set; }
     public List<Alert> Alerts { get; } = new List<Alert>();
@@ -82,6 +83,12 @@ namespace LeagueClient.ClientUI.Main {
       ChatList.ItemsSource = e;
     }
 
+    public bool HandleMessage(MessageReceivedEventArgs args) {
+      if (CurrentPage?.HandleMessage(args) ?? false) return true;
+      if (CurrentQueuer?.HandleMessage(args) ?? false) return true;
+      return CurrentPopup?.HandleMessage(args) ?? false;
+    }
+
     #region IQueueManager
     //public void CreateCapSolo() {
     //  var page = new CapSoloPage();
@@ -105,41 +112,17 @@ namespace LeagueClient.ClientUI.Main {
     //  pending.ContinueWith(t => page.GotLobbyStatus(t.Result));
     //}
 
-    private bool CheckInvoke(Delegate callback, params object[] args) {
-      if (Thread.CurrentThread != Dispatcher.Thread) {
-        Dispatcher.Invoke(callback, args);
-        return true;
-      }
-      return false;
-    }
+    public void ShowQueuer(IQueuer queuer) {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowQueuer, queuer); return; }
 
-    private bool CheckInvoke<T>(Action<T> callback, T t) {
-      if (Thread.CurrentThread != Dispatcher.Thread) {
-        Dispatcher.Invoke(callback, t);
-        return true;
-      }
-      return false;
-    }
-
-    private bool CheckInvoke<T1, T2>(Action<T1, T2> callback, T1 t1, T2 t2) {
-      if (Thread.CurrentThread != Dispatcher.Thread) {
-        Dispatcher.Invoke(callback, t1, t2);
-        return true;
-      }
-      return false;
-    }
-
-    public void ShowQueuer(IQueuer Queuer) {
-      if (CheckInvoke(ShowQueuer, Queuer)) return;
-
-      CurrentQueuer = Queuer;
-      Queuer.Popped += Queue_Popped;
-      StatusPanel.Child = Queuer.GetControl();
+      CurrentQueuer = queuer;
+      queuer.Popped += Queue_Popped;
+      StatusPanel.Child = queuer.GetControl();
       UpdatePlayButton();
     }
 
     public void ShowNotification(Alert alert) {
-      if (CheckInvoke(ShowNotification, alert)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowNotification, alert); return; }
 
       Alerts.Add(alert);
       alert.Handled += Alert_Handled;
@@ -147,25 +130,25 @@ namespace LeagueClient.ClientUI.Main {
       AlertButt.BeginStoryboard(App.FadeIn);
 
       RecentAlert.BeginStoryboard(App.FadeIn);
-      Task.Run(() => {
+      new Thread(() => {
         System.Threading.Thread.Sleep(3500);
         Dispatcher.Invoke(() => RecentAlert.BeginStoryboard(App.FadeOut));
-      });
+      }).Start();
     }
 
     public void ShowPage(IClientSubPage page) {
-      if (CheckInvoke(ShowPage, page)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowPage, page); return; }
 
       CloseSubPage(true);
       page.Close += HandlePageClose;
       CurrentPage = page;
-      SubPage.Content = page?.GetPage();
+      SubPage.Content = page?.Page;
       UpdatePlayButton();
     }
     #endregion
 
     private void CloseSubPage(bool notifyPage) {
-      if (CheckInvoke(CloseSubPage, notifyPage)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(CloseSubPage, notifyPage); return; }
 
       if (CurrentPage != null) {
         CurrentPage.Close -= HandlePageClose;
@@ -180,13 +163,13 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void HandlePageClose(object source, EventArgs e) {
-      if (CheckInvoke(HandlePageClose, source, e)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(HandlePageClose, source, e); return; }
 
       CloseSubPage(false);
     }
 
     private void ShowPopup(Control contents) {
-      if (CheckInvoke(ShowPopup, contents)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowPopup, contents); return; }
 
       PopupPanel.Visibility = Visibility.Visible;
       PopupPanel.Child = contents;
@@ -195,7 +178,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void ToggleChat(object sender, RoutedEventArgs e) {
-      if (CheckInvoke(ToggleChat, sender, e)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ToggleChat, sender, e); return; }
 
       ChatOpen = !chatOpen;
     }
@@ -207,12 +190,12 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void UpdatePlayButton() {
-      PlayButton.IsEnabled = (CurrentPage == null || CurrentPage.CanPlay()) && CurrentQueuer == null && CurrentPopup == null;
+      PlayButton.IsEnabled = (CurrentPage == null || CurrentPage.CanPlay) && CurrentQueuer == null && CurrentPopup == null;
     }
 
     #region Queue Related Event Listeners
     private void Queue_Popped(object src, QueuePoppedEventArgs args) {
-      if (CheckInvoke(Queue_Popped, src, args)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(Queue_Popped, src, args); return; }
 
       StatusPanel.Child = null;
       CurrentQueuer = null;
@@ -226,7 +209,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void QueuePopupClose(object src, EventArgs args) {
-      if (CheckInvoke(QueuePopupClose, src, args)) return;
+      if (Thread.CurrentThread != Dispatcher.Thread) Client.Invoke(QueuePopupClose, src, args);
 
       CurrentPopup = null;
       UpdatePlayButton();
@@ -255,6 +238,7 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     #region Other Event Listeners
+
     private void Page_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key == Key.Escape) { CloseStuff(); }
     }
@@ -274,6 +258,7 @@ namespace LeagueClient.ClientUI.Main {
     private void Header_MouseDown(object sender, MouseButtonEventArgs e) {
       if (e.ChangedButton == MouseButton.Left) Client.MainWindow.DragMove();
     }
+
     #endregion
   }
 }

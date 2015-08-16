@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -29,7 +30,6 @@ namespace LeagueClient.ClientUI.Controls {
 
     public DefaultQueuePopup(GameDTO game) {
       InitializeComponent();
-      Client.MessageReceived += Client_MessageReceived;
 
       GotGameData(game);
 
@@ -64,13 +64,13 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
-    private void Client_MessageReceived(object sender, MessageHandlerArgs e) {
-      if (e.Handled) return;
-      var game = e.InnerEvent.Body as GameDTO;
+    public bool HandleMessage(MessageReceivedEventArgs e) {
+      var game = e.Body as GameDTO;
       if(game != null) {
-        e.Handled = true;
-        GotGameData(game);
+        Client.Invoke(GotGameData, game);
+        return true;
       }
+      return false;
     }
 
     private void Accept_Click(object sender, RoutedEventArgs e) {

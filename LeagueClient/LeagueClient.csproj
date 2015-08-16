@@ -89,8 +89,11 @@
     <Compile Include="ClientUI\Controls\BingeQueuer.xaml.cs">
       <DependentUpon>BingeQueuer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\DefaultPlayer.xaml.cs">
-      <DependentUpon>DefaultPlayer.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\LobbyBotPlayer.xaml.cs">
+      <DependentUpon>LobbyBotPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\LobbyPlayer.xaml.cs">
+      <DependentUpon>LobbyPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\DefaultQueuePopup.xaml.cs">
       <DependentUpon>DefaultQueuePopup.xaml</DependentUpon>
@@ -98,6 +101,7 @@
     <Compile Include="ClientUI\Controls\DefaultQueuer.xaml.cs">
       <DependentUpon>DefaultQueuer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\ICollapsable.cs" />
     <Compile Include="ClientUI\Controls\InvitePopup.xaml.cs">
       <DependentUpon>InvitePopup.xaml</DependentUpon>
     </Compile>
@@ -113,6 +117,7 @@
     <Compile Include="ClientUI\Controls\YesNoAlert.xaml.cs">
       <DependentUpon>YesNoAlert.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\IClientPage.cs" />
     <Compile Include="ClientUI\Main\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
     </Compile>
@@ -148,6 +153,7 @@
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitePrivileges.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
+    <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
     <Compile Include="Logic\Queueing\IQueuePopup.cs" />
     <Compile Include="ClientUI\Controls\MasteryEditor.xaml.cs">
@@ -331,7 +337,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\DefaultPlayer.xaml">
+    <Page Include="ClientUI\Controls\LobbyBotPlayer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ClientUI\Controls\LobbyPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

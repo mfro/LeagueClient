@@ -60,6 +60,9 @@ namespace LeagueClient {
 
     private void Application_Exit(object sender, ExitEventArgs e) {
       Client.Settings.Save();
+      RiotCalls.GameInvitationService.Leave();
+      RiotCalls.GameService.QuitGame();
+      RiotCalls.CapService.Quit();
       RiotCalls.LoginService.Logout();
     }
   }

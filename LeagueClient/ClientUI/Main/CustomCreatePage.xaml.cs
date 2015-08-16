@@ -17,6 +17,7 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -42,7 +43,7 @@ namespace LeagueClient.ClientUI.Main {
       }
       Spectators.ItemsSource = SpectatorState.Values.Values;
       Spectators.SelectedItem = SpectatorState.ALL;
-      GameType.ItemsSource = new[] { GameConfig.Blind, GameConfig.DraftNoBan, GameConfig.AllRandom, GameConfig.OpenPick, GameConfig.BlindDraft, GameConfig.ITBlindPick, GameConfig.OneForAll };
+      GameType.ItemsSource = new[] { GameConfig.Blind, GameConfig.Draft, GameConfig.AllRandom };
       GameType.SelectedItem = GameConfig.Blind;
       GameName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name + "'s Game";
       GameName.CaretIndex = GameName.Text.Length;
@@ -76,8 +77,12 @@ namespace LeagueClient.ClientUI.Main {
         case 12:
         case 14: config.GameMode = "ARAM"; break;
       }
-      var game = await RiotCalls.GameService.CreatePracticeGame(config);
-      if(game.Name == null) {
+      GameDTO game = null;
+      try {
+        game = await RiotCalls.GameService.CreatePracticeGame(config);
+      } catch { }
+
+      if (game?.Name == null) {
         ErrorLabel.Visibility = Visibility.Visible;
         return;
       } else {
@@ -129,11 +134,12 @@ namespace LeagueClient.ClientUI.Main {
     }
     #endregion
 
-    public bool CanPlay() => false;
-    public Page GetPage() => this;
+    public Page Page => this;
+    public bool CanPlay => false;
 
     public IQueuer HandleClose() => null;
     public void ForceClose() { }
+    public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }
 
   public class Animation {

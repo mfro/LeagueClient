@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -32,7 +33,6 @@ namespace LeagueClient.ClientUI.Controls {
     public DefaultQueuer(MatchMakerParams mmp) {
       InitializeComponent();
       Config = Client.AvailableQueues[mmp.QueueIds[0]];
-      Client.MessageReceived += Client_MessageReceived;
       QueueName.Text = QueueType.Values[Config.Type].Value;
       ElapsedText.Text = "In queue for 0:00";
 
@@ -42,15 +42,15 @@ namespace LeagueClient.ClientUI.Controls {
       timer.Start();
     }
 
-    private void Client_MessageReceived(object sender, MessageHandlerArgs e) {
-      if (e.Handled) return;
-      var game = e.InnerEvent.Body as GameDTO;
+
+    public bool HandleMessage(MessageReceivedEventArgs e) {
+      var game = e.Body as GameDTO;
       if(game != null) {
         timer.Dispose();
-        e.Handled = true;
-        Client.MessageReceived -= Client_MessageReceived;
         Dispatcher.Invoke(() => Popped?.Invoke(this, new QueuePoppedEventArgs(new DefaultQueuePopup(game))));
+        return true;
       }
+      return false;
     }
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
@@ -60,7 +60,6 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Cancel_Click(object src, EventArgs args) {
       timer.Dispose();
-      Client.MessageReceived -= Client_MessageReceived;
       Logic.Riot.RiotCalls.MatchmakerService.CancelFromQueueIfPossible(Client.LoginPacket.AllSummonerData.Summoner.SumId);
       Popped?.Invoke(this, new QueuePoppedEventArgs(null));
     }

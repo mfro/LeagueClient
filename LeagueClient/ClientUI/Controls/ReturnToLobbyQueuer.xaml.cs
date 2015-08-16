@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic.Queueing;
+using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -42,5 +43,7 @@ namespace LeagueClient.ClientUI.Controls {
     public Control GetControl() {
       return this;
     }
+
+    public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }
 }
