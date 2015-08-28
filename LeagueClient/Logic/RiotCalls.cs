@@ -644,7 +644,7 @@ namespace LeagueClient.Logic.Riot {
       /// Selects a champion for use
       /// </summary>
       /// <param name="ChampionId">The selected champion id</param>
-      public static Task<Object> SelectChampion(Int32 ChampionId) {
+      public static Task SelectChampion(Int32 ChampionId) {
         return InvokeAsync<Object>("gameService", "selectChampion", ChampionId);
       }
 

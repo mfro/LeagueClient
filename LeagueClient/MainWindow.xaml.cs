@@ -60,10 +60,10 @@ namespace LeagueClient {
     }
 
     public void BeginChampSelect(GameDTO game) {
-      RiotCalls.GameService.StartChampionSelection(game.Id, game.OptimisticLock);
       var page = new ChampSelectPage(game);
       currentPage = page;
       ContentFrame.Content = page;
+      RiotCalls.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) {

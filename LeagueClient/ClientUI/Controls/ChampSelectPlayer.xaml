@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="LeagueClient.ClientUI.Controls.ChampSelectPlayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:local="clr-namespace:LeagueClient.ClientUI.Controls"
+             Background="{StaticResource Back1Brush}" HorizontalAlignment="Stretch">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+    <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4 4 0 4" Grid.Column="1">
+      <Image Width="56" Height="56" Name="ChampImage"/>
+    </Border>
+    <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4" Grid.Column="2" VerticalAlignment="Top">
+      <Image Height="24" Width="24" Name="Spell1Image"/>
+    </Border>
+    <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4" Grid.Column="2" VerticalAlignment="Bottom">
+      <Image Height="24" Width="24" Name="Spell2Image"/>
+    </Border>
+    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" Name="SummonerName">Summoner 1</TextBlock>
+  </Grid>
+</UserControl>

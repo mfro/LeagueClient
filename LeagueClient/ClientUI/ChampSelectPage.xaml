@@ -3,8 +3,15 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
-  <Border Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}" Padding="4">
-    <Grid>
+  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Border Background="{StaticResource Back1Brush}" MouseDown="Border_MouseDown" Height="22">
+      <Label Name="GameStatusLabel" Padding="8 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Your turn to pick!</Label>
+    </Border>
+    <Grid Grid.Row="1" Margin="4">
       <Grid.Resources>
         <Style TargetType="Label" BasedOn="{StaticResource Control}">
           <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -107,8 +114,8 @@
               <RowDefinition Height="18"/>
               <RowDefinition Height="8"/>
             </Grid.RowDefinitions>
-            <Label Padding="8 0" Grid.Row="1" HorizontalAlignment="Left">Runes:</Label>
-            <Label Padding="8 0" Grid.Row="3" HorizontalAlignment="Left">Masteries:</Label>
+            <Label Padding="8 0" Grid.Row="1" FontSize="14" HorizontalAlignment="Left">Runes:</Label>
+            <Label Padding="8 0" Grid.Row="3" FontSize="14" HorizontalAlignment="Left">Masteries:</Label>
             <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="1"/>
             <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="3"/>
           </Grid>
@@ -133,7 +140,6 @@
               <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <my:HintedTextBox Hint="Search"/>
             <Button Grid.Row="2" Width="80" Height="30">Lock In</Button>
           </Grid>
         </Grid>
@@ -142,7 +148,15 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
           </Grid.RowDefinitions>
-          <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource ForeBrush}"/>
+          <ScrollViewer Name="ChatScroller" BorderThickness="1" BorderBrush="{StaticResource ForeBrush}" >
+            <RichTextBox Name="ChatHistory" Style="{StaticResource Control}"  Background="{StaticResource Back1Brush}" BorderThickness="0" IsReadOnly="True">
+              <RichTextBox.Resources>
+                <Style TargetType="Paragraph">
+                  <Setter Property="Margin" Value="0" />
+                </Style>
+              </RichTextBox.Resources>
+            </RichTextBox>
+          </ScrollViewer>
           <TextBox Name="ChatBox" Grid.Row="1" Margin="0 4 60 4"/>
           <Button Name="ChatButt" Grid.Row="1" Margin="0 2 0 4" Width="56"
               HorizontalAlignment="Right" Padding="0 0">Send</Button>
@@ -548,5 +562,7 @@
         </Grid>
       </Grid>
     </Grid>-->
-  </Border>
+  </Grid>
+  <!--<Border Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}" Padding="4" Margin="0 22 0 0">
+  </Border>-->
 </Page>

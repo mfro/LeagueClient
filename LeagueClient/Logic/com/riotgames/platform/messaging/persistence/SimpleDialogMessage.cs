@@ -14,7 +14,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     [SerializedName("msgId")]
     public System.String msgId { get; set; }
     [SerializedName("params")]
-    public RtmpSharp.IO.AMF3.ArrayCollection params { get; set; }
+    public RtmpSharp.IO.AMF3.ArrayCollection @params { get; set; }
     [SerializedName("type")]
     public System.String type { get; set; }
     [SerializedName("bodyCode")]

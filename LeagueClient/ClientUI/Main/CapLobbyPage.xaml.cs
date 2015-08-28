@@ -42,7 +42,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private CapPlayer me;
     private CapMePlayer meControl;
-    private Room chatRoom;
+    private ChatRoomController chatRoom;
     private CapLobbyState state;
 
     public bool IsCaptain { get { return me.SlotId == 0; } }
@@ -86,55 +86,18 @@ namespace LeagueClient.ClientUI.Main {
       Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
                                     where spell.modes.Contains("CLASSIC")
                                     select spell);
-    }
-    #endregion
 
-    #region Chat
-    private void JoinChat() {
-      if (chatRoom != null) return;
-      chatRoom = Client.ChatManager.GetTeambuilderRoom(GroupId, Status.ChatKey);
-      chatRoom.OnJoin += room => Dispatcher.Invoke(() => ShowLobbyMessage("Joined chat lobby"));
-      chatRoom.OnParticipantJoin += (s, e) => Dispatcher.Invoke(() => ShowLobbyMessage(e.Nick + " has joined the lobby"));
-      chatRoom.OnParticipantLeave += (s, e) => Dispatcher.Invoke(() => ShowLobbyMessage(e.Nick + " has left the lobby"));
-      chatRoom.OnRoomMessage += (s, e) => Dispatcher.Invoke(() => ShowMessage(chatRoom.Participants[e.From].Nick, e.Body));
-      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
-      chatRoom.Join(Status.ChatKey);
-    }
-
-    private void SendMessage() {
-      if (string.IsNullOrWhiteSpace(SendBox.Text)) return;
-      chatRoom.PublicMessage(SendBox.Text);
-      ShowMessage(Client.LoginPacket.AllSummonerData.Summoner.Name, SendBox.Text);
-      SendBox.Text = "";
-    }
-
-    private void ShowLobbyMessage(string message) {
-      var tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
-      tr.Text = message + '\n';
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
-      ChatScroller.ScrollToBottom();
-    }
-
-    private void ShowMessage(string user, string message) {
-      var tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
-      tr.Text = user + ": ";
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.CornflowerBlue);
-      tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
-      tr.Text = message + '\n';
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, App.FontBrush);
-      ChatScroller.ScrollToBottom();
-    }
-
-    private void TextBox_KeyUp(object sender, KeyEventArgs e) {
-      if (e.Key == Key.Enter) SendMessage();
-    }
-
-    private void Button_Click(object sender, RoutedEventArgs e) {
-      SendMessage();
+      chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
     }
     #endregion
 
     #region Message and Lobby handling
+    private void JoinChat() {
+      if (!chatRoom.IsJoined)
+        chatRoom.JoinChat(Client.ChatManager.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
+      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
+    }
+
     public void GotLobbyStatus(LobbyStatus status) {
       Status = status;
       if (GroupId != null) JoinChat();
@@ -272,12 +235,12 @@ namespace LeagueClient.ClientUI.Main {
               case "lastSelectedSkinForChampionUpdatedV1":
               case "leaverBusterLowPriorityQueueAbandonedV1":
               case "matchMadeV1":
-                Dispatcher.Invoke(() => ShowLobbyMessage("Match Found"));
+                Dispatcher.Invoke(() => chatRoom.ShowLobbyMessage("Match Found"));
                 break;
               case "matchmakingPhaseStartedV1":
                 state = CapLobbyState.Matching;
                 players[0].Status = CapStatus.Ready;
-                Dispatcher.Invoke(() => ShowLobbyMessage("Matchmaking Started"));
+                Dispatcher.Invoke(() => chatRoom.ShowLobbyMessage("Matchmaking Started"));
                 break;
               case "quitDeniedV1": break;
               case "readinessIndicatedV1":
@@ -586,7 +549,7 @@ namespace LeagueClient.ClientUI.Main {
     public void ForceClose() {
       RiotCalls.GameInvitationService.Leave();
       RiotCalls.CapService.Quit();
-      chatRoom?.Leave("bye");
+      chatRoom?.LeaveChat();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 

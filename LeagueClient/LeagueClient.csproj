@@ -89,6 +89,9 @@
     <Compile Include="ClientUI\Controls\BingeQueuer.xaml.cs">
       <DependentUpon>BingeQueuer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\ChampSelectPlayer.xaml.cs">
+      <DependentUpon>ChampSelectPlayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\LobbyBotPlayer.xaml.cs">
       <DependentUpon>LobbyBotPlayer.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RiotEnums.tt</DependentUpon>
     </Compile>
+    <Compile Include="Logic\Chat\ChatRoomController.cs" />
     <Compile Include="Logic\com\riotgames\other\CapPlayerInfoData.cs" />
     <Compile Include="Logic\com\riotgames\other\CapGroupData.cs" />
     <Compile Include="Logic\com\riotgames\other\CapSlotData.cs" />
@@ -165,19 +169,19 @@
     <Compile Include="ClientUI\Controls\SpellSelector.xaml.cs">
       <DependentUpon>SpellSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\CapMap.xaml.cs">
+    <Compile Include="ClientUI\Controls\Cap\CapMap.xaml.cs">
       <DependentUpon>CapMap.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\CapMePlayer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Cap\CapMePlayer.xaml.cs">
       <DependentUpon>CapMePlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\CapOtherPlayer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml.cs">
       <DependentUpon>CapOtherPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\CapSoloQueuer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Cap\CapSoloQueuer.xaml.cs">
       <DependentUpon>CapSoloQueuer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\CapSoloQueuePopup.xaml.cs">
+    <Compile Include="ClientUI\Controls\Cap\CapSoloQueuePopup.xaml.cs">
       <DependentUpon>CapSoloQueuePopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\LoginPage.xaml.cs">
@@ -255,7 +259,6 @@
     <Compile Include="Logic\com\riotgames\platform\reroll\pojo\EogPointChangeBreakdown.cs" />
     <Compile Include="Logic\com\riotgames\platform\reroll\pojo\PointSummary.cs" />
     <Compile Include="Logic\com\riotgames\platform\reroll\pojo\RollResult.cs" />
-    <Compile Include="Logic\com\riotgames\platform\reroll\pojo\SimpleDialogMessage.cs" />
     <Compile Include="Logic\com\riotgames\platform\reroll\pojo\StoreAccountBalanceNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\statistics\AggregatedStat.cs" />
     <Compile Include="Logic\com\riotgames\platform\statistics\AggregatedStats.cs" />
@@ -337,6 +340,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientUI\Controls\ChampSelectPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Controls\LobbyBotPlayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -401,23 +408,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\CapMap.xaml">
+    <Page Include="ClientUI\Controls\Cap\CapMap.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\CapMePlayer.xaml">
+    <Page Include="ClientUI\Controls\Cap\CapMePlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\CapOtherPlayer.xaml">
+    <Page Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\CapSoloQueuer.xaml">
+    <Page Include="ClientUI\Controls\Cap\CapSoloQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\CapSoloQueuePopup.xaml">
+    <Page Include="ClientUI\Controls\Cap\CapSoloQueuePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

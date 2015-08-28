@@ -49,8 +49,8 @@
         </RichTextBox.Resources>
       </RichTextBox>
     </ScrollViewer>
-    <TextBox Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" Margin="0 0 70 0" KeyUp="TextBox_KeyUp" Name="SendBox"/>
-    <Button  Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="60" Height="24" Click="Button_Click">Send</Button>
+    <TextBox Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" Margin="0 0 70 0" Name="SendBox"/>
+    <Button  Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="60" Height="24" Name="SendButt">Send</Button>
 
     <my:InvitePopup Grid.RowSpan="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center"
                     Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>

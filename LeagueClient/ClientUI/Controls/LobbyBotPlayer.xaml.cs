@@ -68,11 +68,6 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
-    private void GotSummonerData(Task<AllPublicSummonerDataDTO> task) {
-      ChampIcon = LeagueData.GetProfileIconImage(task.Result.Summoner.ProfileIconId);
-      UserName = task.Result.Summoner.Name;
-    }
-
     private void SetField<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string name = null) {
       if (!(field?.Equals(value) ?? false)) {
         field = value;

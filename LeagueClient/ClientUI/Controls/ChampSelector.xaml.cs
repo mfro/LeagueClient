@@ -28,6 +28,18 @@ namespace LeagueClient.ClientUI.Controls {
     public MyChampDto SelectedChampion { get; set; }
     public MyChampDto.SkinDto SelectedSkin { get; set; }
 
+    public bool ReadOnly {
+      get { return readOnly; }
+      set {
+        if (readOnly != value) {
+          ChampSelect.Visibility = System.Windows.Visibility.Visible;
+          SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
+          readOnly = value;
+        }
+      }
+    }
+
+    private bool readOnly;
     private List<MyChampDto.SkinDto> skins = new List<MyChampDto.SkinDto>();
 
     public ChampSelector() {
@@ -37,11 +49,25 @@ namespace LeagueClient.ClientUI.Controls {
         UpdateChampList();
     }
 
+
     public async void UpdateChampList() {
       ChampSelect.Visibility = System.Windows.Visibility.Visible;
       SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
       var images = new List<object>();
       foreach (var riot in await RiotCalls.InventoryService.GetAvailableChampions()) {
+        if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
+        var item = LeagueData.GetChampData(riot.ChampionId);
+        images.Add(new { Image = LeagueData.GetChampIconImage(item.id), Name = item.name, Data = item });
+      }
+      ChampsGrid.ItemsSource = images;
+    }
+
+    public void SetChampList(IEnumerable<ChampionDTO> champions) {
+      //TODO ChampSelection instead of this ^
+      ChampSelect.Visibility = Visibility.Visible;
+      SkinSelect.Visibility = Visibility.Collapsed;
+      var images = new List<object>();
+      foreach (var riot in champions) {
         if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
         var item = LeagueData.GetChampData(riot.ChampionId);
         images.Add(new { Image = LeagueData.GetChampIconImage(item.id), Name = item.name, Data = item });
@@ -61,6 +87,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Champion_Select(object sender, MouseButtonEventArgs e) {
+      if (ReadOnly) return;
       var src = sender as Border;
       var data = (((dynamic) src).DataContext).Data
         as MyChampDto;
@@ -91,6 +118,7 @@ namespace LeagueClient.ClientUI.Controls {
 
       ChampSelect.Visibility = System.Windows.Visibility.Collapsed;
       SkinSelect.Visibility = System.Windows.Visibility.Visible;
+      //SkinsButt.IsEnabled = false;
       SkinScroll.ScrollToHorizontalOffset(294);
     }
 
@@ -117,9 +145,33 @@ namespace LeagueClient.ClientUI.Controls {
       e.Handled = true;
     }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e) {
+    private void SkinsButt_Click(object sender, RoutedEventArgs e) {
+      ChampSelect.Visibility = System.Windows.Visibility.Collapsed;
+      SkinSelect.Visibility = System.Windows.Visibility.Visible;
+    }
+
+    private void ChampButt_Click(object sender, RoutedEventArgs e) {
       ChampSelect.Visibility = System.Windows.Visibility.Visible;
       SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
+      //SkinsButt.IsEnabled = true;
     }
+  }
+
+  public class ChampSelection {
+    public ChampionDTO Riot { get; private set; }
+    public MyChampDto Champion { get; private set; }
+    public BitmapImage Image { get; private set; }
+    public ChampAvailability Availability { get; private set; }
+
+    public ChampSelection(ChampionDTO champ, ChampAvailability available) {
+      Riot = champ;
+      Champion = LeagueData.GetChampData(champ.ChampionId);
+      Availability = available;
+      Image = LeagueData.GetChampIconImage(Champion.id);
+    }
+  }
+
+  public enum ChampAvailability {
+    Available, Banned, Unavailable
   }
 }

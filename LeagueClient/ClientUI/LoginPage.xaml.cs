@@ -19,10 +19,11 @@ namespace LeagueClient.ClientUI {
 
     public LoginPage() {
       InitializeComponent();
+
       BackAnimation.Source = new Uri(Client.LoginVideoPath);
       BackAnimation.Play();
-      BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory,
-        "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
+      BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory, "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
+
       if ((AnimationToggle.IsChecked = Client.Settings.Animation).Value)
         BackAnimation.Visibility = Visibility.Visible;
       else
@@ -65,8 +66,7 @@ namespace LeagueClient.ClientUI {
     private void Login(string user, string pass) {
       Progress.Visibility = System.Windows.Visibility.Visible;
       LoginBar.IsIndeterminate = true;
-      LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled
-        = AnimationToggle.IsEnabled = AutoLoginToggle.IsEnabled = false;
+      LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AnimationToggle.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
       new Thread(() => {
         Client.Initialize(user, pass).ContinueWith(t => {

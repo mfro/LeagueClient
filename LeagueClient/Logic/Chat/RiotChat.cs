@@ -250,14 +250,16 @@ namespace LeagueClient.Logic.Chat {
       UpdateStatus(Message);
     }
 
-    public Room GetTeambuilderRoom(string groupId, string pass) {
-      var room = Conference.GetRoom(new JID(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass)));
-      room.Nickname = Client.LoginPacket.AllSummonerData.Summoner.Name;
-      return room;
+    public JID GetTeambuilderRoom(string groupId, string pass) {
+      return new JID(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass));
     }
 
-    public Room GetCustomRoom(string roomname, double roomId, string pass) {
-      var room = Conference.GetRoom(new JID(GetChatroomJID(GetObfuscatedChatroomName(roomname.ToLower() + (int) roomId, "ap"), false, pass)));
+    public JID GetCustomRoom(string roomname, double roomId, string pass) {
+      return new JID(GetChatroomJID(GetObfuscatedChatroomName(roomname.ToLower() + (int) roomId, "ap"), false, pass));
+    }
+
+    public Room JoinRoom(JID jid) {
+      var room = Conference.GetRoom(jid);
       room.Nickname = Client.LoginPacket.AllSummonerData.Summoner.Name;
       return room;
     }

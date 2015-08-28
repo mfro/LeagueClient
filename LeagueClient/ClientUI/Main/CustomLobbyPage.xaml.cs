@@ -31,7 +31,7 @@ namespace LeagueClient.ClientUI.Main {
     public double GameId { get; private set; }
 
     private GameMap[] Maps = new[] { GameMap.SummonersRift, GameMap.ButchersBridge, GameMap.HowlingAbyss, GameMap.TheCrystalScar, GameMap.TheTwistedTreeline };
-    private Room chatRoom;
+    private ChatRoomController chatRoom;
 
     #region Constructors
 
@@ -103,13 +103,9 @@ namespace LeagueClient.ClientUI.Main {
           QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
           TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
 
-          chatRoom = Client.ChatManager.GetCustomRoom(game.Name, game.Id, game.RoomPassword);
-          chatRoom.OnJoin += room => Dispatcher.Invoke(() => ShowLobbyMessage("Joined chat lobby"));
-          chatRoom.OnParticipantJoin += (s, e) => Dispatcher.Invoke(() => ShowLobbyMessage(e.Nick + " has joined the lobby"));
-          chatRoom.OnParticipantLeave += (s, e) => Dispatcher.Invoke(() => ShowLobbyMessage(e.Nick + " has left the lobby"));
-          chatRoom.OnRoomMessage += (s, e) => Dispatcher.Invoke(() => ShowMessage(chatRoom.Participants[e.From].Nick, e.Body));
+          chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
+          chatRoom.JoinChat(Client.ChatManager.GetCustomRoom(game.Name, game.Id, game.RoomPassword), game.RoomPassword);
           Client.ChatManager.UpdateStatus(ChatStatus.hostingPracticeGame);
-          chatRoom.Join(game.RoomPassword);
         });
       }
       if (game.GameState.Equals("TEAM_SELECT")) {
@@ -143,38 +139,9 @@ namespace LeagueClient.ClientUI.Main {
           }
         });
       } else if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
-        ForceClose();
         Client.MainWindow.BeginChampSelect(game);
       }
     }
-
-    #region Chat
-
-    private void SendMessage() {
-      if (string.IsNullOrWhiteSpace(SendBox.Text)) return;
-      chatRoom.PublicMessage(SendBox.Text);
-      ShowMessage(Client.LoginPacket.AllSummonerData.Summoner.Name, SendBox.Text);
-      SendBox.Text = "";
-    }
-
-    private void ShowLobbyMessage(string message) {
-      var tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
-      tr.Text = message + '\n';
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
-      ChatScroller.ScrollToBottom();
-    }
-
-    private void ShowMessage(string user, string message) {
-      var tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
-      tr.Text = user + ": ";
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.CornflowerBlue);
-      tr = new TextRange(ChatHistory.Document.ContentEnd, ChatHistory.Document.ContentEnd);
-      tr.Text = message + '\n';
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, App.FontBrush);
-      ChatScroller.ScrollToBottom();
-    }
-
-    #endregion
 
     #region IClientSubPage
 
@@ -211,8 +178,6 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void Invite_Click(object sender, RoutedEventArgs e) => InvitePopup.BeginStoryboard(App.FadeIn);
-
-    private void Send_Click(object sender, RoutedEventArgs e) => SendMessage();
 
     private void InvitePopup_Close(object sender, EventArgs e) {
       InvitePopup.BeginStoryboard(App.FadeOut);
