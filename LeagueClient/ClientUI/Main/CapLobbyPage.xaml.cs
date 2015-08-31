@@ -88,6 +88,7 @@ namespace LeagueClient.ClientUI.Main {
                                     select spell);
 
       chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
+      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
     }
     #endregion
 
@@ -95,7 +96,6 @@ namespace LeagueClient.ClientUI.Main {
     private void JoinChat() {
       if (!chatRoom.IsJoined)
         chatRoom.JoinChat(Client.ChatManager.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
-      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
@@ -235,12 +235,12 @@ namespace LeagueClient.ClientUI.Main {
               case "lastSelectedSkinForChampionUpdatedV1":
               case "leaverBusterLowPriorityQueueAbandonedV1":
               case "matchMadeV1":
-                Dispatcher.Invoke(() => chatRoom.ShowLobbyMessage("Match Found"));
+                Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Match Found");
                 break;
               case "matchmakingPhaseStartedV1":
                 state = CapLobbyState.Matching;
                 players[0].Status = CapStatus.Ready;
-                Dispatcher.Invoke(() => chatRoom.ShowLobbyMessage("Matchmaking Started"));
+                Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Matchmaking Started");
                 break;
               case "quitDeniedV1": break;
               case "readinessIndicatedV1":

@@ -28,11 +28,11 @@ namespace LeagueClient.ClientUI.Controls {
     public InvitePopup() {
       InitializeComponent();
       if (Client.Connected) {
-        Client.ChatManager.ChatListUpdated += (s, e) => Dispatcher.Invoke((Action<List<Friend>>) FriendList_ListChanged, e);
+        Client.ChatManager.ChatListUpdated += (s, e) => Dispatcher.MyInvoke(FriendList_ListChanged, e);
       }
     }
 
-    private void FriendList_ListChanged(List<Friend> user) {
+    private void FriendList_ListChanged(IEnumerable<Friend> user) {
       var list = new List<BuddyInfo>();
       foreach(var item in user) {
         if (!Users.ContainsKey(item.User.JID.User)) Users[item.User.JID.User] = false;

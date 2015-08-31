@@ -113,7 +113,7 @@ namespace LeagueClient.ClientUI.Main {
     //}
 
     public void ShowQueuer(IQueuer queuer) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowQueuer, queuer); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowQueuer, queuer); return; }
 
       CurrentQueuer = queuer;
       queuer.Popped += Queue_Popped;
@@ -122,7 +122,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void ShowNotification(Alert alert) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowNotification, alert); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowNotification, alert); return; }
 
       Alerts.Add(alert);
       alert.Handled += Alert_Handled;
@@ -132,12 +132,12 @@ namespace LeagueClient.ClientUI.Main {
       RecentAlert.BeginStoryboard(App.FadeIn);
       new Thread(() => {
         System.Threading.Thread.Sleep(3500);
-        Dispatcher.Invoke(() => RecentAlert.BeginStoryboard(App.FadeOut));
+        Dispatcher.MyInvoke(RecentAlert.BeginStoryboard, App.FadeOut);
       }).Start();
     }
 
     public void ShowPage(IClientSubPage page) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowPage, page); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowPage, page); return; }
 
       CloseSubPage(true);
       page.Close += HandlePageClose;
@@ -148,7 +148,7 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     private void CloseSubPage(bool notifyPage) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(CloseSubPage, notifyPage); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(CloseSubPage, notifyPage); return; }
 
       if (CurrentPage != null) {
         CurrentPage.Close -= HandlePageClose;
@@ -163,13 +163,13 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void HandlePageClose(object source, EventArgs e) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(HandlePageClose, source, e); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(HandlePageClose, source, e); return; }
 
       CloseSubPage(false);
     }
 
     private void ShowPopup(Control contents) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ShowPopup, contents); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowPopup, contents); return; }
 
       PopupPanel.Visibility = Visibility.Visible;
       PopupPanel.Child = contents;
@@ -178,7 +178,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void ToggleChat(object sender, RoutedEventArgs e) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(ToggleChat, sender, e); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ToggleChat, sender, e); return; }
 
       ChatOpen = !chatOpen;
     }
@@ -195,7 +195,7 @@ namespace LeagueClient.ClientUI.Main {
 
     #region Queue Related Event Listeners
     private void Queue_Popped(object src, QueuePoppedEventArgs args) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Client.Invoke(Queue_Popped, src, args); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(Queue_Popped, src, args); return; }
 
       StatusPanel.Child = null;
       CurrentQueuer = null;
@@ -203,13 +203,11 @@ namespace LeagueClient.ClientUI.Main {
       if (args.QueuePopup == null) return;
       CurrentPopup = args.QueuePopup;
       UpdatePlayButton();
-      CurrentPopup.Accepted += QueuePopupClose;
-      CurrentPopup.Cancelled += QueuePopupClose;
       ShowPopup(CurrentPopup.GetControl());
     }
 
     private void QueuePopupClose(object src, EventArgs args) {
-      if (Thread.CurrentThread != Dispatcher.Thread) Client.Invoke(QueuePopupClose, src, args);
+      if (Thread.CurrentThread != Dispatcher.Thread) Dispatcher.MyInvoke(QueuePopupClose, src, args);
 
       CurrentPopup = null;
       UpdatePlayButton();

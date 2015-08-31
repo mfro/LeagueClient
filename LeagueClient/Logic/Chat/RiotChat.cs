@@ -41,7 +41,6 @@ namespace LeagueClient.Logic.Chat {
     public string Message { get; private set; }
 
     public RiotChat(string user, string pass) {
-
       Status = ChatStatus.outOfGame;
       Show = StatusShow.Chat;
       Message = "";
@@ -81,17 +80,21 @@ namespace LeagueClient.Logic.Chat {
     private void ResetList() {
       var list = Friends.Values.Where(u => !u.IsOffline).ToList();
       list.Sort((f1, f2) => {
-        if (f1.IsOffline || f2.IsOffline) return 0;
-        if (f1.GameInfo != null && f2.GameInfo != null) {
-          int score1 = (int) f1.GameInfo.gameStartTime;
-          int score2 = (int) f2.GameInfo.gameStartTime;
-          return Math.Sign(score1 - score2);
-        } else {
-          int score1 = f1.Status.GameStatus.Priority;
-          int score2 = f2.Status.GameStatus.Priority;
-          if (f1.Status.Show == StatusShow.Away) score1 += 50;
-          if (f2.Status.Show == StatusShow.Away) score2 += 50;
-          return score1 - score2;
+        try {
+          if (f1.IsOffline || f2.IsOffline) return 0;
+          if (f1.GameInfo != null && f2.GameInfo != null) {
+            int score1 = (int) f1.GameInfo.gameStartTime;
+            int score2 = (int) f2.GameInfo.gameStartTime;
+            return Math.Sign(score1 - score2);
+          } else {
+            int score1 = f1.Status.GameStatus.Priority;
+            int score2 = f2.Status.GameStatus.Priority;
+            if (f1.Status.Show == StatusShow.Away) score1 += 50;
+            if (f2.Status.Show == StatusShow.Away) score2 += 50;
+            return score1 - score2;
+          }
+        } catch {
+          return 0;
         }
       });
       ChatListUpdated?.Invoke(this, list);
@@ -131,7 +134,10 @@ namespace LeagueClient.Logic.Chat {
 
     #region Event Handlers
     void OnPrimarySessionChange(object sender, jabber.JID bare) {
-      if (!Friends.ContainsKey(bare.User)) return;
+      if (!Friends.ContainsKey(bare.User)) {
+        var p = Presence.GetAll(bare);
+        return;
+      }
 
       var user = Users[bare.User];
 
@@ -143,17 +149,6 @@ namespace LeagueClient.Logic.Chat {
         Friends[bare.User].IsOffline = false;
       }
       App.Current.Dispatcher.Invoke(ResetList);
-      //if (s.Length == 0 || s[0]?.Status == null)
-      //  App.Current?.Dispatcher.Invoke((Action<List<ChatUser>>)ResetList, list);
-      //else {
-      //  App.Current?.Dispatcher.Invoke(() => {
-      //    //var friend = new ChatUser(s[0], user, convo);
-      //    ////friend.MouseUp += (src, e) => OnChatAdd(friend);
-      //    //list.Add(friend);
-      //    //ResetList(list);
-      //    //Friends[bare.User] = friend;
-      //  });
-      //}
     }
 
     void OnChatAdd(Friend friend) {
@@ -237,7 +232,7 @@ namespace LeagueClient.Logic.Chat {
     /// <param name="message">The status message to display</param>
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
-      conn.Presence(PresenceType.available, status.ToXML(), Show.ToString().ToLower(), 1);
+      conn.Presence(PresenceType.available, status.ToXML(), null, 0);
     }
 
     public void UpdateStatus(ChatStatus status) {

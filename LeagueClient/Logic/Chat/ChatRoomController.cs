@@ -36,11 +36,10 @@ namespace LeagueClient.Logic.Chat {
     public void JoinChat(JID jid, string pass) {
       if (IsJoined) return;
       chatRoom = Client.ChatManager.JoinRoom(jid);
-      chatRoom.OnJoin += room => dispatch.Invoke(() => ShowLobbyMessage("Joined chat lobby"));
-      chatRoom.OnParticipantJoin += (s, e) => dispatch.Invoke(() => ShowLobbyMessage(e.Nick + " has joined the lobby"));
-      chatRoom.OnParticipantLeave += (s, e) => dispatch.Invoke(() => ShowLobbyMessage(e.Nick + " has left the lobby"));
-      chatRoom.OnRoomMessage += (s, e) => dispatch.Invoke(() => ShowMessage(chatRoom.Participants[e.From].Nick, e.Body));
-      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
+      chatRoom.OnRoomMessage += (s, e) => dispatch.MyInvoke(ShowMessage, chatRoom.Participants[e.From].Nick, e.Body);
+      chatRoom.OnParticipantJoin += (s, e) => dispatch.MyInvoke(ShowLobbyMessage, e.Nick + " has joined the lobby");
+      chatRoom.OnParticipantLeave += (s, e) => dispatch.MyInvoke(ShowLobbyMessage, e.Nick + " has left the lobby");
+      chatRoom.OnJoin += room => dispatch.MyInvoke(ShowLobbyMessage, "Joined chat lobby");
       chatRoom.Join(pass);
       IsJoined = true;
     }

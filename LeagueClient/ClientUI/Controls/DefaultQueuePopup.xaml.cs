@@ -23,9 +23,6 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for DefaultQueuePopup.xaml
   /// </summary>
   public partial class DefaultQueuePopup : UserControl, IQueuePopup {
-    public event EventHandler Accepted;
-    public event EventHandler Cancelled;
-
     public GameDTO GameData { get; private set; }
 
     public DefaultQueuePopup(GameDTO game) {
@@ -41,45 +38,49 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Time_Elapsed(object sender, ElapsedEventArgs e) {
       (sender as IDisposable).Dispose();
-      if (Cancelled != null) Cancelled(this, new EventArgs());
     }
 
-    private void GotGameData(GameDTO game) {
+    private void GotGameData(GameDTO game)  {
       GameData = game;
-      foreach(char player in game.StatusOfParticipants) {
-        var border = new Border { Width = 16, Height = 20 };
-        border.BorderBrush = App.ForeBrush;
-        border.BorderThickness = new Thickness(1);
-        border.Margin = new Thickness(2, 0, 2, 0);
-        switch (player) {
-          case '0':
-            border.Background = App.ChatBrush;
-            break;
-          case '1':
-            border.Background = App.Back1Brush;
-            break;
-          default: break;
+      if (game.GameState.Equals("JOINING_CHAMP_SELECT")) {
+        ParticipantPanel.Children.Clear();
+        foreach (char player in game.StatusOfParticipants) {
+          var border = new Border { Width = 16, Height = 20 };
+          border.BorderBrush = App.ForeBrush;
+          border.BorderThickness = new Thickness(1);
+          border.Margin = new Thickness(2, 0, 2, 0);
+          switch (player) {
+            case '0':
+              border.Background = App.ChatBrush;
+              break;
+            case '1':
+              border.Background = App.Back1Brush;
+              break;
+            default: break;
+          }
+          ParticipantPanel.Children.Add(border);
         }
-        ParticipantPanel.Children.Add(border);
+      } else if(game.GameState.Equals("CHAMP_SELECT")) {
+        Client.MainWindow.BeginChampSelect(game);
+      } else {
+
       }
     }
 
     public bool HandleMessage(MessageReceivedEventArgs e) {
       var game = e.Body as GameDTO;
       if(game != null) {
-        Client.Invoke(GotGameData, game);
+        Dispatcher.MyInvoke(GotGameData, game);
         return true;
       }
       return false;
     }
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
-      if (Accepted != null) Accepted(this, new EventArgs());
       RiotCalls.GameService.AcceptPoppedGame(true);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
-      if (Cancelled != null) Cancelled(this, new EventArgs());
       RiotCalls.GameService.AcceptPoppedGame(false);
     }
 

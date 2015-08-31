@@ -24,6 +24,6 @@
     <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4" Grid.Column="2" VerticalAlignment="Bottom">
       <Image Height="24" Width="24" Name="Spell2Image"/>
     </Border>
-    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" Name="SummonerName">Summoner 1</TextBlock>
+    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" Name="SummonerName">? Summoner</TextBlock>
   </Grid>
 </UserControl>

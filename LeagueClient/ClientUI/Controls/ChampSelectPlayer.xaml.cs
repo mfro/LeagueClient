@@ -43,5 +43,9 @@ namespace LeagueClient.ClientUI.Controls {
       ChampImage.Source = LeagueData.GetChampIconImage(champ.id);
       SummonerName.Text = champ.name;
     }
+
+    public ChampSelectPlayer(ObfuscatedParticipant obfusc) {
+      InitializeComponent();
+    }
   }
 }

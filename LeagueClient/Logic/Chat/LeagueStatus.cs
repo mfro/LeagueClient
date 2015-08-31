@@ -9,10 +9,10 @@ namespace LeagueClient.Logic.Chat {
   public class LeagueStatus {
     private const string StatusTemplate =
       "<body>" +
-        "<level>30</level>" +
         "<profileIcon>5</profileIcon>" +
-        "<statusMsg>{0}</statusMsg>" +
+        "<level>30</level>" +
         "<gameStatus>{1}</gameStatus>" +
+        "<statusMsg>{0}</statusMsg>" +
       "</body>";
     public int ProfileIcon { get; private set; }
     public long TimeStamp { get; private set; }

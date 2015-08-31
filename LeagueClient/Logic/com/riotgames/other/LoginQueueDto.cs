@@ -18,7 +18,7 @@ namespace LeagueClient.Logic.com.riotgames.other {
     public string Reason { get; set; }
 
     [JSONField("inGameCredentials")]
-    public int InGameCredentials { get; set; }
+    public InGameCredentialsDto InGameCredentials { get; set; }
 
     [JSONField("idToken")]
     public string IdToken { get; set; }
@@ -52,7 +52,7 @@ namespace LeagueClient.Logic.com.riotgames.other {
   }
 
   [JSONSerializable]
-  public class InGameCredentials {
+  public class InGameCredentialsDto {
     [JSONField("inGame")]
     public bool InGame { get; set; }
 

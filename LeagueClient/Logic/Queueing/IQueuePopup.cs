@@ -8,9 +8,6 @@ using RtmpSharp.Messaging;
 
 namespace LeagueClient.Logic.Queueing {
   public interface IQueuePopup {
-    event EventHandler Accepted;
-    event EventHandler Cancelled;
-
     System.Windows.Controls.Control GetControl();
 
     bool HandleMessage(MessageReceivedEventArgs args);

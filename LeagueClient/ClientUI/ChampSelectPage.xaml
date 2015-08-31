@@ -3,6 +3,11 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
+  <Page.Resources>
+    <DataTemplate x:Key="BookTemplate">
+      <TextBlock Style="{StaticResource Control}" Text="{Binding Name}"/>
+    </DataTemplate>
+  </Page.Resources>
   <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
@@ -44,7 +49,7 @@
           <Label>HI</Label>
         </StackPanel>
 
-        <Border Name="MatchDetails" Grid.Row="3" Background="{StaticResource ForeBrush}"
+        <Border Name="MatchDetails" Grid.Row="2" Background="{StaticResource ForeBrush}"
             BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 4 0 0">
           <Grid>
             <Grid.RowDefinitions>
@@ -76,7 +81,7 @@
           <Label>HI</Label>
         </StackPanel>
 
-        <Border Name="MatchDetails2" Grid.Row="7" Background="{StaticResource ForeBrush}"
+        <Border Name="MatchDetails2" Grid.Row="2" Background="{StaticResource ForeBrush}"
             BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 4 0 0">
           <Grid>
             <Grid.RowDefinitions>
@@ -100,48 +105,42 @@
         <my:ChampSelector Margin="4" x:Name="ChampsGrid"/>
         <Grid Grid.Row="1" Margin="4 0 4 4">
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="auto"/>
           </Grid.ColumnDefinitions>
-          <Grid Background="{StaticResource ForeBrush}">
+          <Grid>
             <Grid.RowDefinitions>
               <RowDefinition Height="8"/>
-              <RowDefinition Height="18"/>
+              <RowDefinition Height="auto"/>
               <RowDefinition Height="*"/>
-              <RowDefinition Height="18"/>
+              <RowDefinition Height="auto"/>
               <RowDefinition Height="8"/>
             </Grid.RowDefinitions>
             <Label Padding="8 0" Grid.Row="1" FontSize="14" HorizontalAlignment="Left">Runes:</Label>
             <Label Padding="8 0" Grid.Row="3" FontSize="14" HorizontalAlignment="Left">Masteries:</Label>
-            <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="1"/>
-            <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="3"/>
+            <ComboBox Height="18" Margin="80 0 8 0" Grid.Row="1" ItemTemplate="{StaticResource BookTemplate}" Name="RunesBox"/>
+            <ComboBox Height="18" Margin="80 0 36 0" Grid.Row="3" ItemTemplate="{StaticResource BookTemplate}" Name="MasteriesBox"/>
+            <Button Grid.Row="3" HorizontalAlignment="Right" Width="20" Margin="0 -2 8 0" Click="MasterEdit_Click" Padding="0">
+              <Path Data="M 1 15 L 3 11 13 1 15 3 5 13 Z M 4 10 L 6 12" Stroke="{StaticResource FontBrush}" StrokeLineJoin="Round"/>
+            </Button>
           </Grid>
-          <Grid Grid.Column="2" Margin="4 0">
+          <Grid Grid.Column="4">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="66"/>
               <ColumnDefinition Width="4"/>
               <ColumnDefinition Width="66"/>
             </Grid.ColumnDefinitions>
-            <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="4" Cursor="Hand">
-              <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
+            <Border Grid.Column="0" BorderBrush="{StaticResource ForeBrush}" BorderThickness="4" Cursor="Hand" MouseUp="Spell1_Click">
+              <Image Name="Spell1Image"/>
             </Border>
-            <Border Grid.Column="2" BorderBrush="{StaticResource ForeBrush}" BorderThickness="4"
-                  Cursor="Hand">
-              <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerHaste.png"/>
+            <Border Grid.Column="2" BorderBrush="{StaticResource ForeBrush}" BorderThickness="4" Cursor="Hand" MouseUp="Spell2_Click">
+              <Image Name="Spell2Image"/>
             </Border>
           </Grid>
-          <Grid Grid.Column="4" Background="{StaticResource ForeBrush}">
-            <Grid.RowDefinitions>
-              <RowDefinition Height="auto"/>
-              <RowDefinition Height="4"/>
-              <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <Button Grid.Row="2" Width="80" Height="30">Lock In</Button>
-          </Grid>
+          <Button Grid.Column="2" Width="80" Height="30" HorizontalAlignment="Center" Click="LockIn_Click">Lock In</Button>
         </Grid>
         <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Background="{StaticResource Back1Brush}">
           <Grid.RowDefinitions>
@@ -162,6 +161,9 @@
               HorizontalAlignment="Right" Padding="0 0">Send</Button>
         </Grid>
       </Grid>
+    </Grid>
+    <Grid Grid.Row="1" Visibility="Collapsed" Opacity="0" Name="PopupGrid">
+      <my:PopupSelector HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="Popup" Close="Popup_Close"/>
     </Grid>
     <!--<Grid>
       <Grid.RowDefinitions>
@@ -563,6 +565,4 @@
       </Grid>
     </Grid>-->
   </Grid>
-  <!--<Border Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}" Padding="4" Margin="0 22 0 0">
-  </Border>-->
 </Page>

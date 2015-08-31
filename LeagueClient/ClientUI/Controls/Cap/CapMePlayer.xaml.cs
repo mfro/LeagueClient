@@ -60,7 +60,7 @@ namespace LeagueClient.ClientUI.Controls {
       InitializeComponent();
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
 
-      CapPlayer.PropertyChanged += (s, e) => Dispatcher.Invoke((Action<string>) UpdateChild, e.PropertyName);
+      CapPlayer.PropertyChanged += (s, e) => Dispatcher.MyInvoke(UpdateChild, e.PropertyName);
       PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
       RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED);
       UpdateBooks();

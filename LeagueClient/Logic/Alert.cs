@@ -20,7 +20,7 @@ namespace LeagueClient.Logic {
     private static Alert Create<T>(params object[] args) where T : Alert {
       var types = new Type[args.Length];
       for (int i = 0; i < args.Length; i++) types[i] = args[i]?.GetType();
-      T t = App.Current.Dispatcher.Invoke(() => t = (T) typeof(T).GetConstructor(types).Invoke(args));
+      T t = (T) App.Current.Dispatcher.MyInvoke(typeof(T).GetConstructor(types).Invoke, args);
       return t;
     }
 

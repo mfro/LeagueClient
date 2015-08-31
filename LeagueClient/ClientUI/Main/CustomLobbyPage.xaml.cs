@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,7 +48,8 @@ namespace LeagueClient.ClientUI.Main {
 
     private void SharedInit() {
       InitializeComponent();
-      Client.ChatManager.UpdateStatus(ChatStatus.hostingPracticeGame);
+      chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
+      Client.ChatManager.UpdateStatus(ChatStatus.teamSelect);
     }
 
     #endregion
@@ -56,10 +58,10 @@ namespace LeagueClient.ClientUI.Main {
       GameDTO game;
       LobbyStatus status;
       if ((game = e.Body as GameDTO) != null) {
-        Client.Invoke(GotGameData, game);
+        Dispatcher.MyInvoke(GotGameData, game);
         return true;
       } else if((status = e.Body as LobbyStatus) != null) {
-        Client.Invoke(GotLobbyStatus, status);
+        Dispatcher.MyInvoke(GotLobbyStatus, status);
         return true;
       } else {
 
@@ -88,7 +90,9 @@ namespace LeagueClient.ClientUI.Main {
 
     public void GotGameData(GameDTO game) {
       GameId = game.Id;
-      if (chatRoom == null) {
+      if (!chatRoom.IsJoined) {
+        chatRoom.JoinChat(Client.ChatManager.GetCustomRoom(game.Name, game.Id, game.RoomPassword), game.RoomPassword);
+
         Dispatcher.Invoke(() => {
           var map = Maps.FirstOrDefault(m => m.MapId == game.MapId);
           switch (map.MapId) {
@@ -102,10 +106,6 @@ namespace LeagueClient.ClientUI.Main {
           ModeLabel.Content = GameMode.Values[game.GameMode];
           QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
           TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
-
-          chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
-          chatRoom.JoinChat(Client.ChatManager.GetCustomRoom(game.Name, game.Id, game.RoomPassword), game.RoomPassword);
-          Client.ChatManager.UpdateStatus(ChatStatus.hostingPracticeGame);
         });
       }
       if (game.GameState.Equals("TEAM_SELECT")) {
@@ -152,6 +152,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public void ForceClose() {
       RiotCalls.GameService.QuitGame();
+      Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 
     public IQueuer HandleClose() {

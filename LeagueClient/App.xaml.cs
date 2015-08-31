@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing;
 
@@ -76,6 +77,15 @@ namespace LeagueClient {
     public static void WriteString(this Stream stm, string str) {
       stm.Write(Encoding.UTF8.GetBytes(str));
     }
+
+    public static void MyInvoke<T1>(this Dispatcher dispatch, Action<T1> func, T1 t) => dispatch.Invoke(func, t);
+    public static void MyInvoke<T1, T2>(this Dispatcher dispatch, Action<T1, T2> func, T1 t, T2 t1) => dispatch.Invoke(func, t);
+    public static void MyInvoke<T1, T2, T3>(this Dispatcher dispatch, Action<T1, T2, T3> func, T1 t, T2 t1, T3 t2) => dispatch.Invoke(func, t, t1, t2);
+    public static void MyInvoke<T1, T2, T3, T4>(this Dispatcher dispatch, Action<T1, T2, T3, T4> func, T1 t, T2 t1, T3 t2, T4 t3) => dispatch.Invoke(func, t, t1, t2, t3);
+    public static R MyInvoke<T1, R>(this Dispatcher dispatch, Func<T1, R> func, T1 t) => (R) dispatch.Invoke(func, t);
+    public static R MyInvoke<T1, T2, R>(this Dispatcher dispatch, Func<T1, T2, R> func, T1 t, T2 t1) => (R) dispatch.Invoke(func, t);
+    public static R MyInvoke<T1, T2, T3, R>(this Dispatcher dispatch, Func<T1, T2, T3, R> func, T1 t, T2 t1, T3 t2) => (R) dispatch.Invoke(func, t, t1, t2);
+    public static R MyInvoke<T1, T2, T3, T4, R>(this Dispatcher dispatch, Func<T1, T2, T3, T4, R> func, T1 t, T2 t1, T3 t2, T4 t3) => (R) dispatch.Invoke(func, t, t1, t2, t3);
   }
 
   public class ResourceAttribute : Attribute { }

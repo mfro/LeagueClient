@@ -151,7 +151,8 @@ namespace LeagueClient {
       creds.ClientVersion = AirVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
-      creds.AuthToken = (await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue)).Token;
+      var queue = await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue);
+      creds.AuthToken = queue.Token;
 
       UserSession = await RiotCalls.LoginService.Login(creds);
       await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
@@ -224,15 +225,6 @@ namespace LeagueClient {
       page.Current = true;
       SelectedRunePage = page;
     }
-
-    public static void Invoke<T1>(Action<T1> func, T1 t) => App.Current.Dispatcher.Invoke(func, t);
-    public static void Invoke<T1, T2>(Action<T1, T2> func, T1 t, T2 t1) => App.Current.Dispatcher.Invoke(func, t);
-    public static void Invoke<T1, T2, T3>(Action<T1, T2, T3> func, T1 t, T2 t1, T3 t2) => App.Current.Dispatcher.Invoke(func, t, t1, t2);
-    public static void Invoke<T1, T2, T3, T4>(Action<T1, T2, T3, T4> func, T1 t, T2 t1, T3 t2, T4 t3) => App.Current.Dispatcher.Invoke(func, t, t1, t2, t3);
-    public static R Invoke<T1, R>(Func<T1, R> func, T1 t) => (R) App.Current.Dispatcher.Invoke(func, t);
-    public static R Invoke<T1, T2, R>(Func<T1, T2, R> func, T1 t, T2 t1) => (R) App.Current.Dispatcher.Invoke(func, t);
-    public static R Invoke<T1, T2, T3, R>(Func<T1, T2, T3, R> func, T1 t, T2 t1, T3 t2) => (R) App.Current.Dispatcher.Invoke(func, t, t1, t2);
-    public static R Invoke<T1, T2, T3, T4, R>(Func<T1, T2, T3, T4, R> func, T1 t, T2 t1, T3 t2, T4 t3) => (R) App.Current.Dispatcher.Invoke(func, t, t1, t2, t3);
 
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
     public static void ShowInvite(InvitationRequest invite) {

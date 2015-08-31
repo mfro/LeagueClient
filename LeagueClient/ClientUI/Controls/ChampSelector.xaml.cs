@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,7 +29,7 @@ namespace LeagueClient.ClientUI.Controls {
     public MyChampDto SelectedChampion { get; set; }
     public MyChampDto.SkinDto SelectedSkin { get; set; }
 
-    public bool ReadOnly {
+    public bool IsReadOnly {
       get { return readOnly; }
       set {
         if (readOnly != value) {
@@ -39,6 +40,9 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
+    private IEnumerable<int> last;
+
+    private List<MyChampDto> champs;
     private bool readOnly;
     private List<MyChampDto.SkinDto> skins = new List<MyChampDto.SkinDto>();
 
@@ -51,28 +55,30 @@ namespace LeagueClient.ClientUI.Controls {
 
 
     public async void UpdateChampList() {
-      ChampSelect.Visibility = System.Windows.Visibility.Visible;
-      SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
-      var images = new List<object>();
+      var champs = new List<MyChampDto>();
       foreach (var riot in await RiotCalls.InventoryService.GetAvailableChampions()) {
         if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
-        var item = LeagueData.GetChampData(riot.ChampionId);
-        images.Add(new { Image = LeagueData.GetChampIconImage(item.id), Name = item.name, Data = item });
+        champs.Add(LeagueData.GetChampData(riot.ChampionId));
       }
-      ChampsGrid.ItemsSource = images;
+      SetChampList(champs);
     }
 
-    public void SetChampList(IEnumerable<ChampionDTO> champions) {
+    public void SetChampList(IEnumerable<MyChampDto> champions) {
       //TODO ChampSelection instead of this ^
+      champs = champions.ToList();
+      var images = new List<object>();
+      var save = new List<int>();
+      var filter = SearchBox.Text;
+      if (filter.Equals("Search")) filter = "";
+      foreach (var item in champions.OrderBy(c => c.name).Where(c => Regex.IsMatch(c.name, filter, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace))) {
+        images.Add(new { Image = LeagueData.GetChampIconImage(item.id), Name = item.name, Data = item });
+        save.Add(item.key);
+      }
+      if (last != null && save.SequenceEqual(last)) return;
+      last = save;
+      ChampsGrid.ItemsSource = images;
       ChampSelect.Visibility = Visibility.Visible;
       SkinSelect.Visibility = Visibility.Collapsed;
-      var images = new List<object>();
-      foreach (var riot in champions) {
-        if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
-        var item = LeagueData.GetChampData(riot.ChampionId);
-        images.Add(new { Image = LeagueData.GetChampIconImage(item.id), Name = item.name, Data = item });
-      }
-      ChampsGrid.ItemsSource = images;
     }
 
     private void UpdateSkinList() {
@@ -86,8 +92,13 @@ namespace LeagueClient.ClientUI.Controls {
       SkinScroll.ScrollToHorizontalOffset(294);
     }
 
+    private void SearchBox_KeyUp(object sender, KeyEventArgs e) {
+      last = null;
+      SetChampList(champs);
+    }
+
     private void Champion_Select(object sender, MouseButtonEventArgs e) {
-      if (ReadOnly) return;
+      if (IsReadOnly) return;
       var src = sender as Border;
       var data = (((dynamic) src).DataContext).Data
         as MyChampDto;
@@ -145,33 +156,9 @@ namespace LeagueClient.ClientUI.Controls {
       e.Handled = true;
     }
 
-    private void SkinsButt_Click(object sender, RoutedEventArgs e) {
-      ChampSelect.Visibility = System.Windows.Visibility.Collapsed;
-      SkinSelect.Visibility = System.Windows.Visibility.Visible;
-    }
-
     private void ChampButt_Click(object sender, RoutedEventArgs e) {
       ChampSelect.Visibility = System.Windows.Visibility.Visible;
       SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
-      //SkinsButt.IsEnabled = true;
     }
-  }
-
-  public class ChampSelection {
-    public ChampionDTO Riot { get; private set; }
-    public MyChampDto Champion { get; private set; }
-    public BitmapImage Image { get; private set; }
-    public ChampAvailability Availability { get; private set; }
-
-    public ChampSelection(ChampionDTO champ, ChampAvailability available) {
-      Riot = champ;
-      Champion = LeagueData.GetChampData(champ.ChampionId);
-      Availability = available;
-      Image = LeagueData.GetChampIconImage(Champion.id);
-    }
-  }
-
-  public enum ChampAvailability {
-    Available, Banned, Unavailable
   }
 }
