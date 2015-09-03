@@ -28,6 +28,7 @@ namespace LeagueClient.Logic {
     public static Alert QueueDodger() => Create<OkAlert>("Unabled to join queue", "You have cancelled too many queues recently and are temporarily unabled to queue for games");
     public static Alert GroupDisbanded() => Create<OkAlert>("Your group has disbanded", "The group you were in was disbanded for an unknown reason");
 
+    public static Alert NormalInvite(string user, GameMode mode) => Create<YesNoAlert>("Game Invite", $"You have been invited to a {mode.Value} lobby by " + user);
     public static Alert TeambuilderInvite(string user) => Create<YesNoAlert>("Teambuilder Invite", "You have been invited to a teambuilder game lobby by " + user);
     public static Alert CustomInvite(string user) => Create<YesNoAlert>("Custom Game Invite", "You have been invited to a custom game lobby by " + user);
   }

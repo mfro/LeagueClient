@@ -132,12 +132,12 @@ namespace LeagueClient.ClientUI.Main {
 
     private async void Join1_Click(object sender, RoutedEventArgs e) {
       if (Close != null) Close(this, new EventArgs());
+      var mmp = new MatchMakerParams();
+      mmp.BotDifficulty = selected.Bots;
+      mmp.QueueIds = new int[] { selected.Id };
       switch ((int) selected.Type) {
-        case 0:
-        case 1:
-          var mmp = new MatchMakerParams();
-          mmp.BotDifficulty = selected.Bots;
-          mmp.QueueIds = new int[] { selected.Id };
+        case 0://DEFAULT
+        case 1://RANKED SOLO / DUO
           var search = await RiotCalls.MatchmakerService.AttachToQueue(mmp);
           if(search.PlayerJoinFailures?.Count > 0) {
             switch (search.PlayerJoinFailures[0].ReasonFailed) {
@@ -150,10 +150,10 @@ namespace LeagueClient.ClientUI.Main {
             Client.QueueManager.ShowQueuer(new DefaultQueuer(mmp));
           }
           break;
-        case 3:
+        case 3://TEAMBUILDER
           Client.QueueManager.ShowPage(new CapSoloPage());
           break;
-        case 4:
+        case 4://CUSTOM
           Client.QueueManager.ShowPage(new CustomCreatePage());
           break;
       }
@@ -161,12 +161,19 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Join2_Click(object sender, RoutedEventArgs e) {
       if (Close != null) Close(this, new EventArgs());
+      var mmp = new MatchMakerParams();
+      mmp.BotDifficulty = selected.Bots;
+      mmp.QueueIds = new int[] { selected.Id };
       switch ((int) selected.Type) {
         case 0:
+          var lobby = new DefaultLobbyPage(mmp);
+          RiotCalls.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]).ContinueWith(t => Dispatcher.MyInvoke(lobby.GotLobbyStatus, t.Result));
+          Client.QueueManager.ShowPage(lobby);
+          break;
         case 1:
+          //TODO Ranked duo game lobby
         case 2:
-          //TODO Normal game lobby
-          //Client.QueueManager.CreateLobby(selected.Config, selected.Bots);
+          //TODO Ranked team game lobby
           break;
         case 3:
           Client.QueueManager.ShowPage(new CapLobbyPage(true));
@@ -179,14 +186,9 @@ namespace LeagueClient.ClientUI.Main {
       }
     }
 
-    private void ListBox_Loaded(object sender, RoutedEventArgs e) {
-      //var box = sender as ListBox;
-      //var bd = box.Template.FindName("Bd", box) as Border;
-      //bd.Padding = new Thickness(0);
-    }
-
     public Page Page => this;
     public bool CanPlay => false;
+    public bool CanClose => true;
 
     public void ForceClose() { }
     public IQueuer HandleClose() => null;

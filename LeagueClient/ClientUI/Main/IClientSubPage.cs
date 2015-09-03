@@ -12,6 +12,7 @@ namespace LeagueClient.ClientUI.Main {
     event EventHandler Close;
 
     bool CanPlay { get; }
+    bool CanClose { get; }
     System.Windows.Controls.Page Page { get; }
 
     void ForceClose();

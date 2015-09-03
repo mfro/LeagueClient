@@ -28,10 +28,8 @@ namespace LeagueClient.ClientUI.Main {
   /// Interaction logic for CustomLobbyPage.xaml
   /// </summary>
   public partial class CustomLobbyPage : Page, IClientSubPage {
+    public GameDTO GameDto { get; private set; }
 
-    public double GameId { get; private set; }
-
-    private GameMap[] Maps = new[] { GameMap.SummonersRift, GameMap.ButchersBridge, GameMap.HowlingAbyss, GameMap.TheCrystalScar, GameMap.TheTwistedTreeline };
     private ChatRoomController chatRoom;
 
     #region Constructors
@@ -63,8 +61,6 @@ namespace LeagueClient.ClientUI.Main {
       } else if((status = e.Body as LobbyStatus) != null) {
         Dispatcher.MyInvoke(GotLobbyStatus, status);
         return true;
-      } else {
-
       }
       return false;
     }
@@ -73,35 +69,21 @@ namespace LeagueClient.ClientUI.Main {
       InviteList.Children.Clear();
 
       foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
-        var grid = new Grid();
-        var name = new Label { Content = player.SummonerName };
-        var state = new Label { HorizontalAlignment = HorizontalAlignment.Right };
-        switch (player.InviteeState) {
-          case "PENDING": state.Content = "Pending"; break;
-          case "ACCEPTED": state.Content = "Accepted"; break;
-          case "QUIT": state.Content = "Quit"; break;
-          default: break;
-        }
-        grid.Children.Add(name);
-        grid.Children.Add(state);
-        InviteList.Children.Add(grid);
+        InviteList.Children.Add(new InvitedPlayer(player));
       }
     }
 
     public void GotGameData(GameDTO game) {
-      GameId = game.Id;
+      GameDto = game;
       if (!chatRoom.IsJoined) {
-        chatRoom.JoinChat(Client.ChatManager.GetCustomRoom(game.Name, game.Id, game.RoomPassword), game.RoomPassword);
+        chatRoom.JoinChat(RiotChat.GetCustomRoom(game.Name, game.Id, game.RoomPassword), game.RoomPassword);
+
+        StartButt.Visibility = (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId) ? Visibility.Visible : Visibility.Collapsed;
 
         Dispatcher.Invoke(() => {
-          var map = Maps.FirstOrDefault(m => m.MapId == game.MapId);
-          switch (map.MapId) {
-            case 8: MapImage.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/CScarImage.png"));   break;
-            case 10: MapImage.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/TTImage.png"));     break;
-            case 11: MapImage.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/SRiftImage.png"));  break;
-            case 12: MapImage.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/HAbyssImage.png")); break;
-            case 14: MapImage.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Bilgewater.png"));  break;
-          }
+          var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
+
+          MapImage.Source = GameMap.Images[map];
           MapLabel.Content = map.DisplayName;
           ModeLabel.Content = GameMode.Values[game.GameMode];
           QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
@@ -112,6 +94,7 @@ namespace LeagueClient.ClientUI.Main {
         Dispatcher.Invoke(() => {
           BlueTeam.Children.Clear();
           RedTeam.Children.Clear();
+          ObserverList.Children.Clear();
           foreach (var thing in game.TeamOne.Concat(game.TeamTwo)) {
             var player = thing as PlayerParticipant;
             bool blue = game.TeamOne.Contains(player);
@@ -137,8 +120,13 @@ namespace LeagueClient.ClientUI.Main {
               }
             }
           }
+
+          foreach(var thing in game.Observers) {
+            ObserverList.Children.Add(new Label { Content = thing.SummonerName });
+          }
         });
       } else if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
+        Close?.Invoke(this, new EventArgs());
         Client.MainWindow.BeginChampSelect(game);
       }
     }
@@ -149,6 +137,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
     public bool CanPlay => false;
+    public bool CanClose => true;
 
     public void ForceClose() {
       RiotCalls.GameService.QuitGame();
@@ -191,15 +180,23 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void RedJoin_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.SwitchTeams(GameId);
+      RiotCalls.GameService.SwitchTeams(GameDto.Id);
       RedJoin.Visibility = Visibility.Collapsed;
       BlueJoin.Visibility = Visibility.Visible;
     }
 
     private void BlueJoin_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.SwitchTeams(GameId);
+      RiotCalls.GameService.SwitchTeams(GameDto.Id);
       RedJoin.Visibility = Visibility.Visible;
       BlueJoin.Visibility = Visibility.Collapsed;
+    }
+
+    private void Spectate_Click(object sender, RoutedEventArgs e) {
+      RiotCalls.GameService.SwitchPlayerToObserver(GameDto.Id);
+    }
+
+    private void Start_Click(object sender, RoutedEventArgs e) {
+      RiotCalls.GameService.StartChampionSelection(GameDto.Id, GameDto.OptimisticLock);
     }
 
     #endregion

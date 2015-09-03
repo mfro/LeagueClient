@@ -1,0 +1,81 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using MFroehlich.League.Assets;
+using MFroehlich.Parsing.DynamicJSON;
+
+namespace LeagueClient.ClientUI.Controls {
+  /// <summary>
+  /// Interaction logic for LoginAccount.xaml
+  /// </summary>
+  public partial class LoginAccount : UserControl {
+    private static readonly Duration
+      MoveDuration = new Duration(TimeSpan.FromMilliseconds(200)),
+      ButtonDuration = new Duration(TimeSpan.FromMilliseconds(80));
+
+    private static readonly AnimationTimeline
+      ExpandSlow = new ThicknessAnimation(new Thickness(5), MoveDuration),
+      ContractSlow = new ThicknessAnimation(new Thickness(0), MoveDuration),
+      ExpandFast = new ThicknessAnimation(new Thickness(5), ButtonDuration),
+      ContractFast = new ThicknessAnimation(new Thickness(0), ButtonDuration);
+
+    public string Username { get; private set; }
+    public LoginAccountState State {
+      get { return state; }
+      set {
+        Loader.Visibility = value == LoginAccountState.Loading ? Visibility.Visible : Visibility.Collapsed;
+        state = value;
+      }
+    }
+
+    private LoginAccountState state;
+
+    public LoginAccount(string login, string name, int profileicon) {
+      InitializeComponent();
+
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(profileicon);
+      NameLabel.Content = name;
+      Username = login;
+      State = LoginAccountState.Normal;
+    }
+
+    private void Grid_MouseEnter(object sender, MouseEventArgs e) {
+      if (State != LoginAccountState.Normal) return;
+
+      MainBorder.BeginAnimation(MarginProperty, ContractSlow);
+      MainBorder.BeginAnimation(BorderThicknessProperty, ExpandSlow);
+    }
+
+    private void Grid_MouseLeave(object sender, MouseEventArgs e) {
+      MainBorder.BeginAnimation(MarginProperty, ExpandSlow);
+      MainBorder.BeginAnimation(BorderThicknessProperty, ContractSlow);
+    }
+
+    private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
+      if (State != LoginAccountState.Normal) return;
+
+      MainBorder.BeginAnimation(MarginProperty, ExpandFast);
+    }
+
+    private void Grid_MouseUp(object sender, MouseButtonEventArgs e) {
+      MainBorder.BeginAnimation(MarginProperty, ContractFast);
+    }
+  }
+
+  public enum LoginAccountState {
+    Normal, Readonly, Loading
+  }
+}

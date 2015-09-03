@@ -3,7 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
-      DataContext="{Binding RelativeSource={RelativeSource Self}}">
+      DataContext="{Binding RelativeSource={RelativeSource Self}}"
+      Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
   <Page.Resources>
     <Style TargetType="ListBoxItem" x:Key="ItemStyle">
       <Setter Property="BorderThickness" Value="0"/>
@@ -44,7 +45,7 @@
       </Setter>
     </Style>
   </Page.Resources>
-  <Grid Width="{StaticResource Width}" Height="{StaticResource PageHeight}" Background="{StaticResource Back2Brush}">
+  <Grid Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="40"/>
       <RowDefinition Height="190"/>
@@ -64,10 +65,10 @@
     <Image Grid.Row="1" Grid.RowSpan="2" Name="BackImage2" Grid.Column="4"/>
     <!--Region Lists-->
     <ListBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding GameGroups}"
-             Name="GroupList" Loaded="ListBox_Loaded">
+             Name="GroupList">
     </ListBox>
     <ListBox Grid.Column="2" Grid.Row="1" ItemsSource="{Binding GameModes}"
-             Name="ModeList" Loaded="ListBox_Loaded">
+             Name="ModeList">
       <ListBox.ItemTemplate>
         <DataTemplate>
           <Grid>
@@ -82,7 +83,7 @@
       </ListBox.ItemTemplate>
     </ListBox>
     <ListBox Grid.Column="3" Grid.Row="1" ItemsSource="{Binding GameQueues}"
-             Name="QueueList" Loaded="ListBox_Loaded">
+             Name="QueueList">
     </ListBox>
     <!--End Region-->
     <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Background="{StaticResource Back1Brush}">

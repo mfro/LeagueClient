@@ -136,6 +136,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
     public bool CanPlay => false;
+    public bool CanClose => true;
 
     public IQueuer HandleClose() => null;
     public void ForceClose() { }

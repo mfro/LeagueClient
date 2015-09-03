@@ -22,6 +22,7 @@ using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
 using System.Windows.Threading;
 using RtmpSharp.Messaging;
+using LeagueClient.ClientUI.Main;
 
 namespace LeagueClient {
   /// <summary>
@@ -29,6 +30,8 @@ namespace LeagueClient {
   /// </summary>
   public partial class MainWindow : Window {
     private IClientPage currentPage;
+
+    private ClientUI.Main.ClientPage mainPage;
 
     public MainWindow() {
       Client.Log("Pre-Init");
@@ -45,7 +48,7 @@ namespace LeagueClient {
     }
 
     public void LoginComplete() {
-      var page = new ClientUI.Main.ClientPage();
+      var page = mainPage = new ClientUI.Main.ClientPage();
       Client.QueueManager = page;
       ContentFrame.Content = page;
       this.currentPage = page;
@@ -63,7 +66,14 @@ namespace LeagueClient {
       var page = new ChampSelectPage(game);
       currentPage = page;
       ContentFrame.Content = page;
+      Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
       RiotCalls.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
+    }
+
+    public void ShowInGamePage() {
+      currentPage = mainPage;
+      ContentFrame.Content = mainPage;
+      mainPage.ShowPage(new InGamePage());
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) {

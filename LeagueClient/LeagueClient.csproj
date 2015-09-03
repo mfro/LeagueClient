@@ -92,6 +92,12 @@
     <Compile Include="ClientUI\Controls\ChampSelectPlayer.xaml.cs">
       <DependentUpon>ChampSelectPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\InvitedPlayer.xaml.cs">
+      <DependentUpon>InvitedPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\Loader.xaml.cs">
+      <DependentUpon>Loader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\LobbyBotPlayer.xaml.cs">
       <DependentUpon>LobbyBotPlayer.xaml</DependentUpon>
     </Compile>
@@ -107,6 +113,9 @@
     <Compile Include="ClientUI\Controls\ICollapsable.cs" />
     <Compile Include="ClientUI\Controls\InvitePopup.xaml.cs">
       <DependentUpon>InvitePopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\LoginAccount.xaml.cs">
+      <DependentUpon>LoginAccount.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\OkAlert.xaml.cs">
       <DependentUpon>OkAlert.xaml</DependentUpon>
@@ -140,10 +149,13 @@
     <Compile Include="ClientUI\Main\CustomLobbyPage.xaml.cs">
       <DependentUpon>CustomLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\DebugPage.xaml.cs">
-      <DependentUpon>DebugPage.xaml</DependentUpon>
+    <Compile Include="ClientUI\Main\DefaultLobbyPage.xaml.cs">
+      <DependentUpon>DefaultLobbyPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Main\IClientSubPage.cs" />
+    <Compile Include="ClientUI\Main\InGamePage.xaml.cs">
+      <DependentUpon>InGamePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Enums\RiotEnums.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -344,6 +356,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientUI\Controls\InvitedPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\Loader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Controls\LobbyBotPlayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -361,6 +381,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\InvitePopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\LoginAccount.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -440,7 +464,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\DebugPage.xaml">
+    <Page Include="ClientUI\Main\DefaultLobbyPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Main\InGamePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

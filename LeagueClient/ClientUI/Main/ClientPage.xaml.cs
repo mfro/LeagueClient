@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Cap;
+using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
@@ -68,8 +69,7 @@ namespace LeagueClient.ClientUI.Main {
     private IQueuePopup CurrentPopup;
 
     public ClientPage() {
-      int iconId = Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
-      ProfileIcon = LeagueData.GetProfileIconImage(iconId);
+      ProfileIcon = LeagueData.GetProfileIconImage(Client.Settings.ProfileIcon);
       SummonerName = Client.LoginPacket.AllSummonerData.Summoner.Name;
       InitializeComponent();
       OpenChatList.ItemsSource = Client.ChatManager.OpenChats;
@@ -77,10 +77,41 @@ namespace LeagueClient.ClientUI.Main {
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
 
       Client.ChatManager.ChatListUpdated += ChatManager_ChatListUpdated;
+      Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
+
+      UpdatePlayButton();
+    }
+
+    private void ChatManager_StatusUpdated(object sender, Logic.Chat.StatusUpdatedEventArgs e) {
+      Dispatcher.Invoke(() => {
+        switch (e.PresenceType) {
+          case jabber.protocol.client.PresenceType.available:
+            if (e.Status.GameStatus == ChatStatus.outOfGame) {
+              if (!string.IsNullOrWhiteSpace(e.Status.Message))
+                CurrentStatus.Text = e.Status.Message;
+              else if (e.Show == StatusShow.Chat)
+                CurrentStatus.Text = "Online";
+              else CurrentStatus.Text = "Away";
+            } else CurrentStatus.Text = e.Status.GameStatus.Value;
+
+            switch (e.Show) {
+              case StatusShow.Away: CurrentStatus.Foreground = App.AwayBrush; break;
+              case StatusShow.Chat: CurrentStatus.Foreground = App.ChatBrush; break;
+              case StatusShow.Dnd: CurrentStatus.Foreground = App.BusyBrush; break;
+            }
+
+            break;
+          case jabber.protocol.client.PresenceType.invisible:
+            CurrentStatus.Text = "Invisible";
+            CurrentStatus.Foreground = App.ForeBrush;
+            break;
+        }
+      });
     }
 
     private void ChatManager_ChatListUpdated(object sender, IEnumerable<Friend> e) {
       ChatList.ItemsSource = e;
+      ChatButt1.Content = ChatButt2.Content = $"Chat ({e.Count()})";
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
@@ -163,9 +194,10 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void HandlePageClose(object source, EventArgs e) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(HandlePageClose, source, e); return; }
-
-      CloseSubPage(false);
+      if (Thread.CurrentThread != Dispatcher.Thread)
+        Dispatcher.MyInvoke(CloseSubPage, false);
+      else
+        CloseSubPage(false);
     }
 
     private void ShowPopup(Control contents) {
@@ -191,6 +223,12 @@ namespace LeagueClient.ClientUI.Main {
 
     private void UpdatePlayButton() {
       PlayButton.IsEnabled = (CurrentPage == null || CurrentPage.CanPlay) && CurrentQueuer == null && CurrentPopup == null;
+      if (CurrentPage == null) {
+        HomeButt.Content = "Logout";
+      } else {
+        HomeButt.IsEnabled = CurrentPage.CanClose;
+        HomeButt.Content = "Home";
+      }
     }
 
     #region Queue Related Event Listeners
@@ -227,11 +265,9 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Home_Click(object sender, RoutedEventArgs e) {
       PlayControl.Child = PlayButton;
-      if (CurrentQueuer == null)
-        PlayButton.IsEnabled = true;
-      if (CurrentPage == null)
-        ShowPage(new DebugPage());
-      else CloseSubPage(true);
+      if (CurrentPage == null) {
+        Client.Logout();
+      } else CloseSubPage(true);
     }
     #endregion
 
@@ -253,8 +289,34 @@ namespace LeagueClient.ClientUI.Main {
       }
     }
 
+    bool canDouble;
     private void Header_MouseDown(object sender, MouseButtonEventArgs e) {
-      if (e.ChangedButton == MouseButton.Left) Client.MainWindow.DragMove();
+      if (e.ClickCount == 2 && canDouble) {
+        double sWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+        double sHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+        Client.MainWindow.Left = (sWidth / 2) - (Client.MainWindow.Width / 2);
+        Client.MainWindow.Top = (sHeight / 2) - (Client.MainWindow.Height / 2);
+      }
+    }
+
+    private void Header_MouseMove(object sender, MouseEventArgs e) {
+      if (e.LeftButton == MouseButtonState.Pressed) {
+        Client.MainWindow.DragMove();
+        canDouble = false;
+      } else {
+        canDouble = true;
+      }
+    }
+
+    private void CurrentStatus_MouseUp(object sender, MouseButtonEventArgs e) {
+      switch (Client.ChatManager.Show) {
+        case Logic.Chat.StatusShow.Away:
+          Client.ChatManager.UpdateStatus(StatusShow.Chat);
+          break;
+        case StatusShow.Chat:
+          Client.ChatManager.UpdateStatus(StatusShow.Away);
+          break;
+      }
     }
 
     #endregion

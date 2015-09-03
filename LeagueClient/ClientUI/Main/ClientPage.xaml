@@ -16,14 +16,14 @@
       <RowDefinition Height="25"/>
     </Grid.RowDefinitions>
     <Frame Name="SubPage" Grid.Row="1" NavigationUIVisibility="Hidden"/>
-    <Grid Name="Header" Background="{StaticResource Back1Brush}" Grid.Row="0" MouseDown="Header_MouseDown">
+    <Grid Name="Header" Background="{StaticResource Back1Brush}" Grid.Row="0" MouseDown="Header_MouseDown" MouseMove="Header_MouseMove">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="90"/>
         <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="240"/>
       </Grid.ColumnDefinitions>
-      <Button Margin="10" Content="Home" Click="Home_Click" FontSize="14"/>
+      <Button Margin="10" Content="Home" Name="HomeButt" Click="Home_Click" FontSize="14"/>
       <Button Grid.Column="1" Style="{StaticResource CircleButton}" Height="30" Width="30"
               Click="AlertButt_Click" Visibility="Hidden" Opacity="0" Name="AlertButt" Margin="0,12,0,13">
         <Path Fill="{StaticResource FontBrush}" Stroke="{StaticResource FontBrush}"
@@ -55,7 +55,7 @@
         <TextBlock Style="{StaticResource Control}" FontSize="13" Name="IPAmount" Grid.Column="2" VerticalAlignment="Bottom" Grid.Row="1" Text="100000" Margin="17 0 0 0"/>
         <Image Source="{StaticResource RPIcon}" Grid.Column="3" Grid.Row="1" Width="15" HorizontalAlignment="Left" Margin="0 1 0 0"/>
         <TextBlock Style="{StaticResource Control}" FontSize="13" Name="RPAmount" Grid.Column="3" VerticalAlignment="Bottom" Grid.Row="1" Text="100000" Margin="17 0 0 0"/>
-        <TextBlock Style="{StaticResource Control}" FontSize="13" Name="CurrentStatus" Foreground="{StaticResource ChatBrush}" Grid.Column="2" Grid.Row="2" Text="Online" Grid.ColumnSpan="2"/>
+        <TextBlock Style="{StaticResource Control}" FontSize="13" Name="CurrentStatus" Foreground="{StaticResource ChatBrush}" Grid.Column="2" Grid.Row="2" Text="Online" Background="Transparent" MouseUp="CurrentStatus_MouseUp" Grid.ColumnSpan="2"/>
       </Grid>
     </Grid>
     <Grid Name="Footer" Background="{StaticResource Back1Brush}" Grid.Row="2">
@@ -71,8 +71,7 @@
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
       </ItemsControl>
-      <Button Grid.Column="1" Margin="2" Click="ToggleChat" Padding="0"
-              HorizontalAlignment="Right" Width="{StaticResource ChatButtonWidth}">Chat</Button>
+      <Button Grid.Column="1" Margin="2" Click="ToggleChat" Padding="0" HorizontalAlignment="Right" Name="ChatButt1" Width="{StaticResource ChatButtonWidth}">Chat</Button>
     </Grid>
     <Grid Name="ChatPanel" Grid.Row="1" HorizontalAlignment="Right" Width="243" Background="{StaticResource Back1Brush}"
           Grid.RowSpan="2" Visibility="Collapsed">
@@ -91,7 +90,7 @@
                     HorizontalScrollBarVisibility="Disabled">
         <ItemsControl Name="ChatList"/>
       </ScrollViewer>
-      <Button Margin="0,2,2,2" Click="ToggleChat" Grid.Row="2"  Padding="0"
+      <Button Margin="2" Click="ToggleChat" Grid.Row="2"  Padding="0" Name="ChatButt2"
               HorizontalAlignment="Right" Width="{StaticResource ChatButtonWidth}" Grid.Column="1">Chat</Button>
       <Border BorderThickness="3 0 0 0" BorderBrush="{StaticResource Back1Brush}" Grid.RowSpan="3">
         <Border BorderThickness="1 0 0 0" BorderBrush="{StaticResource ForeBrush}"/>

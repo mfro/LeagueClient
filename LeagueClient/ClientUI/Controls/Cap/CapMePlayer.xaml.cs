@@ -103,16 +103,12 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {
-      var page = (SpellBookPageDTO) RunesBox.SelectedItem;
-      if (page == Client.SelectedRunePage) return;
-      Client.SelectRunePage(page);
+      Client.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);
       if (PlayerUpdate != null) PlayerUpdate(this, e);
     }
 
     private void Mastery_Selected(object sender, SelectionChangedEventArgs e) {
-      var page = (MasteryBookPageDTO) MasteriesBox.SelectedItem;
-      if (page == Client.SelectedMasteryPage) return;
-      Client.SelectMasteryPage(page);
+      Client.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
       if (PlayerUpdate != null) PlayerUpdate(this, e);
     }
   }

@@ -238,7 +238,7 @@
               <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="#33D2D2D2"/>
                 <Trigger.EnterActions>
-                  <BeginStoryboard Storyboard="{StaticResource PressStory}"/>
+                  <!--<BeginStoryboard Storyboard="{StaticResource PressStory}"/>-->
                   <BeginStoryboard>
                     <Storyboard>
                       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{x:Static SystemColors.HotTrackColor}" Duration="0:0:0.1"/>
@@ -246,7 +246,7 @@
                   </BeginStoryboard>
                 </Trigger.EnterActions>
                 <Trigger.ExitActions>
-                  <BeginStoryboard Storyboard="{StaticResource ReleaseStory}"/>
+                  <!--<BeginStoryboard Storyboard="{StaticResource ReleaseStory}"/>-->
                   <BeginStoryboard Storyboard="{StaticResource LeaveStory}"/>
                 </Trigger.ExitActions>
               </Trigger>
@@ -319,6 +319,7 @@
     </Style>
     <Style TargetType="Button" x:Key="OldButton">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="SnapsToDevicePixels" Value="True"/>
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
       <Setter Property="Background" Value="{StaticResource Back1Brush}"/>

@@ -22,6 +22,7 @@ using LeagueClient.Logic.Riot;
 namespace LeagueClient.Logic.Chat {
   public class RiotChat {
     public event EventHandler<IEnumerable<Friend>> ChatListUpdated;
+    public event EventHandler<StatusUpdatedEventArgs> StatusUpdated;
 
     public State ChatState { get; private set; }
     public BindingList<ChatConversation> OpenChats { get; } = new BindingList<ChatConversation>();
@@ -52,8 +53,9 @@ namespace LeagueClient.Logic.Chat {
         KeepAlive = 10,
         NetworkHost = Client.ChatServer,
         User = user,
-        Password = "AIR_"+pass,
+        Password = "AIR_" + pass,
         Resource = "xiff",
+        AutoPresence = true
       };
       conn.OnInvalidCertificate += (src, cert, poop, poo2) => true;
       conn.OnMessage += OnReceiveMessage;
@@ -226,13 +228,19 @@ namespace LeagueClient.Logic.Chat {
       foreach (var item in OpenChats) item.Open = false;
     }
 
+    public void Logout() {
+      conn.Close();
+    }
+
     /// <summary>
     /// Updates the current status string
     /// </summary>
     /// <param name="message">The status message to display</param>
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
-      conn.Presence(PresenceType.available, status.ToXML(), null, 0);
+      var args = new StatusUpdatedEventArgs(status, PresenceType.available, Show);
+      StatusUpdated?.Invoke(this, args);
+      conn.Presence(args.PresenceType, status.ToXML(), Show.ToString().ToLower(), 0);
     }
 
     public void UpdateStatus(ChatStatus status) {
@@ -245,12 +253,16 @@ namespace LeagueClient.Logic.Chat {
       UpdateStatus(Message);
     }
 
-    public JID GetTeambuilderRoom(string groupId, string pass) {
+    public static JID GetTeambuilderRoom(string groupId, string pass) {
       return new JID(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass));
     }
 
-    public JID GetCustomRoom(string roomname, double roomId, string pass) {
+    public static JID GetCustomRoom(string roomname, double roomId, string pass) {
       return new JID(GetChatroomJID(GetObfuscatedChatroomName(roomname.ToLower() + (int) roomId, "ap"), false, pass));
+    }
+
+    public static JID GetLobbyRoom(string inviteId, string pass) {
+      return new JID(GetChatroomJID(GetObfuscatedChatroomName(inviteId.ToLower(), "ag"), false, pass));
     }
 
     public Room JoinRoom(JID jid) {
@@ -272,6 +284,18 @@ namespace LeagueClient.Logic.Chat {
 
     public enum State {
       Disconnected, Connecting, Connected
+    }
+  }
+
+  public class StatusUpdatedEventArgs : EventArgs {
+    public LeagueStatus Status { get; set; }
+    public PresenceType PresenceType { get; set; }
+    public StatusShow Show { get; set; }
+
+    public StatusUpdatedEventArgs(LeagueStatus status, PresenceType presenceType, StatusShow show) {
+      Status = status;
+      PresenceType = presenceType;
+      Show = show;
     }
   }
 }

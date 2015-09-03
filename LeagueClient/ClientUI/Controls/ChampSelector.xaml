@@ -8,8 +8,8 @@
       <RowDefinition Height="auto"/>
       <RowDefinition/>
     </Grid.RowDefinitions>
-    <Button Margin="2" Padding="8 2" Width="90" Name="ChampButt" Click="ChampButt_Click" HorizontalAlignment="Left">Champions</Button>
-    <my:HintedTextBox Margin="2" Padding="1 1" Width="200" x:Name="SearchBox" HorizontalAlignment="Right" Hint="Search" KeyUp="SearchBox_KeyUp"/>
+    <Button Margin="0 0 0 4" Padding="8 2" Width="90" Name="ChampButt" Click="ChampButt_Click" HorizontalAlignment="Left">Champions</Button>
+    <my:HintedTextBox Margin="0 0 0 4" Padding="1 1" Width="200" x:Name="SearchBox" HorizontalAlignment="Right" Hint="Search" KeyUp="SearchBox_KeyUp"/>
     <Grid Name="ChampSelect" Visibility="Visible" Grid.Row="1">
       <ScrollViewer VerticalScrollBarVisibility="Visible">
         <ItemsControl Name="ChampsGrid">

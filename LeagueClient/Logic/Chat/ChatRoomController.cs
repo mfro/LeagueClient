@@ -45,7 +45,7 @@ namespace LeagueClient.Logic.Chat {
     }
 
     public void LeaveChat() {
-      chatRoom.Leave("bye");
+      chatRoom?.Leave("bye");
     }
 
     public void ShowLobbyMessage(string message) {

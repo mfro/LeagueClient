@@ -55,6 +55,13 @@ namespace LeagueClient.ClientUI {
       Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
                                     where spell.modes.Contains(game.GameMode)
                                     select spell);
+
+      var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
+
+      MapLabel.Content = map.DisplayName;
+      ModeLabel.Content = GameMode.Values[game.GameMode];
+      QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
+      TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
     }
 
     #region RTMP Messages
@@ -110,6 +117,7 @@ namespace LeagueClient.ClientUI {
             Dispatcher.Invoke(() => GameStatusLabel.Content = NotPickingString);
         }
       } else if(game.GameState.Equals("POST_CHAMP_SELECT")) {
+        var turn = Dispatcher.MyInvoke(RenderPlayers, game);
         state = State.Watching;
         ChampsGrid.IsReadOnly = true;
         Dispatcher.Invoke(() => GameStatusLabel.Content = PostString);
@@ -219,6 +227,17 @@ namespace LeagueClient.ClientUI {
         Spell2Image.Source = LeagueData.GetSpellImage(e.id);
       }
       RiotCalls.GameService.SelectSpells(spell1.key, spell2.key);
+    }
+
+    private void Masteries_Selected(object sender, SelectionChangedEventArgs e) {
+      if (MasteriesBox.SelectedIndex < 0) return;
+      Client.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
+      //TODO Fix masteries
+    }
+
+    private void Runes_Selected(object sender, SelectionChangedEventArgs e) {
+      if (RunesBox.SelectedIndex < 0) return;
+      Client.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);
     }
 
     private void Popup_Close(object sender, EventArgs e) {

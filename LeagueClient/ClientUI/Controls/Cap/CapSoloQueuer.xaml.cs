@@ -57,8 +57,6 @@ namespace LeagueClient.ClientUI.Controls {
             Dispatcher.Invoke(() => Popped?.Invoke(this, new QueuePoppedEventArgs(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player))));
             return true;
         }
-      } else {
-
       }
       return false;
     }

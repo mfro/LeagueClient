@@ -108,9 +108,13 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
     public bool CanPlay => false;
+    public bool CanClose => true;
 
-    public IQueuer HandleClose() => null;
     public void ForceClose() => Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+    public IQueuer HandleClose() {
+      Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+      return null;
+    }
 
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }

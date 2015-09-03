@@ -13,6 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing;
+using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient {
   /// <summary>
@@ -60,11 +61,9 @@ namespace LeagueClient {
     }
 
     private void Application_Exit(object sender, ExitEventArgs e) {
-      Client.Settings.Save();
-      RiotCalls.GameInvitationService.Leave();
-      RiotCalls.GameService.QuitGame();
-      RiotCalls.CapService.Quit();
-      RiotCalls.LoginService.Logout();
+      if (Client.Connected) {
+        Client.Logout();
+      }
     }
   }
 
@@ -76,6 +75,22 @@ namespace LeagueClient {
 
     public static void WriteString(this Stream stm, string str) {
       stm.Write(Encoding.UTF8.GetBytes(str));
+    }
+
+    public static bool CanAssignTo<T>(this Type type) {
+      return typeof(T).IsAssignableFrom(type);
+    }
+
+    public static string RemoveAllWhitespace(this string str) {
+      return string.Join("", str.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    public static string Substring(this string str, string prefix, string suffix) {
+      int start = str.IndexOf(prefix) + prefix.Length;
+      if (start < prefix.Length) throw new ArgumentException($"Prefix {prefix} not found in string {str}");
+      int end = str.IndexOf(suffix, start);
+      if (end < 0) throw new ArgumentException($"Suffix {suffix} not found in string {str} after {prefix}");
+      return str.Substring(start, end - start);
     }
 
     public static void MyInvoke<T1>(this Dispatcher dispatch, Action<T1> func, T1 t) => dispatch.Invoke(func, t);

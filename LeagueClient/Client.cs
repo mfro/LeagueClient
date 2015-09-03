@@ -19,6 +19,7 @@ using LeagueClient.Logic;
 using LeagueClient.ClientUI.Main;
 using System.Threading;
 using System.Windows.Threading;
+using System.Xml;
 
 namespace LeagueClient {
   public static class Client {
@@ -85,6 +86,7 @@ namespace LeagueClient {
     }
 
     #region Initailization
+
     public static void PreInitialize(MainWindow window) {
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
@@ -95,8 +97,6 @@ namespace LeagueClient {
 
       MFroehlich.League.RiotAPI.RiotAPI.UrlFormat
         = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
-
-      Settings = new Settings(SettingsFile);
 
       var parents = new[] { AirClientParentDir, GameClientParentDir };
 
@@ -132,8 +132,7 @@ namespace LeagueClient {
 
       if (!File.Exists(FFMpegPath))
         using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
-          ffmpeg.Write(LeagueClient.Properties.Resources.ffmpeg, 0,
-            LeagueClient.Properties.Resources.ffmpeg.Length);
+          ffmpeg.Write(LeagueClient.Properties.Resources.ffmpeg, 0, LeagueClient.Properties.Resources.ffmpeg.Length);
     }
 
     public static async Task<bool> Initialize(string user, string pass) {
@@ -141,8 +140,6 @@ namespace LeagueClient {
       RtmpConn = new RtmpClient(new Uri("rtmps://" + Server + ":2099"),
         context, RtmpSharp.IO.ObjectEncoding.Amf3);
       RtmpConn.MessageReceived += RtmpConn_MessageReceived;
-      RtmpConn.CallbackException += CallbackException;
-      RiotCalls.OnInvocationError += CallbackException;
       await RtmpConn.ConnectAsync();
 
       var creds = new AuthenticationCredentials();
@@ -186,11 +183,32 @@ namespace LeagueClient {
 
       if (!state.Equals("ENABLED")) TryBreak("state is not ENABLED");
 
+      Settings.ProfileIcon = LoginPacket.AllSummonerData.Summoner.ProfileIconId;
+      Settings.SummonerName = LoginPacket.AllSummonerData.Summoner.Name;
+
       return state.Equals("ENABLED");
     }
+
+    private static void GotChampions(Task<ChampionDTO[]> Champs) {
+      if (Champs.IsFaulted) {
+        if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+        return;
+      }
+      RiotChampions = new List<ChampionDTO>(Champs.Result);
+      AvailableChampions = new List<MyChampDTO>();
+      foreach (var item in Champs.Result)
+        AvailableChampions.Add(LeagueData.GetChampData(item.ChampionId));
+    }
+
+    private static void GotQueues(Task<GameQueueConfig[]> Task) {
+      AvailableQueues = new Dictionary<int, GameQueueConfig>();
+      foreach (var item in Task.Result) AvailableQueues.Add((int) item.Id, item);
+      new Thread(PlaySelectPage.Setup).Start();
+    }
+
     #endregion
 
-    #region Client methods
+    #region Riot Client Methods
     /// <summary>
     /// Launches the league of legends client and joins an active game
     /// </summary>
@@ -202,24 +220,31 @@ namespace LeagueClient {
       info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLLauncher.exe", "", str);
       info.WorkingDirectory = GameDirectory;
       GameProcess = Process.Start(info);
+
+      App.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
+      ChatManager.UpdateStatus(ChatStatus.inGame);
     }
+
     /// <summary>
     /// Selects a mastery page as the default selected page for your account and
     /// updates the contents of the local and remote mastery books
     /// </summary>
     /// <param name="page">The page to select</param>
     public static void SelectMasteryPage(MasteryBookPageDTO page) {
+      if (page == SelectedMasteryPage) return;
       RiotCalls.MasteryBookService.SelectDefaultMasteryBookPage(page);
       foreach (var item in Masteries.BookPages) item.Current = false;
       page.Current = true;
       SelectedMasteryPage = page;
     }
+
     /// <summary>
     /// Selects a rune page as the default selected page for your account and
     /// updates the contents of the local and remote spell books
     /// </summary>
     /// <param name="page"></param>
     public static void SelectRunePage(SpellBookPageDTO page) {
+      if (page == SelectedRunePage) return;
       RiotCalls.SpellBookService.SelectDefaultSpellBookPage(page);
       foreach (var item in Runes.BookPages) item.Current = false;
       page.Current = true;
@@ -232,38 +257,99 @@ namespace LeagueClient {
         var payload = JSON.ParseObject(invite.GameMetaData);
         string type = payload["gameType"];
         Alert alert;
-        switch (type) {
-          case "PRACTICE_GAME":
-            alert = AlertFactory.CustomInvite(invite.Inviter.summonerName);
-            alert.Handled += (src, e2) => {
-              if(e2.Data as bool? ?? false) {
-                var lobby = new CustomLobbyPage();
-                RiotCalls.GameInvitationService.Accept(invite.InvitationId);
-                QueueManager.ShowPage(lobby);
-              } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
-            };
-            break;
-          default:
-            alert = AlertFactory.TeambuilderInvite(invite.Inviter.summonerName);
-            alert.Handled += (src, e2) => {
-              if (e2.Data as bool? ?? false) {
-                var lobby = new CapLobbyPage(false);
-                RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
-                RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
-                QueueManager.ShowPage(lobby);
-              } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
-            };
-            break;
+        if(payload["gameTypeConfigId"] == 12) {
+          alert = AlertFactory.TeambuilderInvite(invite.Inviter.summonerName);
+          alert.Handled += (src, e2) => {
+            if (e2.Data as bool? ?? false) {
+              var lobby = new CapLobbyPage(false);
+              RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+              RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
+              QueueManager.ShowPage(lobby);
+            } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+          };
+        } else {
+          switch (type) {
+            case "PRACTICE_GAME":
+              alert = AlertFactory.CustomInvite(invite.Inviter.summonerName);
+              alert.Handled += (src, e2) => {
+                if (e2.Data as bool? ?? false) {
+                  var lobby = new CustomLobbyPage();
+                  RiotCalls.GameInvitationService.Accept(invite.InvitationId);
+                  QueueManager.ShowPage(lobby);
+                } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+              };
+              break;
+            case "NORMAL_GAME":
+              alert = AlertFactory.NormalInvite(invite.Inviter.summonerName, GameMode.Values[payload["gameMode"]]);
+              alert.Handled += (src, e2) => {
+                if (e2.Data as bool? ?? false) {
+                  var lobby = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { payload["queueId"] } });
+                  RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+                  QueueManager.ShowPage(lobby);
+                } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+              };
+              break;
+            default: alert = null; break;
+          }
         }
         invites[invite.InvitationId] = alert;
         QueueManager.ShowNotification(alert);
       }
     }
+
+    public static void Logout() {
+      if (Connected) {
+        Client.SaveSettings(Client.Settings.Username, JSONObject.From(Client.Settings));
+        RiotCalls.GameInvitationService.Leave();
+        RiotCalls.GameService.QuitGame();
+        RiotCalls.CapService.Quit();
+        RiotCalls.LoginService.Logout();
+        RtmpConn.Close();
+        Connected = false;
+      }
+      ChatManager?.Logout();
+      MainWindow.PatchComplete();
+    }
     #endregion
 
-    public static void CallbackException(object sender, Exception e) {
-      throw new NotImplementedException();
+    #region My Client Methods
+
+    public static JSONObject LoadSettings(string name) {
+      name = name.RemoveAllWhitespace();
+      var file = Path.Combine(DataPath, name + ".settings");
+      if (!File.Exists(file))
+        return new JSONObject();
+      var json = JSON.ParseObject(File.ReadAllBytes(file));
+      return json;
     }
+
+    public static void SaveSettings(string name, JSONObject json) {
+      name = name.RemoveAllWhitespace();
+      var file = Path.Combine(DataPath, name + ".settings");
+      File.WriteAllText(file, JSON.Stringify(json, 2, 0));
+    }
+
+    private static TextWriter LogDebug = Console.Out;
+    public static void Log(object msg) {
+      lock (LogDebug) {
+        using (var log = new StreamWriter(File.Open(LogFilePath, FileMode.Append))) {
+          LogDebug.WriteLine(msg);
+          log.WriteLine(msg);
+        }
+      }
+    }
+
+    public static void Log(string msg, params object[] args) {
+      if (args.Length == 0) Log((object) msg);
+      else Log((object) string.Format(msg, args));
+    }
+
+    public static void TryBreak(string reason) {
+      Log("Attempt Break: " + reason);
+      if (Debugger.IsAttached) Debugger.Break();
+    }
+
+    #endregion
 
     public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
       try {
@@ -301,48 +387,6 @@ namespace LeagueClient {
         Log("Exception while handling message: " + x.Message);
         TryBreak(x.Message);
       }
-    }
-
-    public static void TryBreak(string reason) {
-      Log("Attempt Break: " + reason);
-      if (Debugger.IsAttached)  Debugger.Break();
-    }
-
-    private static TextWriter LogDebug = Console.Out;
-
-    public static void Log(object msg) {
-      using (var log = new StreamWriter(File.Open(LogFilePath, FileMode.Append))) {
-        LogDebug.WriteLine(msg);
-        log.WriteLine(msg);
-      }
-    }
-
-    public static void Log(string msg, params object[] args) {
-      if (args.Length == 0) Log((object) msg);
-      else Log((object) string.Format(msg, args));
-    }
-
-    private static void GotChampions(Task<ChampionDTO[]> Champs) {
-      if (Champs.IsFaulted) {
-        if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
-        return;
-      }
-      RiotChampions = new List<ChampionDTO>(Champs.Result);
-      AvailableChampions = new List<MyChampDTO>();
-      foreach (var item in Champs.Result)
-        AvailableChampions.Add(LeagueData.GetChampData(item.ChampionId));
-    }
-
-    private static void GotQueues(Task<GameQueueConfig[]> Task) {
-      AvailableQueues = new Dictionary<int, GameQueueConfig>();
-      foreach (var item in Task.Result) AvailableQueues.Add((int) item.Id, item);
-      new Thread(PlaySelectPage.Setup).Start();
-    }
-
-    public static string Substring(this string str, string prefix, string suffix) {
-      int start = str.IndexOf(prefix) + prefix.Length;
-      int end = str.IndexOf(suffix, start);
-      return str.Substring(start, end - start);
     }
   }
 

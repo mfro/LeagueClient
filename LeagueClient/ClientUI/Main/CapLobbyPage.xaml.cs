@@ -95,7 +95,7 @@ namespace LeagueClient.ClientUI.Main {
     #region Message and Lobby handling
     private void JoinChat() {
       if (!chatRoom.IsJoined)
-        chatRoom.JoinChat(Client.ChatManager.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
+        chatRoom.JoinChat(RiotChat.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
@@ -555,6 +555,8 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
     public bool CanPlay => false;
+    public bool CanClose => true;
+
     public IQueuer HandleClose() => new ReturnToLobbyQueuer(this);
     #endregion
   }

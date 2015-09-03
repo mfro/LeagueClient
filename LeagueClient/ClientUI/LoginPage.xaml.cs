@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
@@ -7,12 +8,19 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Xml;
+using LeagueClient.ClientUI.Controls;
+using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.MFro;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for LoginPage.xaml
   /// </summary>
   public partial class LoginPage : Page {
+    private const string SettingsKey = "LoginSettings";
+    private static JSONObject settings = Client.LoadSettings(SettingsKey);
+
     private int tries;
     private string user;
     private string pass;
@@ -20,58 +28,69 @@ namespace LeagueClient.ClientUI {
     public LoginPage() {
       InitializeComponent();
 
+      if (!settings.Dictionary.ContainsKey("Accounts"))
+        settings["Accounts"] = new JSONArray();
+      var accounts = (List<string>) settings["Accounts"];
+      if (accounts.Count > 0) {
+        foreach (var name in accounts) {
+          var user = Client.LoadSettings(name).To<Settings>();
+          var login = new LoginAccount(user.Username, user.SummonerName, user.ProfileIcon);
+          login.MouseUp += Login_MouseUp;
+          AccountList.Children.Insert(0, login);
+        }
+      } else LoginGrid.BeginStoryboard(App.FadeIn);
+
       BackAnimation.Source = new Uri(Client.LoginVideoPath);
       BackAnimation.Play();
       BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory, "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
-
-      if ((AnimationToggle.IsChecked = Client.Settings.Animation).Value)
-        BackAnimation.Visibility = Visibility.Visible;
-      else
-        BackAnimation.Visibility = Visibility.Collapsed;
-
-      UserBox.Text = Client.Settings.Username;
-      if (Client.Settings.Username.Length > 0) App.Focus(PassBox);
-      else App.Focus(UserBox);
-
-      if (Client.Settings.AutoLogin) {
-        AutoLoginToggle.IsChecked = true;
-        var raw = Client.Settings.Password;
-        var decrypted = ProtectedData.Unprotect(raw, null, DataProtectionScope.CurrentUser);
-        var junk = "";
-        for (int i = 0; i < decrypted.Length; i++) junk += " ";
-        PassBox.Password = junk;
-        tries = 3;
-        Login(user = Client.Settings.Username, pass = Encoding.UTF8.GetString(decrypted));
-      }
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e) {
+    private void Login_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+      AutoLoginToggle.IsChecked = true;
+      var login = (sender as LoginAccount).Username;
+      foreach (var obj in AccountList.Children)
+        if (obj is LoginAccount) ((LoginAccount) obj).State = LoginAccountState.Readonly;
+      (sender as LoginAccount).State = LoginAccountState.Loading;
+      Client.Settings = Client.LoadSettings(login).To<Settings>();
+      var raw = Client.Settings.Password;
+      var decrypted = ProtectedData.Unprotect(Convert.FromBase64String(raw), null, DataProtectionScope.CurrentUser);
+      var junk = "";
+      for (int i = 0; i < decrypted.Length; i++) junk += " ";
+      PassBox.Password = junk;
+      tries = 3;
+      Login(user = Client.Settings.Username, pass = Encoding.UTF8.GetString(decrypted));
+    }
+
+    private void Login_Click(object sender, RoutedEventArgs e) {
       user = UserBox.Text;
       pass = PassBox.Password;
-      Client.Settings.Username = user;
 
-      if (AutoLoginToggle.IsChecked.HasValue && AutoLoginToggle.IsChecked.Value)
-        SavePassword(pass);
+      if (AutoLoginToggle.IsChecked ?? false)
+        SaveAccount(user, pass);
 
       tries = 3;
       Login(user, pass);
     }
 
-    private void SavePassword(string pass) {
-      Client.Settings.Password = ProtectedData.Protect(Encoding.UTF8.GetBytes(pass),
-        null, DataProtectionScope.CurrentUser);
-      Client.Settings.AutoLogin = true;
+    private void SaveAccount(string name, string pass) {
+      Client.Settings = Client.LoadSettings(name).To<Settings>();
+      var rawPass = ProtectedData.Protect(Encoding.UTF8.GetBytes(pass), null, DataProtectionScope.CurrentUser);
+      Client.Settings.Password = Convert.ToBase64String(rawPass);
+      Client.Settings.Username = name;
+
+      settings["Accounts"].Add(name);
     }
 
     private void Login(string user, string pass) {
       Progress.Visibility = System.Windows.Visibility.Visible;
       LoginBar.IsIndeterminate = true;
-      LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AnimationToggle.IsEnabled = AutoLoginToggle.IsEnabled = false;
+      LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
       new Thread(() => {
         Client.Initialize(user, pass).ContinueWith(t => {
           if (!t.IsFaulted && t.Result) {
             Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
+            Client.SaveSettings(SettingsKey, settings);
             Dispatcher.Invoke(Client.MainWindow.LoginComplete);
           } else Dispatcher.Invoke(Reset);
         });
@@ -87,8 +106,7 @@ namespace LeagueClient.ClientUI {
       Progress.Visibility = System.Windows.Visibility.Hidden;
       LoginBar.IsIndeterminate = false;
       PassBox.Password = "";
-      LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled
-        = AnimationToggle.IsEnabled = AutoLoginToggle.IsEnabled = true;
+      LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = true;
       PassBox.Focus();
     }
 
@@ -97,19 +115,19 @@ namespace LeagueClient.ClientUI {
       BackAnimation.Play();
     }
 
-    private void AnimationToggled(object sender, RoutedEventArgs e) {
-      if (AnimationToggle.IsChecked.HasValue && AnimationToggle.IsChecked.Value) {
-        BackAnimation.Visibility = System.Windows.Visibility.Visible;
-        Client.Settings.Animation = true;
-      }else{
-        BackAnimation.Visibility = System.Windows.Visibility.Collapsed;
-        BackAnimation_MediaEnded(sender, e);
-        Client.Settings.Animation = false;
-      }
-    }
-
     private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
       Client.MainWindow.DragMove();
+    }
+
+    private void AddAccountButt_Click(object sender, RoutedEventArgs e) {
+      LoginGrid.BeginStoryboard(App.FadeIn);
+      AccountList.BeginStoryboard(App.FadeOut);
+      Dispatcher.Invoke(UserBox.Focus, System.Windows.Threading.DispatcherPriority.Input);
+    }
+
+    private void ShowSavedAccounts_Click(object sender, RoutedEventArgs e) {
+      LoginGrid.BeginStoryboard(App.FadeOut);
+      AccountList.BeginStoryboard(App.FadeIn);
     }
   }
 }

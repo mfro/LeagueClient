@@ -1,0 +1,63 @@
+﻿<Page x:Class="LeagueClient.ClientUI.Main.DefaultLobbyPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+      Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
+  <Grid Margin="80 10">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="2*"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="240"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <StackPanel Background="{StaticResource ForeBrush}" Name="PlayerList">
+      </StackPanel>
+
+      <ScrollViewer Name="ChatScroller" Margin="0 10" Grid.Row="1">
+        <RichTextBox Name="ChatHistory" Background="{StaticResource ForeBrush}" BorderThickness="0" IsReadOnly="True">
+          <RichTextBox.Resources>
+            <Style TargetType="Paragraph">
+              <Setter Property="Margin" Value="0" />
+            </Style>
+          </RichTextBox.Resources>
+        </RichTextBox>
+      </ScrollViewer>
+      <TextBox Name="SendBox" Grid.Row="6" Margin="0 0 70 0"/>
+      <Button Name="ChatSend" Grid.Row="6" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="60">Send</Button>
+    </Grid>
+    <Grid Grid.Column="1" Margin="10 0 0 0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <Image Name="MapImage" Source="/Resources/SRiftImage.png"/>
+      <Border Grid.Row="1" Background="{StaticResource ForeBrush}" Grid.RowSpan="2"/>
+      <Label Grid.Row="1" Name="MapLabel">Summoner's Rift</Label>
+      <Label Grid.Row="1" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
+      <Label Grid.Row="2" Name="ModeLabel">Classic</Label>
+      <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
+
+      <ScrollViewer Grid.Row="3" Margin="0 10 0 0">
+        <StackPanel Background="{StaticResource ForeBrush}" Name="InviteList"/>
+
+      </ScrollViewer>
+
+      <UniformGrid Margin="0 8 0 0" Columns="3" Grid.Row="4">
+        <Button Height="24" Name="StartButton" Click="StartButton_Click">Start Game</Button>
+        <Button Height="24" Name="InviteButton" Click="InviteButton_Click" Margin="10 0">Invite</Button>
+        <Button Height="24" Name="QuitButton" Click="QuitButton_Click">Quit Game</Button>
+      </UniformGrid>
+    </Grid>
+    <my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>
+  </Grid>
+</Page>

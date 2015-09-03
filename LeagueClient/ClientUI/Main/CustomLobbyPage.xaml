@@ -62,19 +62,20 @@
         <RowDefinition Height="10"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="10"/>
-        <RowDefinition Height="150"/>
+        <RowDefinition Height="*"/>
         <RowDefinition Height="10"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
-        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
-      <Button HorizontalAlignment="Left" Width="115" Click="Quit_Click">Spectate</Button>
       <Button HorizontalAlignment="Right" Width="115" Click="Quit_Click">Quit Game</Button>
+      <Button HorizontalAlignment="Left" Width="115" Click="Start_Click" Name="StartButt">Start Game</Button>
       <Label Background="{StaticResource ForeBrush}" Grid.Row="2" FontSize="14">Spectators</Label>
+      <Button HorizontalAlignment="Right" Width="115" Grid.Row="2" Margin="0 -2 0 0" Click="Spectate_Click">Spectate</Button>
 
-      <ListView Grid.Row="4" Background="{StaticResource ForeBrush}" BorderThickness="0">
-
-      </ListView>
+      <StackPanel Grid.Row="4" Background="{StaticResource ForeBrush}" Name="ObserverList">
+      </StackPanel>
+      
       <Image Grid.Row="6" Name="MapImage" Source="/Resources/SRiftImage.png"/>
       <Border Background="{StaticResource ForeBrush}" Grid.Row="7" Grid.RowSpan="2"/>
       <Label Grid.Row="7" Name="MapLabel">Summoner's Rift</Label>

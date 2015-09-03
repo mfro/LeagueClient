@@ -40,6 +40,8 @@ namespace LeagueClient.ClientUI.Controls {
       timer = new Timer(1000);
       timer.Elapsed += Timer_Elapsed;
       timer.Start();
+
+      Client.ChatManager.UpdateStatus(ChatStatus.inQueue);
     }
 
 
