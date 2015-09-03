@@ -111,7 +111,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void ChatManager_ChatListUpdated(object sender, IEnumerable<Friend> e) {
       ChatList.ItemsSource = e;
-      ChatButt1.Content = ChatButt2.Content = $"Chat ({e.Count()})";
+      ChatButt1.Content = ChatButt2.Content = $"Chat - {e.Count()}";
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
@@ -291,12 +291,7 @@ namespace LeagueClient.ClientUI.Main {
 
     bool canDouble;
     private void Header_MouseDown(object sender, MouseButtonEventArgs e) {
-      if (e.ClickCount == 2 && canDouble) {
-        double sWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
-        double sHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-        Client.MainWindow.Left = (sWidth / 2) - (Client.MainWindow.Width / 2);
-        Client.MainWindow.Top = (sHeight / 2) - (Client.MainWindow.Height / 2);
-      }
+      if (e.ClickCount == 2 && canDouble) Client.MainWindow.Center();
     }
 
     private void Header_MouseMove(object sender, MouseEventArgs e) {
@@ -310,7 +305,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void CurrentStatus_MouseUp(object sender, MouseButtonEventArgs e) {
       switch (Client.ChatManager.Show) {
-        case Logic.Chat.StatusShow.Away:
+        case StatusShow.Away:
           Client.ChatManager.UpdateStatus(StatusShow.Chat);
           break;
         case StatusShow.Chat:

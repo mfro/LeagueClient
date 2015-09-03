@@ -80,8 +80,13 @@ namespace LeagueClient.ClientUI.Controls {
     public void Update(Presence p) {
       Status = new LeagueStatus(p.Status, p.Show);
       InGameString = Status.GameStatus.Value;
-      RiotCalls.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
-      RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
+      if(Status.GameStatus == ChatStatus.inGame) {
+        RiotCalls.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
+        RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
+      } else {
+        Game = null;
+        GameInfo = null;
+      }
       Dispatcher.Invoke(() => {
         MsgText.Text = Status.Message;
         if (string.IsNullOrWhiteSpace(Status.Message)) {

@@ -361,7 +361,6 @@ namespace LeagueClient {
 
       ClientDynamicConfigurationNotification config;
       LcdsServiceProxyResponse response;
-      PlayerCredentialsDto creds;
       InvitationRequest invite;
 
       try {
@@ -378,8 +377,6 @@ namespace LeagueClient {
           Log("Received Configuration Notification");
         } else if ((invite = e.Body as InvitationRequest) != null) {
           ShowInvite(invite);
-        } else if ((creds = e.Body as PlayerCredentialsDto) != null) {
-          JoinGame(creds);
         } else if (response == null) {
           Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
         }

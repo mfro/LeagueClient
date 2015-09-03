@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -38,6 +39,10 @@ namespace LeagueClient.ClientUI {
     private ChatRoomController chatRoom;
 
     private State state;
+    private Timer timer;
+    private int counter;
+    private string header;
+    private GameDTO last;
 
     public ChampSelectPage(GameDTO game) {
       InitializeComponent();
@@ -57,6 +62,9 @@ namespace LeagueClient.ClientUI {
                                     select spell);
 
       var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
+      timer = new Timer(1000);
+      timer.Elapsed += Timer_Elapsed;
+      timer.Start();
 
       MapLabel.Content = map.DisplayName;
       ModeLabel.Content = GameMode.Values[game.GameMode];
@@ -64,18 +72,28 @@ namespace LeagueClient.ClientUI {
       TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
     }
 
+    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
+      Dispatcher.Invoke(() => GameStatusLabel.Content = header + "  " + counter--);
+    }
+
     #region RTMP Messages
     public bool HandleMessage(MessageReceivedEventArgs args) {
+      PlayerCredentialsDto creds;
       GameDTO game;
+
       if ((game = args.Body as GameDTO) != null) {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
+      } else if ((creds = args.Body as PlayerCredentialsDto) != null) {
+        Client.JoinGame(creds);
+        timer.Dispose();
       }
 
       return false;
     }
 
     public async void GotGameData(GameDTO game) {
+      var config = Client.LoginPacket.GameTypeConfigs.FirstOrDefault(q => q.Id == game.GameTypeConfigId);
       if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
         var turn = Dispatcher.MyInvoke(RenderPlayers, game);
         ChampsGrid.IsReadOnly = !turn.IsMyTurn;
@@ -89,6 +107,7 @@ namespace LeagueClient.ClientUI {
         });
 
         if (game.GameState.Equals("PRE_CHAMP_SELECT")) {
+          if (last?.PickTurn != game.PickTurn) counter = config.BanTimerDuration - 3;
           if (turn.IsMyTurn) state = State.Banning;
           else state = State.Watching;
           var champs = await RiotCalls.GameService.GetChampionsForBan();
@@ -99,29 +118,27 @@ namespace LeagueClient.ClientUI {
             ChampsGrid.SetChampList(champs.Where(c => c.Owned).Select(c => LeagueData.GetChampData(c.ChampionId)));
           }
 
-          if(turn.IsMyTurn)
-            Dispatcher.Invoke(() => GameStatusLabel.Content = YouBanString);
-          else if(turn.IsOurTurn)
-            Dispatcher.Invoke(() => GameStatusLabel.Content = YourTeamBanString);
-          else
-            Dispatcher.Invoke(() => GameStatusLabel.Content = OtherTeamBanString);
+          if(turn.IsMyTurn) header = YouBanString;
+          else if(turn.IsOurTurn) header = YourTeamBanString;
+          else header = OtherTeamBanString;
 
         } else {
+          if (last?.PickTurn != game.PickTurn) counter = config.MainPickTimerDuration - 3;
           if (turn.IsMyTurn) state = State.Picking;
           else state = State.Watching;
           ChampsGrid.UpdateChampList();
 
-          if (turn.IsMyTurn)
-            Dispatcher.Invoke(() => GameStatusLabel.Content = YouPickString);
-          else
-            Dispatcher.Invoke(() => GameStatusLabel.Content = NotPickingString);
+          if (turn.IsMyTurn) header = YouPickString;
+          else header = NotPickingString;
         }
       } else if(game.GameState.Equals("POST_CHAMP_SELECT")) {
+        if (last?.PickTurn != game.PickTurn) counter = config.PostPickTimerDuration - 3;
         var turn = Dispatcher.MyInvoke(RenderPlayers, game);
         state = State.Watching;
         ChampsGrid.IsReadOnly = true;
-        Dispatcher.Invoke(() => GameStatusLabel.Content = PostString);
+        header = PostString;
       }
+      last = game;
     }
 
     #endregion
@@ -232,7 +249,7 @@ namespace LeagueClient.ClientUI {
     private void Masteries_Selected(object sender, SelectionChangedEventArgs e) {
       if (MasteriesBox.SelectedIndex < 0) return;
       Client.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
-      //TODO Fix masteries
+      RiotCalls.MasteryBookService.SaveMasteryBook(Client.Masteries);
     }
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {

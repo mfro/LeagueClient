@@ -35,7 +35,8 @@ namespace LeagueClient.ClientUI {
         foreach (var name in accounts) {
           var user = Client.LoadSettings(name).To<Settings>();
           var login = new LoginAccount(user.Username, user.SummonerName, user.ProfileIcon);
-          login.MouseUp += Login_MouseUp;
+          login.Click += Account_Click;
+          login.Remove += Account_Remove;
           AccountList.Children.Insert(0, login);
         }
       } else LoginGrid.BeginStoryboard(App.FadeIn);
@@ -45,7 +46,13 @@ namespace LeagueClient.ClientUI {
       BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory, "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
     }
 
-    private void Login_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+    private void Account_Remove(object sender, EventArgs e) {
+      AccountList.Children.Remove(sender as UIElement);
+      settings["Accounts"].Remove(((LoginAccount) sender).Username);
+      Client.SaveSettings(SettingsKey, settings);
+    }
+
+    private void Account_Click(object sender, EventArgs e) {
       AutoLoginToggle.IsChecked = true;
       var login = (sender as LoginAccount).Username;
       foreach (var obj in AccountList.Children)
@@ -79,6 +86,7 @@ namespace LeagueClient.ClientUI {
       Client.Settings.Username = name;
 
       settings["Accounts"].Add(name);
+      Client.SaveSettings(SettingsKey, settings);
     }
 
     private void Login(string user, string pass) {
@@ -111,7 +119,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void BackAnimation_MediaEnded(object sender, RoutedEventArgs e) {
-      BackAnimation.Position = TimeSpan.Zero;
+      BackAnimation.Position = TimeSpan.FromMilliseconds(0);
       BackAnimation.Play();
     }
 
@@ -122,7 +130,7 @@ namespace LeagueClient.ClientUI {
     private void AddAccountButt_Click(object sender, RoutedEventArgs e) {
       LoginGrid.BeginStoryboard(App.FadeIn);
       AccountList.BeginStoryboard(App.FadeOut);
-      Dispatcher.Invoke(UserBox.Focus, System.Windows.Threading.DispatcherPriority.Input);
+      Dispatcher.Invoke(UserBox.Focus, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
     }
 
     private void ShowSavedAccounts_Click(object sender, RoutedEventArgs e) {

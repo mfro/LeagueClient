@@ -7,7 +7,7 @@
       KeyUp="Page_KeyUp"
       DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <Page.Resources>
-    <sys:Double x:Key="ChatButtonWidth">60</sys:Double>
+    <sys:Double x:Key="ChatButtonWidth">70</sys:Double>
   </Page.Resources>
   <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>

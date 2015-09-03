@@ -54,12 +54,19 @@ namespace LeagueClient {
       this.currentPage = page;
     }
 
+    public void PatchComplete() {
+      ContentFrame.Content = new LoginPage();
+    }
+
     public bool HandleMessage(MessageReceivedEventArgs e) {
       return currentPage?.HandleMessage(e) ?? false;
     }
 
-    public void PatchComplete() {
-      ContentFrame.Content = new LoginPage();
+    public void Center() {
+      double sWidth = SystemParameters.PrimaryScreenWidth;
+      double sHeight = SystemParameters.PrimaryScreenHeight;
+      Client.MainWindow.Left = (sWidth / 2) - (Client.MainWindow.Width / 2);
+      Client.MainWindow.Top = (sHeight / 2) - (Client.MainWindow.Height / 2);
     }
 
     public void BeginChampSelect(GameDTO game) {

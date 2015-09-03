@@ -55,12 +55,15 @@ namespace LeagueClient.ClientUI.Main {
     public bool HandleMessage(MessageReceivedEventArgs e) {
       GameDTO game;
       LobbyStatus status;
+      InvitePrivileges invite;
       if ((game = e.Body as GameDTO) != null) {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
       } else if((status = e.Body as LobbyStatus) != null) {
         Dispatcher.MyInvoke(GotLobbyStatus, status);
         return true;
+      } else if((invite = e.Body as InvitePrivileges) != null) {
+        Dispatcher.Invoke(() => InviteButt.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
       }
       return false;
     }
@@ -95,6 +98,10 @@ namespace LeagueClient.ClientUI.Main {
           BlueTeam.Children.Clear();
           RedTeam.Children.Clear();
           ObserverList.Children.Clear();
+
+          if (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+            InviteButt.Visibility = Visibility.Visible;
+
           foreach (var thing in game.TeamOne.Concat(game.TeamTwo)) {
             var player = thing as PlayerParticipant;
             bool blue = game.TeamOne.Contains(player);

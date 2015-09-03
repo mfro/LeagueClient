@@ -16,4 +16,9 @@
       <my:Loader x:Name="Loader" Height="50" Width="50"/>
     </Grid>
   </Border>
+  <UserControl.ContextMenu>
+    <ContextMenu>
+      <MenuItem Click="MenuItem_Click" Header="Remove"/>
+    </ContextMenu>
+  </UserControl.ContextMenu>
 </UserControl>

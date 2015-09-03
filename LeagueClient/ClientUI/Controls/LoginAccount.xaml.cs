@@ -32,6 +32,9 @@ namespace LeagueClient.ClientUI.Controls {
       ExpandFast = new ThicknessAnimation(new Thickness(5), ButtonDuration),
       ContractFast = new ThicknessAnimation(new Thickness(0), ButtonDuration);
 
+    public event EventHandler Click;
+    public event EventHandler Remove;
+
     public string Username { get; private set; }
     public LoginAccountState State {
       get { return state; }
@@ -52,6 +55,11 @@ namespace LeagueClient.ClientUI.Controls {
       State = LoginAccountState.Normal;
     }
 
+    private void MenuItem_Click(object sender, RoutedEventArgs e) {
+      Remove?.Invoke(this, e);
+    }
+
+    #region Mouse Animation Handling
     private void Grid_MouseEnter(object sender, MouseEventArgs e) {
       if (State != LoginAccountState.Normal) return;
 
@@ -65,14 +73,19 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
-      if (State != LoginAccountState.Normal) return;
+      if (e.ChangedButton != MouseButton.Left || State != LoginAccountState.Normal) return;
 
       MainBorder.BeginAnimation(MarginProperty, ExpandFast);
     }
 
     private void Grid_MouseUp(object sender, MouseButtonEventArgs e) {
+      if (e.ChangedButton != MouseButton.Left) return;
+
+      Click?.Invoke(this, e);
+
       MainBorder.BeginAnimation(MarginProperty, ContractFast);
     }
+    #endregion
   }
 
   public enum LoginAccountState {

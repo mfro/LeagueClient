@@ -179,6 +179,9 @@ namespace LeagueClient.ClientUI.Main {
       InvitePrivileges privelage;
       LcdsServiceProxyResponse response;
       RemovedFromLobbyNotification removed;
+      PlayerCredentialsDto creds;
+
+
       if ((status = e.Body as LobbyStatus) != null) {
         GotLobbyStatus(status);
         return true;
@@ -357,6 +360,10 @@ namespace LeagueClient.ClientUI.Main {
           case "PROGRESSED": break;
           default: break;
         }
+        return true;
+      } else if ((creds = e.Body as PlayerCredentialsDto) != null) {
+        Client.JoinGame(creds);
+
         return true;
       } else if ((game = e.Body as GameDTO) != null) {
 

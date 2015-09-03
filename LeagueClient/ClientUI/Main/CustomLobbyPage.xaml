@@ -54,7 +54,7 @@
 
       <StackPanel Name="InviteList" Grid.Row="4" Grid.Column="2" Background="{StaticResource ForeBrush}"/>
       <Button Click="Collapse_Click" Name="CollapseButt" Grid.Row="6" Grid.Column="2" Margin="0 -2 80 0" HorizontalAlignment="Right" Width="120">Collapse Players</Button>
-      <Button Click="Invite_Click" Grid.Row="6" Grid.Column="2" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="70">Invite</Button>
+      <Button Click="Invite_Click" Name="InviteButt" Grid.Row="6" Grid.Column="2" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="70">Invite</Button>
     </Grid>
     <Grid Grid.Column="2" Grid.RowSpan="2"  Margin="10 0 0 0">
       <Grid.RowDefinitions>
