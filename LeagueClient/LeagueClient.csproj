@@ -86,6 +86,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ClientUI\Controls\ProfileIconSelector.xaml.cs">
+      <DependentUpon>ProfileIconSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Logic\Client.cs" />
     <Compile Include="ClientUI\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
@@ -170,6 +173,7 @@
     <Compile Include="Logic\com\riotgames\other\CapGroupData.cs" />
     <Compile Include="Logic\com\riotgames\other\CapSlotData.cs" />
     <Compile Include="Logic\com\riotgames\other\LoginQueueDto.cs" />
+    <Compile Include="Logic\com\riotgames\platform\catalog\icon\IconType.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitePrivileges.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
@@ -397,6 +401,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\PopupSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\ProfileIconSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

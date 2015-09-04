@@ -33,7 +33,6 @@ namespace LeagueClient.ClientUI.Main {
   /// Interaction logic for ClientPage.xaml
   /// </summary>
   public partial class ClientPage : Page, IQueueManager, IClientPage {
-    public BitmapImage ProfileIcon { get; set; }
     public string SummonerName { get; set; }
     public List<Alert> Alerts { get; } = new List<Alert>();
     public IClientSubPage CurrentPage { get; private set; }
@@ -69,15 +68,18 @@ namespace LeagueClient.ClientUI.Main {
     private IQueuePopup CurrentPopup;
 
     public ClientPage() {
-      ProfileIcon = LeagueData.GetProfileIconImage(Client.Settings.ProfileIcon);
       SummonerName = Client.LoginPacket.AllSummonerData.Summoner.Name;
       InitializeComponent();
+
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId);
       OpenChatList.ItemsSource = Client.ChatManager.OpenChats;
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
 
       Client.ChatManager.ChatListUpdated += ChatManager_ChatListUpdated;
       Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
+
+      Popup.IconSelector.IconSelected += IconSelector_IconSelected;
 
       UpdatePlayButton();
     }
@@ -312,6 +314,20 @@ namespace LeagueClient.ClientUI.Main {
           Client.ChatManager.UpdateStatus(StatusShow.Away);
           break;
       }
+    }
+
+    private void ProfileIcon_Click(object sender, MouseButtonEventArgs e) {
+      Popup.CurrentSelector = PopupSelector.Selector.ProfileIcons;
+      Popup.BeginStoryboard(App.FadeIn);
+    }
+
+    private void IconSelector_IconSelected(object sender, Icon e) {
+      Popup.BeginStoryboard(App.FadeOut);
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(e.IconId);
+    }
+
+    private void Popup_Close(object sender, EventArgs e) {
+      Popup.BeginStoryboard(App.FadeOut);
     }
 
     #endregion

@@ -137,8 +137,7 @@ namespace LeagueClient.Logic {
 
     public static async Task<bool> Initialize(string user, string pass) {
       var context = RiotCalls.RegisterObjects();
-      RtmpConn = new RtmpClient(new Uri("rtmps://" + Server + ":2099"),
-        context, RtmpSharp.IO.ObjectEncoding.Amf3);
+      RtmpConn = new RtmpClient(new Uri("rtmps://" + Server + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
       RtmpConn.MessageReceived += RtmpConn_MessageReceived;
       await RtmpConn.ConnectAsync();
 
@@ -303,8 +302,7 @@ namespace LeagueClient.Logic {
         RiotCalls.GameInvitationService.Leave();
         RiotCalls.GameService.QuitGame();
         RiotCalls.CapService.Quit();
-        RiotCalls.LoginService.Logout();
-        RtmpConn.Close();
+        RiotCalls.LoginService.Logout().ContinueWith(t => RtmpConn.LogoutAsync().ContinueWith(t2 => RtmpConn.Close()));
         Connected = false;
       }
       ChatManager?.Logout();

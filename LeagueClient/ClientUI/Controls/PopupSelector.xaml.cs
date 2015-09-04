@@ -19,7 +19,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// </summary>
   public partial class PopupSelector : UserControl {
     public enum Selector {
-      Champions, Masteries, Spells
+      Champions, Masteries, Spells, ProfileIcons
     }
 
     public event EventHandler Close;
@@ -33,6 +33,7 @@ namespace LeagueClient.ClientUI.Controls {
             ChampSelector.UpdateChampList();
             MasteryEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
+            IconSelector.Visibility = Visibility.Collapsed;
             ChampSelector.Visibility = Visibility.Visible;
             TitleBlock.Text = "Select a Champion";
             break;
@@ -40,14 +41,23 @@ namespace LeagueClient.ClientUI.Controls {
             MasteryEditor.Reset();
             ChampSelector.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
+            IconSelector.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Visible;
             TitleBlock.Text = "Select Masteries";
             break;
           case Selector.Spells:
             ChampSelector.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Collapsed;
+            IconSelector.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Visible;
             TitleBlock.Text = "Select Summoner Spells";
+            break;
+          case Selector.ProfileIcons:
+            ChampSelector.Visibility = Visibility.Collapsed;
+            MasteryEditor.Visibility = Visibility.Collapsed;
+            SpellSelector.Visibility = Visibility.Collapsed;
+            IconSelector.Visibility = Visibility.Visible;
+            TitleBlock.Text = "Select Summoner Icon";
             break;
         }
       }

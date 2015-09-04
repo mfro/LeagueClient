@@ -39,8 +39,6 @@ namespace LeagueClient.ClientUI {
     private ChatRoomController chatRoom;
 
     private State state;
-    private Timer timer;
-    private int counter;
     private string header;
     private GameDTO last;
 
@@ -62,18 +60,11 @@ namespace LeagueClient.ClientUI {
                                     select spell);
 
       var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
-      timer = new Timer(1000);
-      timer.Elapsed += Timer_Elapsed;
-      timer.Start();
 
       MapLabel.Content = map.DisplayName;
       ModeLabel.Content = GameMode.Values[game.GameMode];
       QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
       TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
-    }
-
-    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
-      Dispatcher.Invoke(() => GameStatusLabel.Content = header + "  " + counter--);
     }
 
     #region RTMP Messages
@@ -107,7 +98,7 @@ namespace LeagueClient.ClientUI {
         });
 
         if (game.GameState.Equals("PRE_CHAMP_SELECT")) {
-          if (last?.PickTurn != game.PickTurn) counter = config.BanTimerDuration - 3;
+          if (last?.PickTurn != game.PickTurn) SetTimer(config.BanTimerDuration - 3);
           if (turn.IsMyTurn) state = State.Banning;
           else state = State.Watching;
           var champs = await RiotCalls.GameService.GetChampionsForBan();
@@ -123,7 +114,7 @@ namespace LeagueClient.ClientUI {
           else header = OtherTeamBanString;
 
         } else {
-          if (last?.PickTurn != game.PickTurn) counter = config.MainPickTimerDuration - 3;
+          if (last?.PickTurn != game.PickTurn) SetTimer(config.MainPickTimerDuration - 3);
           if (turn.IsMyTurn) state = State.Picking;
           else state = State.Watching;
           ChampsGrid.UpdateChampList();
@@ -132,7 +123,7 @@ namespace LeagueClient.ClientUI {
           else header = NotPickingString;
         }
       } else if(game.GameState.Equals("POST_CHAMP_SELECT")) {
-        if (last?.PickTurn != game.PickTurn) counter = config.PostPickTimerDuration - 3;
+        if (last?.PickTurn != game.PickTurn) SetTimer(config.PostPickTimerDuration - 3);
         var turn = Dispatcher.MyInvoke(RenderPlayers, game);
         state = State.Watching;
         ChampsGrid.IsReadOnly = true;
@@ -190,7 +181,28 @@ namespace LeagueClient.ClientUI {
       return turn;
     }
 
+    private int counter;
+    private Timer timer;
+    private void SetTimer(int time) {
+      timer?.Dispose();
+
+      counter = time;
+      timer = new Timer(1000);
+      timer.Elapsed += Timer_Elapsed;
+      timer.Start();
+      UpdateHeader();
+    }
+
+    private void UpdateHeader() {
+      if (counter > 0) GameStatusLabel.Content = header + "  " + counter--;
+      else GameStatusLabel.Content = header;
+    }
+
     #region Event Listeners
+
+    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
+      Dispatcher.Invoke(UpdateHeader);
+    }
 
     private void ChampsGrid_ChampSelected(object sender, ChampionDto e) {
       switch (state) {

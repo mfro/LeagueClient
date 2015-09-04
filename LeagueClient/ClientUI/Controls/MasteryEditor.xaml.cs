@@ -66,7 +66,7 @@ namespace LeagueClient.ClientUI.Controls {
     private void LoadBook(MasteryBookDTO book) {
       PageList.ItemsSource = book.BookPages;
       var page = book.BookPages.FirstOrDefault(p => p.Current);
-      if (page == null) LoadPage((MasteryBookPageDTO) book.BookPages[0]);
+      if (page == null) LoadPage(book.BookPages[0]);
       else LoadPage(page);
     }
 
@@ -76,7 +76,7 @@ namespace LeagueClient.ClientUI.Controls {
       foreach (var item in Icons.Values) item.Points = 0;
       PageNameBox.Text = page.Name;
       foreach (var item in page.TalentEntries) {
-        var talent = (TalentEntry) item;
+        var talent = item;
         Icons[talent.TalentId + ""].Points = talent.Rank;
       }
       loading = false;

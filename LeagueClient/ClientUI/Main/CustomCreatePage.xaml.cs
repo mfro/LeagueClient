@@ -24,6 +24,8 @@ namespace LeagueClient.ClientUI.Main {
   /// Interaction logic for CustomCreatePage.xaml
   /// </summary>
   public partial class CustomCreatePage : Page, IClientSubPage {
+    public event EventHandler Close;
+
     private const int BorderSize = 3;
     private const int MarginSize = 10;
     private GameMap selected;
@@ -92,8 +94,6 @@ namespace LeagueClient.ClientUI.Main {
 
     #region Border UI Listeners
     private Dictionary<UIElement, Animation> Animations = new Dictionary<UIElement, Animation>();
-
-    public event EventHandler Close;
 
     private async void Border_MouseEnter(object sender, MouseEventArgs e) {
       var border = sender as Border;

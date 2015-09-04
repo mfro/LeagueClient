@@ -65,7 +65,6 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public void SetChampList(IEnumerable<MyChampDto> champions) {
-      //TODO ChampSelection instead of this ^
       champs = champions.ToList();
       var images = new List<object>();
       var save = new List<int>();

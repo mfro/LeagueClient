@@ -42,11 +42,11 @@
           <Label Padding="0 1" HorizontalAlignment="Center">Your Team</Label>
         </Border>
         <StackPanel Background="{StaticResource Back1Brush}" Name="MyTeam" Grid.Row="1">
-          <Label>HI</Label>
-          <Label>HI</Label>
-          <Label>HI</Label>
-          <Label>HI</Label>
-          <Label>HI</Label>
+          <Label Height="84">HI</Label>
+          <Label Height="84">HI</Label>
+          <Label Height="84">HI</Label>
+          <Label Height="84">HI</Label>
+          <Label Height="84">HI</Label>
         </StackPanel>
 
         <Border Name="MatchDetails" Grid.Row="2" Background="{StaticResource ForeBrush}"
