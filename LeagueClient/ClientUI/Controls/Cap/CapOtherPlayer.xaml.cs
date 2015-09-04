@@ -18,7 +18,6 @@ using LeagueClient.Logic.Cap;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.Parsing.DynamicJSON;
-using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>

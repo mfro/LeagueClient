@@ -31,11 +31,11 @@ namespace LeagueClient.ClientUI.Main {
     public bool HandleMessage(MessageReceivedEventArgs args) {
       var game = args.Body as GameDTO;
       if (game != null) {
-        if(game.GameState.Equals("TERMINATED_IN_ERROR")) {
+        if (game.GameState.Equals("TERMINATED_IN_ERROR")) {
           Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
           Close?.Invoke(this, new EventArgs());
           return true;
-        }else if (game.GameState.Equals("TERMINATED")) {
+        } else if (game.GameState.Equals("TERMINATED")) {
 
         }
       }

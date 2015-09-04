@@ -5,9 +5,6 @@
              xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
              StartupUri="MainWindow.xaml" Exit="Application_Exit">
   <Application.Resources>
-    <sys:Double x:Key="Width">960</sys:Double>
-    <sys:Double x:Key="Height">540</sys:Double>
-    <sys:Double x:Key="PageHeight">460</sys:Double>
     <ScaleTransform x:Key="CheckboxScale" ScaleX="2" ScaleY="2"/>
     
     <BitmapImage x:Key="IPIcon" UriSource="Media/ip.png"/>

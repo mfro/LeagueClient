@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
-  <Grid Name="parentGrid" Width="650">
+  <Grid Name="parentGrid">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
       <RowDefinition/>
@@ -15,15 +15,14 @@
         <ItemsControl Name="ChampsGrid">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2" Width="60"
-                  Margin="0 0 4 4" Cursor="Hand" ToolTip="{Binding Name}" MouseUp="Champion_Select">
+              <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2" Width="68" Margin="0 0 8 8" Cursor="Hand" ToolTip="{Binding Name}" MouseUp="Champion_Select">
                 <Image Source="{Binding Image}"/>
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <WrapPanel Margin="0 0 0 -4" HorizontalAlignment="Left"/>
+              <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
         </ItemsControl>
@@ -47,8 +46,7 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <StackPanel Margin="4 0 -4 0" Background="Transparent" MinWidth="650"
-                          Orientation="Horizontal"/>
+                <StackPanel Margin="4 0 -4 0" Background="Transparent" MinWidth="650" Orientation="Horizontal"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
           </ItemsControl>

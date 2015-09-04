@@ -221,7 +221,6 @@
     </Compile>
     <Compile Include="Logic\Queueing\IQueuer.cs" />
     <Compile Include="Logic\Queueing\IQueueManager.cs" />
-    <Compile Include="Media\CurrentGame.cs" />
     <Compile Include="Logic\Alert.cs" />
     <Compile Include="Logic\Chat\LeagueStatus.cs" />
     <Compile Include="Logic\com\riotgames\kudos\dto\PendingKudosDTO.cs" />
@@ -339,7 +338,6 @@
     <Compile Include="Logic\com\riotgames\team\stats\TeamStatSummary.cs" />
     <Compile Include="Logic\com\riotgames\team\TeamId.cs" />
     <Compile Include="Logic\com\riotgames\team\TeamInfo.cs" />
-    <Compile Include="Logic\Strings.cs" />
     <Compile Include="Logic\RiotCalls.cs" />
     <Compile Include="Logic\Chat\RiotChat.cs" />
     <Compile Include="Logic\RiotPatcher.cs" />
@@ -514,6 +512,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientUI\Controls\MyExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

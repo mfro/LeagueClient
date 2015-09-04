@@ -3,32 +3,32 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
-      Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
+      Width="{my:My Width}" Height="{my:My PageHeight}">
   <Grid Margin="10">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="250"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition/>
     </Grid.RowDefinitions>
-    <Label Background="{StaticResource ForeBrush}" FontSize="16">Game Name</Label>
-    <Grid Grid.Row="1" Margin="0 8 0 0" Height="405" VerticalAlignment="Top">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="10"/>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="10"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="10"/>
-        <RowDefinition Height="auto"/>
-      </Grid.RowDefinitions>
+    <Label Background="{StaticResource ForeBrush}" FontSize="16" Margin="0 0 260 0" Name="GameNameLabel">Game Name</Label>
+    <Button HorizontalAlignment="Right" Margin="0 -2 0 0" Width="120" Click="Quit_Click">Quit Game</Button>
+    <Button HorizontalAlignment="Right" Margin="0 -2 130 0" Width="120" Click="Start_Click" Name="StartButt">Start Game</Button>
+    <Grid Grid.Row="1" Margin="0 8 0 0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition/>
         <ColumnDefinition Width="10"/>
         <ColumnDefinition/>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition Width="250"/>
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="10"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
       <Label FontSize="14" Margin="0 2 0 0" Background="{StaticResource ForeBrush}">Blue Team</Label>
       <Label FontSize="14" Margin="0 2 0 0" Background="{StaticResource ForeBrush}" Grid.Column="2">Red Team</Label>
       <Button Width="60" Click="BlueJoin_Click" Name="BlueJoin" HorizontalAlignment="Right">Join</Button>
@@ -39,8 +39,28 @@
       <StackPanel Grid.Row="2" Grid.Column="2" Background="{StaticResource ForeBrush}" Name="RedTeam">
         <Label>Hello</Label>
       </StackPanel>
+      
+      <Label Background="{StaticResource ForeBrush}" Grid.Column="4" FontSize="14">Spectators</Label>
+      <Button HorizontalAlignment="Right" Width="120" Grid.Column="4" Margin="0 -2 0 0" Click="Spectate_Click">Spectate</Button>
 
-      <ScrollViewer Name="ChatScroller" Grid.Row="4">
+      <StackPanel Grid.Row="2" Grid.Column="4" Background="{StaticResource ForeBrush}" Name="ObserverList">
+      </StackPanel>
+    </Grid>
+    <Grid Grid.Row="2" Margin="0 8 0 0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="10"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="2*"/>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition/>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition Width="250"/>
+      </Grid.ColumnDefinitions>
+
+      <ScrollViewer Name="ChatScroller">
         <RichTextBox Name="ChatHistory" Background="{StaticResource ForeBrush}" BorderThickness="0" IsReadOnly="True">
           <RichTextBox.Resources>
             <Style TargetType="Paragraph">
@@ -49,39 +69,25 @@
           </RichTextBox.Resources>
         </RichTextBox>
       </ScrollViewer>
-      <TextBox Name="SendBox" Grid.Row="6" Margin="0 0 70 0"/>
-      <Button Name="ChatSend" Grid.Row="6" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="60">Send</Button>
+      <TextBox Name="SendBox" Grid.Row="2" Margin="0 0 70 0"/>
+      <Button Name="ChatSend" Grid.Row="2" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="60">Send</Button>
 
-      <StackPanel Name="InviteList" Grid.Row="4" Grid.Column="2" Background="{StaticResource ForeBrush}"/>
-      <Button Click="Collapse_Click" Name="CollapseButt" Grid.Row="6" Grid.Column="2" Margin="0 -2 80 0" HorizontalAlignment="Right" Width="120">Collapse Players</Button>
-      <Button Click="Invite_Click" Name="InviteButt" Grid.Row="6" Grid.Column="2" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="70">Invite</Button>
-    </Grid>
-    <Grid Grid.Column="2" Grid.RowSpan="2"  Margin="10 0 0 0">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="25"/>
-        <RowDefinition Height="10"/>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="10"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="10"/>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="auto"/>
-      </Grid.RowDefinitions>
-      <Button HorizontalAlignment="Right" Width="115" Click="Quit_Click">Quit Game</Button>
-      <Button HorizontalAlignment="Left" Width="115" Click="Start_Click" Name="StartButt">Start Game</Button>
-      <Label Background="{StaticResource ForeBrush}" Grid.Row="2" FontSize="14">Spectators</Label>
-      <Button HorizontalAlignment="Right" Width="115" Grid.Row="2" Margin="0 -2 0 0" Click="Spectate_Click">Spectate</Button>
+      <StackPanel Name="InviteList" Grid.Column="2" Background="{StaticResource ForeBrush}"/>
+      <!--<Button Click="Collapse_Click" Name="CollapseButt" Grid.Row="6" Grid.Column="2" Margin="0 -2 80 0" HorizontalAlignment="Right" Width="120">Collapse Players</Button>-->
+      <Button Click="Invite_Click" Name="InviteButt" Grid.Row="2" Grid.Column="2" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="70" Visibility="Collapsed">Invite</Button>
 
-      <StackPanel Grid.Row="4" Background="{StaticResource ForeBrush}" Name="ObserverList">
-      </StackPanel>
-      
-      <Image Grid.Row="6" Name="MapImage" Source="/Resources/SRiftImage.png"/>
-      <Border Background="{StaticResource ForeBrush}" Grid.Row="7" Grid.RowSpan="2"/>
-      <Label Grid.Row="7" Name="MapLabel">Summoner's Rift</Label>
-      <Label Grid.Row="7" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
-      <Label Grid.Row="8" Name="ModeLabel">Classic</Label>
-      <Label Grid.Row="8" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
+      <Grid Grid.Column="4" Grid.RowSpan="3" Background="{StaticResource ForeBrush}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Image Grid.Row="0" Name="MapImage" Source="/Resources/SRiftImage.png"/>
+        <Label Grid.Row="1" Name="MapLabel">Summoner's Rift</Label>
+        <Label Grid.Row="1" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
+        <Label Grid.Row="2" Name="ModeLabel">Classic</Label>
+        <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
+      </Grid>
     </Grid>
     <my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
                     Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>

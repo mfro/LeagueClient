@@ -201,7 +201,10 @@ namespace LeagueClient.ClientUI {
     #region Event Listeners
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
-      Dispatcher.Invoke(UpdateHeader);
+      try {
+        Dispatcher.Invoke(UpdateHeader);
+      } catch { timer.Dispose(); }
+
     }
 
     private void ChampsGrid_ChampSelected(object sender, ChampionDto e) {

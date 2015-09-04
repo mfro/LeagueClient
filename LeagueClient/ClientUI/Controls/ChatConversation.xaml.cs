@@ -69,7 +69,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void ChatOpenButt_Click(object sender, RoutedEventArgs e) {
       Open = !Open;
-      if (Open) App.Focus(ChatSendBox);
+      if (Open) ChatSendBox.MyFocus();
     }
 
     private void ChatSendBox_KeyUp(object sender, KeyEventArgs e) {
@@ -84,7 +84,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void OnFocus(object sender, RoutedEventArgs e) {
-      if (!Open) App.Focus(ChatSendBox);
+      if (!Open) ChatSendBox.MyFocus();
     }
   }
 }

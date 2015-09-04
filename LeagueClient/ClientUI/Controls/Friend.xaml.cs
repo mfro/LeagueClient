@@ -149,7 +149,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void GotGameInfo(Task<RiotAPI.CurrentGameAPI.CurrentGameInfo> game) {
       if (game.IsFaulted) {
-        Client.Log(game.Exception);
+        Client.Log("Failed to parse game [" + game.Exception.Message + "]");
         return;
       }
       if (game.Result == null) return;

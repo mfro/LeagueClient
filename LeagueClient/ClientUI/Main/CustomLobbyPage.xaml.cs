@@ -98,6 +98,7 @@ namespace LeagueClient.ClientUI.Main {
           BlueTeam.Children.Clear();
           RedTeam.Children.Clear();
           ObserverList.Children.Clear();
+          GameNameLabel.Content = game.Name;
 
           if (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
             InviteButt.Visibility = Visibility.Visible;
@@ -106,13 +107,16 @@ namespace LeagueClient.ClientUI.Main {
             var player = thing as PlayerParticipant;
             bool blue = game.TeamOne.Contains(player);
             var bot = thing as BotParticipant;
-            UIElement control;
+            UserControl control;
             if (player != null)
-              control = new LobbyPlayer(player, !collapsed);
+              control = new LobbyPlayer(player, true);
             else if (bot != null)
-              control = new LobbyBotPlayer(bot, !collapsed);
+              control = new LobbyBotPlayer(bot, true);
             else throw new NotImplementedException(thing.GetType().Name);
 
+            Dispatcher.BeginInvoke((Action) (() => {
+              BlueTeam.Height = RedTeam.Height = control.ActualHeight * (game.MaxNumPlayers / 2);
+            }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             if (blue) {
               BlueTeam.Children.Add(control);
               if (player?.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId) {
@@ -164,15 +168,15 @@ namespace LeagueClient.ClientUI.Main {
       ForceClose();
     }
 
-    private bool collapsed;
-    private void Collapse_Click(object sender, RoutedEventArgs e) {
-      collapsed = !collapsed;
-      foreach (var control in BlueTeam.Children)
-        (control as ICollapsable).ForceExpand = !collapsed;
-      foreach (var control in RedTeam.Children)
-        (control as ICollapsable).ForceExpand = !collapsed;
-      CollapseButt.Content = collapsed ? "Expand Players" : "Collapse Players";
-    }
+    //private bool collapsed;
+    //private void Collapse_Click(object sender, RoutedEventArgs e) {
+    //  collapsed = !collapsed;
+    //  foreach (var control in BlueTeam.Children)
+    //    (control as ICollapsable).ForceExpand = !collapsed;
+    //  foreach (var control in RedTeam.Children)
+    //    (control as ICollapsable).ForceExpand = !collapsed;
+    //  CollapseButt.Content = collapsed ? "Expand Players" : "Collapse Players";
+    //}
 
     private void Invite_Click(object sender, RoutedEventArgs e) => InvitePopup.BeginStoryboard(App.FadeIn);
 

@@ -21,7 +21,6 @@ using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using RtmpSharp.Messaging;
-using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>

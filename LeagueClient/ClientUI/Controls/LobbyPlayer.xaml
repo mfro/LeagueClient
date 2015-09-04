@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:LeagueClient.ClientUI.Controls"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Background="{StaticResource ForeBrush}" MouseEnter="This_MouseEnter" MouseLeave="This_MouseLeave">
-  <Grid>
+  <Grid Margin="5">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="auto"/>
       <ColumnDefinition Width="*"/>

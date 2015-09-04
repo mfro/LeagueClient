@@ -21,6 +21,7 @@ namespace LeagueClient {
   /// Interaction logic for App.xaml
   /// </summary>
   public partial class App : Application {
+    #region Resources
     [Resource]
     public static Storyboard
       //ButtonHover, ButtonUnHover, ButtonPress, ButtonRelease,
@@ -44,22 +45,11 @@ namespace LeagueClient {
         if (Attribute.IsDefined(field, typeof(ResourceAttribute)))
           field.SetValue(this, FindResource(field.Name));
     }
+    #endregion
 
-    public void ButtonMouseLeave(object src, EventArgs args) {
-      //var butt = (Button) src;
-      //var release = ButtonRelease;
-      //try {
-      //  release.GetCurrentState(butt);
-      //  release.Remove(butt);
-      //} catch { }
-    }
-
-    public static void Focus(UIElement el) {
-      App.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, new Action(() => {
-        el.Focus();
-        System.Windows.Input.Keyboard.Focus(el);
-      }));
-    }
+    public static double Height => 720;
+    public static double Width => 1280;
+    public static double PageHeight => 640;
 
     private void Application_Exit(object sender, ExitEventArgs e) {
       if (Client.Connected) {
@@ -94,12 +84,16 @@ namespace LeagueClient {
       return str.Substring(start, end - start);
     }
 
+    public static void MyFocus(this UIElement el) {
+      App.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, (Func<bool>) el.Focus);
+    }
+
     public static void MyInvoke<T1>(this Dispatcher dispatch, Action<T1> func, T1 t) => dispatch.Invoke(func, t);
-    public static void MyInvoke<T1, T2>(this Dispatcher dispatch, Action<T1, T2> func, T1 t, T2 t1) => dispatch.Invoke(func, t);
+    public static void MyInvoke<T1, T2>(this Dispatcher dispatch, Action<T1, T2> func, T1 t, T2 t1) => dispatch.Invoke(func, t, t1);
     public static void MyInvoke<T1, T2, T3>(this Dispatcher dispatch, Action<T1, T2, T3> func, T1 t, T2 t1, T3 t2) => dispatch.Invoke(func, t, t1, t2);
     public static void MyInvoke<T1, T2, T3, T4>(this Dispatcher dispatch, Action<T1, T2, T3, T4> func, T1 t, T2 t1, T3 t2, T4 t3) => dispatch.Invoke(func, t, t1, t2, t3);
     public static R MyInvoke<T1, R>(this Dispatcher dispatch, Func<T1, R> func, T1 t) => (R) dispatch.Invoke(func, t);
-    public static R MyInvoke<T1, T2, R>(this Dispatcher dispatch, Func<T1, T2, R> func, T1 t, T2 t1) => (R) dispatch.Invoke(func, t);
+    public static R MyInvoke<T1, T2, R>(this Dispatcher dispatch, Func<T1, T2, R> func, T1 t, T2 t1) => (R) dispatch.Invoke(func, t, t1);
     public static R MyInvoke<T1, T2, T3, R>(this Dispatcher dispatch, Func<T1, T2, T3, R> func, T1 t, T2 t1, T3 t2) => (R) dispatch.Invoke(func, t, t1, t2);
     public static R MyInvoke<T1, T2, T3, T4, R>(this Dispatcher dispatch, Func<T1, T2, T3, T4, R> func, T1 t, T2 t1, T3 t2, T4 t3) => (R) dispatch.Invoke(func, t, t1, t2, t3);
   }

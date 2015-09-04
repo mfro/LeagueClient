@@ -9,7 +9,7 @@
   <Page.Resources>
     <sys:Double x:Key="ChatButtonWidth">70</sys:Double>
   </Page.Resources>
-  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
+  <Grid Width="{my:My Width}" Height="{my:My Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="55"/>
       <RowDefinition Height="*"/>

@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
-      SnapsToDevicePixels="True" Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
+      SnapsToDevicePixels="True" Width="{my:My Width}" Height="{my:My PageHeight}">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>

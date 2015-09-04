@@ -14,7 +14,6 @@ using System.Threading;
 using RtmpSharp.Messaging;
 using MFroehlich.Parsing.DynamicJSON;
 using LeagueClient.Logic.Riot.Kudos;
-using static LeagueClient.Logic.Strings;
 using MFroehlich.League.DataDragon;
 using LeagueClient.Logic.Cap;
 using LeagueClient.Logic.com.riotgames.other;

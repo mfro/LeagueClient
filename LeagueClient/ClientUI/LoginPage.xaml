@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
       SnapsToDevicePixels="True">
-  <Grid Background="{StaticResource Back2Brush}" Width="{StaticResource Width}" Height="{StaticResource Height}">
+  <Grid Background="{StaticResource Back2Brush}" Width="{my:My Width}" Height="{my:My Height}">
     <Grid.RowDefinitions>
       <RowDefinition Height="22"/>
       <RowDefinition Height="50"/>

@@ -299,9 +299,7 @@ namespace LeagueClient.Logic {
     public static void Logout() {
       if (Connected) {
         Client.SaveSettings(Client.Settings.Username, JSONObject.From(Client.Settings));
-        RiotCalls.GameInvitationService.Leave();
         RiotCalls.GameService.QuitGame();
-        RiotCalls.CapService.Quit();
         RiotCalls.LoginService.Logout().ContinueWith(t => RtmpConn.LogoutAsync().ContinueWith(t2 => RtmpConn.Close()));
         Connected = false;
       }

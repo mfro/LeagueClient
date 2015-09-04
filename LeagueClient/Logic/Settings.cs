@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using MFroehlich.Parsing;
 using MFroehlich.Parsing.DynamicJSON;
-using static System.Reflection.CustomAttributeExtensions;
 
 namespace LeagueClient.Logic {
   [JSONSerializable]

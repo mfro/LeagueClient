@@ -143,7 +143,7 @@ namespace LeagueClient.Logic.Chat {
     void OnChatOpen(string user) {
       foreach (var chat in OpenChats)
         if (!chat.User.Equals(user)) chat.Open = false;
-        else App.Focus(chat.ChatSendBox);
+        else chat.ChatSendBox.MyFocus();
     }
 
     void OnChatClose(string user) {

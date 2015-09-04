@@ -8,7 +8,7 @@
       <TextBlock Style="{StaticResource Control}" Text="{Binding Name}"/>
     </DataTemplate>
   </Page.Resources>
-  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
+  <Grid Width="{my:My Width}" Height="{my:My Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="*"/>
@@ -27,11 +27,13 @@
         </Style>
       </Grid.Resources>
       <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="200"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="200"/>
       </Grid.ColumnDefinitions>
-      <Grid>
+      <Grid Grid.Column="0">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto"/>
           <RowDefinition Height="auto"/>
@@ -61,7 +63,7 @@
           </Grid>
         </Border>
       </Grid>
-      <Grid Grid.Column="2">
+      <Grid Grid.Column="4">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto"/>
           <RowDefinition Height="auto"/>
@@ -92,14 +94,13 @@
         </Border>
       </Grid>
 
-      <Grid Grid.Column="1" Grid.RowSpan="2" Margin="4 0" Background="{StaticResource Back1Brush}">
+      <my:ChampSelector Grid.Column="2" Margin="4" VerticalAlignment="Top" Height="350" x:Name="ChampsGrid"/>
+      <Grid Grid.Column="1" Grid.ColumnSpan="3" Margin="4 0" Background="{StaticResource Back1Brush}" VerticalAlignment="Bottom">
         <Grid.RowDefinitions>
-          <RowDefinition Height="300"/>
           <RowDefinition Height="70"/>
           <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <my:ChampSelector Margin="4" x:Name="ChampsGrid"/>
-        <Grid Grid.Row="1" Margin="4 0 4 4">
+        <Grid Margin="4 0 4 4">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
@@ -138,7 +139,7 @@
           </Grid>
           <Button Grid.Column="2" Width="80" Height="30" HorizontalAlignment="Center" Click="LockIn_Click">Lock In</Button>
         </Grid>
-        <Grid Name="ChatDisplay" Grid.Row="2" Margin="4 0" Background="{StaticResource Back1Brush}">
+        <Grid Name="ChatDisplay" Grid.Row="1" Margin="4 0" Height="200" Background="{StaticResource Back1Brush}">
           <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>

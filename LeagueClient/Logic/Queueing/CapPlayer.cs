@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
-using static LeagueClient.Logic.Strings;
 
 namespace LeagueClient.Logic.Cap {
   public class CapPlayer : System.ComponentModel.INotifyPropertyChanged {
