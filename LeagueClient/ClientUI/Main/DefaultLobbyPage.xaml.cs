@@ -86,7 +86,7 @@ namespace LeagueClient.ClientUI.Main {
 
     #region UI Events
     private void StartButton_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.MatchmakerService.AttachToQueue(mmp);
+      RiotServices.MatchmakerService.AttachToQueue(mmp);
     }
 
     private void InviteButton_Click(object sender, RoutedEventArgs e) {
@@ -103,7 +103,7 @@ namespace LeagueClient.ClientUI.Main {
       foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
         double id;
         if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-          RiotCalls.GameInvitationService.Invite(id);
+          RiotServices.GameInvitationService.Invite(id);
         } else Client.TryBreak("Cannot parse user " + user.Key);
       }
     }
@@ -115,7 +115,7 @@ namespace LeagueClient.ClientUI.Main {
     public IQueuer HandleClose() => new ReturnToLobbyQueuer(this);
 
     public void ForceClose() {
-      RiotCalls.GameInvitationService.Leave();
+      RiotServices.GameInvitationService.Leave();
       chatRoom.LeaveChat();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }

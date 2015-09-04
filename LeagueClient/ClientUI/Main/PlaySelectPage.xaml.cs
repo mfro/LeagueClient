@@ -74,7 +74,7 @@ namespace LeagueClient.ClientUI.Main {
 
       queues[GameMap.TheCrystalScar] = new List<IPlayableQueue> {
         new PlayablePvpQueue("Blind Pick", SelectStandardQueue, 16),
-        new PlayablePvpQueue("Ranked Teams", SelectStandardQueue, 17),
+        new PlayablePvpQueue("Draft Pick", SelectStandardQueue, 17),
         new PlayableBotsQueue("Beginner", SelectBots, 25, "EASY"),
         new PlayableBotsQueue("Intermediate", SelectBots, 25, "MEDIUM"),
       };
@@ -106,15 +106,31 @@ namespace LeagueClient.ClientUI.Main {
       MapNameLabel.Content = currentMap.DisplayName;
       QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Collapsed;
 
-      var pvps = queues[currentMap].Where(q => (q.Type == 0 || Client.AvailableQueues.ContainsKey(q.Type)) && q is PlayablePvpQueue);
-      var bots = queues[currentMap].Where(q => (q.Type == 0 || Client.AvailableQueues.ContainsKey(q.Type)) && q is PlayableBotsQueue);
+      var available = queues[currentMap].Where(q => q.Type == 0 || Client.AvailableQueues.ContainsKey(q.Type));
+      var pvps = available.Where(q => q is PlayablePvpQueue);
+      var bots = available.Where(q => q is PlayableBotsQueue);
 
       PvPQueueList.ItemsSource = pvps;
       BotsQueueList.ItemsSource = bots;
+
+      if (Client.Settings.RecentQueuesByMapId == null)
+        Client.Settings.RecentQueuesByMapId = new Dictionary<string, int>();
+      if (Client.Settings.RecentQueuesByMapId.ContainsKey(currentMap.Name)) {
+        var id = Client.Settings.RecentQueuesByMapId[currentMap.Name];
+
+        var pvp = pvps.FirstOrDefault(q => q.Type == id);
+        if (pvp != null) PvPQueueList.SelectedItem = pvp;
+
+        var bot = bots.FirstOrDefault(q => q.Type == id);
+        if (bot != null) BotsQueueList.SelectedItem = bot;
+      } else if (available.Count() == 1) {
+        if (pvps.Count() > 0) PvPQueueList.SelectedIndex = 0;
+        else BotsQueueList.SelectedIndex = 0;
+      }
     }
 
     private void QueueList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      var src = sender as ListView;
+      var src = sender as ListBox;
       if (src.SelectedIndex < 0) return;
       if (sender == PvPQueueList) BotsQueueList.SelectedIndex = -1;
       else PvPQueueList.SelectedIndex = -1;
@@ -159,16 +175,16 @@ namespace LeagueClient.ClientUI.Main {
         case 0: Client.QueueManager.ShowPage(new CapSoloPage()); break;
         case 1:
           Client.QueueManager.ShowPage(new CapLobbyPage(true));
-          RiotCalls.CapService.CreateGroup();
+          RiotServices.CapService.CreateGroup();
           break;
       }
     }
 
     private async void PlayStandard(int button) {
-      var mmp = new MatchMakerParams { QueueIds = new[] { (int) currentConfig.Id } };
+      var mmp = new MatchMakerParams { QueueIds = new[] { currentConfig.Id } };
       switch (button) {
         case 0:
-          var search = await RiotCalls.MatchmakerService.AttachToQueue(mmp);
+          var search = await RiotServices.MatchmakerService.AttachToQueue(mmp);
           if (search.PlayerJoinFailures?.Count > 0) {
             switch (search.PlayerJoinFailures[0].ReasonFailed) {
               case "QUEUE_DODGER":
@@ -181,7 +197,7 @@ namespace LeagueClient.ClientUI.Main {
           break;
         case 1:
           var lobby = new DefaultLobbyPage(mmp);
-          var status = await RiotCalls.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]);
+          var status = await RiotServices.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]);
           lobby.GotLobbyStatus(status);
           Client.QueueManager.ShowPage(lobby);
           break;
@@ -233,11 +249,13 @@ namespace LeagueClient.ClientUI.Main {
 
     private void QueueButton1_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());
+      Client.Settings.RecentQueuesByMapId[currentMap.Name] = currentConfig.Id;
       ButtonAction?.Invoke(0);
     }
 
     private void QueueButton2_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());
+      Client.Settings.RecentQueuesByMapId[currentMap.Name] = currentConfig.Id;
       ButtonAction?.Invoke(1);
     }
 

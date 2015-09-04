@@ -57,7 +57,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public async void UpdateChampList() {
       var champs = new List<MyChampDto>();
-      foreach (var riot in await RiotCalls.InventoryService.GetAvailableChampions()) {
+      foreach (var riot in await RiotServices.InventoryService.GetAvailableChampions()) {
         if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
         champs.Add(LeagueData.GetChampData(riot.ChampionId));
       }

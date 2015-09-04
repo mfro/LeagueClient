@@ -136,7 +136,7 @@ namespace LeagueClient.Logic {
     }
 
     public static async Task<bool> Initialize(string user, string pass) {
-      var context = RiotCalls.RegisterObjects();
+      var context = RiotServices.RegisterObjects();
       RtmpConn = new RtmpClient(new Uri("rtmps://" + Server + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
       RtmpConn.MessageReceived += RtmpConn_MessageReceived;
       await RtmpConn.ConnectAsync();
@@ -147,10 +147,10 @@ namespace LeagueClient.Logic {
       creds.ClientVersion = AirVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
-      var queue = await RiotCalls.GetAuthKey(creds.Username, creds.Password, LoginQueue);
+      var queue = await RiotServices.GetAuthKey(creds.Username, creds.Password, LoginQueue);
       creds.AuthToken = queue.Token;
 
-      UserSession = await RiotCalls.LoginService.Login(creds);
+      UserSession = await RiotServices.LoginService.Login(creds);
       await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
         "bc", "bc-" + UserSession.AccountSummary.AccountId.ToString());
       await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
@@ -161,14 +161,14 @@ namespace LeagueClient.Logic {
         "cn-" + UserSession.AccountSummary.AccountId.ToString());
 
       bool authed = await RtmpConn.LoginAsync(creds.Username.ToLower(), UserSession.Token);
-      LoginPacket = await RiotCalls.ClientFacadeService.GetLoginDataPacketForUser();
-      string state = await RiotCalls.AccountService.GetAccountState();
+      LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
+      string state = await RiotServices.AccountService.GetAccountState();
       Connected = true;
 
       new System.Threading.Thread(() => {
-        RiotCalls.MatchmakerService.GetAvailableQueues()
+        RiotServices.MatchmakerService.GetAvailableQueues()
           .ContinueWith(GotQueues);
-        RiotCalls.InventoryService.GetAvailableChampions()
+        RiotServices.InventoryService.GetAvailableChampions()
           .ContinueWith(GotChampions);
         Runes = LoginPacket.AllSummonerData.SpellBook;
         Masteries = LoginPacket.AllSummonerData.MasteryBook;
@@ -201,7 +201,7 @@ namespace LeagueClient.Logic {
 
     private static void GotQueues(Task<GameQueueConfig[]> Task) {
       AvailableQueues = new Dictionary<int, GameQueueConfig>();
-      foreach (var item in Task.Result) AvailableQueues.Add((int) item.Id, item);
+      foreach (var item in Task.Result) AvailableQueues.Add(item.Id, item);
       //new Thread(PlaySelectPage.Setup).Start();
     }
 
@@ -231,7 +231,7 @@ namespace LeagueClient.Logic {
     /// <param name="page">The page to select</param>
     public static void SelectMasteryPage(MasteryBookPageDTO page) {
       if (page == SelectedMasteryPage) return;
-      RiotCalls.MasteryBookService.SelectDefaultMasteryBookPage(page);
+      RiotServices.MasteryBookService.SelectDefaultMasteryBookPage(page);
       foreach (var item in Masteries.BookPages) item.Current = false;
       page.Current = true;
       SelectedMasteryPage = page;
@@ -244,7 +244,7 @@ namespace LeagueClient.Logic {
     /// <param name="page"></param>
     public static void SelectRunePage(SpellBookPageDTO page) {
       if (page == SelectedRunePage) return;
-      RiotCalls.SpellBookService.SelectDefaultSpellBookPage(page);
+      RiotServices.SpellBookService.SelectDefaultSpellBookPage(page);
       foreach (var item in Runes.BookPages) item.Current = false;
       page.Current = true;
       SelectedRunePage = page;
@@ -261,10 +261,10 @@ namespace LeagueClient.Logic {
           alert.Handled += (src, e2) => {
             if (e2.Data as bool? ?? false) {
               var lobby = new CapLobbyPage(false);
-              RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
-              RiotCalls.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
+              RiotServices.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+              RiotServices.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
               QueueManager.ShowPage(lobby);
-            } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+            } else RiotServices.GameInvitationService.Decline(invite.InvitationId);
           };
         } else {
           switch (type) {
@@ -273,9 +273,9 @@ namespace LeagueClient.Logic {
               alert.Handled += (src, e2) => {
                 if (e2.Data as bool? ?? false) {
                   var lobby = new CustomLobbyPage();
-                  RiotCalls.GameInvitationService.Accept(invite.InvitationId);
+                  RiotServices.GameInvitationService.Accept(invite.InvitationId);
                   QueueManager.ShowPage(lobby);
-                } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+                } else RiotServices.GameInvitationService.Decline(invite.InvitationId);
               };
               break;
             case "NORMAL_GAME":
@@ -283,9 +283,9 @@ namespace LeagueClient.Logic {
               alert.Handled += (src, e2) => {
                 if (e2.Data as bool? ?? false) {
                   var lobby = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { payload["queueId"] } });
-                  RiotCalls.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+                  RiotServices.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
                   QueueManager.ShowPage(lobby);
-                } else RiotCalls.GameInvitationService.Decline(invite.InvitationId);
+                } else RiotServices.GameInvitationService.Decline(invite.InvitationId);
               };
               break;
             default: alert = null; break;
@@ -299,8 +299,8 @@ namespace LeagueClient.Logic {
     public static void Logout() {
       if (Connected) {
         Client.SaveSettings(Client.Settings.Username, JSONObject.From(Client.Settings));
-        RiotCalls.GameService.QuitGame();
-        RiotCalls.LoginService.Logout().ContinueWith(t => RtmpConn.LogoutAsync().ContinueWith(t2 => RtmpConn.Close()));
+        RiotServices.GameService.QuitGame();
+        RiotServices.LoginService.Logout().ContinueWith(t => RtmpConn.LogoutAsync().ContinueWith(t2 => RtmpConn.Close()));
         Connected = false;
       }
       ChatManager?.Logout();
@@ -365,9 +365,9 @@ namespace LeagueClient.Logic {
         if ((response = e.Body as LcdsServiceProxyResponse) != null) {
           if (response.status.Equals("ACK"))
             Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
-          else if (response.messageId != null && RiotCalls.Delegates.ContainsKey(response.messageId)) {
-            RiotCalls.Delegates[response.messageId](response);
-            RiotCalls.Delegates.Remove(response.messageId);
+          else if (response.messageId != null && RiotServices.Delegates.ContainsKey(response.messageId)) {
+            RiotServices.Delegates[response.messageId](response);
+            RiotServices.Delegates.Remove(response.messageId);
           } else {
             Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
           }

@@ -27,9 +27,9 @@ namespace LeagueClient.ClientUI.Controls {
       if (selection?.ChampionId > 0)
         ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId).id);
       if (selection?.Spell1Id > 0)
-        Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData((int) selection.Spell1Id).id);
+        Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id).id);
       if (selection?.Spell2Id > 0)
-        Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData((int) selection.Spell2Id).id);
+        Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id).id);
 
       if (!string.IsNullOrWhiteSpace(player.SummonerName))
         SummonerName.Text = player.SummonerName;

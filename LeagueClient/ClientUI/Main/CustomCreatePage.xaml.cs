@@ -94,7 +94,7 @@ namespace LeagueClient.ClientUI.Main {
       }
       GameDTO game = null;
       try {
-        game = await RiotCalls.GameService.CreatePracticeGame(config);
+        game = await RiotServices.GameService.CreatePracticeGame(config);
       } catch { }
 
       if (game?.Name == null) {

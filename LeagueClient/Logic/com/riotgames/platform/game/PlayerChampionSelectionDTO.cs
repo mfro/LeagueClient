@@ -11,7 +11,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public String SummonerInternalName { get; set; }
 
         [SerializedName("spell2Id")]
-        public Double Spell2Id { get; set; }
+        public Int32 Spell2Id { get; set; }
 
         [SerializedName("selectedSkinIndex")]
         public Int32 SelectedSkinIndex { get; set; }
@@ -20,6 +20,6 @@ namespace LeagueClient.Logic.Riot.Platform
         public Int32 ChampionId { get; set; }
 
         [SerializedName("spell1Id")]
-        public Double Spell1Id { get; set; }
+        public Int32 Spell1Id { get; set; }
     }
 }

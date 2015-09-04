@@ -123,27 +123,6 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     #region IQueueManager
-    //public void CreateCapSolo() {
-    //  var page = new CapSoloPage();
-    //  ShowPage(page);
-    //}
-
-    //public void CreateCapLobby() {
-    //  var page = new CapLobbyPage();
-    //  ShowPage(page);
-    //  RiotCalls.CapService.CreateGroup();
-    //}
-
-    //public void JoinCapLobby(Logic.Cap.CapPlayer player) {
-    //  var page = new CapLobbyPage(player);
-    //  ShowPage(page);
-    //}
-
-    //public void JoinCapLobby(Task<LobbyStatus> pending) {
-    //  var page = new CapLobbyPage();
-    //  ShowPage(page);
-    //  pending.ContinueWith(t => page.GotLobbyStatus(t.Result));
-    //}
 
     public void ShowQueuer(IQueuer queuer) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowQueuer, queuer); return; }

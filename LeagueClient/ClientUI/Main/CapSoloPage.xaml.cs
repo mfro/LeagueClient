@@ -97,8 +97,8 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void EnterQueue(object sender, RoutedEventArgs e) {
-      var id = RiotCalls.CapService.CreateSoloQuery(Player.CapPlayer);
-      RiotCalls.AddHandler(id, response => {
+      var id = RiotServices.CapService.CreateSoloQuery(Player.CapPlayer);
+      RiotServices.AddHandler(id, response => {
         if (response.status.Equals("OK"))
           Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player.CapPlayer)));
       });

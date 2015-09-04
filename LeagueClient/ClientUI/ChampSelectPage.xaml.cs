@@ -90,8 +90,8 @@ namespace LeagueClient.ClientUI {
         ChampsGrid.IsReadOnly = !turn.IsMyTurn;
 
         var me = game.PlayerChampionSelections.FirstOrDefault(p => p.SummonerInternalName == Client.LoginPacket.AllSummonerData.Summoner.InternalName);
-        spell1 = LeagueData.GetSpellData((int) me.Spell1Id);
-        spell2 = LeagueData.GetSpellData((int) me.Spell2Id);
+        spell1 = LeagueData.GetSpellData(me.Spell1Id);
+        spell2 = LeagueData.GetSpellData(me.Spell2Id);
         Dispatcher.Invoke(() => {
           Spell2Image.Source = LeagueData.GetSpellImage(spell2.id);
           Spell1Image.Source = LeagueData.GetSpellImage(spell1.id);
@@ -101,7 +101,7 @@ namespace LeagueClient.ClientUI {
           if (last?.PickTurn != game.PickTurn) SetTimer(config.BanTimerDuration - 3);
           if (turn.IsMyTurn) state = State.Banning;
           else state = State.Watching;
-          var champs = await RiotCalls.GameService.GetChampionsForBan();
+          var champs = await RiotServices.GameService.GetChampionsForBan();
 
           if (turn.IsOurTurn) {
             ChampsGrid.SetChampList(champs.Where(c => c.EnemyOwned).Select(c => LeagueData.GetChampData(c.ChampionId)));
@@ -211,22 +211,22 @@ namespace LeagueClient.ClientUI {
       switch (state) {
         case State.Watching: throw new InvalidOperationException("Attempted to select a champion out of turn");
         case State.Picking:
-          RiotCalls.GameService.SelectChampion(e.key);
+          RiotServices.GameService.SelectChampion(e.key);
           break;
         case State.Banning:
-          RiotCalls.GameService.BanChampion(e.key);
+          RiotServices.GameService.BanChampion(e.key);
           break;
       }
     }
 
     private void ChampsGrid_SkinSelected(object sender, ChampionDto.SkinDto e) {
       if (state != State.Banning)
-        RiotCalls.GameService.SelectChampionSkin(ChampsGrid.SelectedChampion.key, e.id);
+        RiotServices.GameService.SelectChampionSkin(ChampsGrid.SelectedChampion.key, e.id);
     }
 
     private void LockIn_Click(object sender, RoutedEventArgs e) {
       if (state == State.Picking)
-        RiotCalls.GameService.ChampionSelectCompleted();
+        RiotServices.GameService.ChampionSelectCompleted();
     }
 
     bool doSpell1;
@@ -258,13 +258,13 @@ namespace LeagueClient.ClientUI {
         spell2 = e;
         Spell2Image.Source = LeagueData.GetSpellImage(e.id);
       }
-      RiotCalls.GameService.SelectSpells(spell1.key, spell2.key);
+      RiotServices.GameService.SelectSpells(spell1.key, spell2.key);
     }
 
     private void Masteries_Selected(object sender, SelectionChangedEventArgs e) {
       if (MasteriesBox.SelectedIndex < 0) return;
       Client.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
-      RiotCalls.MasteryBookService.SaveMasteryBook(Client.Masteries);
+      RiotServices.MasteryBookService.SaveMasteryBook(Client.Masteries);
     }
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {

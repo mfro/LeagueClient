@@ -46,14 +46,14 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.CapService.IndicateGroupAcceptanceAsCandidate((int) payload["slotId"], true, (string) payload["groupId"]);
+      RiotServices.CapService.IndicateGroupAcceptanceAsCandidate((int) payload["slotId"], true, (string) payload["groupId"]);
       time.Dispose();
       Client.QueueManager.ShowPage(new CapLobbyPage(player));
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       time.Dispose();
-      RiotCalls.CapService.Quit();
+      RiotServices.CapService.Quit();
     }
 
     public Control GetControl() {

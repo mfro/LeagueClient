@@ -229,7 +229,7 @@ namespace LeagueClient.ClientUI.Main {
               case "gatekeeperRestrictedV1": break;
               case "groupCreatedV3":
                 GotGroupData((CapGroupData) (dynamic) json);
-                Task<LobbyStatus> task = RiotCalls.GameInvitationService.CreateGroupFinderLobby(61, GroupId);
+                Task<LobbyStatus> task = RiotServices.GameInvitationService.CreateGroupFinderLobby(61, GroupId);
                 task.ContinueWith(t => GotLobbyStatus(t.Result));
                 break;
               case "groupNoLongerAvailableV1":
@@ -409,10 +409,10 @@ namespace LeagueClient.ClientUI.Main {
       if (state == CapLobbyState.Selecting) {
         switch (e.PropertyName) {
           case nameof(cap.Position):
-            RiotCalls.CapService.SelectAdvertisedPosition(cap.Position, cap.SlotId);
+            RiotServices.CapService.SelectAdvertisedPosition(cap.Position, cap.SlotId);
             break;
           case nameof(cap.Role):
-            RiotCalls.CapService.SelectAdvertisedRole(cap.Role, cap.SlotId);
+            RiotServices.CapService.SelectAdvertisedRole(cap.Role, cap.SlotId);
             break;
         }
       } else {
@@ -427,9 +427,9 @@ namespace LeagueClient.ClientUI.Main {
 
     private void CandidateReacted(object sender, bool e) {
       if (e) {
-        RiotCalls.CapService.AcceptCandidate((sender as CapOtherPlayer).Player.SlotId);
+        RiotServices.CapService.AcceptCandidate((sender as CapOtherPlayer).Player.SlotId);
       } else {
-        RiotCalls.CapService.DeclineCandidate((sender as CapOtherPlayer).Player.SlotId);
+        RiotServices.CapService.DeclineCandidate((sender as CapOtherPlayer).Player.SlotId);
       }
     }
 
@@ -448,10 +448,10 @@ namespace LeagueClient.ClientUI.Main {
     private void Me_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
       switch (e.PropertyName) {
         case nameof(CapPlayer.Role):
-          RiotCalls.CapService.PickRole(me.Role, me.SlotId);
+          RiotServices.CapService.PickRole(me.Role, me.SlotId);
           break;
         case nameof(CapPlayer.Position):
-          RiotCalls.CapService.PickPosition(me.Position, me.SlotId);
+          RiotServices.CapService.PickPosition(me.Position, me.SlotId);
           break;
       }
     }
@@ -492,12 +492,12 @@ namespace LeagueClient.ClientUI.Main {
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
       if (me.Champion?.key != Popup.ChampSelector.SelectedChampion.key) {
         me.Champion = Popup.ChampSelector.SelectedChampion;
-        var guid = RiotCalls.CapService.PickChampion(Popup.ChampSelector.SelectedChampion.key);
+        var guid = RiotServices.CapService.PickChampion(Popup.ChampSelector.SelectedChampion.key);
         if (e.num > 0)
-          RiotCalls.AddHandler(guid, lcds => RiotCalls.CapService.PickSkin(e.id, false));
+          RiotServices.AddHandler(guid, lcds => RiotServices.CapService.PickSkin(e.id, false));
       } else {
         if (e.num > 0)
-          RiotCalls.CapService.PickSkin(e.id, false);
+          RiotServices.CapService.PickSkin(e.id, false);
       }
       Popup_Close(sender, null);
     }
@@ -510,7 +510,7 @@ namespace LeagueClient.ClientUI.Main {
         me.Spell2 = spell;
         Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell2Id = spell.key;
       }
-      RiotCalls.CapService.PickSpells(me.Spell1.key, me.Spell2.key);
+      RiotServices.CapService.PickSpells(me.Spell1.key, me.Spell2.key);
       Popup.BeginStoryboard(App.FadeOut);
     }
     #endregion
@@ -519,19 +519,19 @@ namespace LeagueClient.ClientUI.Main {
 
     private void ReadyButt_Click(object sender, RoutedEventArgs e) {
       if (IsCaptain) {
-        RiotCalls.CapService.StartMatchmaking();
+        RiotServices.CapService.StartMatchmaking();
       } else {
         bool ready = !me.Status.Equals(CapStatus.Ready);
-        RiotCalls.CapService.IndicateReadyness(true);
+        RiotServices.CapService.IndicateReadyness(true);
       }
     }
 
     private void SoloSearchButt_Click(object sender, RoutedEventArgs e) {
       if (state == CapLobbyState.Inviting) {
-        RiotCalls.CapService.SpecCandidates();
+        RiotServices.CapService.SpecCandidates();
         SoloSearchButt.Visibility = Visibility.Collapsed;
       } else
-        RiotCalls.CapService.SearchForCandidates();
+        RiotServices.CapService.SearchForCandidates();
     }
 
     private void InviteButt_Click(object sender, RoutedEventArgs e) {
@@ -543,19 +543,19 @@ namespace LeagueClient.ClientUI.Main {
       foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
         double id;
         if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-          RiotCalls.GameInvitationService.Invite(id);
+          RiotServices.GameInvitationService.Invite(id);
         } else Client.TryBreak("Cannot parse user " + user.Key);
       }
     }
 
-    private void FindAnotherButt_Click(object sender, RoutedEventArgs e) => RiotCalls.CapService.SearchForAnotherGroup();
+    private void FindAnotherButt_Click(object sender, RoutedEventArgs e) => RiotServices.CapService.SearchForAnotherGroup();
 
     #endregion
 
     #region IClientSubPage
     public void ForceClose() {
-      RiotCalls.GameInvitationService.Leave();
-      RiotCalls.CapService.Quit();
+      RiotServices.GameInvitationService.Leave();
+      RiotServices.CapService.Quit();
       chatRoom?.LeaveChat();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }

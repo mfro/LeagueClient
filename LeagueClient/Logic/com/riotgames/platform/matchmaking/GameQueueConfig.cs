@@ -37,7 +37,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     public String CacheName { get; set; }
 
     [SerializedName("id")]
-    public Double Id { get; set; }
+    public Int32 Id { get; set; }
 
     [SerializedName("queueBonusKey")]
     public String QueueBonusKey { get; set; }

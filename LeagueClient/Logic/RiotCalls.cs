@@ -19,8 +19,7 @@ using LeagueClient.Logic.Cap;
 using LeagueClient.Logic.com.riotgames.other;
 
 namespace LeagueClient.Logic.Riot {
-  public class RiotCalls {
-
+  public class RiotServices {
     public delegate void OnInvocationErrorHandler(object sender, Exception error);
     public static event OnInvocationErrorHandler OnInvocationError;
 

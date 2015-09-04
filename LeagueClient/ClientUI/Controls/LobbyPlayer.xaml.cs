@@ -60,7 +60,7 @@ namespace LeagueClient.ClientUI.Controls {
     private bool forceExpand;
       
     public LobbyPlayer(PlayerParticipant player, bool expanded) {
-      RiotCalls.SummonerService.GetSummonerByName(player.SummonerName).ContinueWith(GotSummonerData);
+      RiotServices.SummonerService.GetSummonerByName(player.SummonerName).ContinueWith(GotSummonerData);
       SummonerIcon = LeagueData.GetProfileIconImage(player.ProfileIconId);
       UserName = player.SummonerName;
 
@@ -74,7 +74,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public LobbyPlayer(Member member, bool expanded) {
-      RiotCalls.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
+      RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
 
       InitializeComponent();
 

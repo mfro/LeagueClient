@@ -31,15 +31,15 @@
       <Setter Property="ItemTemplate">
         <Setter.Value>
           <DataTemplate>
-            <TextBlock Style="{StaticResource Control}" FontSize="14" Height="20" Width="150" Text="{Binding}"/>
+             <TextBlock Style="{StaticResource Control}" Text="{Binding}" Padding="4 2" FontSize="14"/>
           </DataTemplate>
         </Setter.Value>
       </Setter>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-              <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{TemplateBinding Background}">
+              <StackPanel Orientation="Vertical" IsItemsHost="True"/>
             </ScrollViewer>
           </ControlTemplate>
         </Setter.Value>
@@ -96,13 +96,13 @@
       </Grid.RowDefinitions>
       <Label FontSize="24" Padding="8 2" Background="{StaticResource Back1Brush}" Grid.ColumnSpan="3" Name="MapNameLabel">Summoner's Rift</Label>
       <Label Grid.Row="1" Padding="8 2" Margin="0 10" Background="{StaticResource Back1Brush}" FontSize="18">PvP</Label>
-      <ListView Grid.Row="2" Name="PvPQueueList" SelectionChanged="QueueList_SelectionChanged">
+      <ListBox Grid.Row="2" Name="PvPQueueList" SelectionChanged="QueueList_SelectionChanged">
 
-      </ListView>
+      </ListBox>
       <Label Grid.Row="1" Grid.Column="2" Padding="8 2" Margin="0 10" Background="{StaticResource Back1Brush}" FontSize="18">Co-op vs AI</Label>
-      <ListView Grid.Row="2" Grid.Column="2" Name="BotsQueueList" SelectionChanged="QueueList_SelectionChanged">
+      <ListBox Grid.Row="2" Grid.Column="2" Name="BotsQueueList" SelectionChanged="QueueList_SelectionChanged">
 
-      </ListView>
+      </ListBox>
     </Grid>
 
     <StackPanel HorizontalAlignment="Left" Grid.Row="1">
@@ -115,69 +115,4 @@
       <Button Name="QueueButton2" Visibility="Collapsed" Margin="0 0 10 10" Width="250" Padding="0 4" Click="QueueButton2_Click">Create Lobby</Button>
     </StackPanel>
   </Grid>
-  <!--<Grid Background="{StaticResource Back2Brush}">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="40"/>
-      <RowDefinition Height="190"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="40"/>
-    </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="150"/>
-      <ColumnDefinition Width="150"/>
-      <ColumnDefinition Width="150"/>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <UserControl Background="{StaticResource Back1Brush}" Margin="-5" Grid.Row="1" Grid.RowSpan="2"
-                 Grid.Column="1" Grid.ColumnSpan="3"/>
-    <Image Grid.Row="1" Grid.RowSpan="2" Name="BackImage1"/>
-    <Image Grid.Row="1" Grid.RowSpan="2" Name="BackImage2" Grid.Column="4"/>
-    -->
-  <!--Region Lists-->
-  <!--
-    <ListBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding GameGroups}"
-             Name="GroupList">
-    </ListBox>
-    <ListBox Grid.Column="2" Grid.Row="1" ItemsSource="{Binding GameModes}"
-             Name="ModeList">
-      <ListBox.ItemTemplate>
-        <DataTemplate>
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="18"/>
-              <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Style="{StaticResource Control}" FontSize="14" Text="{Binding Name}"/>
-            <TextBlock Style="{StaticResource Control}" Grid.Row="1" FontSize="12" Text="{Binding Info}"/>
-          </Grid>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-    <ListBox Grid.Column="3" Grid.Row="1" ItemsSource="{Binding GameQueues}"
-             Name="QueueList">
-    </ListBox>
-    -->
-  <!--End Region-->
-  <!--
-    <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Background="{StaticResource Back1Brush}">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="auto"/>
-      </Grid.RowDefinitions>
-      <TextBlock Style="{StaticResource Control}" TextWrapping="Wrap" Padding="4" FontSize="16"  Name="ModeTitle"
-                 Background="{StaticResource ForeBrush}" Visibility="Collapsed"/>
-      <TextBlock Style="{StaticResource Control}" TextWrapping="Wrap" Padding="4" FontSize="16" HorizontalAlignment="Right" Name="QueueTitle"/>
-      <TextBlock Style="{StaticResource Control}" FontSize="14" TextWrapping="Wrap" Grid.Row="1" Padding="4" Name="GroupDetails"/>
-      <TextBlock Style="{StaticResource Control}" FontSize="14" TextWrapping="Wrap" Grid.Row="2" Padding="4" Name="ModeDetails"/>
-      <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
-              Margin="0 0 155 0" Width="150" Grid.Row="3" Name="Join1"
-              Visibility="Collapsed" Click="Join1_Click"/>
-      <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
-              Margin="0" Width="150" Grid.Row="3" Name="Join2"
-              Visibility="Collapsed" Click="Join2_Click"/>
-    </Grid>
-  </Grid>-->
 </Page>

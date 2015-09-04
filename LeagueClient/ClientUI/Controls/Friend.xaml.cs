@@ -81,8 +81,8 @@ namespace LeagueClient.ClientUI.Controls {
       Status = new LeagueStatus(p.Status, p.Show);
       InGameString = Status.GameStatus.Value;
       if(Status.GameStatus == ChatStatus.inGame) {
-        RiotCalls.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
-        RiotCalls.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
+        RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(UserName).ContinueWith(FoundSpectatorInfo);
+        RiotServices.SummonerService.GetSummonerByName(UserName).ContinueWith(GotSummoner);
       } else {
         Game = null;
         GameInfo = null;

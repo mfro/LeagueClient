@@ -53,7 +53,7 @@ namespace LeagueClient.ClientUI.Controls {
           TalentId = icon.Data.id
         });
       }
-      await RiotCalls.MasteryBookService.SaveMasteryBook(Client.Masteries);
+      await RiotServices.MasteryBookService.SaveMasteryBook(Client.Masteries);
       if (System.Threading.Thread.CurrentThread == Dispatcher.Thread) Changed.Text = "";
       else Dispatcher.Invoke(() => Changed.Text = "");
       unsaved = false;

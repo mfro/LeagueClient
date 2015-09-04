@@ -78,11 +78,11 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.AcceptPoppedGame(true);
+      RiotServices.GameService.AcceptPoppedGame(true);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.AcceptPoppedGame(false);
+      RiotServices.GameService.AcceptPoppedGame(false);
     }
 
     public Control GetControl() {

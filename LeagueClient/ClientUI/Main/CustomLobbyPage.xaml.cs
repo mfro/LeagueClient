@@ -151,7 +151,7 @@ namespace LeagueClient.ClientUI.Main {
     public bool CanClose => true;
 
     public void ForceClose() {
-      RiotCalls.GameService.QuitGame();
+      RiotServices.GameService.QuitGame();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 
@@ -175,29 +175,29 @@ namespace LeagueClient.ClientUI.Main {
       foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
         double id;
         if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-          RiotCalls.GameInvitationService.Invite(id);
+          RiotServices.GameInvitationService.Invite(id);
         } else Client.TryBreak("Cannot parse user " + user.Key);
       }
     }
 
     private void RedJoin_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.SwitchTeams(GameDto.Id);
+      RiotServices.GameService.SwitchTeams(GameDto.Id);
       RedJoin.Visibility = Visibility.Collapsed;
       BlueJoin.Visibility = Visibility.Visible;
     }
 
     private void BlueJoin_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.SwitchTeams(GameDto.Id);
+      RiotServices.GameService.SwitchTeams(GameDto.Id);
       RedJoin.Visibility = Visibility.Visible;
       BlueJoin.Visibility = Visibility.Collapsed;
     }
 
     private void Spectate_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.SwitchPlayerToObserver(GameDto.Id);
+      RiotServices.GameService.SwitchPlayerToObserver(GameDto.Id);
     }
 
     private void Start_Click(object sender, RoutedEventArgs e) {
-      RiotCalls.GameService.StartChampionSelection(GameDto.Id, GameDto.OptimisticLock);
+      RiotServices.GameService.StartChampionSelection(GameDto.Id, GameDto.OptimisticLock);
     }
 
     #endregion

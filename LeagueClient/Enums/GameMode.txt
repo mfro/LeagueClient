@@ -1,3 +1,8 @@
 ﻿CLASSIC = Classic
 ARAM = ARAM
 ODIN = Dominion
+TUTORIAL = Tutorial
+ONEFORALL = One for All
+ASCENSION = Ascension
+FIRSTBLOOD = Snowdown Showdown
+KINGPORO = King Poro

@@ -74,7 +74,7 @@ namespace LeagueClient {
       currentPage = page;
       ContentFrame.Content = page;
       Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
-      RiotCalls.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
+      RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
 
     public void ShowInGamePage() {

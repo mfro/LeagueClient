@@ -73,7 +73,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       timer.Dispose();
-      Logic.Riot.RiotCalls.CapService.Quit();
+      Logic.Riot.RiotServices.CapService.Quit();
       Popped?.Invoke(this, new QueuePoppedEventArgs(null));
     }
 
