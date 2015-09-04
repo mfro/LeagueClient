@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;

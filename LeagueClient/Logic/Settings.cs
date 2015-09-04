@@ -10,7 +10,7 @@ using MFroehlich.Parsing;
 using MFroehlich.Parsing.DynamicJSON;
 using static System.Reflection.CustomAttributeExtensions;
 
-namespace LeagueClient {
+namespace LeagueClient.Logic {
   [JSONSerializable]
   public class Settings {
     public string Username { get; set; }

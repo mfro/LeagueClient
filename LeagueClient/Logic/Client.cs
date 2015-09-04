@@ -21,8 +21,11 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Xml;
 
-namespace LeagueClient {
+namespace LeagueClient.Logic {
   public static class Client {
+    private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    #region Constants
     internal const string
       RiotGamesDir = @"D:\Riot Games",
       Server = "prod.na2.lol.riotgames.com",
@@ -38,9 +41,9 @@ namespace LeagueClient {
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
       LoginVideoPath = Path.Combine(DataPath, "login.mp4"),
       LogFilePath = Path.Combine(DataPath, "log.txt");
+    #endregion
 
-    private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
+    #region Properties
     internal static RtmpClient RtmpConn { get; set; }
 
     internal static Session UserSession { get; set; }
@@ -76,10 +79,7 @@ namespace LeagueClient {
     internal static Settings Settings { get; set; }
 
     internal static Process GameProcess { get; set; }
-
-    public static long GetMilliseconds() {
-      return (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
-    }
+    #endregion
 
     static Client() {
       if (!Directory.Exists(DataPath)) Directory.CreateDirectory(DataPath);
@@ -349,6 +349,8 @@ namespace LeagueClient {
       if (Debugger.IsAttached) Debugger.Break();
     }
 
+    public static long GetMilliseconds() => (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
+
     #endregion
 
     public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
@@ -384,15 +386,6 @@ namespace LeagueClient {
         Log("Exception while handling message: " + x.Message);
         TryBreak(x.Message);
       }
-    }
-  }
-
-  public class MessageHandlerArgs : EventArgs {
-    public bool Handled { get; set; }
-    public MessageReceivedEventArgs InnerEvent { get; private set; }
-
-    public MessageHandlerArgs(MessageReceivedEventArgs args){
-      InnerEvent = args;
     }
   }
 }

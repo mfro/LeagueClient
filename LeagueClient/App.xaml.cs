@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing;
 using MFroehlich.Parsing.DynamicJSON;

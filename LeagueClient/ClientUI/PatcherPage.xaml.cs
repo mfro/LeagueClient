@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using LeagueClient.Logic;
 using MFroehlich.League.Assets;
 
 namespace LeagueClient.ClientUI {

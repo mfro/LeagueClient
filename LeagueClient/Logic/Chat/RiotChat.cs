@@ -21,6 +21,10 @@ using LeagueClient.Logic.Riot;
 
 namespace LeagueClient.Logic.Chat {
   public class RiotChat {
+    private static readonly List<ChatStatus> DndStatuses = new List<ChatStatus> {
+      ChatStatus.championSelect, ChatStatus.tutorial, ChatStatus.inGame, ChatStatus.inQueue, ChatStatus.spectating
+    };
+
     public event EventHandler<IEnumerable<Friend>> ChatListUpdated;
     public event EventHandler<StatusUpdatedEventArgs> StatusUpdated;
 
@@ -109,31 +113,6 @@ namespace LeagueClient.Logic.Chat {
       try { App.Current.Dispatcher.Invoke(ResetList); } catch { timer.Dispose(); }
     }
 
-    private static string GetObfuscatedChatroomName(string Subject, string Type) {
-      int bitHack = 0;
-      byte[] data = System.Text.Encoding.UTF8.GetBytes(Subject);
-      byte[] result;
-      var sha = new SHA1CryptoServiceProvider();
-      result = sha.ComputeHash(data);
-      string obfuscatedName = "";
-      int incrementValue = 0;
-      while (incrementValue < result.Length) {
-        bitHack = result[incrementValue];
-        obfuscatedName = obfuscatedName + Convert.ToString(((uint) (bitHack & 240) >> 4), 16);
-        obfuscatedName = obfuscatedName + Convert.ToString(bitHack & 15, 16);
-        incrementValue = incrementValue + 1;
-      }
-      obfuscatedName = Regex.Replace(obfuscatedName, @"/\s+/gx", "");
-      obfuscatedName = Regex.Replace(obfuscatedName, @"/[^a-zA-Z0-9_~]/gx", "");
-      return Type + "~" + obfuscatedName;
-    }
-
-    private static string GetChatroomJID(string obfuscatedName, bool isPublic, string pass = null) {
-      if (!isPublic) return obfuscatedName + "@sec.pvp.net";
-      else if (pass == null) return obfuscatedName + "@lvl.pvp.net";
-      else return obfuscatedName + "@conference.pvp.net";
-    }
-
     #region Event Handlers
     void OnPrimarySessionChange(object sender, jabber.JID bare) {
       if (!Friends.ContainsKey(bare.User)) {
@@ -215,32 +194,18 @@ namespace LeagueClient.Logic.Chat {
     }
     #endregion
 
-    //var convo = new ChatConversation(item.Nickname, item.JID.User);
-    //convo.MessageSent += OnSendMessage;
-    //    convo.ChatOpened += OnChatOpen;
-    //    convo.ChatClosed += OnChatClose;
-
-
-    /// <summary>
-    /// Minimizes any open chat conversations
-    /// </summary>
-    public void CloseAll() {
-      foreach (var item in OpenChats) item.Open = false;
-    }
-
-    public void Logout() {
-      conn.Close();
-    }
-
+    #region Status
     /// <summary>
     /// Updates the current status string
     /// </summary>
     /// <param name="message">The status message to display</param>
     public void UpdateStatus(string message) {
       var status = new LeagueStatus(Message = message, Status);
-      var args = new StatusUpdatedEventArgs(status, PresenceType.available, Show);
+      var computed = DndStatuses.Contains(Status) ? StatusShow.Dnd : Show;
+
+      var args = new StatusUpdatedEventArgs(status, PresenceType.available, computed);
+      conn.Presence(args.PresenceType, args.Status.ToXML(), args.Show.ToString().ToLower(), 0);
       StatusUpdated?.Invoke(this, args);
-      conn.Presence(args.PresenceType, status.ToXML(), Show.ToString().ToLower(), 0);
     }
 
     public void UpdateStatus(ChatStatus status) {
@@ -251,6 +216,33 @@ namespace LeagueClient.Logic.Chat {
     public void UpdateStatus(StatusShow show) {
       this.Show = show;
       UpdateStatus(Message);
+    }
+    #endregion
+
+    #region Chat Rooms
+    private static string GetObfuscatedChatroomName(string Subject, string Type) {
+      int bitHack = 0;
+      byte[] data = System.Text.Encoding.UTF8.GetBytes(Subject);
+      byte[] result;
+      var sha = new SHA1CryptoServiceProvider();
+      result = sha.ComputeHash(data);
+      string obfuscatedName = "";
+      int incrementValue = 0;
+      while (incrementValue < result.Length) {
+        bitHack = result[incrementValue];
+        obfuscatedName = obfuscatedName + Convert.ToString(((uint) (bitHack & 240) >> 4), 16);
+        obfuscatedName = obfuscatedName + Convert.ToString(bitHack & 15, 16);
+        incrementValue = incrementValue + 1;
+      }
+      obfuscatedName = Regex.Replace(obfuscatedName, @"/\s+/gx", "");
+      obfuscatedName = Regex.Replace(obfuscatedName, @"/[^a-zA-Z0-9_~]/gx", "");
+      return Type + "~" + obfuscatedName;
+    }
+
+    private static string GetChatroomJID(string obfuscatedName, bool isPublic, string pass = null) {
+      if (!isPublic) return obfuscatedName + "@sec.pvp.net";
+      else if (pass == null) return obfuscatedName + "@lvl.pvp.net";
+      else return obfuscatedName + "@conference.pvp.net";
     }
 
     public static JID GetTeambuilderRoom(string groupId, string pass) {
@@ -270,6 +262,7 @@ namespace LeagueClient.Logic.Chat {
       room.Nickname = Client.LoginPacket.AllSummonerData.Summoner.Name;
       return room;
     }
+    #endregion
 
     /// <summary>
     /// Parses the internal summoner ID of a friend from the JID used in the XMPP chat service
@@ -280,6 +273,17 @@ namespace LeagueClient.Logic.Chat {
       double d;
       if (double.TryParse(user.User.Substring(3), out d)) return d;
       else throw new FormatException(user.User + " is not correctly formatted");
+    }
+
+    /// <summary>
+    /// Minimizes any open chat conversations
+    /// </summary>
+    public void CloseAll() {
+      foreach (var item in OpenChats) item.Open = false;
+    }
+
+    public void Logout() {
+      conn.Close();
     }
 
     public enum State {

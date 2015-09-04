@@ -11,6 +11,7 @@ using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
+using LeagueClient.Logic;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>

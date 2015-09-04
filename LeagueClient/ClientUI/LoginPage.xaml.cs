@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic;
 using MFroehlich.Parsing.DynamicJSON;
 using MFroehlich.Parsing.MFro;
 
