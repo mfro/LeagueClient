@@ -94,12 +94,12 @@ namespace LeagueClient.Logic.Riot {
       }
 
       /// <summary>
-      /// Call kudos (get information or send a kudos).
+      /// Report a player
       /// </summary>
       /// <param name="JSONInformation"></param>
       /// <returns>Json Data about kudos</returns>
       public static Task<LcdsResponseString> CallKudos(String JSONInformation) {
-        return InvokeAsync<LcdsResponseString>(Destination, "callKudos", JSONInformation);
+        return InvokeAsync<LcdsResponseString>(Destination, "reportPlayer", JSONInformation);
       }
 
       //TODO Finish riot calls ??

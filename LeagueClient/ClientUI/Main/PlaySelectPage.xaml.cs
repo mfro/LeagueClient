@@ -10,6 +10,8 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -26,123 +28,150 @@ namespace LeagueClient.ClientUI.Main {
   /// Interaction logic for PlaySelectPage.xaml
   /// </summary>
   public partial class PlaySelectPage : Page, IClientSubPage {
-    private static dynamic GameTypesRef = JSON.ParseObject(Properties.Resources.Games);
-    
-    public BindingList<dynamic> GameGroups { get; } = new BindingList<dynamic>();
-    public BindingList<dynamic> GameModes { get; } = new BindingList<dynamic>();
-    public BindingList<dynamic> GameQueues { get; } = new BindingList<dynamic>();
-    private dynamic selected;
+    private static readonly Duration
+      MoveDuration = new Duration(TimeSpan.FromMilliseconds(200)),
+      ButtonDuration = new Duration(TimeSpan.FromMilliseconds(80));
+
+    private static readonly AnimationTimeline
+      MarginShrink = new ThicknessAnimation(new Thickness(MarginSize - BorderSize, MarginSize - BorderSize, -3, -3), MoveDuration),
+      BorderExpand = new ThicknessAnimation(new Thickness(BorderSize), MoveDuration),
+      MarginExpand = new ThicknessAnimation(new Thickness(MarginSize, MarginSize, 0, 0), MoveDuration),
+      BorderShrink = new ThicknessAnimation(new Thickness(0), MoveDuration);
+
+    private const int BorderSize = 3;
+    private const int MarginSize = 10;
 
     public event EventHandler Close;
+
+    private Border currentUI;
+    private GameMap currentMap;
+    private Dictionary<GameMap, List<IPlayableQueue>> queues = new Dictionary<GameMap, List<IPlayableQueue>>();
+
+    private Action<int> ButtonAction;
+    private GameQueueConfig currentConfig;
 
     public PlaySelectPage() {
       InitializeComponent();
 
-      foreach (var item in GameTypesRef.Games)
-        if (item.Value.Games.Count > 0)
-          GameGroups.Add(item.Value);
+      #region Queues
+      queues[GameMap.SummonersRift] = new List<IPlayableQueue> {
+        new PlayablePvpQueue("Team Builder", SelectTeambuilder, 61),
+        new PlayablePvpQueue("Blind Pick", SelectStandardQueue, 2),
+        new PlayablePvpQueue("Draft Pick", SelectStandardQueue, 14),
+        new PlayablePvpQueue("Ranked Solo / Duo Queue", SelectStandardQueue, 4),
+        new PlayablePvpQueue("Ranked Teams", SelectRankedTeams, 42),
+        new PlayableBotsQueue("Intro", SelectBots, 31, "INTRO"),
+        new PlayableBotsQueue("Beginner", SelectBots, 32, "EASY"),
+        new PlayableBotsQueue("Intermediate", SelectBots, 33, "MEDIUM"),
+      };
 
-      GroupList.MouseUp += (src, e) => GroupSelected();
-      ModeList.MouseUp += (src, e) => ModeSelected();
-      QueueList.MouseUp += (src, e) => GameSelected();
-    }
+      queues[GameMap.TheTwistedTreeline] = new List<IPlayableQueue> {
+        new PlayablePvpQueue("Blind Pick", SelectStandardQueue, 8),
+        new PlayablePvpQueue("Ranked Teams", SelectStandardQueue, 41),
+        new PlayableBotsQueue("Beginner", SelectBots, 52, "EASY"),
+        new PlayableBotsQueue("Intermediate", SelectBots, 52, "MEDIUM"),
+      };
 
-    public static void Setup() {
-      Func<dynamic, bool> GameCheck = g => g.Queues.Count == 0;
-      Func<dynamic, bool> QueueCheck = q => !Client.AvailableQueues.ContainsKey(q["Id"]) && q["Id"] >= 0;
-      foreach (var group in GameTypesRef.Games.Values) {
-        foreach (var game in group.Games) {
-          var queues = (IEnumerable<object>) Enumerable.Where(game.Queues.DynamicList, QueueCheck);
-          foreach (var queue in queues.ToList())
-            game.Queues.Remove(queue);
-        }
-        var games = (IEnumerable<object>) Enumerable.Where(group.Games.DynamicList, GameCheck);
-        foreach (var item in games.ToList())
-          group.Games.Remove(item);
+      queues[GameMap.TheCrystalScar] = new List<IPlayableQueue> {
+        new PlayablePvpQueue("Blind Pick", SelectStandardQueue, 16),
+        new PlayablePvpQueue("Ranked Teams", SelectStandardQueue, 17),
+        new PlayableBotsQueue("Beginner", SelectBots, 25, "EASY"),
+        new PlayableBotsQueue("Intermediate", SelectBots, 25, "MEDIUM"),
+      };
+
+      queues[GameMap.HowlingAbyss] = new List<IPlayableQueue> {
+        new PlayablePvpQueue("ARAM", SelectStandardQueue, 65),
+      };
+      #endregion
+
+      SummonersRift.Tag = GameMap.SummonersRift;
+      CrystalScar.Tag = GameMap.TheCrystalScar;
+      TwistedTreeline.Tag = GameMap.TheTwistedTreeline;
+      HowlingAbyss.Tag = GameMap.HowlingAbyss;
+
+      foreach (var border in new[] { SummonersRift, CrystalScar, TwistedTreeline, HowlingAbyss }) {
+        border.MouseEnter += Border_MouseEnter;
+        border.MouseLeave += Border_MouseLeave;
+        border.MouseUp += Border_MouseUp;
       }
+
+      currentUI = SummonersRift;
+      MapSelected();
     }
 
-    void GameSelected() {
-      selected = null;
-      Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Collapsed;
-      if (QueueList.SelectedIndex < 0) return;
-      var info = (dynamic) QueueList.SelectedItem;
-      QueueTitle.Text = info.Name;
-      GameQueueConfig config = null;
-      if (info.Id >= 0) config = Client.AvailableQueues[info.Id];
-      var bots = "";
-      if(info.ContainsKey("BotDifficulty")) bots = info.BotDifficulty;
-      int type = 0;
-      if (info.ContainsKey("Type")) type = info.Type;
-      selected = new { Id = info.Id, Config = config, Bots = bots, Type = type };
-      switch (type) {
-        case 3:
-        case 0:
-          Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Visible;
-          Join1.Content = "Enter Soloqueue";
-          Join2.Content = "Create Lobby";
-          break;
+    private void MapSelected() {
+      if (currentMap == currentUI.Tag) return;
+      currentMap = (GameMap) currentUI.Tag;
+      currentUI.Effect = new DropShadowEffect { BlurRadius = 15, Color = App.FocusColor, ShadowDepth = 0 };
+      MapNameLabel.Content = currentMap.DisplayName;
+      QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Collapsed;
+
+      var pvps = queues[currentMap].Where(q => (q.Type == 0 || Client.AvailableQueues.ContainsKey(q.Type)) && q is PlayablePvpQueue);
+      var bots = queues[currentMap].Where(q => (q.Type == 0 || Client.AvailableQueues.ContainsKey(q.Type)) && q is PlayableBotsQueue);
+
+      PvPQueueList.ItemsSource = pvps;
+      BotsQueueList.ItemsSource = bots;
+    }
+
+    private void QueueList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      var src = sender as ListView;
+      if (src.SelectedIndex < 0) return;
+      if (sender == PvPQueueList) BotsQueueList.SelectedIndex = -1;
+      else PvPQueueList.SelectedIndex = -1;
+      var queue = (IPlayableQueue) src.SelectedItem;
+      queue.Invoke();
+      if (queue.Type > 0) currentConfig = Client.AvailableQueues[queue.Type];
+      else currentConfig = null;
+    }
+
+    #region Selections
+    private void SelectTeambuilder(int type) {
+      QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Visible;
+      QueueButton1.Content = "Enter Soloqueue";
+      QueueButton2.Content = "Create Lobby";
+      ButtonAction = PlayTeambuilder;
+    }
+
+    private void SelectStandardQueue(int type) {
+      QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Visible;
+      QueueButton1.Content = "Enter Soloqueue";
+      QueueButton2.Content = "Create Lobby";
+      ButtonAction = PlayStandard;
+    }
+
+    private void SelectRankedTeams(int type) {
+      QueueButton1.Visibility = Visibility.Visible;
+      QueueButton1.Content = "Create Lobby";
+      ButtonAction = PlayRankedTeams;
+    }
+
+    private void SelectBots(int type, string a) {
+      QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Visible;
+      QueueButton1.Content = "Enter Soloqueue";
+      QueueButton2.Content = "Create Lobby";
+      ButtonAction = PlayBots;
+    }
+    #endregion
+
+    #region Plays
+    private void PlayTeambuilder(int button) {
+      switch (button) {
+        case 0: Client.QueueManager.ShowPage(new CapSoloPage()); break;
         case 1:
-          Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Visible;
-          Join1.Content = "Enter Soloqueue";
-          Join2.Content = "Invite Duo Partner";
-          break;
-        case 2:
-          Join1.Visibility = System.Windows.Visibility.Collapsed;
-          Join2.Visibility = System.Windows.Visibility.Visible;
-          Join2.Content = "Create Lobby";
-          break;
-        case 4:
-          Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Visible;
-          Join1.Content = "Create Lobby";
-          Join2.Content = "Join Lobby";
+          Client.QueueManager.ShowPage(new CapLobbyPage(true));
+          RiotCalls.CapService.CreateGroup();
           break;
       }
     }
-    
-    void ModeSelected() {
-      GameQueues.Clear();
-      QueueTitle.Text = "";
-      Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Collapsed;
-      if (ModeList.SelectedIndex < 0) return;
-      dynamic item = ModeList.SelectedItem;
-      foreach (var queueId in item.Queues)
-        GameQueues.Add(queueId);
-      if (GameQueues.Count == 1) {
-        QueueList.SelectedIndex = 0;
-        GameSelected();
-      }
-      ModeTitle.Visibility = System.Windows.Visibility.Visible;
-      ModeTitle.Text = $"{item.Name} - {item.Info}";
-      ModeDetails.Text = GameTypesRef.Modes[item.Mode];
-    }
 
-    void GroupSelected() {
-      GameModes.Clear();
-      GameQueues.Clear();
-      ModeTitle.Visibility = System.Windows.Visibility.Collapsed;
-      QueueTitle.Text = "";
-      ModeDetails.Text = "";
-      Join1.Visibility = Join2.Visibility = System.Windows.Visibility.Collapsed;
-      if (GroupList.SelectedIndex < 0) return;
-      foreach (var item in ((dynamic) GroupList.SelectedItem).Games)
-        GameModes.Add(item);
-      GroupDetails.Text = ((dynamic) GroupList.SelectedItem).Details;
-    }
-
-    private async void Join1_Click(object sender, RoutedEventArgs e) {
-      if (Close != null) Close(this, new EventArgs());
-      var mmp = new MatchMakerParams();
-      mmp.BotDifficulty = selected.Bots;
-      mmp.QueueIds = new int[] { selected.Id };
-      switch ((int) selected.Type) {
-        case 0://DEFAULT
-        case 1://RANKED SOLO / DUO
+    private async void PlayStandard(int button) {
+      var mmp = new MatchMakerParams { QueueIds = new[] { (int) currentConfig.Id } };
+      switch (button) {
+        case 0:
           var search = await RiotCalls.MatchmakerService.AttachToQueue(mmp);
-          if(search.PlayerJoinFailures?.Count > 0) {
+          if (search.PlayerJoinFailures?.Count > 0) {
             switch (search.PlayerJoinFailures[0].ReasonFailed) {
               case "QUEUE_DODGER":
-                Client.QueueManager.ShowNotification(AlertFactory.QueueDodger());
                 Client.QueueManager.ShowQueuer(new BingeQueuer(search.PlayerJoinFailures[0].PenaltyRemainingTime));
                 break;
             }
@@ -150,41 +179,77 @@ namespace LeagueClient.ClientUI.Main {
             Client.QueueManager.ShowQueuer(new DefaultQueuer(mmp));
           }
           break;
-        case 3://TEAMBUILDER
-          Client.QueueManager.ShowPage(new CapSoloPage());
-          break;
-        case 4://CUSTOM
-          Client.QueueManager.ShowPage(new CustomCreatePage());
+        case 1:
+          var lobby = new DefaultLobbyPage(mmp);
+          var status = await RiotCalls.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]);
+          lobby.GotLobbyStatus(status);
+          Client.QueueManager.ShowPage(lobby);
           break;
       }
     }
 
-    private void Join2_Click(object sender, RoutedEventArgs e) {
-      if (Close != null) Close(this, new EventArgs());
-      var mmp = new MatchMakerParams();
-      mmp.BotDifficulty = selected.Bots;
-      mmp.QueueIds = new int[] { selected.Id };
-      switch ((int) selected.Type) {
-        case 0:
-          var lobby = new DefaultLobbyPage(mmp);
-          RiotCalls.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]).ContinueWith(t => Dispatcher.MyInvoke(lobby.GotLobbyStatus, t.Result));
-          Client.QueueManager.ShowPage(lobby);
-          break;
-        case 1:
-          //TODO Ranked duo game lobby
-        case 2:
-          //TODO Ranked team game lobby
-          break;
-        case 3:
-          Client.QueueManager.ShowPage(new CapLobbyPage(true));
-          RiotCalls.CapService.CreateGroup();
-          break;
-        case 4:
-          //TODO Custom game list page
-          //Client.QueueManager.ShowPage(new CustomListPage());
+    private void PlayRankedTeams(int button) {
+      switch (button) {
+        case 0: //TODO Ranked Teams
           break;
       }
     }
+
+    private void PlayBots(int button) {
+      //TODO Bots
+      switch (button) {
+        case 0:
+
+          break;
+        case 1:
+
+          break;
+      }
+    }
+    #endregion
+
+    #region UI Events
+    private void Border_MouseEnter(object sender, MouseEventArgs e) {
+      var border = sender as Border;
+
+      border.BeginAnimation(MarginProperty, MarginShrink);
+      border.BeginAnimation(Border.BorderThicknessProperty, BorderExpand);
+    }
+
+    private void Border_MouseLeave(object sender, MouseEventArgs e) {
+      var border = sender as Border;
+
+      border.BeginAnimation(MarginProperty, MarginExpand);
+      border.BeginAnimation(Border.BorderThicknessProperty, BorderShrink);
+    }
+
+    private void Border_MouseUp(object sender, MouseButtonEventArgs e) {
+      var border = sender as Border;
+
+      currentUI.Effect = null;
+      currentUI = border;
+      MapSelected();
+    }
+
+    private void QueueButton1_Click(object sender, RoutedEventArgs e) {
+      Close?.Invoke(this, new EventArgs());
+      ButtonAction?.Invoke(0);
+    }
+
+    private void QueueButton2_Click(object sender, RoutedEventArgs e) {
+      Close?.Invoke(this, new EventArgs());
+      ButtonAction?.Invoke(1);
+    }
+
+    private void CreateCustomButton_Click(object sender, RoutedEventArgs e) {
+      Close?.Invoke(this, new EventArgs());
+      Client.QueueManager.ShowPage(new CustomCreatePage(currentMap));
+    }
+
+    private void JoinCustomButton_Click(object sender, RoutedEventArgs e) {
+      Close?.Invoke(this, new EventArgs());
+    }
+    #endregion
 
     public Page Page => this;
     public bool CanPlay => false;
@@ -194,13 +259,49 @@ namespace LeagueClient.ClientUI.Main {
     public IQueuer HandleClose() => null;
 
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
-  }
 
-  public class GameInfo {
-    public string Name { get; private set; }
-    public string Info { get; private set; }
-    public GameInfo(string name, string info) {
-      Name = name; Info = info;
+    private class PlayableBotsQueue : IPlayableQueue {
+      public string Name { get; private set; }
+      public int Type { get; private set; }
+
+      public string Bots { get; private set; }
+
+      private Action<int, string> Selected;
+
+
+      public PlayableBotsQueue(string name, Action<int, string> selected, int type, string bots) {
+        Name = name;
+        Selected = selected;
+        Type = type;
+        Bots = bots;
+      }
+
+      public void Invoke() => Selected(Type, Bots);
+
+      public override string ToString() => Name;
+    }
+
+    private class PlayablePvpQueue : IPlayableQueue {
+      public string Name { get; private set; }
+      public int Type { get; private set; }
+
+      private Action<int> Selected;
+
+      public PlayablePvpQueue(string name, Action<int> selected, int type) {
+        Name = name;
+        Selected = selected;
+        Type = type;
+      }
+
+      public void Invoke() => Selected(Type);
+
+      public override string ToString() => Name;
+    }
+
+    private interface IPlayableQueue {
+      string Name { get; }
+      int Type { get; }
+      void Invoke();
     }
   }
 }

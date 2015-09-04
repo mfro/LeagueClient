@@ -91,7 +91,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Login(string user, string pass) {
-      Progress.Visibility = System.Windows.Visibility.Visible;
+      Progress.Visibility = Visibility.Visible;
       LoginBar.IsIndeterminate = true;
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
@@ -112,7 +112,7 @@ namespace LeagueClient.ClientUI {
         Login(user, pass);
         return;
       }
-      Progress.Visibility = System.Windows.Visibility.Hidden;
+      Progress.Visibility = Visibility.Hidden;
       LoginBar.IsIndeterminate = false;
       PassBox.Password = "";
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = true;

@@ -168,16 +168,6 @@ namespace LeagueClient.ClientUI.Main {
       ForceClose();
     }
 
-    //private bool collapsed;
-    //private void Collapse_Click(object sender, RoutedEventArgs e) {
-    //  collapsed = !collapsed;
-    //  foreach (var control in BlueTeam.Children)
-    //    (control as ICollapsable).ForceExpand = !collapsed;
-    //  foreach (var control in RedTeam.Children)
-    //    (control as ICollapsable).ForceExpand = !collapsed;
-    //  CollapseButt.Content = collapsed ? "Expand Players" : "Collapse Players";
-    //}
-
     private void Invite_Click(object sender, RoutedEventArgs e) => InvitePopup.BeginStoryboard(App.FadeIn);
 
     private void InvitePopup_Close(object sender, EventArgs e) {

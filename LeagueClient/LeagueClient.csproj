@@ -177,6 +177,7 @@
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitePrivileges.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
+    <Compile Include="Logic\com\riotgames\platform\harassment\HarassmentReport.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
     <Compile Include="Logic\Queueing\IQueuePopup.cs" />
@@ -552,6 +553,7 @@
     <Resource Include="Enums\SpectatorState.txt" />
     <Resource Include="Enums\GameConfig.txt" />
     <Resource Include="Enums\ChatStatus.txt" />
+    <Resource Include="Enums\ReportReason.txt" />
     <Content Include="Enums\GameMode.txt" />
     <Content Include="Enums\RiotEnums.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

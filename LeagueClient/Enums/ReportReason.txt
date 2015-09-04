@@ -1,0 +1,10 @@
+﻿NO_COMMUNICATION_WITH_TEAM = Refusing To Communicate
+LEAVING_AFK = Leaving the Game or AFK
+NEGATIVE_ATTITUDE = Negative Attitude
+OFFENSIVE_LANGUAGE = Offensive Language
+VERBAL_ABUSE = Verbal Abuse
+INAPPROPRIATE_NAME = Inappropriate Name
+INTENTIONAL_FEEDING = Intentionally Feeding
+ASSISTING_ENEMY = Assisting Enemy Team
+SPAMMING = Spamming
+UNSKILLED_PLAYER = Unskilled Player

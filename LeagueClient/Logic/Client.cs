@@ -202,7 +202,7 @@ namespace LeagueClient.Logic {
     private static void GotQueues(Task<GameQueueConfig[]> Task) {
       AvailableQueues = new Dictionary<int, GameQueueConfig>();
       foreach (var item in Task.Result) AvailableQueues.Add((int) item.Id, item);
-      new Thread(PlaySelectPage.Setup).Start();
+      //new Thread(PlaySelectPage.Setup).Start();
     }
 
     #endregion

@@ -151,6 +151,34 @@ namespace LeagueClient.Logic {
     }
 	}
 
+	public class ReportReason {
+    public static readonly Dictionary<string, ReportReason> Values = new Dictionary<string, ReportReason>();
+
+    public static readonly ReportReason
+      NO_COMMUNICATION_WITH_TEAM = new ReportReason("NO_COMMUNICATION_WITH_TEAM", "Refusing To Communicate"),
+      LEAVING_AFK = new ReportReason("LEAVING_AFK", "Leaving the Game or AFK"),
+      NEGATIVE_ATTITUDE = new ReportReason("NEGATIVE_ATTITUDE", "Negative Attitude"),
+      OFFENSIVE_LANGUAGE = new ReportReason("OFFENSIVE_LANGUAGE", "Offensive Language"),
+      VERBAL_ABUSE = new ReportReason("VERBAL_ABUSE", "Verbal Abuse"),
+      INAPPROPRIATE_NAME = new ReportReason("INAPPROPRIATE_NAME", "Inappropriate Name"),
+      INTENTIONAL_FEEDING = new ReportReason("INTENTIONAL_FEEDING", "Intentionally Feeding"),
+      ASSISTING_ENEMY = new ReportReason("ASSISTING_ENEMY", "Assisting Enemy Team"),
+      SPAMMING = new ReportReason("SPAMMING", "Spamming"),
+      UNSKILLED_PLAYER = new ReportReason("UNSKILLED_PLAYER", "Unskilled Player");
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+
+		private ReportReason(string key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
 	public class GameConfig {
     public static readonly Dictionary<int, GameConfig> Values = new Dictionary<int, GameConfig>();
 

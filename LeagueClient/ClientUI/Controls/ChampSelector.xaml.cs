@@ -34,8 +34,8 @@ namespace LeagueClient.ClientUI.Controls {
       get { return readOnly; }
       set {
         if (readOnly != value) {
-          ChampSelect.Visibility = System.Windows.Visibility.Visible;
-          SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
+          ChampSelect.Visibility = Visibility.Visible;
+          SkinSelect.Visibility = Visibility.Collapsed;
           readOnly = value;
         }
       }
@@ -127,8 +127,8 @@ namespace LeagueClient.ClientUI.Controls {
       }
       UpdateSkinList();
 
-      ChampSelect.Visibility = System.Windows.Visibility.Collapsed;
-      SkinSelect.Visibility = System.Windows.Visibility.Visible;
+      ChampSelect.Visibility = Visibility.Collapsed;
+      SkinSelect.Visibility = Visibility.Visible;
       //SkinsButt.IsEnabled = false;
       SkinScroll.ScrollToHorizontalOffset(294);
     }
@@ -157,8 +157,8 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void ChampButt_Click(object sender, RoutedEventArgs e) {
-      ChampSelect.Visibility = System.Windows.Visibility.Visible;
-      SkinSelect.Visibility = System.Windows.Visibility.Collapsed;
+      ChampSelect.Visibility = Visibility.Visible;
+      SkinSelect.Visibility = Visibility.Collapsed;
     }
   }
 }
