@@ -100,8 +100,6 @@ namespace LeagueClient.Logic.Riot {
       public static Task<LcdsResponseString> CallKudos(String JSONInformation) {
         return InvokeAsync<LcdsResponseString>(Destination, "reportPlayer", JSONInformation);
       }
-
-      //TODO Finish riot calls ??
     }
 
     public static class MatchmakerService {

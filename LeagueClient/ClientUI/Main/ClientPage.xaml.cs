@@ -222,7 +222,8 @@ namespace LeagueClient.ClientUI.Main {
       if (args.QueuePopup == null) return;
       CurrentPopup = args.QueuePopup;
       UpdatePlayButton();
-      ShowPopup(CurrentPopup.GetControl());
+      CurrentPopup.Close += QueuePopupClose;
+      ShowPopup(CurrentPopup.Control);
     }
 
     private void QueuePopupClose(object src, EventArgs args) {

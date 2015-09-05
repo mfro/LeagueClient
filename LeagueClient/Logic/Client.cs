@@ -20,6 +20,7 @@ using LeagueClient.ClientUI.Main;
 using System.Threading;
 using System.Windows.Threading;
 using System.Xml;
+using LeagueClient.Logic.com.riotgames.other;
 
 namespace LeagueClient.Logic {
   public static class Client {
@@ -79,6 +80,8 @@ namespace LeagueClient.Logic {
     internal static Settings Settings { get; set; }
 
     internal static Process GameProcess { get; set; }
+
+    internal static InGameCredentials QueuedCredentials { get; set; }
     #endregion
 
     static Client() {
@@ -185,6 +188,9 @@ namespace LeagueClient.Logic {
       Settings.ProfileIcon = LoginPacket.AllSummonerData.Summoner.ProfileIconId;
       Settings.SummonerName = LoginPacket.AllSummonerData.Summoner.Name;
 
+      if (queue.InGameCredentials.InGame)
+        QueuedCredentials = queue.InGameCredentials;
+
       return state.Equals("ENABLED");
     }
 
@@ -212,10 +218,17 @@ namespace LeagueClient.Logic {
     /// Launches the league of legends client and joins an active game
     /// </summary>
     /// <param name="creds">The credentials for joining the game</param>
-    public static void JoinGame(PlayerCredentialsDto creds) {
+    public static void JoinGame(PlayerCredentialsDto creds) => JoinGame(creds.ServerIp, creds.ServerPort, creds.EncryptionKey, creds.SummonerId);
+    /// <summary>
+    /// Launches the league of legends client and joins an active game
+    /// </summary>
+    /// <param name="creds">The credentials for joining the game</param>
+    public static void JoinGame(InGameCredentials creds) => JoinGame(creds.ServerIp, creds.ServerPort, creds.EncryptionKey, creds.SummonerId);
+
+    private static void JoinGame(string ip, int port, string encKey, double summId) {
       //"8394" "LoLLauncher.exe" "" "ip port key id"
       var info = new ProcessStartInfo(Path.Combine(GameDirectory, "League of Legends.exe"));
-      var str = $"{creds.ServerIp} {creds.ServerPort} {creds.EncryptionKey} {creds.SummonerId}";
+      var str = $"{ip} {port} {encKey} {summId}";
       info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLLauncher.exe", "", str);
       info.WorkingDirectory = GameDirectory;
       GameProcess = Process.Start(info);

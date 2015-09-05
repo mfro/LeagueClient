@@ -31,7 +31,7 @@ namespace LeagueClient {
   public partial class MainWindow : Window {
     private IClientPage currentPage;
 
-    private ClientUI.Main.ClientPage mainPage;
+    private ClientPage mainPage;
 
     public MainWindow() {
       Client.Log("Pre-Init");
@@ -52,6 +52,11 @@ namespace LeagueClient {
       Client.QueueManager = page;
       ContentFrame.Content = page;
       this.currentPage = page;
+
+      if(Client.QueuedCredentials != null) {
+        Client.JoinGame(Client.QueuedCredentials);
+        Client.QueuedCredentials = null;
+      }
     }
 
     public void PatchComplete() {

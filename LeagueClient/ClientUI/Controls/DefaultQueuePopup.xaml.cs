@@ -24,6 +24,8 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for DefaultQueuePopup.xaml
   /// </summary>
   public partial class DefaultQueuePopup : UserControl, IQueuePopup {
+    public event EventHandler Close;
+
     public GameDTO GameData { get; private set; }
 
     public DefaultQueuePopup(GameDTO game) {
@@ -41,7 +43,7 @@ namespace LeagueClient.ClientUI.Controls {
       (sender as IDisposable).Dispose();
     }
 
-    private void GotGameData(GameDTO game)  {
+    private void GotGameData(GameDTO game) {
       GameData = game;
       if (game.GameState.Equals("JOINING_CHAMP_SELECT")) {
         ParticipantPanel.Children.Clear();
@@ -61,7 +63,8 @@ namespace LeagueClient.ClientUI.Controls {
           }
           ParticipantPanel.Children.Add(border);
         }
-      } else if(game.GameState.Equals("CHAMP_SELECT")) {
+      } else if (game.GameState.Equals("CHAMP_SELECT")) {
+        Close?.Invoke(this, new EventArgs());
         Client.MainWindow.BeginChampSelect(game);
       } else {
 
@@ -70,7 +73,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public bool HandleMessage(MessageReceivedEventArgs e) {
       var game = e.Body as GameDTO;
-      if(game != null) {
+      if (game != null) {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
       }
@@ -85,8 +88,6 @@ namespace LeagueClient.ClientUI.Controls {
       RiotServices.GameService.AcceptPoppedGame(false);
     }
 
-    public Control GetControl() {
-      return this;
-    }
+    public Control Control => this;
   }
 }

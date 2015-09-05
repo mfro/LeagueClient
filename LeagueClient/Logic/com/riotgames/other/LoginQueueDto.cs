@@ -18,7 +18,7 @@ namespace LeagueClient.Logic.com.riotgames.other {
     public string Reason { get; set; }
 
     [JSONField("inGameCredentials")]
-    public InGameCredentialsDto InGameCredentials { get; set; }
+    public InGameCredentials InGameCredentials { get; set; }
 
     [JSONField("idToken")]
     public string IdToken { get; set; }
@@ -52,12 +52,12 @@ namespace LeagueClient.Logic.com.riotgames.other {
   }
 
   [JSONSerializable]
-  public class InGameCredentialsDto {
+  public class InGameCredentials {
     [JSONField("inGame")]
     public bool InGame { get; set; }
 
     [JSONField("summonerId")]
-    public double summonerId { get; set; }
+    public double SummonerId { get; set; }
 
     [JSONField("serverIp")]
     public string ServerIp { get; set; }
@@ -66,7 +66,7 @@ namespace LeagueClient.Logic.com.riotgames.other {
     public int ServerPort { get; set; }
 
     [JSONField("encryptionKey")]
-    public string encryptionKey { get; set; }
+    public string EncryptionKey { get; set; }
 
     [JSONField("handshakeToken")]
     public string HandshakeToken { get; set; }

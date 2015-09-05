@@ -26,6 +26,8 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for TeambuilderSoloQueuePopup.xaml
   /// </summary>
   public partial class CapSoloQueuePopup : UserControl, IQueuePopup {
+    public event EventHandler Close;
+
     private JSONObject payload;
     private Logic.Cap.CapPlayer player;
     private Timer time;
@@ -49,16 +51,16 @@ namespace LeagueClient.ClientUI.Controls {
       RiotServices.CapService.IndicateGroupAcceptanceAsCandidate((int) payload["slotId"], true, (string) payload["groupId"]);
       time.Dispose();
       Client.QueueManager.ShowPage(new CapLobbyPage(player));
+        Close?.Invoke(this, new EventArgs());
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       time.Dispose();
       RiotServices.CapService.Quit();
+        Close?.Invoke(this, new EventArgs());
     }
 
-    public Control GetControl() {
-      return this;
-    }
+    public Control Control => this;
 
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }
