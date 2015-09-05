@@ -28,6 +28,7 @@ namespace LeagueClient.ClientUI.Main {
     public event EventHandler Close;
 
     private MatchMakerParams mmp;
+    private GameQueueConfig config;
     private ChatRoomController chatRoom;
 
     public DefaultLobbyPage(MatchMakerParams mmp) {
@@ -39,12 +40,13 @@ namespace LeagueClient.ClientUI.Main {
 
       InviteButton.Visibility = Visibility.Hidden;
 
-      var config = Client.AvailableQueues[mmp.QueueIds[0]];
+      config = Client.AvailableQueues[mmp.QueueIds[0]];
       var map = GameMap.Maps.FirstOrDefault(m => config.SupportedMapIds.Contains(m.MapId));
+
       MapImage.Source = GameMap.Images[map];
       MapLabel.Content = map.DisplayName;
       QueueLabel.Content = GameConfig.Values[config.GameTypeConfigId].Value;
-      ModeLabel.Content = GameMode.Values[config.GameMode].Value;
+      ModeLabel.Content = config.Ranked ? "Ranked" : ModeLabel.Content = GameMode.Values[config.GameMode].Value;
       TeamSizeLabel.Content = $"{config.NumPlayersPerTeam}v{config.NumPlayersPerTeam}";
     }
 
@@ -74,7 +76,10 @@ namespace LeagueClient.ClientUI.Main {
         }
         PlayerList.Children.Clear();
         foreach (var player in lobby.PlayerIds) {
-          PlayerList.Children.Add(new LobbyPlayer(player, true));
+          var control = new LobbyPlayer(player, true);
+          PlayerList.Children.Add(control);
+          Dispatcher.Invoke(() => QueueDetailsGrid.Height = PlayerList.Height = control.ActualHeight * config.NumPlayersPerTeam,
+            System.Windows.Threading.DispatcherPriority.ApplicationIdle);
         }
 
         if (lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)

@@ -157,6 +157,14 @@ namespace LeagueClient.ClientUI.Main {
       SubPage.Content = page?.Page;
       UpdatePlayButton();
     }
+
+    public void BeginChampionSelect(GameDTO game) {
+      var page = new ChampSelectPage(game);
+      ShowPage(page);
+      Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
+      RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
+    }
+
     #endregion
 
     private void CloseSubPage(bool notifyPage) {
@@ -227,7 +235,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void QueuePopupClose(object src, EventArgs args) {
-      if (Thread.CurrentThread != Dispatcher.Thread) Dispatcher.MyInvoke(QueuePopupClose, src, args);
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(QueuePopupClose, src, args); return; }
 
       CurrentPopup = null;
       UpdatePlayButton();

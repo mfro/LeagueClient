@@ -138,7 +138,7 @@ namespace LeagueClient.ClientUI.Main {
         });
       } else if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
         Close?.Invoke(this, new EventArgs());
-        Client.MainWindow.BeginChampSelect(game);
+        Client.QueueManager.BeginChampionSelect(game);
       }
     }
 

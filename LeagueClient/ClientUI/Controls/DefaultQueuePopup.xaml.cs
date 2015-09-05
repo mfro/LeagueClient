@@ -54,10 +54,10 @@ namespace LeagueClient.ClientUI.Controls {
           border.Margin = new Thickness(2, 0, 2, 0);
           switch (player) {
             case '0':
-              border.Background = App.ChatBrush;
+              border.Background = App.Back1Brush;
               break;
             case '1':
-              border.Background = App.Back1Brush;
+              border.Background = App.ChatBrush;
               break;
             default: break;
           }
@@ -65,10 +65,8 @@ namespace LeagueClient.ClientUI.Controls {
         }
       } else if (game.GameState.Equals("CHAMP_SELECT")) {
         Close?.Invoke(this, new EventArgs());
-        Client.MainWindow.BeginChampSelect(game);
-      } else {
-
-      }
+        Client.QueueManager.BeginChampionSelect(game);
+      } else { }
     }
 
     public bool HandleMessage(MessageReceivedEventArgs e) {

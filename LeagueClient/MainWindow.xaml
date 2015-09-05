@@ -6,7 +6,7 @@
         AllowsTransparency="True" Background="Transparent"
         SnapsToDevicePixels="True" WindowStyle="None">
   <Border BorderBrush="{x:Static SystemColors.HighlightBrush}" BorderThickness="1" Margin="15">
-    <Grid Width="{my:My Width}" Height="{my:My Height}" >
+    <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" >
       <Frame Name="ContentFrame" NavigationUIVisibility="Hidden"/>
       <Button Width="20" Height="22" VerticalAlignment="Top" HorizontalAlignment="Right" Click="Close_Click">
         <Path Data="M 0 0 L 8 8 M 8 0 L 0 8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>

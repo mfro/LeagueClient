@@ -6,6 +6,10 @@
              StartupUri="MainWindow.xaml" Exit="Application_Exit">
   <Application.Resources>
     <ScaleTransform x:Key="CheckboxScale" ScaleX="2" ScaleY="2"/>
+
+    <sys:Double x:Key="Width">1280</sys:Double>
+    <sys:Double x:Key="Height">720</sys:Double>
+    <sys:Double x:Key="PageHeight">640</sys:Double>
     
     <BitmapImage x:Key="IPIcon" UriSource="Media/ip.png"/>
     <BitmapImage x:Key="RPIcon" UriSource="Media/rp.png"/>
@@ -45,6 +49,7 @@
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="{x:Static SystemColors.WindowColor}" Duration="0:0:0.2"/>
     </Storyboard>
+    
     <!--<Storyboard x:Key="ButtonHover" Storyboard.TargetProperty="Color">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
                       To="#313131" Duration="0:0:0.2"/>
@@ -74,6 +79,7 @@
       <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" BeginTime="0:0:0.5"
                       To="#393939" Duration="0:0:1.5"/>
     </Storyboard>-->
+    
     <Storyboard x:Key="FadeIn" Storyboard.TargetProperty="Double">
       <ObjectAnimationUsingKeyFrames BeginTime="0" Storyboard.TargetProperty="Visibility">
         <DiscreteObjectKeyFrame KeyTime="0">
@@ -268,13 +274,17 @@
       <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
       <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
       <Setter Property="Height" Value="16"/>
-      <Setter Property="Width" Value="16"/>
       <Setter Property="HorizontalAlignment" Value="Left"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="CheckBox">
-            <Grid Background="{TemplateBinding Background}">
-              <Border BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Border Background="{TemplateBinding Background}"/>
+              <Border BorderThickness="1" Width="{TemplateBinding Height}" Height="{TemplateBinding Height}" BorderBrush="{TemplateBinding BorderBrush}">
                 <Border.Background>
                   <VisualBrush Viewbox="0 0 10 10" ViewboxUnits="Absolute">
                     <VisualBrush.Visual>
@@ -286,6 +296,7 @@
                   </VisualBrush>
                 </Border.Background>
               </Border>
+              <ContentPresenter Margin="4 0 0 0" TextBlock.FontSize="{TemplateBinding FontSize}" HorizontalAlignment="Left" Grid.Column="1"/>
             </Grid>
             <ControlTemplate.Triggers>
               <Trigger Property="CheckBox.IsChecked" Value="True">

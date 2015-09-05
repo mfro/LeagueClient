@@ -17,6 +17,7 @@ using LeagueClient.Logic.Riot.Kudos;
 using MFroehlich.League.DataDragon;
 using LeagueClient.Logic.Cap;
 using LeagueClient.Logic.com.riotgames.other;
+using LeagueClient.Logic.Riot.Team;
 
 namespace LeagueClient.Logic.Riot {
   public class RiotServices {
@@ -289,8 +290,8 @@ namespace LeagueClient.Logic.Riot {
       /// <summary>
       /// 
       /// </summary>
-      public static Task<Player> CreatePlayer() {
-        return InvokeAsync<Player>(Destination, "createPlayer");
+      public static Task<PlayerDTO> CreatePlayer() {
+        return InvokeAsync<PlayerDTO>(Destination, "createPlayer");
       }
 
       /// <summary>
@@ -372,8 +373,8 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <param name="SummonerId">The summoner id</param>
       /// <returns>Returns the information for a player</returns>
-      public static Task<Player> FindPlayer(Double SummonerId) {
-        return InvokeAsync<Player>(Destination, "findPlayer", SummonerId);
+      public static Task<PlayerDTO> FindPlayer(Double SummonerId) {
+        return InvokeAsync<PlayerDTO>(Destination, "findPlayer", SummonerId);
       }
     }
     

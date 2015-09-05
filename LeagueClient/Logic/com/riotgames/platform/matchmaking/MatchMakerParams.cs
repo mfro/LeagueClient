@@ -12,7 +12,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public object LastMaestroMessage { get; set; }
 
         [SerializedName("teamId")]
-        public object TeamId { get; set; }
+        public Team.TeamId TeamId { get; set; }
 
         [SerializedName("languages")]
         public object Languages { get; set; }

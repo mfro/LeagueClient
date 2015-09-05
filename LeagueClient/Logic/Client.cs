@@ -21,6 +21,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Xml;
 using LeagueClient.Logic.com.riotgames.other;
+using LeagueClient.Logic.Riot.Team;
 
 namespace LeagueClient.Logic {
   public static class Client {
@@ -74,6 +75,8 @@ namespace LeagueClient.Logic {
     internal static MasteryBookDTO Masteries { get; private set; }
     internal static SpellBookPageDTO SelectedRunePage { get; private set; }
     internal static MasteryBookPageDTO SelectedMasteryPage { get; private set; }
+
+    internal static PlayerDTO RankedTeamInfo { get; private set; }
 
     internal static List<int> EnabledMaps { get; set; }
 
@@ -169,10 +172,9 @@ namespace LeagueClient.Logic {
       Connected = true;
 
       new System.Threading.Thread(() => {
-        RiotServices.MatchmakerService.GetAvailableQueues()
-          .ContinueWith(GotQueues);
-        RiotServices.InventoryService.GetAvailableChampions()
-          .ContinueWith(GotChampions);
+        RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(GotQueues);
+        RiotServices.InventoryService.GetAvailableChampions().ContinueWith(GotChampions);
+        RiotServices.SummonerTeamService.CreatePlayer().ContinueWith(GotRankedTeamInfo);
         Runes = LoginPacket.AllSummonerData.SpellBook;
         Masteries = LoginPacket.AllSummonerData.MasteryBook;
         SelectedRunePage = Runes.BookPages.FirstOrDefault(p => p.Current);
@@ -196,7 +198,7 @@ namespace LeagueClient.Logic {
 
     private static void GotChampions(Task<ChampionDTO[]> Champs) {
       if (Champs.IsFaulted) {
-        if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+        if (Debugger.IsAttached) System.Diagnostics.Debugger.Break();
         return;
       }
       RiotChampions = new List<ChampionDTO>(Champs.Result);
@@ -208,7 +210,10 @@ namespace LeagueClient.Logic {
     private static void GotQueues(Task<GameQueueConfig[]> Task) {
       AvailableQueues = new Dictionary<int, GameQueueConfig>();
       foreach (var item in Task.Result) AvailableQueues.Add(item.Id, item);
-      //new Thread(PlaySelectPage.Setup).Start();
+    }
+
+    private static void GotRankedTeamInfo(Task<PlayerDTO> obj) {
+      RankedTeamInfo = obj.Result;
     }
 
     #endregion

@@ -74,14 +74,6 @@ namespace LeagueClient {
       Client.MainWindow.Top = (sHeight / 2) - (Client.MainWindow.Height / 2);
     }
 
-    public void BeginChampSelect(GameDTO game) {
-      var page = new ChampSelectPage(game);
-      currentPage = page;
-      ContentFrame.Content = page;
-      Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
-      RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
-    }
-
     public void ShowInGamePage() {
       currentPage = mainPage;
       ContentFrame.Content = mainPage;

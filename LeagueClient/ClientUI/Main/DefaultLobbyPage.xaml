@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
-      Width="{my:My Width}" Height="{my:My PageHeight}">
+      Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
   <Grid Margin="80 10">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="2*"/>
@@ -12,7 +12,7 @@
 
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="240"/>
+        <RowDefinition Height="auto"/>
         <RowDefinition Height="*"/>
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
@@ -34,21 +34,24 @@
     <Grid Grid.Column="1" Margin="10 0 0 0">
       <Grid.RowDefinitions>
         <RowDefinition Height="auto"/>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="auto"/>
         <RowDefinition/>
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
-      <Image Name="MapImage" Source="/Resources/SRiftImage.png"/>
-      <Border Grid.Row="1" Background="{StaticResource ForeBrush}" Grid.RowSpan="2"/>
-      <Label Grid.Row="1" Name="MapLabel">Summoner's Rift</Label>
-      <Label Grid.Row="1" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
-      <Label Grid.Row="2" Name="ModeLabel">Classic</Label>
-      <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
+      <Grid Name="QueueDetailsGrid" Background="{StaticResource ForeBrush}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Image Name="MapImage" Source="/Resources/SRiftImage.png"/>
+        <Label Grid.Row="1" Name="MapLabel">Summoner's Rift</Label>
+        <Label Grid.Row="1" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
+        <Label Grid.Row="2" Name="ModeLabel">Classic</Label>
+        <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
+      </Grid>
 
-      <ScrollViewer Grid.Row="3" Margin="0 10 0 0">
+      <ScrollViewer Grid.Row="1" Margin="0 10 0 0">
         <StackPanel Background="{StaticResource ForeBrush}" Name="InviteList"/>
-
       </ScrollViewer>
 
       <UniformGrid Margin="0 8 0 0" Columns="3" Grid.Row="4">

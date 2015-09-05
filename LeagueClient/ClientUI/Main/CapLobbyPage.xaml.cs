@@ -44,6 +44,7 @@ namespace LeagueClient.ClientUI.Main {
     private CapMePlayer meControl;
     private ChatRoomController chatRoom;
     private CapLobbyState state;
+    private bool autoReady;
 
     public bool IsCaptain { get { return me.SlotId == 0; } }
     public bool CanInvite { get; private set; }
@@ -134,8 +135,8 @@ namespace LeagueClient.ClientUI.Main {
 
     public void UpdateList() {
       meControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
-      bool canReady = true;
-      bool canSearch = true;
+      bool canReady = state == CapLobbyState.Searching;
+      bool canSearch = state == CapLobbyState.Inviting;
       bool canMatch = true;
       var list = new List<Control>();
       for (int i = 0; i < players.Length; i++) {
@@ -155,8 +156,6 @@ namespace LeagueClient.ClientUI.Main {
         list.Add(c);
         if (i > 0 && players[i].Status != CapStatus.Ready) canMatch = false;
         if (players[i].Status != CapStatus.Present && players[i].Status != CapStatus.Ready) canReady = false;
-        if (players[i].Role == null || players[i].Role == Role.UNSELECTED) canReady = false;
-        if (players[i].Position == null || players[i].Position == Position.UNSELECTED) canReady = false;
         if (players[i].Champion == null || players[i].Position == null || players[i].Position == Position.UNSELECTED ||
           players[i].Role == null || players[i].Role == Role.UNSELECTED)
           canSearch = false;
@@ -174,9 +173,11 @@ namespace LeagueClient.ClientUI.Main {
         foreach (var player in players)
           if (player?.Status == CapStatus.Ready) player.Status = CapStatus.Present;
       }
+      ReadyButt.IsEnabled = !autoReady;
+      if (canReady && autoReady) RiotServices.CapService.IndicateReadyness(true);
 
       InviteButt.Visibility = CanInvite && state == CapLobbyState.Inviting ? Visibility.Visible : Visibility.Collapsed;
-      if (IsCaptain && state == CapLobbyState.Inviting && canSearch) SoloSearchButt.Visibility = Visibility.Visible;
+      if (IsCaptain && canSearch) SoloSearchButt.Visibility = Visibility.Visible;
       else if (state != CapLobbyState.Selecting) SoloSearchButt.Visibility = Visibility.Collapsed;
       PlayerList.ItemsSource = list;
     }
@@ -278,7 +279,7 @@ namespace LeagueClient.ClientUI.Main {
                 if (slot.Spell1Id > 0) players[slot.SlotId].Spell1 = LeagueData.GetSpellData(slot.Spell1Id);
                 if (slot.Spell2Id > 0) players[slot.SlotId].Spell2 = LeagueData.GetSpellData(slot.Spell2Id);
                 foreach (var cap in players)
-                  if (cap.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+                  if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
                 break;
               case "roleSpecifiedV1":
                 players[slot.SlotId].Role = Role.Values[slot.Role];
@@ -580,6 +581,11 @@ namespace LeagueClient.ClientUI.Main {
 
     public IQueuer HandleClose() => new ReturnToLobbyQueuer(this);
     #endregion
+
+    private void CheckBox_Checked(object sender, RoutedEventArgs e) {
+      autoReady = AutoReadyBox.IsChecked ?? false;
+      UpdateList();
+    }
   }
 
   public enum CapLobbyState {

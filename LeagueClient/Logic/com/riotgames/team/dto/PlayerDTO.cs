@@ -12,12 +12,12 @@ namespace LeagueClient.Logic.Riot.Team
         public Double PlayerId { get; set; }
 
         [SerializedName("teamsSummary")]
-        public List<object> TeamsSummary { get; set; }
+        public List<TeamDTO> TeamsSummary { get; set; }
 
         [SerializedName("createdTeams")]
-        public List<object> CreatedTeams { get; set; }
+        public List<CreatedTeam> CreatedTeams { get; set; }
 
         [SerializedName("playerTeams")]
-        public List<object> PlayerTeams { get; set; }
+        public List<TeamInfo> PlayerTeams { get; set; }
     }
 }

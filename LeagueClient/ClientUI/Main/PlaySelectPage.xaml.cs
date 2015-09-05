@@ -20,6 +20,7 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
+using LeagueClient.Logic.Riot.Team;
 using MFroehlich.Parsing.DynamicJSON;
 using RtmpSharp.Messaging;
 
@@ -100,9 +101,10 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void MapSelected() {
-      if (currentMap == currentUI.Tag) return;
-      currentMap = (GameMap) currentUI.Tag;
       currentUI.Effect = new DropShadowEffect { BlurRadius = 15, Color = App.FocusColor, ShadowDepth = 0 };
+      if (currentMap == currentUI.Tag) return;
+
+      currentMap = (GameMap) currentUI.Tag;
       MapNameLabel.Content = currentMap.DisplayName;
       QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Collapsed;
 
@@ -157,6 +159,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void SelectRankedTeams(int type) {
       QueueButton1.Visibility = Visibility.Visible;
+      QueueButton2.Visibility = Visibility.Collapsed;
       QueueButton1.Content = "Create Lobby";
       ButtonAction = PlayRankedTeams;
     }
@@ -171,6 +174,7 @@ namespace LeagueClient.ClientUI.Main {
 
     #region Plays
     private void PlayTeambuilder(int button) {
+      Close?.Invoke(this, new EventArgs());
       switch (button) {
         case 0: Client.QueueManager.ShowPage(new CapSoloPage()); break;
         case 1:
@@ -181,6 +185,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private async void PlayStandard(int button) {
+      Close?.Invoke(this, new EventArgs());
       var mmp = new MatchMakerParams { QueueIds = new[] { currentConfig.Id } };
       switch (button) {
         case 0:
@@ -205,13 +210,18 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void PlayRankedTeams(int button) {
+      //TODO Finish ranked teams
       switch (button) {
-        case 0: //TODO Ranked Teams
+        case 0:
+          TeamCombo.ItemsSource = Client.RankedTeamInfo.PlayerTeams;
+          TeamCombo.SelectedIndex = 0;
+          PopupPanel.BeginStoryboard(App.FadeIn);
           break;
       }
     }
 
     private void PlayBots(int button) {
+      Close?.Invoke(this, new EventArgs());
       //TODO Bots
       switch (button) {
         case 0:
@@ -248,15 +258,21 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void QueueButton1_Click(object sender, RoutedEventArgs e) {
-      Close?.Invoke(this, new EventArgs());
       Client.Settings.RecentQueuesByMapId[currentMap.Name] = currentConfig.Id;
       ButtonAction?.Invoke(0);
     }
 
     private void QueueButton2_Click(object sender, RoutedEventArgs e) {
-      Close?.Invoke(this, new EventArgs());
       Client.Settings.RecentQueuesByMapId[currentMap.Name] = currentConfig.Id;
       ButtonAction?.Invoke(1);
+    }
+
+    private void RankedCreate_Click(object sender, RoutedEventArgs e) {
+      var team = (TeamInfo) TeamCombo.SelectedItem;
+      var mmp = new MatchMakerParams { QueueIds = new[] { currentConfig.Id }, TeamId = team.TeamId  };
+      var lobby = new DefaultLobbyPage(mmp);
+      RiotServices.GameInvitationService.CreateArrangedRankedTeamLobby(mmp.QueueIds[0], team.Name).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+      Client.QueueManager.ShowPage(lobby);
     }
 
     private void CreateCustomButton_Click(object sender, RoutedEventArgs e) {
@@ -266,6 +282,10 @@ namespace LeagueClient.ClientUI.Main {
 
     private void JoinCustomButton_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());
+    }
+
+    private void PopupClose_Click(object sender, RoutedEventArgs e) {
+      PopupPanel.BeginStoryboard(App.FadeOut);
     }
     #endregion
 

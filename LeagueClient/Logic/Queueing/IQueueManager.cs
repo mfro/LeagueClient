@@ -20,12 +20,16 @@ namespace LeagueClient.Logic.Queueing {
     /// </summary>
     /// <param name="page"></param>
     void ShowPage(IClientSubPage page);
-
     /// <summary>
     /// Shows a generic alert notification in the alerts area
     /// </summary>
     /// <param name="alert">The alert to show</param>
     void ShowNotification(Alert alert);
+    /// <summary>
+    /// Begins champion select with the game
+    /// </summary>
+    /// <param name="game"></param>
+    void BeginChampionSelect(GameDTO game);
 
     /// <summary>
     /// Creates a teambuilder solo query selection and displays it

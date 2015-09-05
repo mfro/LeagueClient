@@ -13,9 +13,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using LeagueClient.ClientUI.Controls;
+using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
+using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
@@ -26,7 +29,8 @@ namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for ChampSelect.xaml
   /// </summary>
-  public partial class ChampSelectPage : Page, IClientPage {
+  public partial class ChampSelectPage : Page, IClientSubPage {
+    public event EventHandler Close;
 
     private const string
       YouPickString = "Your turn to pick!",
@@ -62,12 +66,13 @@ namespace LeagueClient.ClientUI {
       var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
 
       MapLabel.Content = map.DisplayName;
-      ModeLabel.Content = GameMode.Values[game.GameMode];
+      ModeLabel.Content = ModeLabel.Content = GameMode.Values[game.GameMode].Value;
       QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
       TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
     }
 
     #region RTMP Messages
+
     public bool HandleMessage(MessageReceivedEventArgs args) {
       PlayerCredentialsDto creds;
       GameDTO game;
@@ -150,9 +155,9 @@ namespace LeagueClient.ClientUI {
         var player = thing as PlayerParticipant;
         var bot = thing as BotParticipant;
         var obfusc = thing as ObfuscatedParticipant;
-
         bool blue = game.TeamOne.Contains(player);
-        UIElement control;
+
+        UserControl control;
         if (player != null) {
           control = new ChampSelectPlayer(player, game.PlayerChampionSelections.FirstOrDefault(c => c.SummonerInternalName.Equals(player.SummonerInternalName)));
           if (player.PickTurn == game.PickTurn) {
@@ -176,8 +181,23 @@ namespace LeagueClient.ClientUI {
         } else {
           OtherTeam.Children.Add(control);
         }
+        Dispatcher.Invoke(() => MyTeam.Height = OtherTeam.Height = control.ActualHeight * (game.MaxNumPlayers / 2), DispatcherPriority.SystemIdle);
       }
-      Dispatcher.BeginInvoke((Action) (() => MyTeam.Height = OtherTeam.Height = Math.Max(MyTeam.ActualHeight, OtherTeam.ActualHeight)), System.Windows.Threading.DispatcherPriority.Input);
+
+      foreach(var thing in game.BannedChampions) {
+        var champ = LeagueData.GetChampData(thing.ChampionId);
+        var image = LeagueData.GetChampIconImage(champ.id);
+        switch (thing.PickTurn) {
+          case 1: Ban1.Source = image; break;
+          case 2: Ban2.Source = image; break;
+          case 3: Ban3.Source = image; break;
+          case 4: Ban4.Source = image; break;
+          case 5: Ban5.Source = image; break;
+          case 6: Ban6.Source = image; break;
+        }
+      }
+
+      //Dispatcher.BeginInvoke((Action) (() => MyTeam.Height = OtherTeam.Height = Math.Max(MyTeam.ActualHeight, OtherTeam.ActualHeight)), System.Windows.Threading.DispatcherPriority.Input);
       return turn;
     }
 
@@ -232,6 +252,7 @@ namespace LeagueClient.ClientUI {
     bool doSpell1;
     SpellDto spell1;
     SpellDto spell2;
+
     private void Spell1_Click(object sender, MouseButtonEventArgs e) {
       PopupGrid.BeginStoryboard(App.FadeIn);
       Popup.CurrentSelector = PopupSelector.Selector.Spells;
@@ -289,6 +310,14 @@ namespace LeagueClient.ClientUI {
       Client.MainWindow.DragMove();
     }
 
+    public void ForceClose() {
+      throw new NotImplementedException();
+    }
+
+    public IQueuer HandleClose() {
+      throw new NotImplementedException();
+    }
+
     #endregion
 
     private enum State {
@@ -299,5 +328,9 @@ namespace LeagueClient.ClientUI {
       public bool IsMyTurn { get; set; }
       public bool IsOurTurn { get; set; }
     }
+
+    public Page Page => this;
+    public bool CanPlay => false;
+    public bool CanClose => false;
   }
 }

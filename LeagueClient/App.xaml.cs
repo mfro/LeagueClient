@@ -47,10 +47,6 @@ namespace LeagueClient {
     }
     #endregion
 
-    public static double Height => 720;
-    public static double Width => 1280;
-    public static double PageHeight => 640;
-
     private void Application_Exit(object sender, ExitEventArgs e) {
       if (Client.Connected) {
         Client.Logout();

@@ -5,7 +5,7 @@
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       DataContext="{Binding RelativeSource={RelativeSource Self}}"
-      Width="{my:My Width}" Height="{my:My PageHeight}">
+      Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
   <Page.Resources>
     <Style TargetType="ListBoxItem" x:Key="ItemStyle">
       <Setter Property="BorderThickness" Value="0"/>
@@ -114,5 +114,40 @@
       <Button Name="QueueButton1" Visibility="Collapsed" Margin="0 0 10 10" Width="250" Padding="0 4" Click="QueueButton1_Click">Enter Soloqueue</Button>
       <Button Name="QueueButton2" Visibility="Collapsed" Margin="0 0 10 10" Width="250" Padding="0 4" Click="QueueButton2_Click">Create Lobby</Button>
     </StackPanel>
+
+    <Grid Name="PopupPanel" Grid.RowSpan="10" Grid.ColumnSpan="10" Background="#11000000" Visibility="Collapsed" Opacity="0">
+      <Grid Background="{StaticResource Back1Brush}" Height="100" Width="250" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.RowSpan="2" Grid.ColumnSpan="2" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="-3"/>
+        <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{StaticResource ForeBrush}" BorderThickness="1 0 1 1"/>
+        <TextBlock Background="{StaticResource ForeBrush}" Style="{StaticResource Control}" FontSize="14" Padding="2 1">Select Ranked Team</TextBlock>
+        <Button BorderThickness="0" Click="PopupClose_Click" Grid.Column="1" Width="20" Height="22">
+          <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+        </Button>
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+          <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+          </Grid.RowDefinitions>
+
+          <ComboBox HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Name="TeamCombo" Margin="0 7 0 0">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <ContentPresenter Content="{Binding Name}"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <Button Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20 2" Margin="0 0 0 6" Click="RankedCreate_Click">Create Lobby</Button>
+        </Grid>
+      </Grid>
+    </Grid>
   </Grid>
 </Page>
