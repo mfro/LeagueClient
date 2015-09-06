@@ -81,8 +81,9 @@ namespace LeagueClient.ClientUI {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
       } else if ((creds = args.Body as PlayerCredentialsDto) != null) {
-        Client.JoinGame(creds);
+        Close?.Invoke(this, new EventArgs());
         timer.Dispose();
+        Client.JoinGame(creds);
       }
 
       return false;
@@ -98,8 +99,8 @@ namespace LeagueClient.ClientUI {
         spell1 = LeagueData.GetSpellData(me.Spell1Id);
         spell2 = LeagueData.GetSpellData(me.Spell2Id);
         Dispatcher.Invoke(() => {
-          Spell2Image.Source = LeagueData.GetSpellImage(spell2.id);
-          Spell1Image.Source = LeagueData.GetSpellImage(spell1.id);
+          Spell1Image.Source = LeagueData.GetSpellImage(spell1);
+          Spell2Image.Source = LeagueData.GetSpellImage(spell2);
         });
 
         if (game.GameState.Equals("PRE_CHAMP_SELECT")) {
@@ -146,8 +147,8 @@ namespace LeagueClient.ClientUI {
       MasteriesBox.SelectedItem = Client.SelectedMasteryPage;
     }
 
-    private Turn RenderPlayers(GameDTO game) {
-      var turn = new Turn();
+    private TurnInfo RenderPlayers(GameDTO game) {
+      var turn = new TurnInfo();
       MyTeam.Children.Clear();
       OtherTeam.Children.Clear();
       bool meBlue = game.TeamOne.Any(p => (p as PlayerParticipant)?.AccountId == Client.LoginPacket.AllSummonerData.Summoner.AcctId);
@@ -186,7 +187,7 @@ namespace LeagueClient.ClientUI {
 
       foreach(var thing in game.BannedChampions) {
         var champ = LeagueData.GetChampData(thing.ChampionId);
-        var image = LeagueData.GetChampIconImage(champ.id);
+        var image = LeagueData.GetChampIconImage(champ);
         switch (thing.PickTurn) {
           case 1: Ban1.Source = image; break;
           case 2: Ban2.Source = image; break;
@@ -224,7 +225,6 @@ namespace LeagueClient.ClientUI {
       try {
         Dispatcher.Invoke(UpdateHeader);
       } catch { timer.Dispose(); }
-
     }
 
     private void ChampsGrid_ChampSelected(object sender, ChampionDto e) {
@@ -274,10 +274,10 @@ namespace LeagueClient.ClientUI {
       PopupGrid.BeginStoryboard(App.FadeOut);
       if (doSpell1) {
         spell1 = e;
-        Spell1Image.Source = LeagueData.GetSpellImage(e.id);
+        Spell1Image.Source = LeagueData.GetSpellImage(e);
       } else {
         spell2 = e;
-        Spell2Image.Source = LeagueData.GetSpellImage(e.id);
+        Spell2Image.Source = LeagueData.GetSpellImage(e);
       }
       RiotServices.GameService.SelectSpells(spell1.key, spell2.key);
     }
@@ -320,17 +320,17 @@ namespace LeagueClient.ClientUI {
 
     #endregion
 
+    public Page Page => this;
+    public bool CanPlay => false;
+    public bool CanClose => false;
+
     private enum State {
       Picking, Banning, Watching
     }
 
-    private struct Turn {
+    private struct TurnInfo {
       public bool IsMyTurn { get; set; }
       public bool IsOurTurn { get; set; }
     }
-
-    public Page Page => this;
-    public bool CanPlay => false;
-    public bool CanClose => false;
   }
 }

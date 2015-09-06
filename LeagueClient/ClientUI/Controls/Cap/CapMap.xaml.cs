@@ -91,7 +91,7 @@ namespace LeagueClient.ClientUI.Controls {
           Style = (Style) FindResource("Image"),
           Margin = new Thickness(ActualWidth * point.X, ActualHeight * point.Y, 0, 0)
         };
-        img.Source = LeagueData.GetChampIconImage(item.Champion.id);
+        img.Source = LeagueData.GetChampIconImage(item.Champion);
         img.Clip = new EllipseGeometry {
           RadiusX = img.Width / 2,
           RadiusY = img.Height / 2,

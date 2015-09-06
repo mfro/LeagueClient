@@ -54,12 +54,15 @@ namespace LeagueClient.ClientUI.Main {
     public bool HandleMessage(MessageReceivedEventArgs args) {
       var lobby = args.Body as LobbyStatus;
       var invite = args.Body as InvitePrivileges;
+      var queue = args.Body as SearchingForMatchNotification;
 
       if (lobby != null) {
         GotLobbyStatus(lobby);
         return true;
       } else if (invite != null) {
         Dispatcher.Invoke(() => InviteButton.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
+      } else if (queue != null) {
+        //TODO starting premade queues
       }
 
       return false;

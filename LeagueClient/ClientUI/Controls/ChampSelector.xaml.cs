@@ -71,7 +71,7 @@ namespace LeagueClient.ClientUI.Controls {
       var filter = SearchBox.Text;
       if (filter.Equals("Search")) filter = "";
       foreach (var item in champions.OrderBy(c => c.name).Where(c => Regex.IsMatch(c.name, filter, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace))) {
-        images.Add(new { Image = LeagueData.GetChampIconImage(item.id), Name = item.name, Data = item });
+        images.Add(new { Image = LeagueData.GetChampIconImage(item), Name = item.name, Data = item });
         save.Add(item.key);
       }
       if (last != null && save.SequenceEqual(last)) return;
@@ -85,7 +85,7 @@ namespace LeagueClient.ClientUI.Controls {
       var images = new List<object>();
       foreach (var item in skins) {
         images.Add(new {
-          Image = LeagueData.GetChampLoadingImage(SelectedChampion.id+"_"+item.num),
+          Image = LeagueData.GetChampLoadingImage(SelectedChampion, item.num),
           Name = item.name, Data = item });
       }
       SkinsGrid.ItemsSource = images;

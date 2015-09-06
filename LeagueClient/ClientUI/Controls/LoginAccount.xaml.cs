@@ -49,7 +49,7 @@ namespace LeagueClient.ClientUI.Controls {
     public LoginAccount(string login, string name, int profileicon) {
       InitializeComponent();
 
-      ProfileIcon.Source = LeagueData.GetProfileIconImage(profileicon);
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileicon));
       NameLabel.Content = name;
       Username = login;
       State = LoginAccountState.Normal;

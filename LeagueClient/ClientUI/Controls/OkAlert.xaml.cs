@@ -20,16 +20,9 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for OkAlert.xaml
   /// </summary>
   public partial class OkAlert : UserControl, Alert, INotifyPropertyChanged {
-    public OkAlert(string title, string message) {
-      InitializeComponent();
-      Title = title;
-      Message = message;
-    }
-
-    public event EventHandler<AlertEventArgs> Handled;
+    public event EventHandler<bool> Close;
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public UIElement Control => this;
     public string Message {
       get { return message; }
       set { SetField(ref message, value); }
@@ -42,9 +35,29 @@ namespace LeagueClient.ClientUI.Controls {
     private string message;
     private string title;
 
-    private void Ok_Click(object sender, RoutedEventArgs e) {
-      Handled?.Invoke(this, new AlertEventArgs(null));
+    public OkAlert(string title, string message) {
+      Title = title;
+      Message = message;
+
+      InitializeComponent();
+
+      HistoryGrid.DataContext = this;
+      PopupGrid.DataContext = this;
+      MainGrid.Children.Remove(HistoryGrid);
+      MainGrid.Children.Remove(PopupGrid);
     }
+
+    public UIElement Popup => PopupGrid;
+    public UIElement History => HistoryGrid;
+
+    private void Ok_Click(object sender, RoutedEventArgs e) {
+      Close?.Invoke(this, true);
+    }
+
+    private void Close_Click(object sender, RoutedEventArgs e) {
+      Close?.Invoke(this, false);
+    }
+    private void CloseAgain_Click(object sender, RoutedEventArgs e) => Close?.Invoke(this, true);
 
     private void SetField<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string name = null) {
       if (!(field?.Equals(value) ?? false)) {

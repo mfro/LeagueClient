@@ -210,7 +210,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void PlayRankedTeams(int button) {
-      //TODO Finish ranked teams
+      //TODO Ranked team lobby
       switch (button) {
         case 0:
           TeamCombo.ItemsSource = Client.RankedTeamInfo.PlayerTeams;

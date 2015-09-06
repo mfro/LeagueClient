@@ -96,24 +96,12 @@ namespace LeagueClient {
 
   public class ResourceAttribute : Attribute { }
 
-  public class MyBindingList<T> : BindingList<T> {
-    private bool adding;
+  public class PointD {
+    public double X { get; set; }
+    public double Y { get; set; }
 
-    public void ReplaceAll(IEnumerable<T> range) {
-      adding = true;
-      Clear();
-      AddRange(range);
-    }
-
-    protected override void OnListChanged(ListChangedEventArgs e) {
-      if (!adding) base.OnListChanged(e);
-    }
-
-    public void AddRange(IEnumerable<T> range) {
-      adding = true;
-      foreach (var item in range) Add(item);
-      adding = false;
-      OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
+    public PointD(double x, double y) {
+      X = x; Y = y;
     }
   }
 }

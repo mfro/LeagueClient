@@ -61,7 +61,7 @@ namespace LeagueClient.ClientUI.Controls {
       
     public LobbyPlayer(PlayerParticipant player, bool expanded) {
       RiotServices.SummonerService.GetSummonerByName(player.SummonerName).ContinueWith(GotSummonerData);
-      SummonerIcon = LeagueData.GetProfileIconImage(player.ProfileIconId);
+      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(player.ProfileIconId));
       UserName = player.SummonerName;
 
       InitializeComponent();
@@ -86,7 +86,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void GotSummonerData(Task<PublicSummoner> task) {
-      SummonerIcon = LeagueData.GetProfileIconImage(task.Result.ProfileIconId);
+      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(task.Result.ProfileIconId));
       UserName = task.Result.Name;
       LevelString = "Level " + task.Result.SummonerLevel;
       RankString = "Challenjour";

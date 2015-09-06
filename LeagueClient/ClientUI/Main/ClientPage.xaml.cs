@@ -55,14 +55,14 @@ namespace LeagueClient.ClientUI.Main {
         if (value) {
           PastAlerts.BeginStoryboard(App.FadeIn);
           var alerts = new List<UIElement>();
-          foreach (var item in Alerts) alerts.Add(item.Control);
+          foreach (var item in Alerts) alerts.Add(item.History);
           AlertHistory.ItemsSource = alerts;
         } else PastAlerts.BeginStoryboard(App.FadeOut);
         alertsOpen = value;
       }
     }
 
-    private bool chatOpen;
+    private bool chatOpen; 
     private bool alertsOpen;
     private IQueuer CurrentQueuer;
     private IQueuePopup CurrentPopup;
@@ -71,7 +71,7 @@ namespace LeagueClient.ClientUI.Main {
       SummonerName = Client.LoginPacket.AllSummonerData.Summoner.Name;
       InitializeComponent();
 
-      ProfileIcon.Source = LeagueData.GetProfileIconImage(Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId);
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId));
       OpenChatList.ItemsSource = Client.ChatManager.OpenChats;
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
@@ -137,8 +137,8 @@ namespace LeagueClient.ClientUI.Main {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowNotification, alert); return; }
 
       Alerts.Add(alert);
-      alert.Handled += Alert_Handled;
-      RecentAlert.Child = alert.Control;
+      alert.Close += Alert_Close; ;
+      RecentAlert.Child = alert.Popup;
       AlertButt.BeginStoryboard(App.FadeIn);
 
       RecentAlert.BeginStoryboard(App.FadeIn);
@@ -271,9 +271,11 @@ namespace LeagueClient.ClientUI.Main {
       AlertsOpen = !alertsOpen;
     }
 
-    private void Alert_Handled(object sender, AlertEventArgs e) {
-      Alerts.Remove(sender as Alert);
-      if(Alerts.Count == 0) {
+    private void Alert_Close(object sender, bool removeFromHistory) {
+      RecentAlert.BeginStoryboard(App.FadeOut);
+      if (removeFromHistory)
+        Alerts.Remove(sender as Alert);
+      if (Alerts.Count == 0) {
         AlertsOpen = false;
         AlertButt.BeginStoryboard(App.FadeOut);
       }
@@ -311,7 +313,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void IconSelector_IconSelected(object sender, Icon e) {
       Popup.BeginStoryboard(App.FadeOut);
-      ProfileIcon.Source = LeagueData.GetProfileIconImage(e.IconId);
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(e.IconId));
     }
 
     private void Popup_Close(object sender, EventArgs e) {

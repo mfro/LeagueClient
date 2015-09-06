@@ -40,7 +40,10 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public void Reset() {
-      LoadBook(Client.Masteries);
+      PageList.ItemsSource = Client.Masteries.BookPages;
+      var page = Client.Masteries.BookPages.FirstOrDefault(p => p.Current);
+      if (page == null) LoadPage(Client.Masteries.BookPages[0]);
+      else LoadPage(page);
     }
 
     public async Task Save() {
@@ -62,13 +65,6 @@ namespace LeagueClient.ClientUI.Controls {
     private bool loading;
     private bool unsaved;
     private MasteryBookPageDTO page;
-
-    private void LoadBook(MasteryBookDTO book) {
-      PageList.ItemsSource = book.BookPages;
-      var page = book.BookPages.FirstOrDefault(p => p.Current);
-      if (page == null) LoadPage(book.BookPages[0]);
-      else LoadPage(page);
-    }
 
     private void LoadPage(MasteryBookPageDTO page) {
       loading = true;
@@ -219,7 +215,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void DeleteButt_Click(object sender, RoutedEventArgs e) {
-
+      Client.Masteries.BookPages.Remove(Client.SelectedMasteryPage);
     }
 
     private void RevertButt_Click(object sender, RoutedEventArgs e) {
@@ -247,7 +243,7 @@ namespace LeagueClient.ClientUI.Controls {
         get { return enabled; }
         set {
           enabled = value;
-          image.Source = LeagueData.GetMasteryImage(Data.id, !enabled);
+          image.Source = LeagueData.GetMasteryImage(Data, !enabled);
           if (!enabled && points > 0) Points = 0;
         }
       }

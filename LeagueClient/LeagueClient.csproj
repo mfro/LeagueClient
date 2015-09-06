@@ -89,6 +89,12 @@
     <Compile Include="ClientUI\Controls\ProfileIconSelector.xaml.cs">
       <DependentUpon>ProfileIconSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\RuneEditor.xaml.cs">
+      <DependentUpon>RuneEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\RuneListItem.xaml.cs">
+      <DependentUpon>RuneListItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Logic\Client.cs" />
     <Compile Include="ClientUI\Main\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
@@ -133,8 +139,8 @@
     <Compile Include="ClientUI\Controls\ReturnToLobbyQueuer.xaml.cs">
       <DependentUpon>ReturnToLobbyQueuer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\YesNoAlert.xaml.cs">
-      <DependentUpon>YesNoAlert.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\GameInviteAlert.xaml.cs">
+      <DependentUpon>GameInviteAlert.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\IClientPage.cs" />
     <Compile Include="ClientUI\Main\ClientPage.xaml.cs">
@@ -351,6 +357,14 @@
     <Compile Include="Logic\SWF\SWFTypes\Tag.cs" />
     <Compile Include="Logic\SWF\SWFTypes\TagCodes.cs" />
     <Compile Include="Logic\Settings.cs" />
+    <Page Include="ClientUI\Controls\RuneEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\RuneListItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Main\ChampSelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -411,7 +425,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\YesNoAlert.xaml">
+    <Page Include="ClientUI\Controls\GameInviteAlert.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -543,6 +557,13 @@
     <Resource Include="Media\rp.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\SealDefault.png" />
+    <Resource Include="Resources\RunesBackground.png" />
+    <Resource Include="Resources\Quint3Default.png" />
+    <Resource Include="Resources\Quint2Default.png" />
+    <Resource Include="Resources\Quint1Default.png" />
+    <Resource Include="Resources\MarkDefault.png" />
+    <Resource Include="Resources\GlyphDefault.png" />
     <Resource Include="Resources\TTImage.png" />
     <Resource Include="Resources\SRiftImage.png" />
     <Resource Include="Resources\HAbyssImage.png" />

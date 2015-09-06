@@ -56,7 +56,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public LobbyBotPlayer(BotParticipant bot, bool expanded) {
       var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
-      ChampIcon = LeagueData.GetChampIconImage(champ.id);
+      ChampIcon = LeagueData.GetChampIconImage(champ);
       UserName = champ.name;
       Difficulty = bot.BotSkillLevelName;
 

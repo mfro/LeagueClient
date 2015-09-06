@@ -97,13 +97,13 @@
       </Border>
     </Grid>
 
-    <Grid Name="PastAlerts" Grid.Row="1" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5 5 0 0"
+    <Grid Name="PastAlerts" Grid.Row="1" Width="250" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10 10"
           Visibility="Collapsed" Opacity="0">
       <ScrollViewer VerticalScrollBarVisibility="Hidden" MinHeight="100" MaxHeight="300" Background="Red" Name="AlertScroll">
         <ItemsControl Name="AlertHistory" Background="{StaticResource Back1Brush}" ItemsSource="{Binding Alerts}"/>
       </ScrollViewer>
     </Grid>
-    <Border Name="RecentAlert" Margin="5 5" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Row="1" Visibility="Collapsed" Opacity="0">
+    <Border Name="RecentAlert" Margin="10 10" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Row="1" Visibility="Collapsed" Opacity="0">
       
     </Border>
     <Border Grid.ColumnSpan="100" Grid.RowSpan="100" Name="PopupPanel" Background="#4F101010" Visibility="Collapsed"/>

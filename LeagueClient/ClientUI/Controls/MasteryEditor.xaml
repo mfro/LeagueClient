@@ -49,7 +49,7 @@
       <Button Name="SaveButt" Grid.Row="5" Margin="10 4" Click="SaveButt_Click">Save Mastery Page</Button>
       <Button Name="ResetButt" Grid.Row="6" Margin="10 4" Click="ResetButt_Click">Reset Points</Button>
       <Button Name="DeleteButt" Grid.Row="7" Margin="10 4" Click="DeleteButt_Click">Delete Mastery Page</Button>
-      <Button Name="RevertButt" Grid.Row="8" Margin="10 4" Click="RevertButt_Click">Undo Changes</Button>
+      <Button Name="RevertButt" Grid.Row="8" Margin="10 4" Click="RevertButt_Click">Revert Changes</Button>
     </Grid>
     <Border Padding="4" Grid.Column="1" Margin="4 4 4 24" Background="{StaticResource Back1Brush}" Grid.Row="1">
       <UniformGrid Name="OffenseTree" Columns="4" ClipToBounds="False"/>

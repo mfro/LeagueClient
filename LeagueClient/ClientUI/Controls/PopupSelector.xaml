@@ -20,6 +20,7 @@
     </Button>
     <my:ChampSelector Margin="4 5 4 4" x:Name="ChampSelector" Height="350" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed"/>
     <my:MasteryEditor Margin="4" x:Name="MasteryEditor" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed"/>
+    <my:RuneEditor Margin="4" x:Name="RuneEditor" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed"/>
     <my:SpellSelector Margin="4" x:Name="SpellSelector" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed"/>
     <my:ProfileIconSelector Margin="4" x:Name="IconSelector" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed"/>
   </Grid>

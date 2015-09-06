@@ -54,9 +54,9 @@ namespace LeagueClient.Logic.Cap {
       set { SetField(ref status, value); }
     }
 
-    public BitmapImage ChampionImage => Champion != null ? LeagueData.GetChampIconImage(Champion.id) : null;
-    public BitmapImage Spell1Image => Spell1 != null ? LeagueData.GetSpellImage(Spell1.id) : null;
-    public BitmapImage Spell2Image => Spell2 != null ? LeagueData.GetSpellImage(Spell2.id) : null;
+    public BitmapImage ChampionImage => Champion != null ? LeagueData.GetChampIconImage(Champion) : null;
+    public BitmapImage Spell1Image => Spell1 != null ? LeagueData.GetSpellImage(Spell1) : null;
+    public BitmapImage Spell2Image => Spell2 != null ? LeagueData.GetSpellImage(Spell2) : null;
     #endregion
 
     private ChampionDto champion;

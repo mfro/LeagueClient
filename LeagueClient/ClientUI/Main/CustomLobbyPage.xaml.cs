@@ -60,7 +60,7 @@ namespace LeagueClient.ClientUI.Main {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
       } else if((status = e.Body as LobbyStatus) != null) {
-        Dispatcher.MyInvoke(GotLobbyStatus, status);
+        GotLobbyStatus(status);
         return true;
       } else if((invite = e.Body as InvitePrivileges) != null) {
         Dispatcher.Invoke(() => InviteButt.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
@@ -69,11 +69,13 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
-      InviteList.Children.Clear();
+      Dispatcher.Invoke(() => {
+        InviteList.Children.Clear();
 
-      foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
-        InviteList.Children.Add(new InvitedPlayer(player));
-      }
+        foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
+          InviteList.Children.Add(new InvitedPlayer(player));
+        }
+      });
     }
 
     public void GotGameData(GameDTO game) {

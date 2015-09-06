@@ -189,21 +189,21 @@ namespace LeagueClient.Logic.Riot {
       public const string Destination = "summonerRuneService";
 
       /// <summary>
-      /// Get the runes the user owns.
+      /// ???
       /// </summary>
       /// <param name="SummonerId">The summoner ID for the user</param>
       /// <returns>Returns the inventory for the user</returns>
-      public static Task<SummonerRuneInventory> GetSummonerRuneInventory(Double SummonerId) {
+      public static Task<SummonerRuneInventory> GetSummonerRunes(Double SummonerId) {
         return InvokeAsync<SummonerRuneInventory>(Destination, "getSummonerRunes", SummonerId);
       }
 
       /// <summary>
-      /// Get the current Mastery Book for the user.
+      /// Get the runes the user owns.
       /// </summary>
       /// <param name="SummonerId">The summoner ID for the user</param>
       /// <returns>Returns the mastery books for the user</returns>
-      public static Task<MasteryBookDTO> GetMasteryBook(Double SummonerId) {
-        return InvokeAsync<MasteryBookDTO>(Destination, "getSummonerRuneInventory", SummonerId);
+      public static Task<SummonerRuneInventory> GetSummonerRuneInventory(Double SummonerId) {
+        return InvokeAsync<SummonerRuneInventory>(Destination, "getSummonerRuneInventory", SummonerId);
       }
     }
 
@@ -1156,7 +1156,7 @@ namespace LeagueClient.Logic.Riot {
       inputStream.Close();
       con.Abort();
 
-      dynamic json = MFroehlich.Parsing.DynamicJSON.JSON.ParseObject(sb.ToString());
+      dynamic json = JSON.ParseObject(sb.ToString());
 
       return (LoginQueueDto) json;
     }
@@ -1173,7 +1173,7 @@ namespace LeagueClient.Logic.Riot {
 
       con.Abort();
 
-      var json = MFroehlich.Parsing.DynamicJSON.JSON.ParseObject(sb.ToString());
+      var json = JSON.ParseObject(sb.ToString());
 
       return (string) json["ip_address"];
     }

@@ -19,7 +19,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// </summary>
   public partial class PopupSelector : UserControl {
     public enum Selector {
-      Champions, Masteries, Spells, ProfileIcons
+      Champions, Masteries, Runes, Spells, ProfileIcons
     }
 
     public event EventHandler Close;
@@ -34,6 +34,7 @@ namespace LeagueClient.ClientUI.Controls {
             MasteryEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
             IconSelector.Visibility = Visibility.Collapsed;
+            RuneEditor.Visibility = Visibility.Collapsed;
             ChampSelector.Visibility = Visibility.Visible;
             TitleBlock.Text = "Select a Champion";
             break;
@@ -42,6 +43,7 @@ namespace LeagueClient.ClientUI.Controls {
             ChampSelector.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
             IconSelector.Visibility = Visibility.Collapsed;
+            RuneEditor.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Visible;
             TitleBlock.Text = "Select Masteries";
             break;
@@ -49,6 +51,7 @@ namespace LeagueClient.ClientUI.Controls {
             ChampSelector.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Collapsed;
             IconSelector.Visibility = Visibility.Collapsed;
+            RuneEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Visible;
             TitleBlock.Text = "Select Summoner Spells";
             break;
@@ -58,6 +61,14 @@ namespace LeagueClient.ClientUI.Controls {
             SpellSelector.Visibility = Visibility.Collapsed;
             IconSelector.Visibility = Visibility.Visible;
             TitleBlock.Text = "Select Summoner Icon";
+            break;
+          case Selector.Runes:
+            ChampSelector.Visibility = Visibility.Collapsed;
+            MasteryEditor.Visibility = Visibility.Collapsed;
+            SpellSelector.Visibility = Visibility.Collapsed;
+            IconSelector.Visibility = Visibility.Collapsed;
+            RuneEditor.Visibility = Visibility.Visible;
+            TitleBlock.Text = "Select Runes";
             break;
         }
       }

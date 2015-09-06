@@ -22,6 +22,7 @@ using System.Windows.Threading;
 using System.Xml;
 using LeagueClient.Logic.com.riotgames.other;
 using LeagueClient.Logic.Riot.Team;
+using LeagueClient.ClientUI.Controls;
 
 namespace LeagueClient.Logic {
   public static class Client {
@@ -171,10 +172,11 @@ namespace LeagueClient.Logic {
       string state = await RiotServices.AccountService.GetAccountState();
       Connected = true;
 
-      new System.Threading.Thread(() => {
+      new Thread(() => {
         RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(GotQueues);
         RiotServices.InventoryService.GetAvailableChampions().ContinueWith(GotChampions);
         RiotServices.SummonerTeamService.CreatePlayer().ContinueWith(GotRankedTeamInfo);
+
         Runes = LoginPacket.AllSummonerData.SpellBook;
         Masteries = LoginPacket.AllSummonerData.MasteryBook;
         SelectedRunePage = Runes.BookPages.FirstOrDefault(p => p.Current);
@@ -242,73 +244,13 @@ namespace LeagueClient.Logic {
       ChatManager.UpdateStatus(ChatStatus.inGame);
     }
 
-    /// <summary>
-    /// Selects a mastery page as the default selected page for your account and
-    /// updates the contents of the local and remote mastery books
-    /// </summary>
-    /// <param name="page">The page to select</param>
-    public static void SelectMasteryPage(MasteryBookPageDTO page) {
-      if (page == SelectedMasteryPage) return;
-      RiotServices.MasteryBookService.SelectDefaultMasteryBookPage(page);
-      foreach (var item in Masteries.BookPages) item.Current = false;
-      page.Current = true;
-      SelectedMasteryPage = page;
-    }
-
-    /// <summary>
-    /// Selects a rune page as the default selected page for your account and
-    /// updates the contents of the local and remote spell books
-    /// </summary>
-    /// <param name="page"></param>
-    public static void SelectRunePage(SpellBookPageDTO page) {
-      if (page == SelectedRunePage) return;
-      RiotServices.SpellBookService.SelectDefaultSpellBookPage(page);
-      foreach (var item in Runes.BookPages) item.Current = false;
-      page.Current = true;
-      SelectedRunePage = page;
-    }
-
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
     public static void ShowInvite(InvitationRequest invite) {
       if (invite.InvitationState.Equals("ACTIVE")) {
         var payload = JSON.ParseObject(invite.GameMetaData);
         string type = payload["gameType"];
-        Alert alert;
-        if(payload["gameTypeConfigId"] == 12) {
-          alert = AlertFactory.TeambuilderInvite(invite.Inviter.summonerName);
-          alert.Handled += (src, e2) => {
-            if (e2.Data as bool? ?? false) {
-              var lobby = new CapLobbyPage(false);
-              RiotServices.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
-              RiotServices.CapService.JoinGroupAsInvitee((string) payload["groupFinderId"]);
-              QueueManager.ShowPage(lobby);
-            } else RiotServices.GameInvitationService.Decline(invite.InvitationId);
-          };
-        } else {
-          switch (type) {
-            case "PRACTICE_GAME":
-              alert = AlertFactory.CustomInvite(invite.Inviter.summonerName);
-              alert.Handled += (src, e2) => {
-                if (e2.Data as bool? ?? false) {
-                  var lobby = new CustomLobbyPage();
-                  RiotServices.GameInvitationService.Accept(invite.InvitationId);
-                  QueueManager.ShowPage(lobby);
-                } else RiotServices.GameInvitationService.Decline(invite.InvitationId);
-              };
-              break;
-            case "NORMAL_GAME":
-              alert = AlertFactory.NormalInvite(invite.Inviter.summonerName, GameMode.Values[payload["gameMode"]]);
-              alert.Handled += (src, e2) => {
-                if (e2.Data as bool? ?? false) {
-                  var lobby = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { payload["queueId"] } });
-                  RiotServices.GameInvitationService.Accept(invite.InvitationId).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
-                  QueueManager.ShowPage(lobby);
-                } else RiotServices.GameInvitationService.Decline(invite.InvitationId);
-              };
-              break;
-            default: alert = null; break;
-          }
-        }
+        GameInviteAlert alert = AlertFactory.InviteAlert(invite);
+
         invites[invite.InvitationId] = alert;
         QueueManager.ShowNotification(alert);
       }
@@ -324,6 +266,49 @@ namespace LeagueClient.Logic {
       ChatManager?.Logout();
       MainWindow.PatchComplete();
     }
+    #endregion
+
+    #region Runes and Masteries
+
+    /// <summary>
+    /// Selects a mastery page as the default selected page for your account and
+    /// updates the contents of the local and server-side mastery books
+    /// </summary>
+    /// <param name="page">The page to select</param>
+    public static void SelectMasteryPage(MasteryBookPageDTO page) {
+      if (page == SelectedMasteryPage) return;
+      RiotServices.MasteryBookService.SelectDefaultMasteryBookPage(page);
+      foreach (var item in Masteries.BookPages) item.Current = false;
+      page.Current = true;
+      SelectedMasteryPage = page;
+    }
+
+    /// <summary>
+    /// Selects a rune page as the default selected page for your account and
+    /// updates the contents of the local and server-side spell books
+    /// </summary>
+    /// <param name="page">The page to select</param>
+    public static void SelectRunePage(SpellBookPageDTO page) {
+      if (page == SelectedRunePage) return;
+      RiotServices.SpellBookService.SelectDefaultSpellBookPage(page);
+      foreach (var item in Runes.BookPages) item.Current = false;
+      page.Current = true;
+      SelectedRunePage = page;
+    }
+
+    /// <summary>
+    /// Deletes a mastery page from your mastery page book and updates the
+    /// contents of the local and server-side mastery books
+    /// </summary>
+    /// <param name="page">The page to delete</param>
+    public static void DeleteMasteryPage(MasteryBookPageDTO page) {
+      if (!Masteries.BookPages.Contains(page)) throw new ArgumentException("Book page not found: " + page);
+      Masteries.BookPages.Remove(page);
+      SelectedMasteryPage = Masteries.BookPages.First();
+      SelectedMasteryPage.Current = true;
+      RiotServices.MasteryBookService.SaveMasteryBook(Masteries);
+    }
+
     #endregion
 
     #region My Client Methods

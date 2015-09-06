@@ -6,38 +6,27 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic.Riot.Platform;
 
 namespace LeagueClient.Logic {
   public interface Alert {
-    event EventHandler<AlertEventArgs> Handled;
+    event EventHandler<bool> Close;
 
-    string Title { get; set; }
-    string Message { get; set; }
-    UIElement Control { get; }
+    UIElement Popup { get; }
+    UIElement History { get; }
   }
 
   public static class AlertFactory {
-    private static Alert Create<T>(params object[] args) where T : Alert {
+    private static T Create<T>(params object[] args) where T : Alert {
       var types = new Type[args.Length];
       for (int i = 0; i < args.Length; i++) types[i] = args[i]?.GetType();
-      T t = (T) App.Current.Dispatcher.MyInvoke(typeof(T).GetConstructor(types).Invoke, args);
-      return t;
+      return (T) App.Current.Dispatcher.MyInvoke(typeof(T).GetConstructor(types).Invoke, args);
     }
 
-    public static Alert KickedFromCap() => Create<OkAlert>("Kicked from Group", "You have been kicked from a teambuilder group and returned to the queue.");
-    public static Alert QueueDodger() => Create<OkAlert>("Unabled to join queue", "You have cancelled too many queues recently and are temporarily unabled to queue for games");
-    public static Alert GroupDisbanded() => Create<OkAlert>("Your group has disbanded", "The group you were in was disbanded for an unknown reason");
+    public static OkAlert KickedFromCap() => Create<OkAlert>("Kicked from Group", "You have been kicked from a teambuilder group and returned to the queue.");
+    public static OkAlert QueueDodger() => Create<OkAlert>("Unabled to join queue", "You have cancelled too many queues recently and are temporarily unabled to queue for games");
+    public static OkAlert GroupDisbanded() => Create<OkAlert>("Your group has disbanded", "The group you were in was disbanded for an unknown reason");
 
-    public static Alert NormalInvite(string user, GameMode mode) => Create<YesNoAlert>("Game Invite", $"You have been invited to a {mode.Value} lobby by " + user);
-    public static Alert TeambuilderInvite(string user) => Create<YesNoAlert>("Teambuilder Invite", "You have been invited to a teambuilder game lobby by " + user);
-    public static Alert CustomInvite(string user) => Create<YesNoAlert>("Custom Game Invite", "You have been invited to a custom game lobby by " + user);
-  }
-
-  public class AlertEventArgs : EventArgs {
-    public object Data { get; private set; }
-
-    public AlertEventArgs(object data) {
-      Data = data;
-    }
+    public static GameInviteAlert InviteAlert(InvitationRequest invite) => Create<GameInviteAlert>(invite);
   }
 }

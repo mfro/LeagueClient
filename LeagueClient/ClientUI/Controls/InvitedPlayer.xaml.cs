@@ -27,6 +27,7 @@ namespace LeagueClient.ClientUI.Controls {
         case "PENDING": StateText.Content = "Pending"; break;
         case "ACCEPTED": StateText.Content = "Accepted"; break;
         case "QUIT": StateText.Content = "Quit"; break;
+        case "DECLINED": StateText.Content = "Declined"; break;
         default: break;
       }
     }

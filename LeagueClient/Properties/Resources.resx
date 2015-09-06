@@ -139,4 +139,25 @@
   <data name="TTImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TTImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GlyphDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GlyphDefault.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MarkDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MarkDefault.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Quint1Default" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Quint1Default.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Quint2Default" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Quint2Default.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Quint3Default" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Quint3Default.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RunesBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RunesBackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SealDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SealDefault.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

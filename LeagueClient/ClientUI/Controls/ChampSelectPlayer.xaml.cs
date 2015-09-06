@@ -25,11 +25,11 @@ namespace LeagueClient.ClientUI.Controls {
       InitializeComponent();
 
       if (selection?.ChampionId > 0)
-        ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId).id);
+        ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId));
       if (selection?.Spell1Id > 0)
-        Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id).id);
+        Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id));
       if (selection?.Spell2Id > 0)
-        Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id).id);
+        Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
 
       if (!string.IsNullOrWhiteSpace(player.SummonerName))
         SummonerName.Text = player.SummonerName;
@@ -40,7 +40,7 @@ namespace LeagueClient.ClientUI.Controls {
       InitializeComponent();
 
       var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
-      ChampImage.Source = LeagueData.GetChampIconImage(champ.id);
+      ChampImage.Source = LeagueData.GetChampIconImage(champ);
       SummonerName.Text = champ.name;
     }
 

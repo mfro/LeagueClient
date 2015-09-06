@@ -94,7 +94,7 @@ namespace LeagueClient.ClientUI.Controls {
         } else {
           MsgText.Visibility = Visibility.Visible;
         }
-        SummonerIcon = LeagueData.GetProfileIconImage(Status.ProfileIcon);
+        SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Status.ProfileIcon));
         switch (p.Show) {
           case "chat": InGameText.Foreground = App.ChatBrush; break;
           case "away": InGameText.Foreground = App.AwayBrush; break;
@@ -139,8 +139,9 @@ namespace LeagueClient.ClientUI.Controls {
       }
       if (summ.Result == null) return;
       Summoner = summ.Result;
-      if (Summoner.ProfileIconId != Status.ProfileIcon)
-        App.Current.Dispatcher.Invoke(() => SummonerIcon = LeagueData.GetProfileIconImage(Status.ProfileIcon));
+      if (Summoner.ProfileIconId != Status.ProfileIcon) {
+        App.Current.Dispatcher.Invoke(() => SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Summoner.ProfileIconId)));
+      }
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SummonerIcon)));
       if (Status.GameStatus == ChatStatus.inGame)
         RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", (long) Summoner.SummonerId)
