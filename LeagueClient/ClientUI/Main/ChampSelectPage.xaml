@@ -44,7 +44,7 @@
         </StackPanel>
 
         <Border Name="MatchDetails" Grid.Row="2" Background="{StaticResource ForeBrush}"
-            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 8">
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 8 0 0">
           <Grid Margin="4 0">
             <Grid.RowDefinitions>
               <RowDefinition Height="auto"/>
@@ -55,7 +55,7 @@
           </Grid>
         </Border>
 
-        <UniformGrid Grid.Row="3" Columns="3" Margin="0 0 -4 0">
+        <UniformGrid Grid.Row="3" Columns="3" Name="MyTeamBans" Margin="0 8 -4 0">
           <UniformGrid.Resources>
             <Style TargetType="Border">
               <Setter Property="Margin" Value="0 0 4 0"/>
@@ -95,7 +95,7 @@
         </StackPanel>
 
         <Border Name="MatchDetails2" Grid.Row="2" Background="{StaticResource ForeBrush}"
-            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 8">
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="0 8 0 0">
           <Grid Margin="4 0">
             <Grid.RowDefinitions>
               <RowDefinition Height="auto"/>
@@ -106,7 +106,7 @@
           </Grid>
         </Border>
 
-        <UniformGrid Grid.Row="3" Columns="3" Margin="0 0 -4 0">
+        <UniformGrid Grid.Row="3" Name="OtherTeamBans" Columns="3" Margin="0 8 -4 0">
           <UniformGrid.Resources>
             <Style TargetType="Border">
               <Setter Property="Margin" Value="0 0 4 0"/>

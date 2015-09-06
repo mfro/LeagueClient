@@ -65,6 +65,11 @@ namespace LeagueClient.ClientUI {
 
       var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
 
+      var config = Client.LoginPacket.GameTypeConfigs.FirstOrDefault(g => g.Id == game.GameTypeConfigId);
+      if(config.MaxAllowableBans == 0) {
+        MyTeamBans.Visibility = OtherTeamBans.Visibility = Visibility.Collapsed;
+      }
+
       MapLabel.Content = map.DisplayName;
       ModeLabel.Content = ModeLabel.Content = GameMode.Values[game.GameMode].Value;
       QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
@@ -182,10 +187,10 @@ namespace LeagueClient.ClientUI {
         } else {
           OtherTeam.Children.Add(control);
         }
-        Dispatcher.Invoke(() => MyTeam.Height = OtherTeam.Height = control.ActualHeight * (game.MaxNumPlayers / 2), DispatcherPriority.SystemIdle);
       }
+      MyTeam.Height = OtherTeam.Height = 84 * (game.MaxNumPlayers / 2);
 
-      foreach(var thing in game.BannedChampions) {
+      foreach (var thing in game.BannedChampions) {
         var champ = LeagueData.GetChampData(thing.ChampionId);
         var image = LeagueData.GetChampIconImage(champ);
         switch (thing.PickTurn) {

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:local="clr-namespace:LeagueClient.ClientUI.Controls"
              Background="{StaticResource Back1Brush}" HorizontalAlignment="Stretch">
-  <Grid>
+  <Grid Height="84">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
       <RowDefinition/>

@@ -17,6 +17,8 @@ namespace LeagueClient.Logic {
     public int ProfileIcon { get; set; }
     public string SummonerName { get; set; }
 
+    public string ChatStatus { get; set; }
+
     public Dictionary<string, int> RecentQueuesByMapId;
   }
 }

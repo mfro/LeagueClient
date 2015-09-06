@@ -43,12 +43,10 @@ namespace LeagueClient.Logic.Chat {
 
     public ChatStatus Status { get; private set; }
     public StatusShow Show { get; private set; }
-    public string Message { get; private set; }
 
     public RiotChat(string user, string pass) {
       Status = ChatStatus.outOfGame;
       Show = StatusShow.Chat;
-      Message = "";
       conn = new JabberClient {
         Server = "pvp.net",
         Port = 5223,
@@ -59,11 +57,11 @@ namespace LeagueClient.Logic.Chat {
         User = user,
         Password = "AIR_" + pass,
         Resource = "xiff",
-        AutoPresence = true
+        AutoPresence = false
       };
       conn.OnInvalidCertificate += (src, cert, poop, poo2) => true;
       conn.OnMessage += OnReceiveMessage;
-      conn.OnAuthenticate += s => UpdateStatus(Message);
+      conn.OnAuthenticate += s => UpdateStatus(Client.Settings.ChatStatus);
       ChatState = State.Connecting;
       conn.Connect();
       Roster.Stream = conn;
@@ -73,7 +71,7 @@ namespace LeagueClient.Logic.Chat {
       Roster.OnRosterEnd += src => {
         fullyAuthed = true;
         Presence.OnPrimarySessionChange += OnPrimarySessionChange;
-        UpdateStatus("");
+        SendPresence();
       };
       Presence.Stream = conn;
       Conference.Stream = conn;
@@ -116,7 +114,11 @@ namespace LeagueClient.Logic.Chat {
     #region Event Handlers
     void OnPrimarySessionChange(object sender, jabber.JID bare) {
       if (!Friends.ContainsKey(bare.User)) {
-        var p = Presence.GetAll(bare);
+        if (!bare.User.Equals(conn.JID.User)) {
+          var p = Presence.GetAll(bare);
+          if (p.Any(s2 => Client.LoginPacket.AllSummonerData.Summoner.Name.Equals(s2.From.Resource))) return;
+          SendPresence();
+        }
         return;
       }
 
@@ -200,22 +202,27 @@ namespace LeagueClient.Logic.Chat {
     /// </summary>
     /// <param name="message">The status message to display</param>
     public void UpdateStatus(string message) {
-      var status = new LeagueStatus(Message = message, Status);
+      Client.Settings.ChatStatus = message;
+      SendPresence();
+    }
+
+    public void UpdateStatus(ChatStatus status) {
+      this.Status = status;
+      SendPresence();
+    }
+
+    public void UpdateStatus(StatusShow show) {
+      this.Show = show;
+      SendPresence();
+    }
+
+    public void SendPresence() {
+      var status = new LeagueStatus(Client.Settings.ChatStatus, Status);
       var computed = DndStatuses.Contains(Status) ? StatusShow.Dnd : Show;
 
       var args = new StatusUpdatedEventArgs(status, PresenceType.available, computed);
       conn.Presence(args.PresenceType, args.Status.ToXML(), args.Show.ToString().ToLower(), 0);
       StatusUpdated?.Invoke(this, args);
-    }
-
-    public void UpdateStatus(ChatStatus status) {
-      this.Status = status;
-      UpdateStatus(Message);
-    }
-
-    public void UpdateStatus(StatusShow show) {
-      this.Show = show;
-      UpdateStatus(Message);
     }
     #endregion
 
