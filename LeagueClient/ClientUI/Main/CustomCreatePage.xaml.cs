@@ -101,6 +101,7 @@ namespace LeagueClient.ClientUI.Main {
         ErrorLabel.Visibility = Visibility.Visible;
         return;
       } else {
+        Close?.Invoke(this, new EventArgs());
         Client.QueueManager.ShowPage(new CustomLobbyPage(game));
       }
     }

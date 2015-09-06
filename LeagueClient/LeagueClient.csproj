@@ -53,9 +53,6 @@
     <ApplicationIcon>ikonica-lol.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="jabber-net">
-      <HintPath>..\..\..\Libraries\jabber-net.dll</HintPath>
-    </Reference>
     <Reference Include="Parsing">
       <HintPath>..\..\..\Libraries\Parsing.dll</HintPath>
     </Reference>
@@ -611,6 +608,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\jabber-net\2005-jabber-net.csproj">
+      <Project>{6cae854a-f202-4d2b-b10e-e8d8e81e5ef5}</Project>
+      <Name>2005-jabber-net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\rtmp-sharp\rtmp-sharp.csproj">
       <Project>{aa1a4f5d-3bd4-4832-9f5d-90727007727e}</Project>
       <Name>rtmp-sharp</Name>
