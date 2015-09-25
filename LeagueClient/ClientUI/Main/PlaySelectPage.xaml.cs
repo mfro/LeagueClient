@@ -57,9 +57,9 @@ namespace LeagueClient.ClientUI.Main {
       #region Queues
       queues[GameMap.SummonersRift] = new List<IPlayableQueue> {
         new PlayablePvpQueue("Team Builder", SelectTeambuilder, 61),
-        new PlayablePvpQueue("Blind Pick", SelectStandardQueue, 2),
-        new PlayablePvpQueue("Draft Pick", SelectStandardQueue, 14),
-        new PlayablePvpQueue("Ranked Solo / Duo Queue", SelectStandardQueue, 4),
+        new PlayablePvpQueue("Blind Pick", SelectStandard, 2),
+        new PlayablePvpQueue("Draft Pick", SelectStandard, 14),
+        new PlayablePvpQueue("Ranked Solo / Duo Queue", SelectStandard, 4),
         new PlayablePvpQueue("Ranked Teams", SelectRankedTeams, 42),
         new PlayableBotsQueue("Intro", SelectBots, 31, "INTRO"),
         new PlayableBotsQueue("Beginner", SelectBots, 32, "EASY"),
@@ -67,21 +67,21 @@ namespace LeagueClient.ClientUI.Main {
       };
 
       queues[GameMap.TheTwistedTreeline] = new List<IPlayableQueue> {
-        new PlayablePvpQueue("Blind Pick", SelectStandardQueue, 8),
-        new PlayablePvpQueue("Ranked Teams", SelectStandardQueue, 41),
+        new PlayablePvpQueue("Blind Pick", SelectStandard, 8),
+        new PlayablePvpQueue("Ranked Teams", SelectStandard, 41),
         new PlayableBotsQueue("Beginner", SelectBots, 52, "EASY"),
         new PlayableBotsQueue("Intermediate", SelectBots, 52, "MEDIUM"),
       };
 
       queues[GameMap.TheCrystalScar] = new List<IPlayableQueue> {
-        new PlayablePvpQueue("Blind Pick", SelectStandardQueue, 16),
-        new PlayablePvpQueue("Draft Pick", SelectStandardQueue, 17),
+        new PlayablePvpQueue("Blind Pick", SelectStandard, 16),
+        new PlayablePvpQueue("Draft Pick", SelectStandard, 17),
         new PlayableBotsQueue("Beginner", SelectBots, 25, "EASY"),
         new PlayableBotsQueue("Intermediate", SelectBots, 25, "MEDIUM"),
       };
 
       queues[GameMap.HowlingAbyss] = new List<IPlayableQueue> {
-        new PlayablePvpQueue("ARAM", SelectStandardQueue, 65),
+        new PlayablePvpQueue("ARAM", SelectStandard, 65),
       };
       #endregion
 
@@ -150,11 +150,18 @@ namespace LeagueClient.ClientUI.Main {
       ButtonAction = PlayTeambuilder;
     }
 
-    private void SelectStandardQueue(int type) {
+    private void SelectStandard(int type) {
       QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Visible;
       QueueButton1.Content = "Enter Soloqueue";
       QueueButton2.Content = "Create Lobby";
       ButtonAction = PlayStandard;
+    }
+
+    private void SelectRanked(int type) {
+      QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Visible;
+      QueueButton1.Content = "Enter Soloqueue";
+      QueueButton2.Content = "Invite Duo Partner";
+      ButtonAction = PlayRanked;
     }
 
     private void SelectRankedTeams(int type) {
@@ -201,6 +208,32 @@ namespace LeagueClient.ClientUI.Main {
           }
           break;
         case 1:
+          var lobby = new DefaultLobbyPage(mmp);
+          var status = await RiotServices.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]);
+          lobby.GotLobbyStatus(status);
+          Client.QueueManager.ShowPage(lobby);
+          break;
+      }
+    }
+
+    private async void PlayRanked(int button) {
+      Close?.Invoke(this, new EventArgs());
+      var mmp = new MatchMakerParams { QueueIds = new[] { currentConfig.Id } };
+      switch (button) {
+        case 0:
+          var search = await RiotServices.MatchmakerService.AttachToQueue(mmp);
+          if (search.PlayerJoinFailures?.Count > 0) {
+            switch (search.PlayerJoinFailures[0].ReasonFailed) {
+              case "QUEUE_DODGER":
+                Client.QueueManager.ShowQueuer(new BingeQueuer(search.PlayerJoinFailures[0].PenaltyRemainingTime));
+                break;
+            }
+          } else {
+            Client.QueueManager.ShowQueuer(new DefaultQueuer(mmp));
+          }
+          break;
+        case 1:
+          //TODO Ranked Duo Lobby
           var lobby = new DefaultLobbyPage(mmp);
           var status = await RiotServices.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]);
           lobby.GotLobbyStatus(status);

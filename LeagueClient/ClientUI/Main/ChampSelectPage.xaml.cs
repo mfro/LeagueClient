@@ -139,7 +139,11 @@ namespace LeagueClient.ClientUI {
         state = State.Watching;
         ChampsGrid.IsReadOnly = true;
         header = PostString;
+      } else {
+        
       }
+
+      UpdateHeader();
       last = game;
     }
 

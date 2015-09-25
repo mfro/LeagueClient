@@ -136,7 +136,7 @@
         <Border Background="{StaticResource ForeBrush}" MouseDown="Border_MouseDown" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
           <Label Name="GameStatusLabel" Padding="8 1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Your turn to pick!</Label>
         </Border>
-        <my:ChampSelector Grid.Row="1" Margin="4 8 4 8" HorizontalAlignment="Center" x:Name="ChampsGrid"/>
+        <my:ChampSelector Grid.Row="1" Margin="0 8" x:Name="ChampsGrid"/>
         <Grid Margin="0" Grid.Row="2">
           <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

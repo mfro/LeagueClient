@@ -378,7 +378,6 @@ namespace LeagueClient.ClientUI.Main {
         Client.JoinGame(creds);
         return true;
       } else if ((game = e.Body as GameDTO) != null) {
-        //TODO Game Details Popup
         return true;
       }
       return false;

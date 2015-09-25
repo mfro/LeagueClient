@@ -114,35 +114,17 @@ namespace LeagueClient.ClientUI.Controls {
       usedPoints = 0;
       int total = offense.Points + defense.Points + utility.Points;
       for (int r = 0; r < 6; r++) {
-        foreach (var item in offense.Rows[r]) {
-          bool prereq;
-          if (item.Data.prereq.Equals("0")) prereq = true;
-          else {
-            var pre = Icons[item.Data.prereq];
-            prereq = pre.Points == pre.Data.ranks;
+        foreach(var tree in new[] { offense, defense, utility }) {
+          foreach (var item in tree.Rows[r]) {
+            bool prereq;
+            if (item.Data.prereq.Equals("0")) prereq = true;
+            else {
+              var pre = Icons[item.Data.prereq];
+              prereq = pre.Points == pre.Data.ranks;
+            }
+            item.Enabled = (total < 30 || item.Points > 0) && prereq && tree.PointsAboveRow(r) >= 4 * r;
+            usedPoints += item.Points;
           }
-          item.Enabled = (total < 30 || item.Points > 0) && prereq && offense.PointsAboveRow(r) >= 4 * r;
-          usedPoints += item.Points;
-        }
-        foreach (var item in defense.Rows[r]) {
-          bool prereq;
-          if (item.Data.prereq.Equals("0")) prereq = true;
-          else {
-            var pre = Icons[item.Data.prereq];
-            prereq = pre.Points == pre.Data.ranks;
-          }
-          item.Enabled = (total < 30 || item.Points > 0) && prereq && defense.PointsAboveRow(r) >= 4 * r;
-          usedPoints += item.Points;
-        }
-        foreach (var item in utility.Rows[r]) {
-          bool prereq;
-          if (item.Data.prereq.Equals("0")) prereq = true;
-          else {
-            var pre = Icons[item.Data.prereq];
-            prereq = pre.Points == pre.Data.ranks;
-          }
-          item.Enabled = (total < 30 || item.Points > 0) && prereq && utility.PointsAboveRow(r) >= 4 * r;
-          usedPoints += item.Points;
         }
       }
       unsaved = true;
