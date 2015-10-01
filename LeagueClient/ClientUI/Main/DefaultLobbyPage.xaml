@@ -29,7 +29,7 @@
         </RichTextBox>
       </ScrollViewer>
       <TextBox Name="SendBox" Grid.Row="6" Margin="0 0 70 0"/>
-      <Button Name="ChatSend" Grid.Row="6" Margin="0 -2 0 0" HorizontalAlignment="Right" Width="60">Send</Button>
+      <Button Name="ChatSend" Grid.Row="6" HorizontalAlignment="Right" Width="60">Send</Button>
     </Grid>
     <Grid Grid.Column="1" Margin="10 0 0 0">
       <Grid.RowDefinitions>

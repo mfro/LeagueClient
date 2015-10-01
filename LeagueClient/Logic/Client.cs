@@ -1,28 +1,28 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
+using System.Xml;
+using LeagueClient.ClientUI.Controls;
+using LeagueClient.ClientUI.Main;
+using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
+using LeagueClient.Logic.com.riotgames.other;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
+using LeagueClient.Logic.Riot.Team;
 using LegendaryClient.Logic.SWF;
 using MFroehlich.League.Assets;
+using MFroehlich.Parsing.DynamicJSON;
 using RtmpSharp.IO;
 using RtmpSharp.Messaging;
 using RtmpSharp.Net;
 using MyChampDTO = MFroehlich.League.DataDragon.ChampionDto;
-using MFroehlich.Parsing.DynamicJSON;
-using LeagueClient.Logic;
-using LeagueClient.ClientUI.Main;
-using System.Threading;
-using System.Windows.Threading;
-using System.Xml;
-using LeagueClient.Logic.com.riotgames.other;
-using LeagueClient.Logic.Riot.Team;
-using LeagueClient.ClientUI.Controls;
 
 namespace LeagueClient.Logic {
   public static class Client {

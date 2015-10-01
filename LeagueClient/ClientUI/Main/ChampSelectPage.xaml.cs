@@ -108,6 +108,8 @@ namespace LeagueClient.ClientUI {
           Spell2Image.Source = LeagueData.GetSpellImage(spell2);
         });
 
+        LockInButt.IsEnabled = turn.IsMyTurn;
+
         if (game.GameState.Equals("PRE_CHAMP_SELECT")) {
           if (last?.PickTurn != game.PickTurn) SetTimer(config.BanTimerDuration - 3);
           if (turn.IsMyTurn) state = State.Banning;

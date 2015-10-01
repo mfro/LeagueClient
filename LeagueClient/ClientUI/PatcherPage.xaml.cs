@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using LeagueClient.Logic;
 using MFroehlich.League.Assets;
+using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for PatcherPage.xaml
   /// </summary>
   public partial class PatcherPage : Page {
+    private const string SettingsKey = "PatcherSettings";
+    private static JSONObject settings = Client.LoadSettings(SettingsKey);
 
     public PatcherPage() {
       InitializeComponent();
@@ -49,7 +52,7 @@ namespace LeagueClient.ClientUI {
     }
 
     void CreateLoginPage() {
-      if (!File.Exists(Client.LoginVideoPath)) {
+      if (!settings.Dictionary.ContainsKey("theme") || !Client.LoginTheme.Equals(settings["theme"])) {
         var info = new ProcessStartInfo {
           FileName = Client.FFMpegPath,
           Arguments = "-i \"" + Path.Combine(Client.AirDirectory, @"mod\lgn\themes",
@@ -58,12 +61,16 @@ namespace LeagueClient.ClientUI {
           CreateNoWindow = true
         };
         Process.Start(info).WaitForExit();
+
+        settings["theme"] = Client.LoginTheme;
+        Client.SaveSettings(SettingsKey, settings);
       }
+
       Dispatcher.Invoke(Client.MainWindow.PatchComplete);
     }
 
     public static bool NeedsPatch() {
-      return !File.Exists(Client.LoginVideoPath) || !LeagueData.IsCurrent;
+      return !File.Exists(Client.LoginVideoPath) || !LeagueData.IsCurrent || !settings.Dictionary.ContainsKey("theme") || !Client.LoginTheme.Equals(settings["theme"]);
     }
   }
 }

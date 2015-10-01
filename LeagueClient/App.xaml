@@ -28,12 +28,14 @@
 
     <SolidColorBrush x:Key="FontBrush" Color="{StaticResource FontColor}"/>
     <SolidColorBrush x:Key="FocusBrush" Color="{x:Static SystemColors.HighlightColor}"/>
+    
       <!--<SolidColorBrush x:Key="ForeBrush" Color="{x:Static SystemColors.ControlLightColor}"/>-->
     <!--<SolidColorBrush x:Key="Back1Brush" Color="{x:Static SystemColors.WindowColor}"/>-->
     <!--<SolidColorBrush x:Key="Back2Brush" Color="{x:Static SystemColors.ControlDarkDarkColor}"/>-->
     <SolidColorBrush x:Key="ForeBrush" Color="{StaticResource ForeColor}"/>
     <SolidColorBrush x:Key="Back1Brush" Color="{StaticResource Back1Color}"/>
     <SolidColorBrush x:Key="Back2Brush" Color="{StaticResource Back2Color}"/>
+    
     <SolidColorBrush x:Key="BusyBrush" Color="{StaticResource BusyColor}"/>
     <SolidColorBrush x:Key="AwayBrush" Color="{StaticResource AwayColor}"/>
     <SolidColorBrush x:Key="ChatBrush" Color="{StaticResource ChatColor}"/>
@@ -323,12 +325,11 @@
                 </Grid>
               </Border>
             </Border>
-            <!--<ControlTemplate.Triggers>
+            <ControlTemplate.Triggers>
               <Trigger Property="IsEnabled" Value="False">
                 <Setter TargetName="content" Property="Opacity" Value=".6"/>
-                <Setter TargetName="border" Property="Opacity" Value=".9"/>
               </Trigger>
-            </ControlTemplate.Triggers>-->
+            </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
       </Setter>
