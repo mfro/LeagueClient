@@ -112,9 +112,6 @@
     <Compile Include="ClientUI\Controls\Loader.xaml.cs">
       <DependentUpon>Loader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\LobbyBotPlayer.xaml.cs">
-      <DependentUpon>LobbyBotPlayer.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ClientUI\Controls\LobbyPlayer.xaml.cs">
       <DependentUpon>LobbyPlayer.xaml</DependentUpon>
     </Compile>
@@ -385,10 +382,6 @@
     <Page Include="ClientUI\Controls\Loader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ClientUI\Controls\LobbyBotPlayer.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="ClientUI\Controls\LobbyPlayer.xaml">
       <SubType>Designer</SubType>

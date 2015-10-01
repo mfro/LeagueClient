@@ -106,14 +106,13 @@ namespace LeagueClient.ClientUI.Main {
             InviteButt.Visibility = Visibility.Visible;
 
           foreach (var thing in game.TeamOne.Concat(game.TeamTwo)) {
+            bool blue = game.TeamOne.Contains(thing);
             var player = thing as PlayerParticipant;
-            bool blue = game.TeamOne.Contains(player);
             var bot = thing as BotParticipant;
+
             UserControl control;
-            if (player != null)
-              control = new LobbyPlayer(player, true);
-            else if (bot != null)
-              control = new LobbyBotPlayer(bot, true);
+            if (player != null) control = new LobbyPlayer(player, true);
+            else if (bot != null) control = new LobbyPlayer(bot, true);
             else throw new NotImplementedException(thing.GetType().Name);
 
             Dispatcher.BeginInvoke((Action) (() => {
@@ -134,7 +133,12 @@ namespace LeagueClient.ClientUI.Main {
             }
           }
 
-          foreach(var thing in game.Observers) {
+          if (game.TeamOne.Count == game.MaxNumPlayers / 2)
+            BlueJoin.Visibility = Visibility.Collapsed;
+          if (game.TeamTwo.Count == game.MaxNumPlayers / 2)
+            RedJoin.Visibility = Visibility.Collapsed;
+
+          foreach (var thing in game.Observers) {
             ObserverList.Children.Add(new Label { Content = thing.SummonerName });
           }
         });
@@ -184,14 +188,10 @@ namespace LeagueClient.ClientUI.Main {
 
     private void RedJoin_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.SwitchTeams(GameDto.Id);
-      RedJoin.Visibility = Visibility.Collapsed;
-      BlueJoin.Visibility = Visibility.Visible;
     }
 
     private void BlueJoin_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.SwitchTeams(GameDto.Id);
-      RedJoin.Visibility = Visibility.Visible;
-      BlueJoin.Visibility = Visibility.Collapsed;
     }
 
     private void Spectate_Click(object sender, RoutedEventArgs e) {

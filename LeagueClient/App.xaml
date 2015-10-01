@@ -19,18 +19,21 @@
 
     <Color x:Key="FontColor" R="210" G="210" B="210" A="255"/>
     <Color x:Key="FocusColor" R="0" G="122" B="204" A="255"/>
-    <Color x:Key="ForeColor" R="100" G="100" B="100" A="255"/>
-    <Color x:Key="Back1Color" R="58" G="58" B="58" A="255"/>
-    <Color x:Key="Back2Color" R="28" G="28" B="28" A="255"/>
+    <Color x:Key="ForeColor" R="62" G="62" B="68" A="255"/>
+    <Color x:Key="Back1Color" R="42" G="42" B="46" A="255"/>
+    <Color x:Key="Back2Color" R="22" G="22" B="24" A="255"/>
     <Color x:Key="BusyColor" R="255" G="150" B="5" A="255"/>
     <Color x:Key="AwayColor" R="221" G="0" B="0" A="255"/>
     <Color x:Key="ChatColor" R="0" G="179" B="80" A="255"/>
 
-    <SolidColorBrush x:Key="FontBrush" Color="{x:Static SystemColors.WindowTextColor}"/>
+    <SolidColorBrush x:Key="FontBrush" Color="{StaticResource FontColor}"/>
     <SolidColorBrush x:Key="FocusBrush" Color="{x:Static SystemColors.HighlightColor}"/>
-    <SolidColorBrush x:Key="ForeBrush" Color="{x:Static SystemColors.ControlLightColor}"/>
-    <SolidColorBrush x:Key="Back1Brush" Color="{x:Static SystemColors.WindowColor}"/>
-    <SolidColorBrush x:Key="Back2Brush" Color="{x:Static SystemColors.ControlDarkDarkColor}"/>
+      <!--<SolidColorBrush x:Key="ForeBrush" Color="{x:Static SystemColors.ControlLightColor}"/>-->
+    <!--<SolidColorBrush x:Key="Back1Brush" Color="{x:Static SystemColors.WindowColor}"/>-->
+    <!--<SolidColorBrush x:Key="Back2Brush" Color="{x:Static SystemColors.ControlDarkDarkColor}"/>-->
+    <SolidColorBrush x:Key="ForeBrush" Color="{StaticResource ForeColor}"/>
+    <SolidColorBrush x:Key="Back1Brush" Color="{StaticResource Back1Color}"/>
+    <SolidColorBrush x:Key="Back2Brush" Color="{StaticResource Back2Color}"/>
     <SolidColorBrush x:Key="BusyBrush" Color="{StaticResource BusyColor}"/>
     <SolidColorBrush x:Key="AwayBrush" Color="{StaticResource AwayColor}"/>
     <SolidColorBrush x:Key="ChatBrush" Color="{StaticResource ChatColor}"/>
@@ -53,36 +56,6 @@
                       To="{x:Static SystemColors.WindowColor}" Duration="0:0:0.2"/>
     </Storyboard>
     
-    <!--<Storyboard x:Key="ButtonHover" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="#313131" Duration="0:0:0.2"/>
-      <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" 
-                      To="{StaticResource FocusColor}" Duration="0:0:0.2"/>
-    </Storyboard>
-    <Storyboard x:Key="ButtonUnHover" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="{StaticResource Back1Color}" Duration="0:0:0.2"/>
-      <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" 
-                      To="{StaticResource ForeColor}" Duration="0:0:0.2"/>
-    </Storyboard>
-    <Storyboard x:Key="ButtonPress" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="#282828" Duration="0:0:0.08"/>
-    </Storyboard>
-    <Storyboard x:Key="ButtonRelease" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="#363636" Duration="0:0:0.08"/>
-    </Storyboard>-->
-
-    <!--<Storyboard x:Key="UnreadPulse" RepeatBehavior="Forever">
-      <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)"
-                      To="#0071CC" Duration="0:0:0.5"/>
-      <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" BeginTime="0:0:0.5"
-                      To="#393939" Duration="0:0:0.5"/>
-      <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" BeginTime="0:0:0.5"
-                      To="#393939" Duration="0:0:1.5"/>
-    </Storyboard>-->
-    
     <Storyboard x:Key="FadeIn" Storyboard.TargetProperty="Double">
       <ObjectAnimationUsingKeyFrames BeginTime="0" Storyboard.TargetProperty="Visibility">
         <DiscreteObjectKeyFrame KeyTime="0">
@@ -102,14 +75,6 @@
           </DiscreteObjectKeyFrame.Value>
         </DiscreteObjectKeyFrame>
       </ObjectAnimationUsingKeyFrames>
-    </Storyboard>
-    <Storyboard x:Key="ComboItemEnter" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
-                      To="{x:Static SystemColors.ControlLightColor}" Duration="0:0:0.2"/>
-    </Storyboard>
-    <Storyboard x:Key="ComboItemLeave" Storyboard.TargetProperty="Color">
-      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
-                      To="{x:Static SystemColors.WindowColor}" Duration="0:0:0.2"/>
     </Storyboard>
 
     <Style TargetType="Button" x:Key="CircleButton">
@@ -149,6 +114,7 @@
     </Style>
     <Style x:Key="Control">
       <Setter Property="Control.Background" Value="{StaticResource ForeBrush}"/>
+      <Setter Property="Control.Foreground" Value="{StaticResource FontBrush}"/>
       <Setter Property="Control.FontSize" Value="12"/>
       <Setter Property="Control.SnapsToDevicePixels" Value="True"/>
     </Style>
@@ -200,7 +166,7 @@
         </Setter.Value>
       </Setter>
     </Style>
-    <Style TargetType="Button">
+    <!--<Style TargetType="Button">
       <Style.Resources>
         <Color x:Key="BaseColor" R="5" G="125" B="200" A="255"/>
         <Color x:Key="ShadowColor" R="5" G="75" B="125" A="255"/>
@@ -244,7 +210,6 @@
               <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="#33D2D2D2"/>
                 <Trigger.EnterActions>
-                  <!--<BeginStoryboard Storyboard="{StaticResource PressStory}"/>-->
                   <BeginStoryboard>
                     <Storyboard>
                       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{x:Static SystemColors.HotTrackColor}" Duration="0:0:0.1"/>
@@ -252,7 +217,6 @@
                   </BeginStoryboard>
                 </Trigger.EnterActions>
                 <Trigger.ExitActions>
-                  <!--<BeginStoryboard Storyboard="{StaticResource ReleaseStory}"/>-->
                   <BeginStoryboard Storyboard="{StaticResource LeaveStory}"/>
                 </Trigger.ExitActions>
               </Trigger>
@@ -260,19 +224,7 @@
           </ControlTemplate>
         </Setter.Value>
       </Setter>
-      <Style.Triggers>
-        <!--<EventTrigger RoutedEvent="MouseEnter">
-          <BeginStoryboard>
-            <Storyboard>
-              <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource HoverColor}" Duration="0:0:0.1"/>
-            </Storyboard>
-          </BeginStoryboard>
-        </EventTrigger>
-        <EventTrigger RoutedEvent="MouseLeave">
-          <BeginStoryboard Storyboard="{StaticResource LeaveStory}"/>
-        </EventTrigger>-->
-      </Style.Triggers>
-    </Style>
+    </Style>-->
     <Style TargetType="CheckBox" BasedOn="{StaticResource Control}">
       <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
       <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
@@ -328,50 +280,73 @@
         </Trigger>
       </Style.Triggers>
     </Style>
-    <Style TargetType="Button" x:Key="OldButton">
+    <Style TargetType="Button">
+      <Style.Resources>
+        <Color x:Key="BorderColor" R="32" G="32" B="36" A="255"/>
+        <Color x:Key="HoverBorderColor" R="5" G="125" B="200" A="255"/>
+        <Color x:Key="BackColor" R="62" G="62" B="68" A="255"/>
+        <Color x:Key="HoverBackColor" R="82" G="82" B="89" A="255"/>
+        <Color x:Key="PressBackColor" R="42" G="42" B="46" A="255"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+        <SolidColorBrush x:Key="BackBrush" Color="{StaticResource BackColor}"/>
+        <Storyboard x:Key="HoverStory">
+          <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" To="{StaticResource HoverBorderColor}" Duration="0:0:0.2"/>
+          <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource HoverBackColor}" Duration="0:0:0.2"/>
+        </Storyboard>
+        <Storyboard x:Key="PressStory">
+          <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource PressBackColor}" Duration="0:0:0.1"/>
+        </Storyboard>
+        <Storyboard x:Key="ReleaseStory">
+          <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource HoverBackColor}" Duration="0:0:0.1"/>
+        </Storyboard>
+        <Storyboard x:Key="LeaveStory">
+          <ColorAnimation Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" To="{StaticResource BorderColor}" Duration="0:0:0.2"/>
+          <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource BackColor}" Duration="0:0:0.2"/>
+        </Storyboard>
+      </Style.Resources>
       <Setter Property="OverridesDefaultStyle" Value="True"/>
       <Setter Property="SnapsToDevicePixels" Value="True"/>
       <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
-      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
+      <Setter Property="Background" Value="{StaticResource BackBrush}"/>
       <Setter Property="Foreground" Value="{StaticResource FontBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
       <Setter Property="Padding" Value="4 2"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="Button">
-            <Border BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}"
-                    BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}"
-                    Name="border">
-              <Grid Margin="{TemplateBinding Padding}">
-                <TextBlock Name="content" HorizontalAlignment="Center" VerticalAlignment="Center"
-                           FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Content}"/>
-              </Grid>
+            <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="Black">
+              <Border Margin="0" Background="{TemplateBinding Background}">
+                <Grid Margin="{TemplateBinding Padding}">
+                  <ContentPresenter Name="content" HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.Foreground="{StaticResource FontBrush}"
+                                    TextBlock.FontSize="{TemplateBinding FontSize}" Content="{TemplateBinding Content}"/>
+                </Grid>
+              </Border>
             </Border>
-            <ControlTemplate.Triggers>
+            <!--<ControlTemplate.Triggers>
               <Trigger Property="IsEnabled" Value="False">
                 <Setter TargetName="content" Property="Opacity" Value=".6"/>
                 <Setter TargetName="border" Property="Opacity" Value=".9"/>
               </Trigger>
-            </ControlTemplate.Triggers>
+            </ControlTemplate.Triggers>-->
           </ControlTemplate>
         </Setter.Value>
       </Setter>
       <Style.Triggers>
         <Trigger Property="IsMouseOver" Value="True">
           <Trigger.EnterActions>
-            <BeginStoryboard Storyboard="{StaticResource ButtonHover}"/>
+            <BeginStoryboard Storyboard="{StaticResource HoverStory}"/>
           </Trigger.EnterActions>
           <Trigger.ExitActions>
-            <BeginStoryboard Storyboard="{StaticResource ButtonUnHover}"/>
+            <BeginStoryboard Storyboard="{StaticResource LeaveStory}"/>
           </Trigger.ExitActions>
         </Trigger>
         <Trigger Property="IsPressed" Value="True">
           <Trigger.EnterActions>
-            <BeginStoryboard Storyboard="{StaticResource ButtonPress}"/>
+            <BeginStoryboard Storyboard="{StaticResource PressStory}"/>
           </Trigger.EnterActions>
           <Trigger.ExitActions>
-            <BeginStoryboard Name="Release" Storyboard="{StaticResource ButtonRelease}"/>
+            <BeginStoryboard Storyboard="{StaticResource ReleaseStory}"/>
           </Trigger.ExitActions>
         </Trigger>
       </Style.Triggers>
@@ -443,6 +418,13 @@
         </Setter.Value>
       </Setter>
     </Style>
+
+    <Storyboard x:Key="ComboItemEnter" Storyboard.TargetProperty="Color">
+      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource ForeColor}" Duration="0:0:0.2"/>
+    </Storyboard>
+    <Storyboard x:Key="ComboItemLeave" Storyboard.TargetProperty="Color">
+      <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" To="{StaticResource Back1Color}" Duration="0:0:0.2"/>
+    </Storyboard>
 
     <Style TargetType="ComboBoxItem">
       <Setter Property="OverridesDefaultStyle" Value="True"/>

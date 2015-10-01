@@ -85,6 +85,20 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
+    public LobbyPlayer(BotParticipant bot, bool expanded) {
+      var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
+      SummonerIcon = LeagueData.GetChampIconImage(champ);
+      UserName = champ.name;
+      RankString = bot.BotSkillLevelName;
+
+      InitializeComponent();
+
+      forceExpand = expanded;
+      if (!expanded) {
+        Image.Height = Image.Width = 0;
+      }
+    }
+
     private void GotSummonerData(Task<PublicSummoner> task) {
       SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(task.Result.ProfileIconId));
       UserName = task.Result.Name;
@@ -100,7 +114,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Expand() {
-      var img = new DoubleAnimation(48, new Duration(TimeSpan.FromMilliseconds(200)));
+      var img = new DoubleAnimation(52, new Duration(TimeSpan.FromMilliseconds(200)));
       var lvlHeight = new DoubleAnimation(20, new Duration(TimeSpan.FromMilliseconds(200)));
 
       Image.BeginAnimation(Image.HeightProperty, img);

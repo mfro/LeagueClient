@@ -8,10 +8,10 @@
   <Border BorderBrush="{x:Static SystemColors.HighlightBrush}" BorderThickness="1" Margin="15">
     <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" >
       <Frame Name="ContentFrame" NavigationUIVisibility="Hidden"/>
-      <Button Width="20" Height="22" VerticalAlignment="Top" HorizontalAlignment="Right" Click="Close_Click">
+      <Button Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Click="Close_Click">
         <Path Data="M 0 0 L 8 8 M 8 0 L 0 8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
-      <Button Width="20" Height="22" VerticalAlignment="Top" HorizontalAlignment="Right" Click="Minimize_Click" Margin="20 0">
+      <Button Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Click="Minimize_Click" Margin="20 0">
         <Path Data="M 0 0 L 10 0" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
     </Grid>

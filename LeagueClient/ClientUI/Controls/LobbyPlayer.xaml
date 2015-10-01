@@ -5,12 +5,12 @@
              xmlns:local="clr-namespace:LeagueClient.ClientUI.Controls"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Background="{StaticResource ForeBrush}" MouseEnter="This_MouseEnter" MouseLeave="This_MouseLeave">
-  <Grid Margin="5">
+  <Grid Margin="4">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="auto"/>
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
-    <Image Width="48" Height="48" Source="{Binding SummonerIcon}" Name="Image"/>
+    <Image Width="52" Height="52" Source="{Binding SummonerIcon}" Name="Image"/>
 
     <Label Grid.Column="1" Content="{Binding UserName}"/>
     <Label Grid.Column="1" VerticalAlignment="Bottom" Content="{Binding LevelString}" Height="20" Name="LevelText"/>
