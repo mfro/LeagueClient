@@ -34,10 +34,10 @@
             Height="32">
         <Image Source="{Binding Player.Spell2Image}"/>
       </Border>
-      <Button Name="AcceptButt" Grid.Column="2" VerticalAlignment="Top" Margin="2 0" Height="30" Padding="0" Click="Accept_Click">
+      <Button Name="AcceptButt" Grid.Column="2" VerticalAlignment="Top" Margin="2" Height="28" Padding="0" Click="Accept_Click">
         <Path Stroke="White" Data="M 4 11 L 9 16 L 18 6" Width="22" Height="22" StrokeThickness="2"/>
       </Button>
-      <Button Name="DeclineButt" Grid.Column="2" VerticalAlignment="Bottom" Margin="2 2" Height="30" Padding="0" Click="Decline_Click">
+      <Button Name="DeclineButt" Grid.Column="2" VerticalAlignment="Bottom" Margin="2" Height="28" Padding="0" Click="Decline_Click">
         <Path Stroke="White" Data="M 5 5 L 17 17 M 17 5 L 5 17" Width="22" Height="22" StrokeThickness="2"/>
       </Button>
     </Grid>

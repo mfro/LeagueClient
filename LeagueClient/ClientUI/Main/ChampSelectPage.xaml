@@ -163,9 +163,7 @@
                 <Label Padding="2 0" Grid.Row="3" FontSize="14" HorizontalAlignment="Left">Masteries:</Label>
                 <ComboBox Height="18" Margin="80 0 0 0" Grid.Row="1" ItemTemplate="{StaticResource BookTemplate}" Name="RunesBox" SelectionChanged="Runes_Selected"/>
                 <ComboBox Height="18" Margin="80 0 28 0" Grid.Row="3" ItemTemplate="{StaticResource BookTemplate}" Name="MasteriesBox" SelectionChanged="Masteries_Selected"/>
-                <Button Grid.Row="3" HorizontalAlignment="Right" Width="20" Click="MasterEdit_Click" Padding="0">
-                  <Path Data="M 1 15 L 3 11 13 1 15 3 5 13 Z M 4 10 L 6 12" Stroke="{StaticResource FontBrush}" StrokeLineJoin="Round"/>
-                </Button>
+                <Button Grid.Row="3" HorizontalAlignment="Right" Click="MasterEdit_Click" Style="{StaticResource EditButton}"/>
               </Grid>
               <Grid Grid.Column="4" Margin="0 4 4 4">
                 <Grid.ColumnDefinitions>

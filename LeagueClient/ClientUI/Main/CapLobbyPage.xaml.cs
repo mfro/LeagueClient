@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -182,6 +183,191 @@ namespace LeagueClient.ClientUI.Main {
       PlayerList.ItemsSource = list;
     }
 
+    private static readonly Dictionary<string, string> MethodNames = new Dictionary<string, string> {
+      ["candidateDeclinedGroupV2"] = "candidateDeclinedV2"
+    };
+    private Action<JSONObject> GetMethod(LcdsServiceProxyResponse response) {
+      JSONObject json = null;
+      if (response.payload != null) {
+        json = JSON.ParseObject(response.payload);
+      }
+      Console.WriteLine(response.methodName + ": " + response.payload);
+      var name = response.methodName;
+      if (MethodNames.ContainsKey(name)) name = MethodNames[name];
+      var method = GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+      if (method != null)
+        return (Action<JSONObject>) method.CreateDelegate(typeof(Action<JSONObject>), this);
+      else throw new NotSupportedException(name);
+    }
+
+    #region LcdsMethods
+
+    private void groupUpdatedV3(JSONObject json) => GotGroupData(json.To<CapGroupData>());
+
+    private void candidateAcceptedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      if (found.ContainsKey(slot.SlotId))
+        found[slot.SlotId].Status = CapStatus.Joining;
+    }
+
+    private void candidateDeclinedV2(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      found.Remove(slot.SlotId);
+      DoTimeout(players[slot.SlotId], json["penaltyInSeconds"]);
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void candidateFoundV2(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      var player = new CapPlayer(slot.SlotId);
+      player.Champion = LeagueData.GetChampData(slot.ChampionId);
+      player.Role = Role.Values[slot.Role];
+      player.Position = players[slot.SlotId].Position;
+      player.TimeoutEnd = DateTime.Now.Add(TimeSpan.FromSeconds(json["autoDeclineCandidateTimeout"]));
+      player.Status = CapStatus.Found;
+      found[player.SlotId] = player;
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void groupCreatedV3(JSONObject json) {
+      GotGroupData(json.To<CapGroupData>());
+      Task<LobbyStatus> task = RiotServices.GameInvitationService.CreateGroupFinderLobby(61, GroupId);
+      task.ContinueWith(t => GotLobbyStatus(t.Result));
+    }
+
+    private void matchMadeV1(JSONObject json) {
+      Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Match Found");
+    }
+
+    private void matchmakingPhaseStartedV1(JSONObject json) {
+      state = CapLobbyState.Matching;
+      players[0].Status = CapStatus.Ready;
+      Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Matchmaking Started");
+    }
+
+    private void readinessIndicatedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      if (json["ready"]) players[slot.SlotId].Status = CapStatus.Ready;
+      else players[slot.SlotId].Status = CapStatus.Present;
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void slotPopulatedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      slot.Status = "POPULATED";
+      if (found.ContainsKey(slot.SlotId)) found.Remove(slot.SlotId);
+      if (players[slot.SlotId] == null) players[slot.SlotId] = new CapPlayer(slot.SlotId);
+      SetPlayerInfo(slot, players[slot.SlotId]);
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void skinPickedV1(JSONObject json) {
+      Client.Log("Skin picked");
+    }
+
+    private void championPickedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      players[slot.SlotId].Champion = LeagueData.GetChampData(slot.ChampionId);
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void spellsPickedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      if (slot.Spell1Id > 0) players[slot.SlotId].Spell1 = LeagueData.GetSpellData(slot.Spell1Id);
+      if (slot.Spell2Id > 0) players[slot.SlotId].Spell2 = LeagueData.GetSpellData(slot.Spell2Id);
+      foreach (var cap in players)
+        if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+    }
+
+    private void roleSpecifiedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      players[slot.SlotId].Role = Role.Values[slot.Role];
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void positionSpecifiedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      players[slot.SlotId].Position = Position.Values[slot.Position];
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void advertisedRoleSpecifiedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      if (players[slot.SlotId] == null)
+        players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
+      players[slot.SlotId].Status = CapStatus.ChoosingAdvert;
+      players[slot.SlotId].Role = Role.Values[slot.AdvertisedRole];
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void advertisedPositionSpecifiedV1(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      if (players[slot.SlotId] == null)
+        players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
+      players[slot.SlotId].Status = CapStatus.ChoosingAdvert;
+      players[slot.SlotId].Position = Position.Values[slot.AdvertisedPosition];
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void playerRemovedV3(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      if (state == CapLobbyState.Inviting) {
+        players[slot.SlotId] = null;
+        Dispatcher.Invoke(UpdateList);
+      } else
+        DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
+      foreach (var cap in players)
+        if (cap.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+    }
+
+    private void soloSearchedForAnotherGroupV2(JSONObject json) {
+      var slot = json.To<CapSlotData>();
+      if (slot.SlotId == me.SlotId) {
+        Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(me)));
+        if (Close != null) Close(this, new EventArgs());
+        if (json["reason"].Equals("KICKED"))
+          Client.QueueManager.ShowNotification(AlertFactory.KickedFromCap());
+      } else {
+        DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
+      }
+      foreach (var cap in players)
+        if (cap.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+    }
+
+    private void removedFromServiceV1(JSONObject json) {
+      ForceClose();
+      Close?.Invoke(this, new EventArgs());
+      if (json["reason"].Equals("GROUP_DISBANDED"))
+        Client.QueueManager.ShowNotification(AlertFactory.GroupDisbanded());
+    }
+
+    private void groupBuildingPhaseStartedV1(JSONObject json) {
+      state = CapLobbyState.Searching;
+      foreach (var cap in players) {
+        if (cap.Status == CapStatus.ChoosingAdvert) {
+          cap.Status = CapStatus.Searching;
+        }
+      }
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    private void soloSpecPhaseStartedV2(JSONObject json) {
+      state = CapLobbyState.Selecting;
+      for (int i = 0; i < players.Length; i++) {
+        if (players[i] == null) {
+          var cap = new CapPlayer(i);
+          cap.Role = Role.Values[json["initialSoloSpecRole"]];
+          cap.Position = Position.UNSELECTED;
+          cap.Status = CapStatus.ChoosingAdvert;
+          players[i] = cap;
+          if (IsCaptain) cap.PropertyChanged += Cap_PropertyChanged;
+        }
+      }
+      Dispatcher.Invoke(UpdateList);
+    }
+
+    #endregion
+
     public bool HandleMessage(MessageReceivedEventArgs e) {
       GameDTO game;
       LobbyStatus status;
@@ -197,167 +383,10 @@ namespace LeagueClient.ClientUI.Main {
       } else if ((response = e.Body as LcdsServiceProxyResponse) != null) {
         if (response.status.Equals("OK")) {
           JSONObject json = null;
-          CapSlotData slot = null;
-          if (response.payload != null) {
-            slot = (CapSlotData) (dynamic) (json = JSON.ParseObject(response.payload));
-          }
-          Console.WriteLine(response.methodName + ": " + response.payload);
+          if (response.payload != null) json = JSON.ParseObject(response.payload);
           try {
-            #region Massive Lcds Switch
-            switch (response.methodName) {
-              case "groupUpdatedV3":
-                GotGroupData((CapGroupData) (dynamic) json);
-                break;
-              case "candidateAcceptedV1":
-                if (found.ContainsKey(slot.SlotId))
-                  found[slot.SlotId].Status = CapStatus.Joining;
-                break;
-              case "candidateDeclinedV2":
-                found.Remove(slot.SlotId);
-                DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "candidateDeclinedGroupV2":
-                found.Remove(slot.SlotId);
-                DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "candidateFoundV2":
-                var player = new CapPlayer(slot.SlotId);
-                player.Champion = LeagueData.GetChampData(slot.ChampionId);
-                player.Role = Role.Values[slot.Role];
-                player.Position = players[slot.SlotId].Position;
-                player.TimeoutEnd = DateTime.Now.Add(TimeSpan.FromSeconds((int) json["autoDeclineCandidateTimeout"]));
-                player.Status = CapStatus.Found;
-                found[player.SlotId] = player;
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "candidateJoinedV1":
-              case "estimatedWaitTimeRetrievedV1":
-              case "featureTogglesRetrieved":
-              case "gameStartFailedV1":
-              case "gatekeeperRestrictedV1": break;
-              case "groupCreatedV3":
-                GotGroupData((CapGroupData) (dynamic) json);
-                Task<LobbyStatus> task = RiotServices.GameInvitationService.CreateGroupFinderLobby(61, GroupId);
-                task.ContinueWith(t => GotLobbyStatus(t.Result));
-                break;
-              case "groupNoLongerAvailableV1":
-              case "infoRetrievedV1":
-              case "infoRetrievedV2":
-              case "lastSelectedSkinForChampionUpdatedV1":
-              case "leaverBusterLowPriorityQueueAbandonedV1":
-              case "matchMadeV1":
-                Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Match Found");
-                break;
-              case "matchmakingPhaseStartedV1":
-                state = CapLobbyState.Matching;
-                players[0].Status = CapStatus.Ready;
-                Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Matchmaking Started");
-                break;
-              case "quitDeniedV1": break;
-              case "readinessIndicatedV1":
-                if (json["ready"]) players[slot.SlotId].Status = CapStatus.Ready;
-                else players[slot.SlotId].Status = CapStatus.Present;
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "slotPopulatedV1":
-                slot.Status = "POPULATED";
-                if (found.ContainsKey(slot.SlotId)) found.Remove(slot.SlotId);
-                if (players[slot.SlotId] == null) players[slot.SlotId] = new CapPlayer(slot.SlotId);
-                SetPlayerInfo(slot, players[slot.SlotId]);
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "skinPickedV1":
-                Client.Log("Skin picked");
-                break;
-              case "championPickedV1":
-                players[slot.SlotId].Champion = LeagueData.GetChampData(slot.ChampionId);
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "spellsPickedV1":
-                if (slot.Spell1Id > 0) players[slot.SlotId].Spell1 = LeagueData.GetSpellData(slot.Spell1Id);
-                if (slot.Spell2Id > 0) players[slot.SlotId].Spell2 = LeagueData.GetSpellData(slot.Spell2Id);
-                foreach (var cap in players)
-                  if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
-                break;
-              case "roleSpecifiedV1":
-                players[slot.SlotId].Role = Role.Values[slot.Role];
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "positionSpecifiedV1":
-                players[slot.SlotId].Position = Position.Values[slot.Position];
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "advertisedRoleSpecifiedV1":
-                if (players[slot.SlotId] == null)
-                  players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
-                players[slot.SlotId].Status = CapStatus.ChoosingAdvert;
-                players[slot.SlotId].Role = Role.Values[slot.AdvertisedRole];
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "advertisedPositionSpecifiedV1":
-                if (players[slot.SlotId] == null)
-                  players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
-                players[slot.SlotId].Status = CapStatus.ChoosingAdvert;
-                players[slot.SlotId].Position = Position.Values[slot.AdvertisedPosition];
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "playerRemovedV3":
-                if (state == CapLobbyState.Inviting) {
-                  players[slot.SlotId] = null;
-                  Dispatcher.Invoke(UpdateList);
-                } else
-                  DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
-                foreach (var cap in players)
-                  if (cap.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
-                break;
-              case "soloSearchedForAnotherGroupV2":
-                if (slot.SlotId == me.SlotId) {
-                  Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(me)));
-                  if (Close != null) Close(this, new EventArgs());
-                  if (json["reason"].Equals("KICKED"))
-                    Client.QueueManager.ShowNotification(AlertFactory.KickedFromCap());
-                } else {
-                  DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
-                }
-                foreach (var cap in players)
-                  if (cap.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
-                break;
-              case "removedFromServiceV1":
-                ForceClose();
-                Close?.Invoke(this, new EventArgs());
-                if (json["reason"].Equals("GROUP_DISBANDED"))
-                  Client.QueueManager.ShowNotification(AlertFactory.GroupDisbanded());
-                break;
-              case "groupBuildingPhaseStartedV1":
-                state = CapLobbyState.Searching;
-                foreach (var cap in players) {
-                  if (cap.Status == CapStatus.ChoosingAdvert) {
-                    cap.Status = CapStatus.Searching;
-                  }
-                }
-                Dispatcher.Invoke(UpdateList);
-                break;
-              case "soloSpecPhaseStartedV2":
-                state = CapLobbyState.Selecting;
-                for (int i = 0; i < players.Length; i++) {
-                  if (players[i] == null) {
-                    var cap = new CapPlayer(i);
-                    cap.Role = Role.Values[json["initialSoloSpecRole"]];
-                    cap.Position = Position.UNSELECTED;
-                    cap.Status = CapStatus.ChoosingAdvert;
-                    players[i] = cap;
-                    if (IsCaptain) cap.PropertyChanged += Cap_PropertyChanged;
-                  }
-                }
-                Dispatcher.Invoke(UpdateList);
-                break;
-              default:
-                Client.Log("Unhandled response to {0}, {1}", response.methodName, response.payload);
-                break;
-            }
-            #endregion
+            var method = GetMethod(response);
+            method(json);
           } catch (Exception x) {
             Client.TryBreak(x.ToString());
           }

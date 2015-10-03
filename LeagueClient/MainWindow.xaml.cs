@@ -39,6 +39,7 @@ namespace LeagueClient {
       Client.Log(LeagueData.CurrentVersion);
 
       InitializeComponent();
+
       ((App) App.Current).LoadResources();
       if (!PatcherPage.NeedsPatch()) {
         PatchComplete();

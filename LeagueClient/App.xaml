@@ -29,7 +29,7 @@
     <SolidColorBrush x:Key="FontBrush" Color="{StaticResource FontColor}"/>
     <SolidColorBrush x:Key="FocusBrush" Color="{x:Static SystemColors.HighlightColor}"/>
     
-      <!--<SolidColorBrush x:Key="ForeBrush" Color="{x:Static SystemColors.ControlLightColor}"/>-->
+    <!--<SolidColorBrush x:Key="ForeBrush" Color="{x:Static SystemColors.ControlLightColor}"/>-->
     <!--<SolidColorBrush x:Key="Back1Brush" Color="{x:Static SystemColors.WindowColor}"/>-->
     <!--<SolidColorBrush x:Key="Back2Brush" Color="{x:Static SystemColors.ControlDarkDarkColor}"/>-->
     <SolidColorBrush x:Key="ForeBrush" Color="{StaticResource ForeColor}"/>
@@ -43,19 +43,19 @@
 
     <Storyboard x:Key="OldButtonHover">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="{x:Static SystemColors.ControlLightColor}" Duration="0:0:0.2"/>
+                      To="{StaticResource ForeColor}" Duration="0:0:0.2"/>
     </Storyboard>
     <Storyboard x:Key="OldButtonPress">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="{x:Static SystemColors.ControlDarkColor}" Duration="0:0:0.2"/>
+                      To="{StaticResource Back2Color}" Duration="0:0:0.2"/>
     </Storyboard>
     <Storyboard x:Key="OldButtonRelease">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="{x:Static SystemColors.ControlLightColor}" Duration="0:0:0.2"/>
+                      To="{StaticResource ForeColor}" Duration="0:0:0.2"/>
     </Storyboard>
     <Storyboard x:Key="OldButtonLeave">
       <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" 
-                      To="{x:Static SystemColors.WindowColor}" Duration="0:0:0.2"/>
+                      To="{StaticResource Back1Color}" Duration="0:0:0.2"/>
     </Storyboard>
     
     <Storyboard x:Key="FadeIn" Storyboard.TargetProperty="Double">
@@ -355,6 +355,16 @@
     <Style TargetType="Label" BasedOn="{StaticResource Control}">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="Padding" Value="4 2"/>
+    </Style>
+    <Style TargetType="Button" x:Key="EditButton" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Width" Value="20"/>
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="Content">
+        <Setter.Value>
+          <Path Data="M 0 15 L 2 10 11 1 14 4 5 13 Z M 3 9 L 6 12" Stroke="{StaticResource FontBrush}" StrokeLineJoin="Round"/>
+        </Setter.Value>
+      </Setter>
     </Style>
 
     <Style x:Key="ScrollThumb" TargetType="Thumb">

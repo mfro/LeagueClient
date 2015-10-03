@@ -4,7 +4,7 @@
         xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
         Title="MainWindow" SizeToContent="WidthAndHeight"
         AllowsTransparency="True" Background="Transparent"
-        SnapsToDevicePixels="True" WindowStyle="None">
+        SnapsToDevicePixels="True" WindowStyle="None" ClipToBounds="False">
   <Border BorderBrush="{x:Static SystemColors.HighlightBrush}" BorderThickness="1" Margin="15">
     <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" >
       <Frame Name="ContentFrame" NavigationUIVisibility="Hidden"/>

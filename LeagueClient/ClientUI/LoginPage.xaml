@@ -6,7 +6,7 @@
       SnapsToDevicePixels="True">
   <Grid Background="{StaticResource Back2Brush}" Width="{StaticResource Width}" Height="{StaticResource Height}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="22"/>
+      <RowDefinition Height="20"/>
       <RowDefinition Height="50"/>
       <RowDefinition/>
     </Grid.RowDefinitions>
