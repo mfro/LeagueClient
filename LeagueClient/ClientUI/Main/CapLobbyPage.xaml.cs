@@ -57,7 +57,7 @@ namespace LeagueClient.ClientUI.Main {
       InitializeComponent();
       me = new CapPlayer(isCreating ? 0 : -1);
       me.PropertyChanged += Me_PropertyChanged;
-      meControl = new CapMePlayer(me);
+      meControl = new CapMePlayer(me) { Margin = new Thickness(0, 0, 0, 4) };
       FindAnotherButt.Visibility = Visibility.Collapsed;
       state = CapLobbyState.Inviting;
 
@@ -68,7 +68,7 @@ namespace LeagueClient.ClientUI.Main {
     public CapLobbyPage(CapPlayer solo) {
       InitializeComponent();
       me = solo;
-      meControl = new CapMePlayer(me) { Editable = false };
+      meControl = new CapMePlayer(me) { Editable = false, Margin = new Thickness(0, 0, 0, 4) };
       state = CapLobbyState.Searching;
 
       SharedInit();
@@ -139,29 +139,32 @@ namespace LeagueClient.ClientUI.Main {
       bool canReady = state == CapLobbyState.Searching;
       bool canSearch = state == CapLobbyState.Inviting;
       bool canMatch = true;
-      var list = new List<Control>();
+
       for (int i = 0; i < players.Length; i++) {
         var player = (found.ContainsKey(i)) ? found[i] : players[i];
         if (player == null) {
           canMatch = canReady = false;
           continue;
         }
-        Control c;
-        if (player.SlotId == me.SlotId) c = meControl;
-        else {
-          var c2 = new CapOtherPlayer(player, IsCaptain);
-          c = c2;
-          c2.CandidateReacted += CandidateReacted;
+
+        if (player.SlotId == me.SlotId) {
+          PlayerList.Children.Add(meControl);
+        } else {
+          var control = new CapOtherPlayer(player, IsCaptain) { Margin = new Thickness(0, 0, 0, 4) };
+          control.CandidateReacted += CandidateReacted;
+          PlayerList.Children.Add(control);
         }
-        c.Margin = new Thickness(0, 0, 0, 4);
-        list.Add(c);
+
+        //Player other than captain is not ready - cannot start matchmaking
         if (i > 0 && players[i].Status != CapStatus.Ready) canMatch = false;
+        //Slot does not contain acual player - cannot ready
         if (players[i].Status != CapStatus.Present && players[i].Status != CapStatus.Ready) canReady = false;
-        if (players[i].Champion == null || players[i].Position == null || players[i].Position == Position.UNSELECTED ||
-          players[i].Role == null || players[i].Role == Role.UNSELECTED)
+        //Advertised role and position have not been selected
+        if (players[i].Champion == null || players[i].Position == null || players[i].Position == Position.UNSELECTED || players[i].Role == null || players[i].Role == Role.UNSELECTED)
           canSearch = false;
       }
       if (IsCaptain) {
+        AutoReadyBox.Content = "Auto Start Matchmaking";
         ReadyButt.Content = "Start Matchmaking";
         ReadyButt.Visibility = canMatch ? Visibility.Visible : Visibility.Collapsed;
       } else {
@@ -171,16 +174,19 @@ namespace LeagueClient.ClientUI.Main {
       GameMap.UpdateList(players);
 
       if (!canReady) {
-        foreach (var player in players)
-          if (player?.Status == CapStatus.Ready) player.Status = CapStatus.Present;
+        foreach (var player in players.Where(p => p?.Status == CapStatus.Ready))
+          player.Status = CapStatus.Present;
       }
       ReadyButt.IsEnabled = !autoReady;
-      if (canReady && autoReady) RiotServices.CapService.IndicateReadyness(true);
+      if (IsCaptain && canMatch && autoReady)
+        RiotServices.CapService.StartMatchmaking();
+      else if (canReady && autoReady)
+        RiotServices.CapService.IndicateReadyness(true);
 
       InviteButt.Visibility = CanInvite && state == CapLobbyState.Inviting ? Visibility.Visible : Visibility.Collapsed;
+
       if (IsCaptain && canSearch) SoloSearchButt.Visibility = Visibility.Visible;
       else if (state != CapLobbyState.Selecting) SoloSearchButt.Visibility = Visibility.Collapsed;
-      PlayerList.ItemsSource = list;
     }
 
     private static readonly Dictionary<string, string> MethodNames = new Dictionary<string, string> {

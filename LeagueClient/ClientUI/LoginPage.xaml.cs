@@ -120,7 +120,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void BackAnimation_MediaEnded(object sender, RoutedEventArgs e) {
-      BackAnimation.Position = TimeSpan.FromMilliseconds(0);
+      BackAnimation.Position = TimeSpan.Zero;
       BackAnimation.Play();
     }
 

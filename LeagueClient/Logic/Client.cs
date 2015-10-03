@@ -88,10 +88,6 @@ namespace LeagueClient.Logic {
     internal static InGameCredentials QueuedCredentials { get; set; }
     #endregion
 
-    static Client() {
-      if (!Directory.Exists(DataPath)) Directory.CreateDirectory(DataPath);
-    }
-
     #region Initailization
 
     public static void PreInitialize(MainWindow window) {
@@ -360,12 +356,12 @@ namespace LeagueClient.Logic {
         TryBreak(x.Message);
       }
 
-      ClientDynamicConfigurationNotification config;
-      LcdsServiceProxyResponse response;
-      InvitationRequest invite;
+      var response = e.Body as LcdsServiceProxyResponse;
+      var config = e.Body as ClientDynamicConfigurationNotification;
+      var invite = e.Body as InvitationRequest;
 
       try {
-        if ((response = e.Body as LcdsServiceProxyResponse) != null) {
+        if (response != null) {
           if (response.status.Equals("ACK"))
             Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
           else if (response.messageId != null && RiotServices.Delegates.ContainsKey(response.messageId)) {
@@ -374,11 +370,11 @@ namespace LeagueClient.Logic {
           } else {
             Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
           }
-        } else if ((config = e.Body as ClientDynamicConfigurationNotification) != null) {
+        } else if (config != null) {
           Log("Received Configuration Notification");
-        } else if ((invite = e.Body as InvitationRequest) != null) {
+        } else if (invite != null) {
           ShowInvite(invite);
-        } else if (response == null) {
+        } else {
           Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
         }
       } catch (Exception x) {

@@ -11,19 +11,19 @@
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition/>
-      <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="64"/>
+      <ColumnDefinition Width="36"/>
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4 4 0 4" Grid.Column="1">
+    <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4 4 0 1" Grid.Column="1">
       <Image Width="56" Height="56" Name="ChampImage"/>
     </Border>
     <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4" Grid.Column="2" VerticalAlignment="Top">
       <Image Height="24" Width="24" Name="Spell1Image"/>
     </Border>
-    <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4" Grid.Column="2" VerticalAlignment="Bottom">
+    <Border BorderThickness="2" BorderBrush="{StaticResource ForeBrush}" Margin="4 1" Grid.Column="2" VerticalAlignment="Bottom">
       <Image Height="24" Width="24" Name="Spell2Image"/>
     </Border>
-    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" Name="SummonerName">? Summoner</TextBlock>
+    <Label Grid.Row="1" Grid.ColumnSpan="4" HorizontalAlignment="Center" Name="SummonerName" Padding="0">? Summoner</Label>
   </Grid>
 </UserControl>

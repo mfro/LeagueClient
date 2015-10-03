@@ -362,7 +362,27 @@
       <Setter Property="Height" Value="20"/>
       <Setter Property="Content">
         <Setter.Value>
-          <Path Data="M 0 15 L 2 10 11 1 14 4 5 13 Z M 3 9 L 6 12" Stroke="{StaticResource FontBrush}" StrokeLineJoin="Round"/>
+          <Path Data="M 0 15 L 2 10 11 1 14 4 5 13 Z M 3 9 L 6 12" Stroke="{StaticResource FontBrush}" StrokeLineJoin="Round" IsHitTestVisible="False"/>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="Button" x:Key="CloseButton" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Width" Value="20"/>
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="Content">
+        <Setter.Value>
+          <Path Data="M 0 0 L 8 8 M 8 0 L 0 8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="Button" x:Key="HomeButton" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Width" Value="20"/>
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="Content">
+        <Setter.Value>
+          <Path Width="18" Height="18" Fill="{StaticResource FontBrush}" Data="M 9 3 L 16 8 14 8 14 15 10 15 10 12 8 12 8 15 4 15 4 8 2 8 Z"/>
         </Setter.Value>
       </Setter>
     </Style>

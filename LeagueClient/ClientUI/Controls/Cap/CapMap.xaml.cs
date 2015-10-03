@@ -70,20 +70,24 @@ namespace LeagueClient.ClientUI.Controls {
       Dispatcher.Invoke(Reset);
     }
 
+    private static Dictionary<Position, List<PointRef>> onMap = new Dictionary<Position, List<PointRef>> {
+      [Position.TOP] = TopLane,
+      [Position.MIDDLE] = MidLane,
+      [Position.BOTTOM] = BotLane,
+      [Position.JUNGLE] = Jungle,
+    };
     private void Reset() {
-      int topT = (from p in players where p.Position == Position.TOP && p.Champion != null select p).Count();
-      int midT = (from p in players where p.Position == Position.MIDDLE && p.Champion != null select p).Count();
-      int botT = (from p in players where p.Position == Position.BOTTOM && p.Champion != null select p).Count();
-      int jglT = (from p in players where p.Position == Position.JUNGLE && p.Champion != null select p).Count();
-      int top = 0, mid = 0, bot = 0, jgl = 0;
+      var positions = new Dictionary<Position, int>();
+      var counts = new Dictionary<Position, int>();
+      foreach(var pos in onMap.Keys) {
+        positions[pos] = (from p in players where p.Position == pos && p.Champion != null select p).Count();
+        counts[pos] = 0;
+      }
+
       Body.Children.Clear();
       foreach (var item in players.Where(p => p.Position != null && p.Champion != null)) {
-        Point point;
-        if (item.Position == Position.TOP) point = TopLane[topT - 1][top++];
-        else if (item.Position == Position.MIDDLE) point = MidLane[midT - 1][mid++];
-        else if (item.Position == Position.BOTTOM) point = BotLane[botT - 1][bot++];
-        else if (item.Position == Position.JUNGLE) point = Jungle[jglT - 1][jgl++];
-        else continue;
+        var pos = item.Position;
+        Point point = onMap[pos][positions[pos] - 1][counts[pos]++];
 
         var img = new Image {
           Width = ActualWidth * .12,
@@ -91,12 +95,12 @@ namespace LeagueClient.ClientUI.Controls {
           Style = (Style) FindResource("Image"),
           Margin = new Thickness(ActualWidth * point.X, ActualHeight * point.Y, 0, 0)
         };
-        img.Source = LeagueData.GetChampIconImage(item.Champion);
         img.Clip = new EllipseGeometry {
           RadiusX = img.Width / 2,
           RadiusY = img.Height / 2,
           Center = new Point(img.Width / 2, img.Height / 2),
         };
+        img.Source = LeagueData.GetChampIconImage(item.Champion);
         Body.Children.Add(img);
       }
     }

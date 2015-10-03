@@ -32,7 +32,7 @@ namespace LeagueClient.ClientUI.Controls {
         Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
 
       if (!string.IsNullOrWhiteSpace(player.SummonerName))
-        SummonerName.Text = player.SummonerName;
+        SummonerName.Content = player.SummonerName;
 
     }
 
@@ -41,7 +41,7 @@ namespace LeagueClient.ClientUI.Controls {
 
       var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
       ChampImage.Source = LeagueData.GetChampIconImage(champ);
-      SummonerName.Text = champ.name;
+      SummonerName.Content = champ.name;
     }
 
     public ChampSelectPlayer(ObfuscatedParticipant obfusc) {

@@ -120,6 +120,6 @@ namespace LeagueClient.Logic.Cap {
     /// <summary>
     /// Same functionally as Searching but after a player has left the slot
     /// </summary>
-    SearchingDeclined,
+    SearchingDeclined
   }
 }

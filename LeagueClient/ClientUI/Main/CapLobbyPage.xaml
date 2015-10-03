@@ -20,7 +20,7 @@
       <ColumnDefinition Width="75"/>
     </Grid.ColumnDefinitions>
 
-    <ItemsControl Height="448" Name="PlayerList" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0 0 10 10"/>
+    <StackPanel Height="448" Name="PlayerList" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0 0 10 10"/>
 
     <Border Grid.Column="2" Grid.Row="1" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4">
       <my:CapMap x:Name="GameMap"/>

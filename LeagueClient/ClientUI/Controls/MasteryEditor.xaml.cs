@@ -12,6 +12,7 @@ using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using LeagueClient.Logic;
+using System.Windows.Threading;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -137,6 +138,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void LoadMasteries(MasteryTree tree, List<List<MasteryTreeDto.BranchDto>> src, int col) {
       var points = new Dictionary<string, Point>();
+
       for (int y = 0; y < src.Count; y++) {
         var row = new List<MasteryIcon>();
         for (int x = 0; x < 4; x++) {
@@ -150,14 +152,15 @@ namespace LeagueClient.ClientUI.Controls {
             Icons.Add(item.masteryId, icon);
             tree.Control.Children.Add(icon.Control);
             if (!item.prereq.Equals("0")) {
-              double srcY = y * (ImageSize + ImageBorder * 2 + VerticalSpace + 2)
-                + VerticalSpace + 3;
-              double srcX = x * (ImageSize + ImageBorder * 2 + HorizontalSpace)
-                + HorizontalSpace + ImageBorder + ImageSize / 2 + 4.5;
-              double dstY = points[item.prereq].Y * (ImageSize + ImageBorder * 2 + VerticalSpace + 2)
-                + VerticalSpace + ImageBorder * 2 + ImageSize + 3;
-              double dstX = points[item.prereq].X * (ImageSize + ImageBorder * 2 + HorizontalSpace)
-                + HorizontalSpace + ImageBorder + ImageSize / 2 + 4.5;
+              var spaceY = ImageSize + ImageBorder * 2 + VerticalSpace + 2;
+              var spaceX = ImageSize + ImageBorder * 2 + HorizontalSpace;
+
+              double srcY = y * spaceY + VerticalSpace + 3;
+              double srcX = x * spaceX + HorizontalSpace + ImageBorder + ImageSize / 2 + 2.5;
+
+              double dstY = points[item.prereq].Y * spaceY + VerticalSpace + ImageBorder * 2 + ImageSize + 3;
+              double dstX = points[item.prereq].X * spaceX + HorizontalSpace + ImageBorder + ImageSize / 2 + 2.5;
+
               var path = new Line() { X1 = srcX, Y1 = srcY, X2 = dstX, Y2 = dstY };
               path.SnapsToDevicePixels = true;
               path.Stroke = App.FontBrush;

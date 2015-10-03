@@ -71,7 +71,8 @@ namespace LeagueClient.Logic.Chat {
       Roster.OnRosterEnd += src => {
         fullyAuthed = true;
         Presence.OnPrimarySessionChange += OnPrimarySessionChange;
-        SendPresence();
+        if (conn.IsAuthenticated)
+          SendPresence();
       };
       Presence.Stream = conn;
       Conference.Stream = conn;
