@@ -90,6 +90,8 @@ namespace LeagueClient.Logic.Chat {
           if (f1.GameInfo != null && f2.GameInfo != null) {
             int score1 = (int) f1.GameInfo.gameStartTime;
             int score2 = (int) f2.GameInfo.gameStartTime;
+            if (score1 == 0) score1 = int.MaxValue;
+            if (score2 == 0) score2 = int.MaxValue;
             return Math.Sign(score1 - score2);
           } else {
             int score1 = f1.Status.GameStatus.Priority;

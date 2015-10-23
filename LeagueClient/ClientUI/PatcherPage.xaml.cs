@@ -52,7 +52,7 @@ namespace LeagueClient.ClientUI {
     }
 
     void CreateLoginPage() {
-      if (!settings.Dictionary.ContainsKey("theme") || !Client.LoginTheme.Equals(settings["theme"])) {
+      if (!settings.Dictionary.ContainsKey("theme") || !Client.LoginTheme.Equals(settings["theme"]) || !File.Exists(Client.LoginVideoPath)) {
         var info = new ProcessStartInfo {
           FileName = Client.FFMpegPath,
           Arguments = "-i \"" + Path.Combine(Client.AirDirectory, @"mod\lgn\themes",
