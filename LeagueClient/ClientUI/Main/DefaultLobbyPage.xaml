@@ -6,8 +6,8 @@
       Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
   <Grid Margin="80 10">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="2*"/>
       <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="auto"/>
     </Grid.ColumnDefinitions>
 
     <Grid>

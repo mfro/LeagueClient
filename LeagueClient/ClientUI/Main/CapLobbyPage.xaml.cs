@@ -82,6 +82,7 @@ namespace LeagueClient.ClientUI.Main {
       meControl.Spell1Clicked += Spell1_Click;
       meControl.Spell2Clicked += Spell2_Click;
       meControl.MasteryClicked += Player_MasteryClicked;
+      meControl.RuneClicked += Player_RuneClicked;
 
       Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
       Popup.SpellSelector.SpellSelected += Spell_Select;
@@ -140,6 +141,7 @@ namespace LeagueClient.ClientUI.Main {
       bool canSearch = state == CapLobbyState.Inviting;
       bool canMatch = true;
 
+      PlayerList.Children.Clear();
       for (int i = 0; i < players.Length; i++) {
         var player = (found.ContainsKey(i)) ? found[i] : players[i];
         if (player == null) {
@@ -197,7 +199,7 @@ namespace LeagueClient.ClientUI.Main {
       if (response.payload != null) {
         json = JSON.ParseObject(response.payload);
       }
-      Console.WriteLine(response.methodName + ": " + response.payload);
+      Client.Log(response.methodName + ": " + response.payload);
       var name = response.methodName;
       if (MethodNames.ContainsKey(name)) name = MethodNames[name];
       var method = GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -505,6 +507,12 @@ namespace LeagueClient.ClientUI.Main {
       Popup.MasteryEditor.Reset();
       Popup.BeginStoryboard(App.FadeIn);
       Popup.CurrentSelector = PopupSelector.Selector.Masteries;
+    }
+
+    private void Player_RuneClicked(object sender, EventArgs e) {
+      Popup.RuneEditor.Reset();
+      Popup.BeginStoryboard(App.FadeIn);
+      Popup.CurrentSelector = PopupSelector.Selector.Runes;
     }
 
     private void Spell1_Click(object src, EventArgs args) {

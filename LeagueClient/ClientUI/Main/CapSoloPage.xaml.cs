@@ -43,6 +43,7 @@ namespace LeagueClient.ClientUI.Main {
       Player.Spell1Clicked += Spell1_Click;
       Player.Spell2Clicked += Spell2_Click;
       Player.MasteryClicked += Player_MasteryClicked;
+      Player.RuneClicked += Player_RuneClicked;
 
       Popup.SpellSelector.SpellSelected += Spell_Select;
       Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
@@ -59,6 +60,11 @@ namespace LeagueClient.ClientUI.Main {
     private void Player_MasteryClicked(object src, EventArgs args) {
       Popup.BeginStoryboard(App.FadeIn);
       Popup.CurrentSelector = PopupSelector.Selector.Masteries;
+    }
+
+    private void Player_RuneClicked(object sender, EventArgs e) {
+      Popup.BeginStoryboard(App.FadeIn);
+      Popup.CurrentSelector = PopupSelector.Selector.Runes;
     }
 
     private void Spell1_Click(object src, EventArgs args) {

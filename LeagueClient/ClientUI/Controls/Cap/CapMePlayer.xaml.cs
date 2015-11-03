@@ -29,6 +29,7 @@ namespace LeagueClient.ClientUI.Controls {
     public event EventHandler Spell1Clicked;
     public event EventHandler Spell2Clicked;
     public event EventHandler MasteryClicked;
+    public event EventHandler RuneClicked;
     public event EventHandler PlayerUpdate;
 
     public bool Editable {
@@ -97,8 +98,12 @@ namespace LeagueClient.ClientUI.Controls {
       if (Spell2Clicked != null) Spell2Clicked(this, new EventArgs());
     }
 
-    private void EditButton_Click(object src, EventArgs args) {
+    private void MasteryEdit_Click(object src, EventArgs args) {
       if (MasteryClicked != null) MasteryClicked(this, new EventArgs());
+    }
+
+    private void RuneEdit_Click(object sender, RoutedEventArgs e) {
+      if (RuneClicked != null) RuneClicked(this, new EventArgs());
     }
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {

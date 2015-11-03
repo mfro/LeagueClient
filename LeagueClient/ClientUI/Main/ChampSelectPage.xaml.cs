@@ -276,9 +276,14 @@ namespace LeagueClient.ClientUI {
       doSpell1 = false;
     }
 
-    private void MasterEdit_Click(object sender, RoutedEventArgs e) {
+    private void MasteryEdit_Click(object sender, RoutedEventArgs e) {
       PopupGrid.BeginStoryboard(App.FadeIn);
       Popup.CurrentSelector = PopupSelector.Selector.Masteries;
+    }
+
+    private void RuneEdit_Click(object sender, RoutedEventArgs e) {
+      PopupGrid.BeginStoryboard(App.FadeIn);
+      Popup.CurrentSelector = PopupSelector.Selector.Runes;
     }
 
     private void SpellSelector_SpellSelected(object sender, SpellDto e) {
