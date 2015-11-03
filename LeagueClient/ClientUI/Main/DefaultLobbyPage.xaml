@@ -62,5 +62,10 @@
     </Grid>
     <my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
                     Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>
+    
+    <Grid Width="128" Height="160" Background="Red" Margin="15,25,639,435"/>
+    <Grid Width="128" Height="160" Background="Red" Margin="444,25,210,435"/>
+    <Grid Width="128" Height="160" Background="Red" Margin="301,25,353,435"/>
+    <Grid Width="128" Height="160" Background="Red" Margin="158,25,496,435"/>
   </Grid>
 </Page>

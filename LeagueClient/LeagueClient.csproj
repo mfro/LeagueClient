@@ -87,54 +87,57 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ClientUI\Controls\ProfileIconSelector.xaml.cs">
+    <Compile Include="ClientUI\Controls\Players\LobbyPlayer2.xaml.cs">
+      <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\Selectors\ProfileIconSelector.xaml.cs">
       <DependentUpon>ProfileIconSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\RuneEditor.xaml.cs">
+    <Compile Include="ClientUI\Controls\Selectors\RuneEditor.xaml.cs">
       <DependentUpon>RuneEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\RuneListItem.xaml.cs">
+    <Compile Include="ClientUI\Controls\Selectors\RuneListItem.xaml.cs">
       <DependentUpon>RuneListItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Client.cs" />
     <Compile Include="ClientUI\Main\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\BingeQueuer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Queue\BingeQueuer.xaml.cs">
       <DependentUpon>BingeQueuer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\ChampSelectPlayer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Players\ChampSelectPlayer.xaml.cs">
       <DependentUpon>ChampSelectPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\InvitedPlayer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Players\InvitedPlayer.xaml.cs">
       <DependentUpon>InvitedPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\Loader.xaml.cs">
       <DependentUpon>Loader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\LobbyPlayer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Players\LobbyPlayer.xaml.cs">
       <DependentUpon>LobbyPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\DefaultQueuePopup.xaml.cs">
+    <Compile Include="ClientUI\Controls\Queue\DefaultQueuePopup.xaml.cs">
       <DependentUpon>DefaultQueuePopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\DefaultQueuer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Queue\DefaultQueuer.xaml.cs">
       <DependentUpon>DefaultQueuer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\ICollapsable.cs" />
     <Compile Include="ClientUI\Controls\InvitePopup.xaml.cs">
       <DependentUpon>InvitePopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\LoginAccount.xaml.cs">
+    <Compile Include="ClientUI\Controls\Players\LoginAccount.xaml.cs">
       <DependentUpon>LoginAccount.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\OkAlert.xaml.cs">
       <DependentUpon>OkAlert.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\PopupSelector.xaml.cs">
+    <Compile Include="ClientUI\Controls\Selectors\PopupSelector.xaml.cs">
       <DependentUpon>PopupSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\ReturnToLobbyQueuer.xaml.cs">
+    <Compile Include="ClientUI\Controls\Queue\ReturnToLobbyQueuer.xaml.cs">
       <DependentUpon>ReturnToLobbyQueuer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\GameInviteAlert.xaml.cs">
@@ -144,7 +147,7 @@
     <Compile Include="ClientUI\Main\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\ChampSelector.xaml.cs">
+    <Compile Include="ClientUI\Controls\Selectors\ChampSelector.xaml.cs">
       <DependentUpon>ChampSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\ChatConversation.xaml.cs">
@@ -185,13 +188,13 @@
     <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
     <Compile Include="Logic\Queueing\IQueuePopup.cs" />
-    <Compile Include="ClientUI\Controls\MasteryEditor.xaml.cs">
+    <Compile Include="ClientUI\Controls\Selectors\MasteryEditor.xaml.cs">
       <DependentUpon>MasteryEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\MyProgressBar.xaml.cs">
       <DependentUpon>MyProgressBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\SpellSelector.xaml.cs">
+    <Compile Include="ClientUI\Controls\Selectors\SpellSelector.xaml.cs">
       <DependentUpon>SpellSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\Cap\CapMap.xaml.cs">
@@ -355,11 +358,15 @@
     <Compile Include="Logic\SWF\SWFTypes\Tag.cs" />
     <Compile Include="Logic\SWF\SWFTypes\TagCodes.cs" />
     <Compile Include="Logic\Settings.cs" />
-    <Page Include="ClientUI\Controls\RuneEditor.xaml">
+    <Page Include="ClientUI\Controls\Players\LobbyPlayer2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\RuneListItem.xaml">
+    <Page Include="ClientUI\Controls\Selectors\RuneEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\Selectors\RuneListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -367,15 +374,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\BingeQueuer.xaml">
+    <Page Include="ClientUI\Controls\Queue\BingeQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\ChampSelectPlayer.xaml">
+    <Page Include="ClientUI\Controls\Players\ChampSelectPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\InvitedPlayer.xaml">
+    <Page Include="ClientUI\Controls\Players\InvitedPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -383,15 +390,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\LobbyPlayer.xaml">
+    <Page Include="ClientUI\Controls\Players\LobbyPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\DefaultQueuePopup.xaml">
+    <Page Include="ClientUI\Controls\Queue\DefaultQueuePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\DefaultQueuer.xaml">
+    <Page Include="ClientUI\Controls\Queue\DefaultQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -399,7 +406,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\LoginAccount.xaml">
+    <Page Include="ClientUI\Controls\Players\LoginAccount.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -407,15 +414,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\PopupSelector.xaml">
+    <Page Include="ClientUI\Controls\Selectors\PopupSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\ProfileIconSelector.xaml">
+    <Page Include="ClientUI\Controls\Selectors\ProfileIconSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\ReturnToLobbyQueuer.xaml">
+    <Page Include="ClientUI\Controls\Queue\ReturnToLobbyQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -427,7 +434,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\ChampSelector.xaml">
+    <Page Include="ClientUI\Controls\Selectors\ChampSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -439,7 +446,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\MasteryEditor.xaml">
+    <Page Include="ClientUI\Controls\Selectors\MasteryEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -447,7 +454,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\SpellSelector.xaml">
+    <Page Include="ClientUI\Controls\Selectors\SpellSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
