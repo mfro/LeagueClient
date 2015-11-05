@@ -22,11 +22,14 @@ namespace LeagueClient.ClientUI {
     private const string SettingsKey = "LoginSettings";
     private static JSONObject settings = Client.LoadSettings(SettingsKey);
 
+    public Uri BackAnimationURI { get; private set; }
+
     private int tries;
     private string user;
     private string pass;
 
     public LoginPage() {
+      BackAnimationURI = new Uri(Client.LoginVideoPath);
       InitializeComponent();
 
       if (!settings.Dictionary.ContainsKey("Accounts"))
@@ -42,8 +45,6 @@ namespace LeagueClient.ClientUI {
         }
       } else LoginGrid.BeginStoryboard(App.FadeIn);
 
-      BackAnimation.Source = new Uri(Client.LoginVideoPath);
-      BackAnimation.Play();
       BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory, "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
     }
 
@@ -117,11 +118,6 @@ namespace LeagueClient.ClientUI {
       PassBox.Password = "";
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = true;
       PassBox.Focus();
-    }
-
-    private void BackAnimation_MediaEnded(object sender, RoutedEventArgs e) {
-      BackAnimation.Position = TimeSpan.Zero;
-      BackAnimation.Play();
     }
 
     private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {

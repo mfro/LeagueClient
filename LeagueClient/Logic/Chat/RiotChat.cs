@@ -53,7 +53,7 @@ namespace LeagueClient.Logic.Chat {
         SSL = true,
         AutoReconnect = 30,
         KeepAlive = 10,
-        NetworkHost = Client.ChatServer,
+        NetworkHost = Client.Region.ChatServer,
         User = user,
         Password = "AIR_" + pass,
         Resource = "xiff",

@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
-      SnapsToDevicePixels="True">
+      SnapsToDevicePixels="True" DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <Grid Background="{StaticResource Back2Brush}" Width="{StaticResource Width}" Height="{StaticResource Height}">
     <Grid.RowDefinitions>
       <RowDefinition Height="20"/>
@@ -16,8 +16,19 @@
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
     <Image Name="BackStatic" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center"/>
-    <MediaElement Name="BackAnimation" Grid.RowSpan="50" Grid.ColumnSpan="50" MediaEnded="BackAnimation_MediaEnded"
-                  Stretch="UniformToFill" VerticalAlignment="Center" LoadedBehavior="Manual"/>
+    <MediaElement Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center">
+      <MediaElement.Triggers>
+        <EventTrigger RoutedEvent="MediaElement.Loaded">
+          <EventTrigger.Actions>
+            <BeginStoryboard>
+              <Storyboard>
+                <MediaTimeline Source="{Binding BackAnimationURI}" RepeatBehavior="Forever"/>
+              </Storyboard>
+            </BeginStoryboard>
+          </EventTrigger.Actions>
+        </EventTrigger>
+      </MediaElement.Triggers>
+    </MediaElement>
     <UniformGrid Grid.Row="2" Grid.Column="1" Columns="2" Margin="0 0 -10 0" VerticalAlignment="Top" Name="AccountList">
       <Button Name="AddAccountButt" Click="AddAccountButt_Click" VerticalAlignment="Top" Margin="5 5 5 5">Other Account</Button>
     </UniformGrid>

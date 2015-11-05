@@ -70,7 +70,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public void GotLobbyStatus(LobbyStatus lobby) {
       if (!chatRoom.IsJoined)
-        this.chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
+        chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
 
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();
@@ -81,7 +81,7 @@ namespace LeagueClient.ClientUI.Main {
         foreach (var player in lobby.PlayerIds) {
           var control = new LobbyPlayer(player, true);
           PlayerList.Children.Add(control);
-          Dispatcher.Invoke(() => QueueDetailsGrid.Height = PlayerList.Height = control.ActualHeight * config.NumPlayersPerTeam,
+          Dispatcher.BeginInvoke((Action) (() => QueueDetailsGrid.Height = PlayerList.Height = control.ActualHeight * config.NumPlayersPerTeam),
             System.Windows.Threading.DispatcherPriority.ApplicationIdle);
         }
 

@@ -62,10 +62,10 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void UpdateRunes() {
       int i = 0;
-      for (; i < 9; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/Resources/MarkDefault.png"));
-      for (; i < 18; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/Resources/SealDefault.png"));
-      for (; i < 27; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/Resources/GlyphDefault.png"));
-      for (; i < 30; i++) Runes[i].Source = new BitmapImage(new Uri($"pack://application:,,,/Resources/Quint{i - 26}Default.png"));
+      for (; i < 9; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/MarkDefault.png"));
+      for (; i < 18; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/SealDefault.png"));
+      for (; i < 27; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/GlyphDefault.png"));
+      for (; i < 30; i++) Runes[i].Source = new BitmapImage(new Uri($"pack://application:,,,/RiotAPI;component/Resources/Quint{i - 26}Default.png"));
 
       foreach (var entry in page.SlotEntries) {
         var rune = Runes[entry.RuneSlotId - 1];

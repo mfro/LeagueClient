@@ -15,7 +15,7 @@
     <Border Grid.RowSpan="2" Grid.ColumnSpan="2" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Margin="-3"/>
     <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{StaticResource ForeBrush}" BorderThickness="1 0 1 1"/>
     <TextBlock Background="{StaticResource ForeBrush}" Style="{StaticResource Control}" Name="TitleBlock" FontSize="14" Padding="2 1"/>
-    <Button BorderThickness="0" Click="Close_Click" Grid.Column="1" Width="20" Height="22">
+    <Button BorderThickness="0" Click="Close_Click" Grid.Column="1" Width="20" Height="20">
       <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
     </Button>
     <my:ChampSelector Margin="4 5 4 4" x:Name="ChampSelector" Height="350" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed"/>

@@ -572,7 +572,7 @@ namespace RtmpSharp.IO {
             member.SetValue(instance, value);
           else if(!memberName.Equals("dataVersion") && !memberName.Equals("futureData")
             && !memberName.Equals("correlationId") && !memberName.Equals("version")) {
-            //Console.WriteLine("{0} [{1}]: {2}", memberName, (value == null) ? "null" : value.GetType() + "", value);
+            Console.WriteLine("{0} [{1}]: {2}", memberName, (value == null) ? "null" : value.GetType() + "", value);
           }
         }
         if (objectDescription.IsTyped && strategy == DeserializationStrategy.DynamicObject &&

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace LeagueClient.Logic {
 <#
 	
-	foreach(var e in new[] { "Position", "Role", "QueueType", "SpectatorState", "GameMode", "ReportReason" }) {
+	foreach(var e in new[] { "Position", "Role", "QueueType", "SpectatorState", "GameMode", "ReportReason", "RankedTier" }) {
 
 #>
 	public class <#= e #> {

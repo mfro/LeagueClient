@@ -70,16 +70,16 @@
           </Style>
         </UniformGrid.Resources>
         <Border Name="SummonersRift">
-          <Image Source="/Resources/SRiftImage.png"/>
+          <Image Source="pack://application:,,,/RiotAPI;component/Resources/SRiftImage.png"/>
         </Border>
         <Border Name="CrystalScar">
-          <Image Source="/Resources/CScarImage.png"/>
+          <Image Source="pack://application:,,,/RiotAPI;component/Resources/CScarImage.png"/>
         </Border>
         <Border Name="TwistedTreeline">
-          <Image Source="/Resources/TTImage.png"/>
+          <Image Source="pack://application:,,,/RiotAPI;component/Resources/TTImage.png"/>
         </Border>
         <Border Name="HowlingAbyss">
-          <Image Source="/Resources/HAbyssImage.png"/>
+          <Image Source="pack://application:,,,/RiotAPI;component/Resources/HAbyssImage.png"/>
         </Border>
       </UniformGrid>
     </ScrollViewer>

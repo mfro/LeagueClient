@@ -14,6 +14,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
@@ -63,7 +64,7 @@ namespace LeagueClient.ClientUI.Controls {
       RiotServices.SummonerService.GetSummonerByName(player.SummonerName).ContinueWith(GotSummonerData);
       SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(player.ProfileIconId));
       UserName = player.SummonerName;
-
+      
       InitializeComponent();
 
       forceExpand = expanded;
@@ -101,9 +102,17 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void GotSummonerData(Task<PublicSummoner> task) {
       SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(task.Result.ProfileIconId));
-      UserName = task.Result.Name;
+      RiotServices.LeaguesService.GetAllLeaguesForPlayer(task.Result.SummonerId).ContinueWith(GotLeagueData);
       LevelString = "Level " + task.Result.SummonerLevel;
+      UserName = task.Result.Name;
       RankString = "Challenjour";
+    }
+
+    private void GotLeagueData(Task<SummonerLeaguesDTO> task) {
+      var league = task.Result.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
+      if (league != null) {
+        var str = RankedTier.Values[league.Tier] + " " + league.RequestorsRank;
+      }
     }
 
     private void SetField<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string name = null) {

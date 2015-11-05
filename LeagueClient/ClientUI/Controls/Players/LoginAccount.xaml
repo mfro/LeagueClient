@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
-  <Border Name="MainBorder" Margin="5" Background="{StaticResource Back1Brush}" BorderBrush="{StaticResource Back1Brush}"
+  <Border Name="MainBorder" Margin="5" Background="{StaticResource ForeBrush}" BorderBrush="{StaticResource ForeBrush}"
           MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave"
           MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp">
     <Grid>

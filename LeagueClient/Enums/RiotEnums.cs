@@ -55,39 +55,23 @@ namespace LeagueClient.Logic {
 
     public static readonly QueueType
       CUSTOM = new QueueType("CUSTOM", "Custom"),
-      NONE = new QueueType("NONE", "None"),
+      NONE = new QueueType("NONE", "Custom"),
       NORMAL = new QueueType("NORMAL", "Normal"),
-      BOT = new QueueType("BOT", "Bot"),
-      RANKED_SOLO_3x3 = new QueueType("RANKED_SOLO_3x3", "Ranked Solo 3v3"),
-      RANKED_SOLO_5x5 = new QueueType("RANKED_SOLO_5x5", "Ranked Solo 5v5"),
-      RANKED_PREMADE_3x3 = new QueueType("RANKED_PREMADE_3x3", "Ranked Teams 3v3"),
-      RANKED_PREMADE_5x5 = new QueueType("RANKED_PREMADE_5x5", "Ranked Teams 5v5"),
-      RANKED_SOLO_1x1 = new QueueType("RANKED_SOLO_1x1", "Ranked 1v1"),
+      NORMAL_3x3 = new QueueType("NORMAL_3x3", "Normal 3v3"),
       ODIN_UNRANKED = new QueueType("ODIN_UNRANKED", "Dominion"),
-      ODIN_RANKED_SOLO = new QueueType("ODIN_RANKED_SOLO", "Ranked Solo Dominion"),
-      ODIN_RANKED_TEAM = new QueueType("ODIN_RANKED_TEAM", "Ranked Teams Dominion"),
+      ARAM_UNRANKED_5x5 = new QueueType("ARAM_UNRANKED_5x5", "ARAM 5v5"),
+      BOT = new QueueType("BOT", "Co-op vs AI 5v5"),
+      BOT_3x3 = new QueueType("BOT_3x3", "Co-op vs AI 3v3"),
+      RANKED_SOLO_5x5 = new QueueType("RANKED_SOLO_5x5", "Ranked Solo 5v5"),
       RANKED_TEAM_3x3 = new QueueType("RANKED_TEAM_3x3", "Ranked Team 3v3"),
       RANKED_TEAM_5x5 = new QueueType("RANKED_TEAM_5x5", "Ranked Team 5v5"),
-      NORMAL_3x3 = new QueueType("NORMAL_3x3", "Normal 3v3"),
-      BOT_3x3 = new QueueType("BOT_3x3", "Co-op vs AI 3v3"),
-      CAP_1x1 = new QueueType("CAP_1x1", "Teambuilder 1v1"),
-      CAP_5x5 = new QueueType("CAP_5x5", "Teambuilder 5v5"),
-      ARAM_UNRANKED_1x1 = new QueueType("ARAM_UNRANKED_1x1", "Aram 1v1"),
-      ARAM_UNRANKED_2x2 = new QueueType("ARAM_UNRANKED_2x2", "Aram 2v2"),
-      ARAM_UNRANKED_3x3 = new QueueType("ARAM_UNRANKED_3x3", "Aram 3v3"),
-      ARAM_UNRANKED_5x5 = new QueueType("ARAM_UNRANKED_5x5", "Aram 5v5"),
-      ARAM_UNRANKED_6x6 = new QueueType("ARAM_UNRANKED_6x6", "Aram 6v6"),
-      ARAM_BOT = new QueueType("ARAM_BOT", "Co-op vs AI Aram"),
       ONEFORALL_5x5 = new QueueType("ONEFORALL_5x5", "One for All 5v5"),
-      ONEFORALL_1x1 = new QueueType("ONEFORALL_1x1", "One for All 1v1"),
       FIRSTBLOOD_1x1 = new QueueType("FIRSTBLOOD_1x1", "Showdown 1v1"),
       FIRSTBLOOD_2x2 = new QueueType("FIRSTBLOOD_2x2", "Showdown 2v2"),
       SR_6x6 = new QueueType("SR_6x6", "Summoner's Rift Hexakill"),
-      TT_5x5 = new QueueType("TT_5x5", "Twisted Treeline Hexakill"),
+      CAP_5x5 = new QueueType("CAP_5x5", "Teambuilder 5v5"),
       URF = new QueueType("URF", "URF"),
       URF_BOT = new QueueType("URF_BOT", "Co-op vs AI URF"),
-      FEATURED = new QueueType("FEATURED", "Featured"),
-      FEATURED_BOT = new QueueType("FEATURED_BOT", "Co-op vs AI Featured"),
       NIGHTMARE_BOT = new QueueType("NIGHTMARE_BOT", "Nightmare Bots"),
       ASCENSION = new QueueType("ASCENSION", "Ascension"),
       HEXAKILL = new QueueType("HEXAKILL", "Hexakill"),
@@ -136,7 +120,12 @@ namespace LeagueClient.Logic {
     public static readonly GameMode
       CLASSIC = new GameMode("CLASSIC", "Classic"),
       ARAM = new GameMode("ARAM", "ARAM"),
-      ODIN = new GameMode("ODIN", "Dominion");
+      ODIN = new GameMode("ODIN", "Dominion"),
+      TUTORIAL = new GameMode("TUTORIAL", "Tutorial"),
+      ONEFORALL = new GameMode("ONEFORALL", "One for All"),
+      ASCENSION = new GameMode("ASCENSION", "Ascension"),
+      FIRSTBLOOD = new GameMode("FIRSTBLOOD", "Snowdown Showdown"),
+      KINGPORO = new GameMode("KINGPORO", "King Poro");
 
     public string Key { get; private set; }
     public string Value { get; private set; }
@@ -170,6 +159,31 @@ namespace LeagueClient.Logic {
     public string Value { get; private set; }
 
 		private ReportReason(string key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
+	public class RankedTier {
+    public static readonly Dictionary<string, RankedTier> Values = new Dictionary<string, RankedTier>();
+
+    public static readonly RankedTier
+      BRONZE = new RankedTier("BRONZE", "Bronze"),
+      SILVER = new RankedTier("SILVER", "Silver"),
+      GOLD = new RankedTier("GOLD", "Gold"),
+      PLATINUM = new RankedTier("PLATINUM", "Platinum"),
+      DIAMOND = new RankedTier("DIAMOND", "Diamond"),
+      CHALLENGER = new RankedTier("CHALLENGER", "Challenger"),
+      MASTER = new RankedTier("MASTER", "Master");
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+
+		private RankedTier(string key, string value) {
 			Key = key; Value = value;
 			Values.Add(key, this);
 		}

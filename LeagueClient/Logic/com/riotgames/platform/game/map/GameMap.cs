@@ -74,11 +74,11 @@ namespace LeagueClient.Logic.Riot.Platform {
     };
 
     public static readonly Dictionary<GameMap, BitmapImage> Images = new Dictionary<GameMap, System.Windows.Media.Imaging.BitmapImage> {
-      [SummonersRift] = new BitmapImage(new Uri("pack://application:,,,/Resources/SRiftImage.png")),
-      [TheCrystalScar] = new BitmapImage(new Uri("pack://application:,,,/Resources/CScarImage.png")),
-      [TheTwistedTreeline] = new BitmapImage(new Uri("pack://application:,,,/Resources/TTImage.png")),
-      [HowlingAbyss] = new BitmapImage(new Uri("pack://application:,,,/Resources/HAbyssImage.png")),
-      [ButchersBridge] = new BitmapImage(new Uri("pack://application:,,,/Resources/BilgewaterImage.png"))
+      [SummonersRift] = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/SRiftImage.png")),
+      [TheCrystalScar] = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/CScarImage.png")),
+      [TheTwistedTreeline] = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/TTImage.png")),
+      [HowlingAbyss] = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/HAbyssImage.png")),
+      [ButchersBridge] = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/BilgewaterImage.png"))
     }; 
 
     public static readonly GameMap[] Maps = new[] { GameMap.SummonersRift, GameMap.ButchersBridge, GameMap.HowlingAbyss, GameMap.TheCrystalScar, GameMap.TheTwistedTreeline };

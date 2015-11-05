@@ -29,16 +29,13 @@ namespace LeagueClient.Logic {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     #region Constants
-    internal const string
-      RiotGamesDir = @"D:\Riot Games",
-      Server = "prod.na2.lol.riotgames.com",
-      LoginQueue = "https://lq.na2.lol.riotgames.com/",
-      ChatServer = "chat.na2.lol.riotgames.com",
-      Locale = "en_US";
+    internal static readonly Region Region = Region.NA;
 
     internal static readonly string
-      AirClientParentDir = Path.Combine(RiotGamesDir, @"League of Legends\RADS\projects\lol_air_client"),
-      GameClientParentDir = Path.Combine(RiotGamesDir, @"League of Legends\RADS\projects\lol_game_client"),
+      RiotGamesDir = @"D:\Riot Games\" + (Region == Region.PBE ? "PBE" : "League of Legends"),
+      Locale = "en_US",
+      AirClientParentDir = Path.Combine(RiotGamesDir, @"RADS\projects\lol_air_client"),
+      GameClientParentDir = Path.Combine(RiotGamesDir, @"RADS\projects\lol_game_client"),
       DataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MFro\LeagueClient\",
       SettingsFile = Path.Combine(DataPath, "settings.xml"),
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
@@ -140,7 +137,7 @@ namespace LeagueClient.Logic {
 
     public static async Task<bool> Initialize(string user, string pass) {
       var context = RiotServices.RegisterObjects();
-      RtmpConn = new RtmpClient(new Uri("rtmps://" + Server + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
+      RtmpConn = new RtmpClient(new Uri("rtmps://" + Region.MainServer + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
       RtmpConn.MessageReceived += RtmpConn_MessageReceived;
       await RtmpConn.ConnectAsync();
 
@@ -150,7 +147,7 @@ namespace LeagueClient.Logic {
       creds.ClientVersion = AirVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
-      var queue = await RiotServices.GetAuthKey(creds.Username, creds.Password, LoginQueue);
+      var queue = await RiotServices.GetAuthKey(creds.Username, creds.Password);
       creds.AuthToken = queue.Token;
 
       UserSession = await RiotServices.LoginService.Login(creds);

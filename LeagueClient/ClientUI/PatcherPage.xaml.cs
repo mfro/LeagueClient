@@ -60,6 +60,7 @@ namespace LeagueClient.ClientUI {
           UseShellExecute = false,
           CreateNoWindow = true
         };
+        File.Delete(Client.LoginVideoPath);
         Process.Start(info).WaitForExit();
 
         settings["theme"] = Client.LoginTheme;

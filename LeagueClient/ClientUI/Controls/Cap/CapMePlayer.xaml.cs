@@ -98,7 +98,7 @@ namespace LeagueClient.ClientUI.Controls {
       if (Spell2Clicked != null) Spell2Clicked(this, new EventArgs());
     }
 
-    private void MasteryEdit_Click(object src, EventArgs args) {
+    private void MasteryEdit_Click(object src, RoutedEventArgs args) {
       if (MasteryClicked != null) MasteryClicked(this, new EventArgs());
     }
 

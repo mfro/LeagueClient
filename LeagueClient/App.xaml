@@ -356,16 +356,17 @@
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="Padding" Value="4 2"/>
     </Style>
-    <Style TargetType="Button" x:Key="EditButton" BasedOn="{StaticResource {x:Type Button}}">
+    <Style TargetType="my:EditButton" BasedOn="{StaticResource {x:Type Button}}">
       <Setter Property="Padding" Value="0"/>
       <Setter Property="Width" Value="20"/>
       <Setter Property="Height" Value="20"/>
-      <Setter Property="Content">
-        <Setter.Value>
-          <Path Data="M 0 15 L 2 10 11 1 14 4 5 13 Z M 3 9 L 6 12" Stroke="{StaticResource FontBrush}" StrokeLineJoin="Round" IsHitTestVisible="False"/>
-        </Setter.Value>
-      </Setter>
     </Style>
+    <!--<Style TargetType="Button" x:Key="EditButton" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Width" Value="20"/>
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="Content" Value="{DynamicResource PencilPath}"/>
+    </Style>-->
     <Style TargetType="Button" x:Key="CloseButton" BasedOn="{StaticResource {x:Type Button}}">
       <Setter Property="Padding" Value="0"/>
       <Setter Property="Width" Value="20"/>

@@ -1134,12 +1134,12 @@ namespace LeagueClient.Logic.Riot {
       }
     }
 
-    public static async Task<LoginQueueDto> GetAuthKey(String Username, String Password, String LoginQueue) {
+    public static async Task<LoginQueueDto> GetAuthKey(String Username, String Password) {
       StringBuilder sb = new StringBuilder();
       string payload = "user=" + Username + ",password=" + Password;
       string query = "payload=" + payload;
 
-      WebRequest con = WebRequest.Create(LoginQueue + "login-queue/rest/queue/authenticate");
+      WebRequest con = WebRequest.Create(Client.Region.LoginQueueURL + "login-queue/rest/queue/authenticate");
       con.Method = "POST";
 
       Stream outputStream = con.GetRequestStream();

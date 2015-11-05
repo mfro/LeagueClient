@@ -87,6 +87,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ClientUI\Controls\EditButton.cs" />
     <Compile Include="ClientUI\Controls\Players\LobbyPlayer2.xaml.cs">
       <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
     </Compile>
@@ -186,6 +187,7 @@
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\harassment\HarassmentReport.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
+    <Compile Include="Logic\Region.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
     <Compile Include="Logic\Queueing\IQueuePopup.cs" />
     <Compile Include="ClientUI\Controls\Selectors\MasteryEditor.xaml.cs">
@@ -558,16 +560,6 @@
     <Resource Include="Media\rp.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\SealDefault.png" />
-    <Resource Include="Resources\RunesBackground.png" />
-    <Resource Include="Resources\Quint3Default.png" />
-    <Resource Include="Resources\Quint2Default.png" />
-    <Resource Include="Resources\Quint1Default.png" />
-    <Resource Include="Resources\MarkDefault.png" />
-    <Resource Include="Resources\GlyphDefault.png" />
-    <Resource Include="Resources\TTImage.png" />
-    <Resource Include="Resources\SRiftImage.png" />
-    <Resource Include="Resources\HAbyssImage.png" />
     <Resource Include="Enums\Position.txt" />
     <Resource Include="Enums\Role.txt" />
     <Resource Include="Enums\QueueType.txt" />
@@ -576,12 +568,11 @@
     <Resource Include="Enums\ChatStatus.txt" />
     <Resource Include="Enums\ReportReason.txt" />
     <Content Include="Enums\GameMode.txt" />
+    <Resource Include="Enums\RankedTier.txt" />
     <Content Include="Enums\RiotEnums.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>RiotEnums.cs</LastGenOutput>
     </Content>
-    <Resource Include="Resources\BilgewaterImage.png" />
-    <Resource Include="Resources\CScarImage.png" />
     <Resource Include="ikonica-lol.ico" />
     <Content Include="Resources\ffmpeg.exe" />
     <Compile Include="Logic\com\riotgames\platform\serviceproxy\dispatch\LcdsServiceProxyResponse.cs" />

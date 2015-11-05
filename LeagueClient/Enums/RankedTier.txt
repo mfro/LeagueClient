@@ -1,0 +1,7 @@
+﻿BRONZE = Bronze
+SILVER = Silver
+GOLD = Gold
+PLATINUM = Platinum
+DIAMOND = Diamond
+CHALLENGER = Challenger
+MASTER = Master
