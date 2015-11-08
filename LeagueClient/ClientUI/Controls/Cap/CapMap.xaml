@@ -10,7 +10,7 @@
     </Style>
   </UserControl.Resources>
   <Grid>
-    <Image Name="GameMap" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Top"/>
+    <Image Name="GameMap" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Top" Stretch="Fill"/>
     <Grid Name="Body"/>
   </Grid>
 </UserControl>

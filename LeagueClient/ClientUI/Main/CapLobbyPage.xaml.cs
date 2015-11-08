@@ -41,8 +41,8 @@ namespace LeagueClient.ClientUI.Main {
     private CapPlayer[] players = new CapPlayer[5];
     private Dictionary<int, CapPlayer> found = new Dictionary<int, CapPlayer>();
 
+    private CapMePlayer myControl;
     private CapPlayer me;
-    private CapMePlayer meControl;
     private ChatRoomController chatRoom;
     private CapLobbyState state;
     private bool autoReady;
@@ -54,10 +54,10 @@ namespace LeagueClient.ClientUI.Main {
 
     #region Constructors
     public CapLobbyPage(bool isCreating) {
-      InitializeComponent();
       me = new CapPlayer(isCreating ? 0 : -1);
       me.PropertyChanged += Me_PropertyChanged;
-      meControl = new CapMePlayer(me) { Margin = new Thickness(0, 0, 0, 4) };
+      myControl = new CapMePlayer(me) { Margin = new Thickness(0, 10, 0, 0) };
+      InitializeComponent();
       FindAnotherButt.Visibility = Visibility.Collapsed;
       state = CapLobbyState.Inviting;
 
@@ -66,23 +66,24 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public CapLobbyPage(CapPlayer solo) {
-      InitializeComponent();
       me = solo;
-      meControl = new CapMePlayer(me) { Editable = false, Margin = new Thickness(0, 0, 0, 4) };
+      myControl = new CapMePlayer(me) { Editable = false, Margin = new Thickness(0, 10, 0, 0) };
+      InitializeComponent();
       state = CapLobbyState.Searching;
 
       SharedInit();
     }
 
     private void SharedInit() {
-      me.Status = Logic.Cap.CapStatus.Present;
+      MyGrid.Children.Add(myControl);
+      me.Status = CapStatus.Present;
       SoloSearchButt.Visibility = Visibility.Collapsed;
       ReadyButt.Visibility = Visibility.Collapsed;
-      meControl.ChampClicked += Champion_Click;
-      meControl.Spell1Clicked += Spell1_Click;
-      meControl.Spell2Clicked += Spell2_Click;
-      meControl.MasteryClicked += Player_MasteryClicked;
-      meControl.RuneClicked += Player_RuneClicked;
+      myControl.ChampClicked += Champion_Click;
+      myControl.Spell1Clicked += Spell1_Click;
+      myControl.Spell2Clicked += Spell2_Click;
+      myControl.MasteryClicked += Player_MasteryClicked;
+      myControl.RuneClicked += Player_RuneClicked;
 
       Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
       Popup.SpellSelector.SpellSelected += Spell_Select;
@@ -90,6 +91,7 @@ namespace LeagueClient.ClientUI.Main {
                                     where spell.modes.Contains("CLASSIC")
                                     select spell);
 
+      PlayerList.Children.Clear();
       chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
       Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
     }
@@ -145,7 +147,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void UpdateList() {
-      meControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
+      myControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
       bool canReady = state == CapLobbyState.Searching;
       bool canSearch = state == CapLobbyState.Inviting;
       bool canMatch = true;
@@ -158,17 +160,19 @@ namespace LeagueClient.ClientUI.Main {
           continue;
         }
 
-        if (player.SlotId == me.SlotId) {
-          PlayerList.Children.Add(meControl);
-        } else {
-          var control = new CapOtherPlayer(player, IsCaptain) { Margin = new Thickness(0, 0, 0, 4) };
-          control.CandidateReacted += CandidateReacted;
+        if (player.SlotId != me.SlotId) {
+          var control = new CapOtherPlayer2(player, IsCaptain);
+          if (PlayerList.Children.Count < 3) control.Margin = new Thickness(0, 0, 10, 0);
+          else control.Margin = new Thickness(0);
+          control.CandidateReacted += Candidate_Reacted;
+          control.Kicked += Candidate_Kicked;
+          control.GiveInvite += Candidate_GiveInvite;
+
           PlayerList.Children.Add(control);
         }
 
         //Player other than captain is not ready - cannot start matchmaking
         if (i > 0 && players[i].Status != CapStatus.Ready) canMatch = false;
-        //Slot does not contain acual player - cannot ready
         if (players[i].Status != CapStatus.Present && players[i].Status != CapStatus.Ready) canReady = false;
         //Advertised role and position have not been selected
         if (players[i].Champion == null || players[i].Position == null || players[i].Position == Position.UNSELECTED || players[i].Role == null || players[i].Role == Role.UNSELECTED)
@@ -275,6 +279,8 @@ namespace LeagueClient.ClientUI.Main {
       if (found.ContainsKey(slot.SlotId)) found.Remove(slot.SlotId);
       if (players[slot.SlotId] == null) players[slot.SlotId] = new CapPlayer(slot.SlotId);
       SetPlayerInfo(slot, players[slot.SlotId]);
+      if (state == CapLobbyState.Inviting)
+        players[slot.SlotId].Status = CapStatus.Choosing;
       Dispatcher.Invoke(UpdateList);
     }
 
@@ -334,7 +340,7 @@ namespace LeagueClient.ClientUI.Main {
       } else
         DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
       foreach (var cap in players)
-        if (cap.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+        if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
     }
 
     private void soloSearchedForAnotherGroupV2(JSONObject json) {
@@ -378,7 +384,7 @@ namespace LeagueClient.ClientUI.Main {
           cap.Status = CapStatus.ChoosingAdvert;
           players[i] = cap;
           if (IsCaptain) cap.PropertyChanged += Cap_PropertyChanged;
-        }
+        } else players[i].Status = CapStatus.Present;
       }
       Dispatcher.Invoke(UpdateList);
     }
@@ -479,12 +485,28 @@ namespace LeagueClient.ClientUI.Main {
       SoloSearchButt.Visibility = Visibility.Visible;
     }
 
-    private void CandidateReacted(object sender, bool e) {
+    private void Candidate_Reacted(object sender, bool e) {
       if (e) {
-        RiotServices.CapService.AcceptCandidate((sender as CapOtherPlayer).Player.SlotId);
+        RiotServices.CapService.AcceptCandidate((sender as CapOtherPlayer2).Player.SlotId);
       } else {
-        RiotServices.CapService.DeclineCandidate((sender as CapOtherPlayer).Player.SlotId);
+        RiotServices.CapService.DeclineCandidate((sender as CapOtherPlayer2).Player.SlotId);
       }
+    }
+
+    private void Candidate_Kicked(object sender, EventArgs e) {
+      var player = (CapOtherPlayer2) sender;
+      if (state == CapLobbyState.Searching) {
+        RiotServices.CapService.KickPlayer(player.Player.SlotId);
+      } else {
+        var member = Status.PlayerIds.FirstOrDefault(m => m.SummonerName.Equals(player.Player.Name));
+        RiotServices.GameInvitationService.Kick(member.SummonerId);
+      }
+    }
+
+    private void Candidate_GiveInvite(object sender, EventArgs e) {
+      var player = (CapOtherPlayer2) sender;
+      var member = Status.PlayerIds.FirstOrDefault(m => m.SummonerName.Equals(player.Player.Name));
+      RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
     }
 
     private static void DoTimeout(CapPlayer player, int timeoutSecs) {
@@ -545,7 +567,7 @@ namespace LeagueClient.ClientUI.Main {
     private void Popup_Close(object sender, EventArgs e) {
       Popup.BeginStoryboard(App.FadeOut);
       Popup.MasteryEditor.Save().Wait();
-      meControl.UpdateBooks();
+      myControl.UpdateBooks();
     }
 
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {

@@ -45,7 +45,7 @@
     <TextBlock Style="{StaticResource Control}" Name="RoleText" Grid.Column="3" VerticalAlignment="Top" Grid.Row="1" FontSize="13"/>
     <Path Stroke="{StaticResource FocusBrush}" Data="M 0 10 L 10 20 L 28 0" StrokeThickness="5" Name="Check" Grid.RowSpan="2"
           HorizontalAlignment="Right" VerticalAlignment="Center" Margin="15 0" Grid.Column="2"/>
-    <ComboBox Name="PositionBox" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"
+    <ComboBox Name="PositionBox" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left"
               SelectedItem="{Binding Path=Player.Position,Mode=TwoWay}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
@@ -53,7 +53,7 @@
         </DataTemplate>
       </ComboBox.ItemTemplate>
     </ComboBox>
-    <ComboBox Name="RoleBox" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"
+    <ComboBox Name="RoleBox" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left"
               SelectedItem="{Binding Path=Player.Role,Mode=TwoWay}" Margin="130 0 0 0">
       <ComboBox.ItemTemplate>
         <DataTemplate>

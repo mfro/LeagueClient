@@ -1102,7 +1102,16 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <returns></returns>
       public static Task Leave() {
-        return InvokeAsync<LobbyStatus>(Destination, "leave");
+        return InvokeAsync<AsObject>(Destination, "leave");
+      }
+
+      /// <summary>
+      /// Kicks a summoner from a lobby
+      /// </summary>
+      /// <param name="summonerId"></param>
+      /// <returns></returns>
+      public static Task Kick(double summonerId) {
+        return InvokeAsync<AsObject>(Destination, "kick");
       }
 
       /// <summary>

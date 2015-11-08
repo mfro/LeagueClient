@@ -58,6 +58,7 @@ namespace LeagueClient.ClientUI.Controls {
     public CapMePlayer(CapPlayer player) {
       CapPlayer = player ?? new CapPlayer (-1) { Status = CapStatus.Present };
       InitializeComponent();
+      if (!Client.Connected) return;
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
 
       CapPlayer.PropertyChanged += (s, e) => Dispatcher.MyInvoke(UpdateChild, e.PropertyName);
@@ -90,21 +91,10 @@ namespace LeagueClient.ClientUI.Controls {
       if (ChampClicked != null) ChampClicked(this, new EventArgs());
     }
 
-    private void Spell1_Click(object src, EventArgs args) {
-      if (Spell1Clicked != null) Spell1Clicked(this, new EventArgs());
-    }
-
-    private void Spell2_Click(object src, EventArgs args) {
-      if (Spell2Clicked != null) Spell2Clicked(this, new EventArgs());
-    }
-
-    private void MasteryEdit_Click(object src, RoutedEventArgs args) {
-      if (MasteryClicked != null) MasteryClicked(this, new EventArgs());
-    }
-
-    private void RuneEdit_Click(object sender, RoutedEventArgs e) {
-      if (RuneClicked != null) RuneClicked(this, new EventArgs());
-    }
+    private void Spell1_Click(object src, EventArgs args) => Spell1Clicked?.Invoke(this, new EventArgs());
+    private void Spell2_Click(object src, EventArgs args) => Spell2Clicked?.Invoke(this, new EventArgs());
+    private void RuneEdit_Click(object sender, RoutedEventArgs e) => RuneClicked?.Invoke(this, new EventArgs());
+    private void MasteryEdit_Click(object src, RoutedEventArgs args) => MasteryClicked?.Invoke(this, new EventArgs());
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {
       Client.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);

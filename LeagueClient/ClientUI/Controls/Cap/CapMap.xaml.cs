@@ -85,7 +85,7 @@ namespace LeagueClient.ClientUI.Controls {
       }
 
       Body.Children.Clear();
-      foreach (var item in players.Where(p => p.Position != null && p.Champion != null)) {
+      foreach (var item in players.Where(p => p.Position != null && p.Position != Position.UNSELECTED && p.Champion != null)) {
         var pos = item.Position;
         Point point = onMap[pos][positions[pos] - 1][counts[pos]++];
 
