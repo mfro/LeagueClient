@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.ClientUI.Controls;
+using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Cap;
 using LeagueClient.Logic.Chat;
@@ -28,7 +29,7 @@ using MFroehlich.League.DataDragon;
 using MFroehlich.Parsing.DynamicJSON;
 using RtmpSharp.Messaging;
 
-namespace LeagueClient.ClientUI.Main {
+namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for ClientPage.xaml
   /// </summary>
@@ -76,12 +77,17 @@ namespace LeagueClient.ClientUI.Main {
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
 
-      Client.ChatManager.ChatListUpdated += ChatManager_ChatListUpdated;
+      ChatList.ItemsSource = Client.ChatManager.FriendList;
+      Client.ChatManager.FriendList.ListChanged += FriendList_ListChanged;
       Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
 
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;
 
       UpdatePlayButton();
+    }
+
+    private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
+      ChatButt1.Content = ChatButt2.Content = $"Chat - {((System.Collections.IList) sender).Count}";
     }
 
     private void ChatManager_StatusUpdated(object sender, Logic.Chat.StatusUpdatedEventArgs e) {
@@ -109,11 +115,6 @@ namespace LeagueClient.ClientUI.Main {
             break;
         }
       });
-    }
-
-    private void ChatManager_ChatListUpdated(object sender, IEnumerable<Friend> e) {
-      ChatList.ItemsSource = e;
-      ChatButt1.Content = ChatButt2.Content = $"Chat - {e.Count()}";
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {

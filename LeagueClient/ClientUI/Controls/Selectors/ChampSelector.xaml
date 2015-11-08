@@ -15,7 +15,7 @@
         <ItemsControl Name="ChampsGrid">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2" Width="68" Margin="0 0 8 8" Cursor="Hand" ToolTip="{Binding Name}" MouseUp="Champion_Select">
+              <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2" Width="68" Margin="0 0 8 8" ToolTip="{Binding Name}" MouseUp="Champion_Select" MouseEnter="Champ_Hover">
                 <Image Source="{Binding Image}"/>
               </Border>
             </DataTemplate>

@@ -43,26 +43,30 @@
           <RowDefinition Height="auto"/>
           <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Image Name="MapImage" Source="/Resources/SRiftImage.png"/>
+        <Image Name="MapImage" Source="pack://application:,,,/RiotAPI;component/Resources/SRiftImage.png"/>
         <Label Grid.Row="1" Name="MapLabel">Summoner's Rift</Label>
         <Label Grid.Row="1" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
         <Label Grid.Row="2" Name="ModeLabel">Classic</Label>
         <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
       </Grid>
 
-      <ScrollViewer Grid.Row="1" Margin="0 10 0 0">
+      <ScrollViewer Grid.Row="1" Margin="0 10 0 10">
         <StackPanel Background="{StaticResource ForeBrush}" Name="InviteList"/>
       </ScrollViewer>
 
-      <UniformGrid Margin="0 8 0 0" Columns="3" Grid.Row="4">
-        <Button Height="24" Name="StartButton" Click="StartButton_Click">Start Game</Button>
-        <Button Height="24" Name="InviteButton" Click="InviteButton_Click" Margin="10 0">Invite</Button>
-        <Button Height="24" Name="QuitButton" Click="QuitButton_Click">Quit Game</Button>
-      </UniformGrid>
+      <Grid Grid.Row="4">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition Width="8"/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Name="QuitButton" Click="QuitButton_Click">Quit Game</Button>
+        <Button Grid.Column="2" Name="StartButton" Click="StartButton_Click">Start Game</Button>
+      </Grid>
     </Grid>
-    <my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>
-    
+    <!--<my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>-->
+
     <Grid Width="128" Height="160" Background="Red" Margin="15,25,639,435"/>
     <Grid Width="128" Height="160" Background="Red" Margin="444,25,210,435"/>
     <Grid Width="128" Height="160" Background="Red" Margin="301,25,353,435"/>

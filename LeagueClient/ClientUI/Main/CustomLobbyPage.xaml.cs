@@ -30,6 +30,7 @@ namespace LeagueClient.ClientUI.Main {
   public partial class CustomLobbyPage : Page, IClientSubPage {
     public GameDTO GameDto { get; private set; }
 
+    private LobbyStatus lobby;
     private ChatRoomController chatRoom;
 
     #region Constructors
@@ -63,15 +64,19 @@ namespace LeagueClient.ClientUI.Main {
         GotLobbyStatus(status);
         return true;
       } else if((invite = e.Body as InvitePrivileges) != null) {
-        Dispatcher.Invoke(() => InviteButt.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
+        Client.CanInviteFriends = invite.canInvite;
+        //Dispatcher.Invoke(() => InviteButt.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
       }
       return false;
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
+      lobby = status;
+      if (status.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+        Client.CanInviteFriends = true;
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();
-
+        
         foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
           InviteList.Children.Add(new InvitedPlayer(player));
         }
@@ -102,8 +107,8 @@ namespace LeagueClient.ClientUI.Main {
           ObserverList.Children.Clear();
           GameNameLabel.Content = game.Name;
 
-          if (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
-            InviteButt.Visibility = Visibility.Visible;
+          //if (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+          //  InviteButt.Visibility = Visibility.Visible;
 
           foreach (var thing in game.TeamOne.Concat(game.TeamTwo)) {
             bool blue = game.TeamOne.Contains(thing);
@@ -174,17 +179,17 @@ namespace LeagueClient.ClientUI.Main {
       ForceClose();
     }
 
-    private void Invite_Click(object sender, RoutedEventArgs e) => InvitePopup.BeginStoryboard(App.FadeIn);
+    //private void Invite_Click(object sender, RoutedEventArgs e) => InvitePopup.BeginStoryboard(App.FadeIn);
 
-    private void InvitePopup_Close(object sender, EventArgs e) {
-      InvitePopup.BeginStoryboard(App.FadeOut);
-      foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
-        double id;
-        if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-          RiotServices.GameInvitationService.Invite(id);
-        } else Client.TryBreak("Cannot parse user " + user.Key);
-      }
-    }
+    //private void InvitePopup_Close(object sender, EventArgs e) {
+    //  InvitePopup.BeginStoryboard(App.FadeOut);
+    //  foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
+    //    double id;
+    //    if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
+    //      RiotServices.GameInvitationService.Invite(id);
+    //    } else Client.TryBreak("Cannot parse user " + user.Key);
+    //  }
+    //}
 
     private void RedJoin_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.SwitchTeams(GameDto.Id);

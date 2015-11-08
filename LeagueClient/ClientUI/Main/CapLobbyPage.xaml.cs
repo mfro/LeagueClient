@@ -104,6 +104,15 @@ namespace LeagueClient.ClientUI.Main {
     public void GotLobbyStatus(LobbyStatus status) {
       Status = status;
       if (GroupId != null) JoinChat();
+
+      if (status.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+        Client.CanInviteFriends = true;
+      Dispatcher.Invoke(() => {
+        InviteList.Children.Clear();
+        foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
+          InviteList.Children.Add(new InvitedPlayer(player));
+        }
+      });
     }
 
     public void GotGroupData(CapGroupData data) {
@@ -185,7 +194,7 @@ namespace LeagueClient.ClientUI.Main {
       else if (canReady && autoReady)
         RiotServices.CapService.IndicateReadyness(true);
 
-      InviteButt.Visibility = CanInvite && state == CapLobbyState.Inviting ? Visibility.Visible : Visibility.Collapsed;
+      //InviteButt.Visibility = CanInvite && state == CapLobbyState.Inviting ? Visibility.Visible : Visibility.Collapsed;
 
       if (IsCaptain && canSearch) SoloSearchButt.Visibility = Visibility.Visible;
       else if (state != CapLobbyState.Selecting) SoloSearchButt.Visibility = Visibility.Collapsed;
@@ -401,7 +410,7 @@ namespace LeagueClient.ClientUI.Main {
           return true;
         } else if (!response.status.Equals("ACK")) Client.TryBreak(response.status + ": " + response.payload);
       } else if ((privelage = e.Body as InvitePrivileges) != null) {
-        CanInvite = privelage.canInvite;
+        Client.CanInviteFriends = privelage.canInvite;
         Dispatcher.Invoke(UpdateList);
         return true;
       } else if ((removed = e.Body as RemovedFromLobbyNotification) != null) {
@@ -489,7 +498,6 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     #region Me Editing
-
     private void Me_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
       switch (e.PropertyName) {
         case nameof(CapPlayer.Role):
@@ -585,19 +593,19 @@ namespace LeagueClient.ClientUI.Main {
         RiotServices.CapService.SearchForCandidates();
     }
 
-    private void InviteButt_Click(object sender, RoutedEventArgs e) {
-      InvitePopup.BeginStoryboard(App.FadeIn);
-    }
+    //private void InviteButt_Click(object sender, RoutedEventArgs e) {
+    //  InvitePopup.BeginStoryboard(App.FadeIn);
+    //}
 
-    private void InvitePopup_Close(object sender, EventArgs e) {
-      InvitePopup.BeginStoryboard(App.FadeOut);
-      foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
-        double id;
-        if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-          RiotServices.GameInvitationService.Invite(id);
-        } else Client.TryBreak("Cannot parse user " + user.Key);
-      }
-    }
+    //private void InvitePopup_Close(object sender, EventArgs e) {
+    //  InvitePopup.BeginStoryboard(App.FadeOut);
+    //  foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
+    //    double id;
+    //    if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
+    //      RiotServices.GameInvitationService.Invite(id);
+    //    } else Client.TryBreak("Cannot parse user " + user.Key);
+    //  }
+    //}
 
     private void QuitButt_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());

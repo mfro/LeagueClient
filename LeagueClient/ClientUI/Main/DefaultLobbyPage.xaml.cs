@@ -38,7 +38,7 @@ namespace LeagueClient.ClientUI.Main {
       this.chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
       Client.ChatManager.UpdateStatus(ChatStatus.hostingNormalGame);
 
-      InviteButton.Visibility = Visibility.Hidden;
+      //InviteButton.Visibility = Visibility.Hidden;
 
       config = Client.AvailableQueues[mmp.QueueIds[0]];
       var map = GameMap.Maps.FirstOrDefault(m => config.SupportedMapIds.Contains(m.MapId));
@@ -60,7 +60,8 @@ namespace LeagueClient.ClientUI.Main {
         GotLobbyStatus(lobby);
         return true;
       } else if (invite != null) {
-        Dispatcher.Invoke(() => InviteButton.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
+        Client.CanInviteFriends = invite.canInvite;
+        //Dispatcher.Invoke(() => InviteButton.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
       } else if (queue != null) {
         //TODO starting premade queues
       }
@@ -85,9 +86,9 @@ namespace LeagueClient.ClientUI.Main {
             System.Windows.Threading.DispatcherPriority.ApplicationIdle);
         }
 
-        if (lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
-          StartButton.Visibility = InviteButton.Visibility = Visibility.Visible;
-        else StartButton.Visibility = Visibility.Hidden;
+        bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+        StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
+        Client.CanInviteFriends = owner;
       });
     }
     #endregion
@@ -97,24 +98,24 @@ namespace LeagueClient.ClientUI.Main {
       RiotServices.MatchmakerService.AttachToQueue(mmp);
     }
 
-    private void InviteButton_Click(object sender, RoutedEventArgs e) {
-      InvitePopup.BeginStoryboard(App.FadeIn);
-    }
+    //private void InviteButton_Click(object sender, RoutedEventArgs e) {
+    //  InvitePopup.BeginStoryboard(App.FadeIn);
+    //}
 
     private void QuitButton_Click(object sender, RoutedEventArgs e) {
       ForceClose();
       Close?.Invoke(this, new EventArgs());
     }
 
-    private void InvitePopup_Close(object sender, EventArgs e) {
-      InvitePopup.BeginStoryboard(App.FadeOut);
-      foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
-        double id;
-        if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-          RiotServices.GameInvitationService.Invite(id);
-        } else Client.TryBreak("Cannot parse user " + user.Key);
-      }
-    }
+    //private void InvitePopup_Close(object sender, EventArgs e) {
+    //  InvitePopup.BeginStoryboard(App.FadeOut);
+    //  foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
+    //    double id;
+    //    if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
+    //      RiotServices.GameInvitationService.Invite(id);
+    //    } else Client.TryBreak("Cannot parse user " + user.Key);
+    //  }
+    //}
     #endregion
 
     public Page Page => this;

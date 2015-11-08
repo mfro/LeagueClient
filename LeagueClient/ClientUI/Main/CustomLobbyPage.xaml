@@ -90,9 +90,9 @@
       <TextBox Name="SendBox" Grid.Row="2" Margin="0 0 70 0"/>
       <Button Name="ChatSend" Grid.Row="2" Margin="0" HorizontalAlignment="Right" Width="60">Send</Button>
 
-      <StackPanel Name="InviteList" Grid.Column="2" Background="{StaticResource ForeBrush}"/>
+      <StackPanel Name="InviteList" Grid.Column="2" Grid.RowSpan="3" Background="{StaticResource ForeBrush}"/>
       <!--<Button Click="Collapse_Click" Name="CollapseButt" Grid.Row="6" Grid.Column="2" Margin="0 -2 80 0" HorizontalAlignment="Right" Width="120">Collapse Players</Button>-->
-      <Button Click="Invite_Click" Name="InviteButt" Grid.Row="2" Grid.Column="2" Margin="0" HorizontalAlignment="Right" Width="70" Visibility="Collapsed">Invite</Button>
+      <!--<Button Click="Invite_Click" Name="InviteButt" Grid.Row="2" Grid.Column="2" Margin="0" HorizontalAlignment="Right" Width="70" Visibility="Collapsed">Invite</Button>-->
 
       <Grid Grid.Column="4" Grid.RowSpan="3" Background="{StaticResource ForeBrush}">
         <Grid.RowDefinitions>
@@ -107,7 +107,7 @@
         <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
       </Grid>
     </Grid>
-    <my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>
+    <!--<my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>-->
   </Grid>
 </Page>

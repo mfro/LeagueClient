@@ -35,7 +35,7 @@ namespace LeagueClient.Logic {
       RiotGamesDir = @"D:\Riot Games\" + (Region == Region.PBE ? "PBE" : "League of Legends"),
       Locale = "en_US",
       AirClientParentDir = Path.Combine(RiotGamesDir, @"RADS\projects\lol_air_client"),
-      GameClientParentDir = Path.Combine(RiotGamesDir, @"RADS\projects\lol_game_client"),
+      GameClientParentDir = Path.Combine(RiotGamesDir, @"RADS\solutions\lol_game_client_sln"),
       DataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MFro\LeagueClient\",
       SettingsFile = Path.Combine(DataPath, "settings.xml"),
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
@@ -83,6 +83,8 @@ namespace LeagueClient.Logic {
     internal static Process GameProcess { get; set; }
 
     internal static InGameCredentials QueuedCredentials { get; set; }
+    
+    internal static bool CanInviteFriends { get; set; }
     #endregion
 
     #region Initailization
@@ -204,7 +206,9 @@ namespace LeagueClient.Logic {
 
     private static void GotQueues(Task<GameQueueConfig[]> Task) {
       AvailableQueues = new Dictionary<int, GameQueueConfig>();
-      foreach (var item in Task.Result) AvailableQueues.Add(item.Id, item);
+      foreach (var item in Task.Result)
+        if (LoginPacket.AllSummonerData.SummonerLevel.Level >= item.MinLevel && LoginPacket.AllSummonerData.SummonerLevel.Level <= item.MaxLevel)
+          AvailableQueues.Add(item.Id, item);
     }
 
     private static void GotRankedTeamInfo(Task<PlayerDTO> obj) {
@@ -226,10 +230,10 @@ namespace LeagueClient.Logic {
     public static void JoinGame(InGameCredentials creds) => JoinGame(creds.ServerIp, creds.ServerPort, creds.EncryptionKey, creds.SummonerId);
 
     private static void JoinGame(string ip, int port, string encKey, double summId) {
-      //"8394" "LoLLauncher.exe" "" "ip port key id"
+      //"8394" "LoLPatcher.exe" "" "ip port key id"
       var info = new ProcessStartInfo(Path.Combine(GameDirectory, "League of Legends.exe"));
       var str = $"{ip} {port} {encKey} {summId}";
-      info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLLauncher.exe", "", str);
+      info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLPatcher.exe", Path.Combine(AirDirectory, "LolClient.exe"), str);
       info.WorkingDirectory = GameDirectory;
       GameProcess = Process.Start(info);
 
@@ -270,10 +274,12 @@ namespace LeagueClient.Logic {
     /// <param name="page">The page to select</param>
     public static void SelectMasteryPage(MasteryBookPageDTO page) {
       if (page == SelectedMasteryPage) return;
-      RiotServices.MasteryBookService.SelectDefaultMasteryBookPage(page);
       foreach (var item in Masteries.BookPages) item.Current = false;
       page.Current = true;
       SelectedMasteryPage = page;
+      RiotServices.MasteryBookService.SelectDefaultMasteryBookPage(page).ContinueWith(t =>
+        RiotServices.MasteryBookService.SaveMasteryBook(Masteries)
+      );
     }
 
     /// <summary>
@@ -283,10 +289,12 @@ namespace LeagueClient.Logic {
     /// <param name="page">The page to select</param>
     public static void SelectRunePage(SpellBookPageDTO page) {
       if (page == SelectedRunePage) return;
-      RiotServices.SpellBookService.SelectDefaultSpellBookPage(page);
       foreach (var item in Runes.BookPages) item.Current = false;
       page.Current = true;
       SelectedRunePage = page;
+      RiotServices.SpellBookService.SelectDefaultSpellBookPage(page).ContinueWith(t =>
+        RiotServices.SpellBookService.SaveSpellBook(Runes)
+      );
     }
 
     /// <summary>

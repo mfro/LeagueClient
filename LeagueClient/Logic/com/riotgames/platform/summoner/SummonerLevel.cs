@@ -29,6 +29,6 @@ namespace LeagueClient.Logic.Riot.Platform
         public Double ExpForWin { get; set; }
 
         [SerializedName("summonerLevel")]
-        public Double Level { get; set; }
+        public Int32 Level { get; set; }
     }
 }

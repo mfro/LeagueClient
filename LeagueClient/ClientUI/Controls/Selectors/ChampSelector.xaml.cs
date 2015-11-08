@@ -129,7 +129,6 @@ namespace LeagueClient.ClientUI.Controls {
 
       ChampSelect.Visibility = Visibility.Hidden;
       SkinSelect.Visibility = Visibility.Visible;
-      //SkinsButt.IsEnabled = false;
       SkinScroll.ScrollToHorizontalOffset(294);
     }
 
@@ -159,6 +158,10 @@ namespace LeagueClient.ClientUI.Controls {
     private void ChampButt_Click(object sender, RoutedEventArgs e) {
       ChampSelect.Visibility = Visibility.Visible;
       SkinSelect.Visibility = Visibility.Hidden;
+    }
+
+    private void Champ_Hover(object sender, MouseEventArgs e) {
+      (sender as Border).Cursor = IsReadOnly ? Cursors.Arrow : Cursors.Hand;
     }
   }
 }

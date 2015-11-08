@@ -9,7 +9,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using jabber;
 using jabber.client;
@@ -17,7 +19,6 @@ using jabber.connection;
 using jabber.protocol.client;
 using jabber.protocol.iq;
 using LeagueClient.ClientUI.Controls;
-using LeagueClient.Logic.Riot;
 
 namespace LeagueClient.Logic.Chat {
   public class RiotChat {
@@ -25,14 +26,12 @@ namespace LeagueClient.Logic.Chat {
       ChatStatus.championSelect, ChatStatus.tutorial, ChatStatus.inGame, ChatStatus.inQueue, ChatStatus.spectating
     };
 
-    public event EventHandler<IEnumerable<Friend>> ChatListUpdated;
     public event EventHandler<StatusUpdatedEventArgs> StatusUpdated;
 
     public State ChatState { get; private set; }
+    public Dictionary<string, ChatFriend> Friends { get; } = new Dictionary<string, ChatFriend>();
     public BindingList<ChatConversation> OpenChats { get; } = new BindingList<ChatConversation>();
-    public Dictionary<string, Item> Users { get; } = new Dictionary<string, Item>();
-
-    private Dictionary<string, Friend> Friends = new Dictionary<string, Friend>();
+    public BindingList<FriendListItem> FriendList { get; } = new BindingList<FriendListItem>();
 
     private JabberClient conn;
     private RosterManager Roster = new RosterManager();
@@ -87,9 +86,9 @@ namespace LeagueClient.Logic.Chat {
       list.Sort((f1, f2) => {
         try {
           if (f1.IsOffline || f2.IsOffline) return 0;
-          if (f1.GameInfo != null && f2.GameInfo != null) {
-            int score1 = (int) f1.GameInfo.gameStartTime;
-            int score2 = (int) f2.GameInfo.gameStartTime;
+          if (f1.CurrentGameInfo != null && f2.CurrentGameInfo != null) {
+            int score1 = (int) f1.CurrentGameInfo.gameStartTime;
+            int score2 = (int) f2.CurrentGameInfo.gameStartTime;
             if (score1 == 0) score1 = int.MaxValue;
             if (score2 == 0) score2 = int.MaxValue;
             return Math.Sign(score1 - score2);
@@ -104,18 +103,18 @@ namespace LeagueClient.Logic.Chat {
           return 0;
         }
       });
-      ChatListUpdated?.Invoke(this, list);
+      FriendList.Clear();
+      foreach (var friend in list) FriendList.Add(friend.ListItem);
     }
 
     private void UpdateProc(object src, ElapsedEventArgs args) {
-      var list = new List<Friend>(Friends.Values);
-      foreach (var friend in list)
-        try { App.Current.Dispatcher.Invoke(friend.Update); } catch { timer.Dispose(); }
+      foreach (var friend in new List<ChatFriend>(Friends.Values))
+        try { App.Current.Dispatcher.Invoke(friend.ListItem.Update); } catch { timer.Dispose(); }
       try { App.Current.Dispatcher.Invoke(ResetList); } catch { timer.Dispose(); }
     }
 
     #region Event Handlers
-    void OnPrimarySessionChange(object sender, jabber.JID bare) {
+    private void OnPrimarySessionChange(object sender, jabber.JID bare) {
       if (!Friends.ContainsKey(bare.User)) {
         if (!bare.User.Equals(conn.JID.User)) {
           var p = Presence.GetAll(bare);
@@ -125,39 +124,31 @@ namespace LeagueClient.Logic.Chat {
         return;
       }
 
-      var user = Users[bare.User];
-
       var s = Presence.GetAll(bare);
-      if (s.Length == 0 || s[0]?.Status == null)
-        Friends[bare.User].IsOffline = true;
-      else {
-        Friends[bare.User].Update(s[0]);
-        Friends[bare.User].IsOffline = false;
-      }
+      if (s.Length == 0) Friends[bare.User].UpdatePresence(null);
+      else Friends[bare.User].UpdatePresence(s[0]);
       App.Current.Dispatcher.Invoke(ResetList);
     }
 
-    void OnChatAdd(Friend friend) {
+    private void OnChatAdd(ChatFriend friend) {
       if (!OpenChats.Contains(friend.Conversation))
         OpenChats.Add(friend.Conversation);
-      if (OpenChats.Count > 8)
-        OpenChats.RemoveAt(0);
       friend.Conversation.Open = !friend.Conversation.Open;
     }
 
-    void OnChatOpen(string user) {
+    private void OnChatOpen(string user) {
       foreach (var chat in OpenChats)
         if (!chat.User.Equals(user)) chat.Open = false;
         else chat.ChatSendBox.MyFocus();
     }
 
-    void OnChatClose(string user) {
+    private void OnChatClose(string user) {
       Friends[user].Conversation.Open = false;
       OpenChats.Remove(Friends[user].Conversation);
     }
 
-    void OnReceiveMessage(object sender, Message msg) {
-      if (!Users.ContainsKey(msg.From.User)) return;
+    private void OnReceiveMessage(object sender, Message msg) {
+      if (!Friends.ContainsKey(msg.From.User)) return;
       string user = msg.From.User;
       if (msg.From.User.Equals(msg.To.User)) {
         return;
@@ -168,36 +159,52 @@ namespace LeagueClient.Logic.Chat {
           OnChatAdd(Friends[user]);
           convo.Open = false;
         }
-        if(!convo.Open){
+        if (!convo.Open) {
           convo.Unread = true;
         }
-        convo.History += $"[{Users[user].Nickname}]: {msg.Body}\n";
+        convo.History += $"[{Friends[user].User.Nickname}]: {msg.Body}\n";
       });
     }
 
-    void OnSendMessage(string user, string msg) {
+    private void OnSendMessage(string user, string msg) {
       conn.Message(user + "@pvp.net", msg);
       Friends[user].Conversation.History += $"[{Client.LoginPacket.AllSummonerData.Summoner.Name}]: {msg}\n";
     }
 
-    void OnRosterItem(object sender, jabber.protocol.iq.Item item) {
-      if (!Users.ContainsKey(item.JID.User)) {
-        Users.Add(item.JID.User, item);
-
-        App.Current.Dispatcher.Invoke(() => {
-          var convo = new ChatConversation(item.Nickname, item.JID.User);
-          convo.MessageSent += OnSendMessage;
-          convo.ChatOpened += OnChatOpen;
-          convo.ChatClosed += OnChatClose;
-          var friend = new Friend(item, convo);
-          friend.MouseUp += (src, e) => OnChatAdd(friend);
-          Friends.Add(item.JID.User, friend);
-        });
+    private void OnRosterItem(object sender, Item item) {
+      if (!Friends.ContainsKey(item.JID.User)) {
+        Application.Current.Dispatcher.MyInvoke(CreateChatFriend, item);
       }
       if (!fullyAuthed)
         OnPrimarySessionChange(sender, item.JID);
+      //if (!Users.ContainsKey(item.JID.User)) {
+      //  Users.Add(item.JID.User, item);
+
+      //  App.Current.Dispatcher.Invoke(() => {
+      //    var convo = new ChatConversation(item.Nickname, item.JID.User);
+      //    convo.MessageSent += OnSendMessage;
+      //    convo.ChatOpened += OnChatOpen;
+      //    convo.ChatClosed += OnChatClose;
+      //    var friend = new Friend(item, convo);
+      //    friend.MouseUp += (src, e) => OnChatAdd(friend);
+      //    Friends.Add(item.JID.User, friend);
+      //  });
+      //}
+      //if (!fullyAuthed)
+      //  OnPrimarySessionChange(sender, item.JID);
     }
     #endregion
+
+    private void CreateChatFriend(Item item) {
+      var chatFriend = new ChatFriend(item);
+      chatFriend.Conversation.MessageSent += OnSendMessage;
+      chatFriend.Conversation.ChatOpened += OnChatOpen;
+      chatFriend.Conversation.ChatClosed += OnChatClose;
+      chatFriend.ListItem.MouseUp += (src, e) => {
+        if (e.ChangedButton == MouseButton.Left) OnChatAdd(chatFriend);
+      };
+      Friends.Add(item.JID.User, chatFriend);
+    }
 
     #region Status
     /// <summary>

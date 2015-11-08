@@ -38,6 +38,8 @@ namespace LeagueClient {
       Client.PreInitialize(this);
       Client.Log(LeagueData.CurrentVersion);
 
+      Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+
       InitializeComponent();
 
       ((App) App.Current).LoadResources();
@@ -48,8 +50,18 @@ namespace LeagueClient {
       }
     }
 
+    private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
+      Client.Log("***UNHANDLED EXCEPTION***");
+      Client.Log("***UNHANDLED EXCEPTION***");
+      Client.Log("***UNHANDLED EXCEPTION***");
+      Client.Log(e.Exception);
+      Client.Log("***UNHANDLED EXCEPTION***");
+      Client.Log("***UNHANDLED EXCEPTION***");
+      Client.Log("***UNHANDLED EXCEPTION***");
+    }
+
     public void LoginComplete() {
-      var page = mainPage = new ClientUI.Main.ClientPage();
+      var page = mainPage = new ClientPage();
       Client.QueueManager = page;
       ContentFrame.Content = page;
       this.currentPage = page;

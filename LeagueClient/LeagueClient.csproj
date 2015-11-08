@@ -100,6 +100,7 @@
     <Compile Include="ClientUI\Controls\Selectors\RuneListItem.xaml.cs">
       <DependentUpon>RuneListItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logic\Chat\ChatFriend.cs" />
     <Compile Include="Logic\Client.cs" />
     <Compile Include="ClientUI\Main\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
@@ -126,9 +127,6 @@
       <DependentUpon>DefaultQueuer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\ICollapsable.cs" />
-    <Compile Include="ClientUI\Controls\InvitePopup.xaml.cs">
-      <DependentUpon>InvitePopup.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ClientUI\Controls\Players\LoginAccount.xaml.cs">
       <DependentUpon>LoginAccount.xaml</DependentUpon>
     </Compile>
@@ -145,7 +143,7 @@
       <DependentUpon>GameInviteAlert.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\IClientPage.cs" />
-    <Compile Include="ClientUI\Main\ClientPage.xaml.cs">
+    <Compile Include="ClientUI\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\Selectors\ChampSelector.xaml.cs">
@@ -154,8 +152,8 @@
     <Compile Include="ClientUI\Controls\ChatConversation.xaml.cs">
       <DependentUpon>ChatConversation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Friend.xaml.cs">
-      <DependentUpon>Friend.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\FriendListItem.xaml.cs">
+      <DependentUpon>FriendListItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\HintedTextBox.cs" />
     <Compile Include="ClientUI\Main\CustomCreatePage.xaml.cs">
@@ -404,10 +402,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\InvitePopup.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ClientUI\Controls\Players\LoginAccount.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -432,7 +426,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\ClientPage.xaml">
+    <Page Include="ClientUI\ClientPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -444,7 +438,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Friend.xaml">
+    <Page Include="ClientUI\Controls\FriendListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
