@@ -20,8 +20,8 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for BingeQueuer.xaml
   /// </summary>
-  public partial class BingeQueuer : UserControl, IQueuer {
-    public event QueuePoppedEventHandler Popped;
+  public sealed partial class BingeQueuer : UserControl, IQueuer, IDisposable {
+    public event EventHandler<QueuePoppedEventArgs> Popped;
 
     private Timer timer;
     private DateTime start;
@@ -49,5 +49,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
+
+    public void Dispose() => timer.Dispose();
   }
 }

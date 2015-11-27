@@ -19,7 +19,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     public Boolean HelpFlag { get; set; }
 
     [SerializedName("sumId")]
-    public Double SumId { get; set; }
+    public Int64 SumId { get; set; }
 
     [SerializedName("profileIconId")]
     public Int32 ProfileIconId { get; set; }

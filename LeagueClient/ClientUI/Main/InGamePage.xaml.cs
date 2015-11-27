@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,12 @@ namespace LeagueClient.ClientUI.Main {
 
     public InGamePage() {
       InitializeComponent();
+      new Thread(WaitForGameClient) { IsBackground = true }.Start();
+    }
+
+    private void WaitForGameClient() {
+      Client.GameProcess.WaitForExit();
+
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {

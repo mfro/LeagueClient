@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using RtmpSharp.Messaging;
 
 namespace LeagueClient.Logic.Queueing {
-  public delegate void QueuePoppedEventHandler(object src, QueuePoppedEventArgs args);
-
   public interface IQueuer {
-    event QueuePoppedEventHandler Popped;
+    event EventHandler<QueuePoppedEventArgs> Popped;
 
     System.Windows.Controls.Control GetControl();
 

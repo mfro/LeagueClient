@@ -74,7 +74,7 @@
       <Button Grid.Column="1" Margin="2" Click="ToggleChat" Padding="0" HorizontalAlignment="Right" Name="ChatButt1" Width="{StaticResource ChatButtonWidth}">Chat</Button>
     </Grid>
     <Grid Name="ChatPanel" Grid.Row="1" HorizontalAlignment="Right" Width="243" Background="{StaticResource Back1Brush}"
-          Grid.RowSpan="2">
+          Grid.RowSpan="2" Visibility="Collapsed" Opacity="0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="4"/>
         <ColumnDefinition Width="*"/>

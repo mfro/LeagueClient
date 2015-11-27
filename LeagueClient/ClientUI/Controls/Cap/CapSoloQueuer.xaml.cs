@@ -23,8 +23,8 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for TeambuilderSoloQueueHandler.xaml
   /// </summary>
-  public partial class CapSoloQueuer : UserControl, IQueuer {
-    public event QueuePoppedEventHandler Popped;
+  public sealed partial class CapSoloQueuer : UserControl, IQueuer, IDisposable {
+    public event EventHandler<QueuePoppedEventArgs> Popped;
 
     private Timer timer;
     private DateTime start;
@@ -78,5 +78,6 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public Control GetControl() => this;
+    public void Dispose() => timer.Dispose();
   }
 }

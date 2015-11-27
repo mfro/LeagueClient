@@ -61,10 +61,11 @@
     <Image Grid.Row="1" Grid.Column="3" Source="{Binding Player.Spell2Image}" VerticalAlignment="Bottom"/>
     <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 0 0" HorizontalAlignment="Center" Name="SummonerText" FontSize="14">master mor</Label>
 
-    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" Name="PositionText" FontSize="12">Middle lane</Label>
-    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Name="RoleText" FontSize="12">Assassin</Label>
+    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Name="PositionText" FontSize="12">Middle lane</Label>
+    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Right" Name="RoleText" FontSize="12">Assassin</Label>
+    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Padding="0" Margin="0 -5" HorizontalAlignment="Center" Name="TimerText" FontSize="18">99</Label>
     <ComboBox Name="PositionBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Top"
-              SelectedItem="{Binding Path=Player.Position,Mode=TwoWay}">
+              SelectedItem="{Binding Path=Player.Position,Mode=TwoWay}" Visibility="Collapsed">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <ContentPresenter Content="{Binding Value}"/>
@@ -72,7 +73,7 @@
       </ComboBox.ItemTemplate>
     </ComboBox>
     <ComboBox Name="RoleBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Top"
-              SelectedItem="{Binding Path=Player.Role,Mode=TwoWay}">
+              SelectedItem="{Binding Path=Player.Role,Mode=TwoWay}" Visibility="Collapsed">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <ContentPresenter Content="{Binding Value}"/>

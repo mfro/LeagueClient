@@ -6,7 +6,7 @@ using ICSharpCode.SharpZipLib.Zip.Compression;
 
 namespace LegendaryClient.Logic.SWF
 {
-    public class SWFReader
+    public sealed class SWFReader : IDisposable
     {
         public SWFCompression SWFCompressionType { get; private set; }
 
@@ -169,6 +169,7 @@ namespace LegendaryClient.Logic.SWF
             return v;
         }
 
-        #endregion Extention Buffer Methods
-    }
+    public void Dispose() => SWFBinary.Dispose();
+    #endregion Extention Buffer Methods
+  }
 }

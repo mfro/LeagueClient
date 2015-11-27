@@ -19,12 +19,9 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for ChatConversation.xaml
   /// </summary>
   public partial class ChatConversation : UserControl {
-    public delegate void ChatSendHandler (string user, string msg);
-    public delegate void ChatWindowHandler (string user);
-
-    public event ChatSendHandler MessageSent;
-    public event ChatWindowHandler ChatOpened;
-    public event ChatWindowHandler ChatClosed;
+    public event EventHandler<MessageSentEventArgs> MessageSent;
+    public event EventHandler ChatOpened;
+    public event EventHandler ChatClosed;
 
     public string UserName { get; private set; }
     public string User { get; private set; }
@@ -50,7 +47,7 @@ namespace LeagueClient.ClientUI.Controls {
         else {
           if (Unread) Unread = false;
           ChatDisplayPanel.BeginStoryboard(App.FadeIn);
-          if (ChatOpened != null) ChatOpened(User);
+          ChatOpened?.Invoke(this, new EventArgs());
           ChatSendBox.Focus();
         }
         open = value;
@@ -75,16 +72,25 @@ namespace LeagueClient.ClientUI.Controls {
     private void ChatSendBox_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key != Key.Enter || ChatSendBox.Text.Length == 0) return;
       if (MessageSent != null)
-        MessageSent(User, ChatSendBox.Text);
+        MessageSent(this, new MessageSentEventArgs(User, ChatSendBox.Text));
       ChatSendBox.Text = "";
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) {
-      if (ChatClosed != null) ChatClosed(User);
+      ChatClosed?.Invoke(this, new EventArgs());
     }
 
     private void OnFocus(object sender, RoutedEventArgs e) {
       if (!Open) ChatSendBox.MyFocus();
+    }
+  }
+
+  public class MessageSentEventArgs : EventArgs {
+    public string User { get; }
+    public string Message { get; }
+    public MessageSentEventArgs(string user, string message) {
+      User = user;
+      Message = message;
     }
   }
 }

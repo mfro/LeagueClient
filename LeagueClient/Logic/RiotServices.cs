@@ -21,8 +21,7 @@ using LeagueClient.Logic.Riot.Team;
 
 namespace LeagueClient.Logic.Riot {
   public class RiotServices {
-    public delegate void OnInvocationErrorHandler(object sender, Exception error);
-    public static event OnInvocationErrorHandler OnInvocationError;
+    public static event EventHandler<Exception> OnInvocationError;
 
     internal static Dictionary<string, Action<LcdsServiceProxyResponse>> Delegates { get; } = new Dictionary<string, Action<LcdsServiceProxyResponse>>();
 

@@ -17,7 +17,9 @@ using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using LeagueClient.Logic.Riot.Team;
 using LegendaryClient.Logic.SWF;
+using MFroehlich.League;
 using MFroehlich.League.Assets;
+using MFroehlich.League.RiotAPI;
 using MFroehlich.Parsing.DynamicJSON;
 using RtmpSharp.IO;
 using RtmpSharp.Messaging;
@@ -81,8 +83,8 @@ namespace LeagueClient.Logic {
     internal static Settings Settings { get; set; }
 
     internal static Process GameProcess { get; set; }
-
     internal static InGameCredentials QueuedCredentials { get; set; }
+    internal static AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
     
     internal static bool CanInviteFriends { get; set; }
     #endregion
@@ -239,6 +241,7 @@ namespace LeagueClient.Logic {
 
       App.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
       ChatManager.UpdateStatus(ChatStatus.inGame);
+      CurrentGame = RiotAPI.CurrentGameAPI.BySummonerAsync("NA", LoginPacket.AllSummonerData.Summoner.SumId);
     }
 
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
@@ -329,9 +332,10 @@ namespace LeagueClient.Logic {
       File.WriteAllText(file, JSON.Stringify(json, 2, 0));
     }
 
+    private static object _lock = new object();
     private static TextWriter LogDebug = Console.Out;
     public static void Log(object msg) {
-      lock (LogDebug) {
+      lock (_lock) {
         using (var log = new StreamWriter(File.Open(LogFilePath, FileMode.Append))) {
           LogDebug.WriteLine(msg);
           log.WriteLine(msg);

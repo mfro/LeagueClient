@@ -497,9 +497,6 @@ namespace LeagueClient.ClientUI.Main {
       var player = (CapOtherPlayer2) sender;
       if (state == CapLobbyState.Searching) {
         RiotServices.CapService.KickPlayer(player.Player.SlotId);
-      } else {
-        var member = Status.PlayerIds.FirstOrDefault(m => m.SummonerName.Equals(player.Player.Name));
-        RiotServices.GameInvitationService.Kick(member.SummonerId);
       }
     }
 

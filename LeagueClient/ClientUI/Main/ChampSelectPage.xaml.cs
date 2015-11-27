@@ -29,7 +29,7 @@ namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for ChampSelect.xaml
   /// </summary>
-  public partial class ChampSelectPage : Page, IClientSubPage {
+  public sealed partial class ChampSelectPage : Page, IClientSubPage, IDisposable {
     public event EventHandler Close;
 
     private const string
@@ -333,6 +333,8 @@ namespace LeagueClient.ClientUI {
     public IQueuer HandleClose() {
       throw new NotImplementedException();
     }
+
+    public void Dispose() => timer.Dispose();
 
     #endregion
 

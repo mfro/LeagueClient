@@ -21,7 +21,7 @@ using jabber.protocol.iq;
 using LeagueClient.ClientUI.Controls;
 
 namespace LeagueClient.Logic.Chat {
-  public class RiotChat {
+  public sealed class RiotChat : IDisposable {
     private static readonly List<ChatStatus> DndStatuses = new List<ChatStatus> {
       ChatStatus.championSelect, ChatStatus.tutorial, ChatStatus.inGame, ChatStatus.inQueue, ChatStatus.spectating
     };
@@ -136,13 +136,15 @@ namespace LeagueClient.Logic.Chat {
       friend.Conversation.Open = !friend.Conversation.Open;
     }
 
-    private void OnChatOpen(string user) {
+    private void OnChatOpen(object src, EventArgs args) {
+      var user = ((ChatConversation) src).User;
       foreach (var chat in OpenChats)
         if (!chat.User.Equals(user)) chat.Open = false;
         else chat.ChatSendBox.MyFocus();
     }
 
-    private void OnChatClose(string user) {
+    private void OnChatClose(object src, EventArgs args) {
+      var user = ((ChatConversation) src).User;
       Friends[user].Conversation.Open = false;
       OpenChats.Remove(Friends[user].Conversation);
     }
@@ -166,9 +168,9 @@ namespace LeagueClient.Logic.Chat {
       });
     }
 
-    private void OnSendMessage(string user, string msg) {
-      conn.Message(user + "@pvp.net", msg);
-      Friends[user].Conversation.History += $"[{Client.LoginPacket.AllSummonerData.Summoner.Name}]: {msg}\n";
+    private void OnSendMessage(object sender, MessageSentEventArgs msg) {
+      conn.Message(msg.User + "@pvp.net", msg.Message);
+      Friends[msg.User].Conversation.History += $"[{Client.LoginPacket.AllSummonerData.Summoner.Name}]: {msg.Message}\n";
     }
 
     private void OnRosterItem(object sender, Item item) {
@@ -301,6 +303,13 @@ namespace LeagueClient.Logic.Chat {
 
     public void Logout() {
       conn.Close();
+    }
+
+    public void Dispose() {
+      timer.Dispose();
+      Conference.Dispose();
+      Presence.Dispose();
+      Roster.Dispose();
     }
 
     public enum State {

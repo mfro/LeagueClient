@@ -22,8 +22,8 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for DefaultQueuer.xaml
   /// </summary>
-  public partial class DefaultQueuer : UserControl, IQueuer {
-    public event QueuePoppedEventHandler Popped;
+  public sealed partial class DefaultQueuer : UserControl, IQueuer, IDisposable {
+    public event EventHandler<QueuePoppedEventArgs> Popped;
 
     public GameQueueConfig Config { get; private set; }
 
@@ -71,5 +71,7 @@ namespace LeagueClient.ClientUI.Controls {
     public Control GetControl() {
       return this;
     }
+
+    public void Dispose() => timer.Dispose();
   }
 }

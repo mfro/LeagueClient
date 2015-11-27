@@ -37,6 +37,9 @@ namespace LeagueClient.Logic.Chat {
         if (Status.GameStatus == ChatStatus.inGame) {
           RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Nickname).ContinueWith(GotGameDTO);
           if(Summoner != null) RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Summoner.SummonerId).ContinueWith(GotGameInfo);
+        } else {
+          CurrentGameDTO = null;
+          CurrentGameInfo = null;
         }
       }
     }

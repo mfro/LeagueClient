@@ -52,13 +52,13 @@
       <Button Name="RevertButt" Grid.Row="8" Margin="10 4" Click="RevertButt_Click">Revert Changes</Button>
     </Grid>
     <Border Padding="4" Grid.Column="1" Margin="4 4 4 24" Background="{StaticResource Back1Brush}" Grid.Row="1">
-      <UniformGrid Name="OffenseTree" Columns="4" ClipToBounds="False"/>
+      <UniformGrid Name="OffenseTree"/>
     </Border>
     <Border Padding="4" Grid.Column="2" Margin="4 4 4 24" Background="{StaticResource Back1Brush}" Grid.Row="1">
-      <UniformGrid Name="DefenseTree" Columns="4"/>
+      <UniformGrid Name="DefenseTree"/>
     </Border>
     <Border Padding="4" Grid.Column="3" Margin="4 4 4 24" Background="{StaticResource Back1Brush}" Grid.Row="1">
-      <UniformGrid Name="UtilityTree" Columns="4"/>
+      <UniformGrid Name="UtilityTree"/>
     </Border>
     <TextBlock Style="{StaticResource Control}" Name="OffenseTotal" Grid.Column="1" VerticalAlignment="Bottom"
                FontSize="16" Margin="5,0,5,1" Grid.Row="1">Offense: 0</TextBlock>

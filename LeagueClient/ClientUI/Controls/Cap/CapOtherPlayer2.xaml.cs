@@ -50,6 +50,7 @@ namespace LeagueClient.ClientUI.Controls {
     private void PlayerUpdate() {
       PositionText.Content = Player.Position?.Value;
       RoleText.Content = Player.Role?.Value;
+      TimerText.Visibility = Visibility.Collapsed;
 
       //Glow.Opacity = 0;
       if (editable && Player.Status == CapStatus.ChoosingAdvert) {
@@ -61,16 +62,15 @@ namespace LeagueClient.ClientUI.Controls {
       }
 
       if (editable && Player.Status == CapStatus.Found) {
-        Grid.SetColumnSpan(Unknown, 1);
         AcceptButton.Visibility = Visibility.Visible;
         DeclineButton.Visibility = Visibility.Visible;
       } else {
-        Grid.SetColumnSpan(Unknown, 3);
         AcceptButton.Visibility = Visibility.Collapsed;
         DeclineButton.Visibility = Visibility.Collapsed;
       }
 
       Unknown.Visibility = Visibility.Collapsed;
+      TimerText.Visibility = Visibility.Collapsed;
       switch (Player.Status) {
         case CapStatus.ChoosingAdvert:
           SummonerText.Content = "Select Position and Role";
@@ -82,8 +82,8 @@ namespace LeagueClient.ClientUI.Controls {
           break;
         case CapStatus.Found:
           SummonerText.Content = "A candidate has been found";
-          Unknown.Visibility = Visibility.Visible;
-          Unknown.Text = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
+          TimerText.Visibility = Visibility.Visible;
+          TimerText.Content = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
           timer = new Timer { Interval = 1000, Enabled = true };
           timer.Elapsed += Timer_Elapsed;
           break;
@@ -112,7 +112,11 @@ namespace LeagueClient.ClientUI.Controls {
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       var t = (int) Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds);
       if (t > 0) {
-        Dispatcher.Invoke(() => Unknown.Text = t + "");
+        try {
+          Dispatcher.Invoke(() => TimerText.Content = Unknown.Text = t + "");
+        } catch {
+          timer.Dispose();
+        }
       } else {
         timer.Dispose();
         Player.Status = CapStatus.Searching;
@@ -125,7 +129,7 @@ namespace LeagueClient.ClientUI.Controls {
     private void GiveInvite_Click(object sender, RoutedEventArgs e) => GiveInvite?.Invoke(this, new EventArgs());
 
     private void Champ_MouseEnter(object sender, MouseEventArgs e) {
-      if (editable && (Player.Status == CapStatus.Choosing || Player.Status == CapStatus.Present)) KickButton.BeginStoryboard(App.FadeIn);
+      if (editable && Player.Status == CapStatus.Present) KickButton.BeginStoryboard(App.FadeIn);
       if (editable && Player.Status == CapStatus.Choosing) GiveInviteButt.BeginStoryboard(App.FadeIn);
     }
 

@@ -22,7 +22,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for ReturnToLobbyQueuer.xaml
   /// </summary>
   public partial class ReturnToLobbyQueuer : UserControl, IQueuer {
-    public event QueuePoppedEventHandler Popped;
+    public event EventHandler<QueuePoppedEventArgs> Popped;
 
     private IClientSubPage page;
 
