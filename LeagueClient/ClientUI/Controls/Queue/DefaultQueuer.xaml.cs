@@ -30,9 +30,9 @@ namespace LeagueClient.ClientUI.Controls {
     private Timer timer;
     private DateTime start;
 
-    public DefaultQueuer(MatchMakerParams mmp) {
+    public DefaultQueuer(QueueInfo queue) {
       InitializeComponent();
-      Config = Client.AvailableQueues[mmp.QueueIds[0]];
+      Config = Client.AvailableQueues[queue.QueueId];
       QueueName.Text = QueueType.Values[Config.Type].Value;
       ElapsedText.Text = "In queue for 0:00";
 

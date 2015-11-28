@@ -11,7 +11,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public Double WaitTime { get; set; }
 
         [SerializedName("queueId")]
-        public Double QueueId { get; set; }
+        public Int32 QueueId { get; set; }
 
         [SerializedName("queueLength")]
         public Int32 QueueLength { get; set; }

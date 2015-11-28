@@ -30,12 +30,13 @@ namespace LeagueClient.ClientUI.Main {
     private MatchMakerParams mmp;
     private GameQueueConfig config;
     private ChatRoomController chatRoom;
+    private LobbyStatus lobby;
 
     public DefaultLobbyPage(MatchMakerParams mmp) {
       InitializeComponent();
 
       this.mmp = mmp;
-      this.chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
+      chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
       Client.ChatManager.UpdateStatus(ChatStatus.hostingNormalGame);
 
       //InviteButton.Visibility = Visibility.Hidden;
@@ -63,13 +64,27 @@ namespace LeagueClient.ClientUI.Main {
         Client.CanInviteFriends = invite.canInvite;
         //Dispatcher.Invoke(() => InviteButton.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
       } else if (queue != null) {
-        //TODO starting premade queues
+        if (queue.PlayerJoinFailures?.Count > 0) {
+          switch (queue.PlayerJoinFailures[0].ReasonFailed) {
+            case "QUEUE_DODGER":
+              Client.QueueManager.ShowNotification(AlertFactory.QueueDodger());
+              break;
+            default:
+              Client.TryBreak(queue.PlayerJoinFailures[0].ReasonFailed);
+              break;
+          }
+        } else {
+          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new DefaultQueuer(queue.JoinedQueues[0])));
+          Close?.Invoke(this, new EventArgs());
+        }
+        return true;
       }
 
       return false;
     }
 
     public void GotLobbyStatus(LobbyStatus lobby) {
+      this.lobby = lobby;
       if (!chatRoom.IsJoined)
         chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
 
@@ -80,10 +95,10 @@ namespace LeagueClient.ClientUI.Main {
         }
         PlayerList.Children.Clear();
         foreach (var player in lobby.PlayerIds) {
-          var control = new LobbyPlayer(player, true);
+          var control = new LobbyPlayer2(lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId, player);
+          control.GiveInviteClicked += GiveInviteClicked;
+          control.KickClicked += KickClicked;
           PlayerList.Children.Add(control);
-          Dispatcher.BeginInvoke((Action) (() => QueueDetailsGrid.Height = PlayerList.Height = control.ActualHeight * config.NumPlayersPerTeam),
-            System.Windows.Threading.DispatcherPriority.ApplicationIdle);
         }
 
         bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
@@ -94,6 +109,15 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     #region UI Events
+    private void GiveInviteClicked(object sender, EventArgs e) {
+      var member = lobby.PlayerIds.FirstOrDefault(m => m.SummonerId == ((LobbyPlayer2) sender).SummonerId);
+      RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
+    }
+
+    private void KickClicked(object sender, EventArgs e) {
+      throw new NotImplementedException();
+    }
+
     private void StartButton_Click(object sender, RoutedEventArgs e) {
       RiotServices.MatchmakerService.AttachToQueue(mmp);
     }

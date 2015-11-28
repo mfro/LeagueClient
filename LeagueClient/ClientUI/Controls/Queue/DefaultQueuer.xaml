@@ -9,7 +9,7 @@
     </Grid.RowDefinitions>
     <TextBlock Style="{StaticResource Control}" Grid.Row="0" VerticalAlignment="Center" Margin="3 0" Name="QueueName"/>
     <TextBlock Style="{StaticResource Control}" Grid.Row="1" VerticalAlignment="Center" Margin="3 0" Name="ElapsedText">In queue for 0:00</TextBlock>
-    <Button Padding="3 1" BorderThickness="0" Click="Cancel_Click" Width="16" Height="18" HorizontalAlignment="Right" Grid.Row="1">
+    <Button Padding="3 1" BorderThickness="0" Click="Cancel_Click" Width="16" Height="16" HorizontalAlignment="Right" Grid.Row="1">
       <Path Data="M 0 0 L 8 8 M 8 0 L 0 8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
     </Button>
   </Grid>
