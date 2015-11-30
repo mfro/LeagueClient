@@ -1,6 +1,6 @@
 ﻿CUSTOM = Custom
 NONE = Custom
-NORMAL = Normal
+NORMAL = Normal 5v5
 NORMAL_3x3 = Normal 3v3
 ODIN_UNRANKED = Dominion
 ARAM_UNRANKED_5x5 = ARAM 5v5
@@ -13,7 +13,7 @@ ONEFORALL_5x5 = One for All 5v5
 FIRSTBLOOD_1x1 = Showdown 1v1
 FIRSTBLOOD_2x2 = Showdown 2v2
 SR_6x6 = Summoner's Rift Hexakill
-CAP_5x5 = Teambuilder 5v5
+CAP_5x5 = Teambuilder
 URF = URF
 URF_BOT = Co-op vs AI URF
 NIGHTMARE_BOT = Nightmare Bots

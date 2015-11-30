@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="LeagueClient.ClientUI.Controls.FriendListItem2"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Cursor="Hand"
+             MouseDoubleClick="This_DoubleClick">
+  <Grid Background="{StaticResource ForeBrush}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="90"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="90"/>
+      <ColumnDefinition Width="auto"/>
+    </Grid.ColumnDefinitions>
+    <Image Margin="8 8 8 8" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Name="SummonerIcon"/>
+    <Grid Grid.Column="1" Grid.RowSpan="2" Margin="0 4 8 5" Width="120" Name="Sidebar">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <Label Padding="0" FontSize="16" Name="NameText">KombatProwess</Label>
+      <TextBlock Style="{StaticResource Control}" TextWrapping="Wrap" Grid.Row="1" FontSize="12" Padding="0" Width="120" Name="MsgText">New Computer :D</TextBlock>
+
+      <Label Grid.Row="2" Padding="0" HorizontalAlignment="Right" Name="ChampText">Annie</Label>
+      <Label Grid.Row="10" Padding="0" HorizontalAlignment="Right" Name="StatusText">Teambuilder - 99.99</Label>
+    </Grid>
+  </Grid>
+  <UserControl.ContextMenu>
+    <ContextMenu>
+      <MenuItem Header="Invite to game" Click="Invite_Click"/>
+      <!--<MenuItem Header="Contract" Click="SizeToggle_Click"/>-->
+    </ContextMenu>
+  </UserControl.ContextMenu>
+</UserControl>

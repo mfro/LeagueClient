@@ -56,7 +56,7 @@ namespace LeagueClient.Logic {
     public static readonly QueueType
       CUSTOM = new QueueType("CUSTOM", "Custom"),
       NONE = new QueueType("NONE", "Custom"),
-      NORMAL = new QueueType("NORMAL", "Normal"),
+      NORMAL = new QueueType("NORMAL", "Normal 5v5"),
       NORMAL_3x3 = new QueueType("NORMAL_3x3", "Normal 3v3"),
       ODIN_UNRANKED = new QueueType("ODIN_UNRANKED", "Dominion"),
       ARAM_UNRANKED_5x5 = new QueueType("ARAM_UNRANKED_5x5", "ARAM 5v5"),
@@ -69,7 +69,7 @@ namespace LeagueClient.Logic {
       FIRSTBLOOD_1x1 = new QueueType("FIRSTBLOOD_1x1", "Showdown 1v1"),
       FIRSTBLOOD_2x2 = new QueueType("FIRSTBLOOD_2x2", "Showdown 2v2"),
       SR_6x6 = new QueueType("SR_6x6", "Summoner's Rift Hexakill"),
-      CAP_5x5 = new QueueType("CAP_5x5", "Teambuilder 5v5"),
+      CAP_5x5 = new QueueType("CAP_5x5", "Teambuilder"),
       URF = new QueueType("URF", "URF"),
       URF_BOT = new QueueType("URF_BOT", "Co-op vs AI URF"),
       NIGHTMARE_BOT = new QueueType("NIGHTMARE_BOT", "Nightmare Bots"),

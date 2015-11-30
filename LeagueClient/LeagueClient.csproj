@@ -91,6 +91,9 @@
       <DependentUpon>CapOtherPlayer2.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\EditButton.cs" />
+    <Compile Include="ClientUI\Controls\FriendListItem2.xaml.cs">
+      <DependentUpon>FriendListItem2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\Players\LobbyPlayer2.xaml.cs">
       <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
     </Compile>
@@ -102,6 +105,9 @@
     </Compile>
     <Compile Include="ClientUI\Controls\Selectors\RuneListItem.xaml.cs">
       <DependentUpon>RuneListItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Main\LandingPage.xaml.cs">
+      <DependentUpon>LandingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Chat\ChatFriend.cs" />
     <Compile Include="Logic\Client.cs" />
@@ -365,6 +371,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientUI\Controls\FriendListItem2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ClientUI\Controls\Players\LobbyPlayer2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -498,6 +508,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Main\InGamePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Main\LandingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

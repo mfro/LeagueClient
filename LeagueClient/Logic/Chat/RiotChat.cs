@@ -22,6 +22,7 @@ using LeagueClient.ClientUI.Controls;
 
 namespace LeagueClient.Logic.Chat {
   public sealed class RiotChat : IDisposable {
+    public event EventHandler Tick;
     private static readonly List<ChatStatus> DndStatuses = new List<ChatStatus> {
       ChatStatus.championSelect, ChatStatus.tutorial, ChatStatus.inGame, ChatStatus.inQueue, ChatStatus.spectating
     };
@@ -31,7 +32,7 @@ namespace LeagueClient.Logic.Chat {
     public State ChatState { get; private set; }
     public Dictionary<string, ChatFriend> Friends { get; } = new Dictionary<string, ChatFriend>();
     public BindingList<ChatConversation> OpenChats { get; } = new BindingList<ChatConversation>();
-    public BindingList<FriendListItem> FriendList { get; } = new BindingList<FriendListItem>();
+    public BindingList<ChatFriend> FriendList { get; } = new BindingList<ChatFriend>();
 
     private JabberClient conn;
     private RosterManager Roster = new RosterManager();
@@ -82,35 +83,22 @@ namespace LeagueClient.Logic.Chat {
     }
 
     private void ResetList() {
-      var list = Friends.Values.Where(u => !u.IsOffline).ToList();
-      list.Sort((f1, f2) => {
-        try {
-          if (f1.IsOffline || f2.IsOffline) return 0;
-          if (f1.CurrentGameInfo != null && f2.CurrentGameInfo != null) {
-            int score1 = (int) f1.CurrentGameInfo.gameStartTime;
-            int score2 = (int) f2.CurrentGameInfo.gameStartTime;
-            if (score1 == 0) score1 = int.MaxValue;
-            if (score2 == 0) score2 = int.MaxValue;
-            return Math.Sign(score1 - score2);
-          } else {
-            int score1 = f1.Status.GameStatus.Priority;
-            int score2 = f2.Status.GameStatus.Priority;
-            if (f1.Status.Show == StatusShow.Away) score1 += 50;
-            if (f2.Status.Show == StatusShow.Away) score2 += 50;
-            return score1 - score2;
-          }
-        } catch {
-          return 0;
+      var list = Friends.Values.Where(u => !u.IsOffline).OrderBy(u => u.GetValue()).ToList();
+      for (int i = 0; i < Math.Max(FriendList.Count, list.Count); i++) {
+        if (i >= list.Count) {
+          FriendList.RemoveAt(i);
+          i--;
+        } else if (i == FriendList.Count) {
+          FriendList.Add(list[i]);
+        } else if (FriendList[i] != list[i]) {
+          FriendList[i] = list[i];
         }
-      });
-      FriendList.Clear();
-      foreach (var friend in list) FriendList.Add(friend.ListItem);
+      }
     }
 
     private void UpdateProc(object src, ElapsedEventArgs args) {
-      foreach (var friend in new List<ChatFriend>(Friends.Values))
-        try { App.Current.Dispatcher.Invoke(friend.ListItem.Update); } catch { timer.Dispose(); }
       try { App.Current.Dispatcher.Invoke(ResetList); } catch { timer.Dispose(); }
+      Tick?.Invoke(this, new EventArgs());
     }
 
     #region Event Handlers
@@ -128,12 +116,6 @@ namespace LeagueClient.Logic.Chat {
       if (s.Length == 0) Friends[bare.User].UpdatePresence(null);
       else Friends[bare.User].UpdatePresence(s[0]);
       App.Current.Dispatcher.Invoke(ResetList);
-    }
-
-    private void OnChatAdd(ChatFriend friend) {
-      if (!OpenChats.Contains(friend.Conversation))
-        OpenChats.Add(friend.Conversation);
-      friend.Conversation.Open = !friend.Conversation.Open;
     }
 
     private void OnChatOpen(object src, EventArgs args) {
@@ -158,7 +140,7 @@ namespace LeagueClient.Logic.Chat {
       App.Current.Dispatcher.Invoke(() => {
         var convo = Friends[user].Conversation;
         if (!OpenChats.Contains(convo)) {
-          OnChatAdd(Friends[user]);
+          AddChat(Friends[user]);
           convo.Open = false;
         }
         if (!convo.Open) {
@@ -177,8 +159,7 @@ namespace LeagueClient.Logic.Chat {
       if (!Friends.ContainsKey(item.JID.User)) {
         Application.Current.Dispatcher.MyInvoke(CreateChatFriend, item);
       }
-      if (!fullyAuthed)
-        OnPrimarySessionChange(sender, item.JID);
+      if (!fullyAuthed) OnPrimarySessionChange(sender, item.JID);
       //if (!Users.ContainsKey(item.JID.User)) {
       //  Users.Add(item.JID.User, item);
 
@@ -202,9 +183,6 @@ namespace LeagueClient.Logic.Chat {
       chatFriend.Conversation.MessageSent += OnSendMessage;
       chatFriend.Conversation.ChatOpened += OnChatOpen;
       chatFriend.Conversation.ChatClosed += OnChatClose;
-      chatFriend.ListItem.MouseUp += (src, e) => {
-        if (e.ChangedButton == MouseButton.Left) OnChatAdd(chatFriend);
-      };
       Friends.Add(item.JID.User, chatFriend);
     }
 
@@ -299,6 +277,12 @@ namespace LeagueClient.Logic.Chat {
     /// </summary>
     public void CloseAll() {
       foreach (var item in OpenChats) item.Open = false;
+    }
+
+    public void AddChat(ChatFriend friend) {
+      if (!OpenChats.Contains(friend.Conversation))
+        OpenChats.Add(friend.Conversation);
+      friend.Conversation.Open = !friend.Conversation.Open;
     }
 
     public void Logout() {

@@ -77,13 +77,15 @@ namespace LeagueClient.ClientUI {
       IPAmount.Text = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Text = Client.LoginPacket.RpBalance.ToString();
 
-      ChatList.ItemsSource = Client.ChatManager.FriendList;
+      //ChatList.ItemsSource = Client.ChatManager.FriendList;
       Client.ChatManager.FriendList.ListChanged += FriendList_ListChanged;
       Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
 
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;
 
       UpdatePlayButton();
+
+      ShowPage(new LandingPage());
     }
 
     private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {

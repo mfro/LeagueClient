@@ -86,10 +86,16 @@
       </Grid.RowDefinitions>
       <my:HintedTextBox Hint="Status" x:Name="StatusBox" FontSize="12"
                         Grid.Column="1" KeyUp="StatusBox_KeyUp"/>
-      <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Hidden"
+      <!--<ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Hidden"
                     HorizontalScrollBarVisibility="Disabled">
-        <ItemsControl Name="ChatList"/>
-      </ScrollViewer>
+        <ItemsControl Name="ChatList">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <my:FriendListItem DataContext="{Binding}"/>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>-->
       <Button Margin="2" Click="ToggleChat" Grid.Row="2"  Padding="0" Name="ChatButt2"
               HorizontalAlignment="Right" Width="{StaticResource ChatButtonWidth}" Grid.Column="1">Chat</Button>
       <Border BorderThickness="3 0 0 0" BorderBrush="{StaticResource Back1Brush}" Grid.RowSpan="3">

@@ -1,0 +1,51 @@
+﻿<Page x:Class="LeagueClient.ClientUI.Main.LandingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+      SnapsToDevicePixels="True" Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="20"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="40"/>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="40"/>
+    </Grid.ColumnDefinitions>
+    <!--<StackPanel Grid.Column="1" Grid.Row="1" Margin="0 0 0 0">
+      <StackPanel.Resources>
+        <Style TargetType="my:FriendListItem2">
+          <Setter Property="Margin" Value="0 0 0 10"/>
+        </Style>
+      </StackPanel.Resources>
+      <my:FriendListItem2/>
+      <my:FriendListItem2/>
+      <my:FriendListItem2/>
+      <my:FriendListItem2/>
+    </StackPanel>-->
+    <StackPanel Grid.Row="1" Grid.Column="1" Name="GroupList">
+      <StackPanel.Resources>
+        <Style TargetType="ItemsControl">
+          <Setter Property="Margin" Value="0 0 0 10"/>
+          <Setter Property="ItemTemplate">
+            <Setter.Value>
+              <DataTemplate>
+                <my:FriendListItem2 DataContext="{Binding}" MouseUp="Friend_MouseUp" Margin="0 0 10 0"/>
+              </DataTemplate>
+            </Setter.Value>
+          </Setter>
+          <Setter Property="ItemsPanel">
+            <Setter.Value>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </StackPanel.Resources>
+    </StackPanel>
+  </Grid>
+</Page>
