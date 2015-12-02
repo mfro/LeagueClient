@@ -106,7 +106,7 @@
     <Compile Include="ClientUI\Controls\Selectors\RuneListItem.xaml.cs">
       <DependentUpon>RuneListItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\LandingPage.xaml.cs">
+    <Compile Include="ClientUI\LandingPage.xaml.cs">
       <DependentUpon>LandingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Chat\ChatFriend.cs" />
@@ -511,7 +511,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\LandingPage.xaml">
+    <Page Include="ClientUI\LandingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

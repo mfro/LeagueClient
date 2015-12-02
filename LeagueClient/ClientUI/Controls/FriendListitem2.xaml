@@ -21,8 +21,9 @@
       <Label Padding="0" FontSize="16" Name="NameText">KombatProwess</Label>
       <TextBlock Style="{StaticResource Control}" TextWrapping="Wrap" Grid.Row="1" FontSize="12" Padding="0" Width="120" Name="MsgText">New Computer :D</TextBlock>
 
-      <Label Grid.Row="2" Padding="0" HorizontalAlignment="Right" Name="ChampText">Annie</Label>
-      <Label Grid.Row="10" Padding="0" HorizontalAlignment="Right" Name="StatusText">Teambuilder - 99.99</Label>
+      <Label Grid.Row="1" Padding="0" FontSize="11" VerticalAlignment="Bottom" HorizontalAlignment="Right" Name="TimeText">99:99</Label>
+      <Label Grid.Row="2" Padding="0" FontSize="11" HorizontalAlignment="Right" Name="ChampText">Annie</Label>
+      <Label Grid.Row="10" Padding="0" HorizontalAlignment="Right" Name="StatusText">Ranked Team 3v3</Label>
     </Grid>
   </Grid>
   <UserControl.ContextMenu>

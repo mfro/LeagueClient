@@ -50,7 +50,7 @@ namespace LeagueClient.Logic.Chat {
     }
 
     public double GetValue() {
-      if (IsOffline) return 1000;
+      if (Status == null || IsOffline) return 1000;
       if (CurrentGameInfo != null) {
         if (CurrentGameInfo.gameStartTime == 0)
           return Status.GameStatus.Priority + .99;
@@ -96,7 +96,7 @@ namespace LeagueClient.Logic.Chat {
           Thread.Sleep(30000);
           RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Summoner.SummonerId).ContinueWith(GotGameInfo);
         }) { IsBackground = true, Name = "GameFetch-" + Summoner.InternalName }.Start();
-      }
+      } else Client.ChatManager.ForceUpdate();
     }
     #endregion
   }

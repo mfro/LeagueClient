@@ -43,7 +43,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private CapMePlayer myControl;
     private CapPlayer me;
-    private ChatRoomController chatRoom;
+    //private ChatRoomController chatRoom;
     private CapLobbyState state;
     private bool autoReady;
 
@@ -56,7 +56,7 @@ namespace LeagueClient.ClientUI.Main {
     public CapLobbyPage(bool isCreating) {
       me = new CapPlayer(isCreating ? 0 : -1);
       me.PropertyChanged += Me_PropertyChanged;
-      myControl = new CapMePlayer(me) { Margin = new Thickness(0, 10, 0, 0) };
+      myControl = new CapMePlayer(me) { Margin = new Thickness(0, 10, 0, 0), VerticalAlignment = VerticalAlignment.Top };
       InitializeComponent();
       FindAnotherButt.Visibility = Visibility.Collapsed;
       state = CapLobbyState.Inviting;
@@ -67,7 +67,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public CapLobbyPage(CapPlayer solo) {
       me = solo;
-      myControl = new CapMePlayer(me) { Editable = false, Margin = new Thickness(0, 10, 0, 0) };
+      myControl = new CapMePlayer(me) { Editable = false, Margin = new Thickness(0, 10, 0, 0), VerticalAlignment = VerticalAlignment.Top };
       InitializeComponent();
       state = CapLobbyState.Searching;
 
@@ -92,15 +92,15 @@ namespace LeagueClient.ClientUI.Main {
                                     select spell);
 
       PlayerList.Children.Clear();
-      chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
+      //chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
       Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
     }
     #endregion
 
     #region Message and Lobby handling
     private void JoinChat() {
-      if (!chatRoom.IsJoined)
-        chatRoom.JoinChat(RiotChat.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
+      //if (!chatRoom.IsJoined)
+      //  chatRoom.JoinChat(RiotChat.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
@@ -257,13 +257,13 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void matchMadeV1(JSONObject json) {
-      Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Match Found");
+      //Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Match Found");
     }
 
     private void matchmakingPhaseStartedV1(JSONObject json) {
       state = CapLobbyState.Matching;
       players[0].Status = CapStatus.Ready;
-      Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Matchmaking Started");
+      //Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Matchmaking Started");
     }
 
     private void readinessIndicatedV1(JSONObject json) {
@@ -640,7 +640,7 @@ namespace LeagueClient.ClientUI.Main {
     public void ForceClose() {
       RiotServices.GameInvitationService.Leave();
       RiotServices.CapService.Quit();
-      chatRoom?.LeaveChat();
+      //chatRoom?.LeaveChat();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 

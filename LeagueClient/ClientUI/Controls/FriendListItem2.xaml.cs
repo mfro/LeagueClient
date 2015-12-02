@@ -85,22 +85,22 @@ namespace LeagueClient.ClientUI.Controls {
         case StatusShow.Dnd: StatusText.Foreground = NameText.Foreground = App.BusyBrush; break;
       }
 
-      ChampText.Visibility = Visibility.Collapsed;
+      TimeText.Visibility = ChampText.Visibility = Visibility.Collapsed;
       if (friend.CurrentGameDTO != null) {
-        string timestr;
+        TimeText.Visibility = Visibility.Visible;
         if (friend.CurrentGameInfo == null) {
           long time = friend.Status.TimeStamp - Client.GetMilliseconds();
-          timestr = TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
+          TimeText.Content = TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
         } else if (friend.CurrentGameInfo.gameStartTime == 0) {
-          timestr = "Loading";
+          TimeText.Content = "Loading";
         } else {
           long time = friend.CurrentGameInfo.gameStartTime - Client.GetMilliseconds();
-          timestr = TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
+          TimeText.Content = TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
         }
-        StatusText.Content = QueueType.Values[friend.CurrentGameDTO.QueueTypeName].Value + " - " + timestr;
+        StatusText.Content = QueueType.Values[friend.CurrentGameDTO.QueueTypeName].Value;
         if (!string.IsNullOrEmpty(friend.Status.Champion)) {
           ChampText.Visibility = Visibility;
-          ChampText.Content = friend.Status.Champion;
+          ChampText.Content = LeagueData.ChampData.Value.data[friend.Status.Champion].name;
         }
       } else StatusText.Content = friend.Status.GameStatus.Value;
     }

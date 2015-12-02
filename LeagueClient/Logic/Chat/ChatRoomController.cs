@@ -19,7 +19,7 @@ namespace LeagueClient.Logic.Chat {
     private ScrollViewer scroller;
 
     private jabber.connection.Room chatRoom;
-    private Dispatcher dispatch = App.Current.Dispatcher;
+    private Dispatcher dispatch = Application.Current.Dispatcher;
 
     public bool IsJoined { get; private set; }
 

@@ -82,22 +82,22 @@ namespace LeagueClient.Logic.Chat {
       timer.Start();
     }
 
-    private void ResetList() {
-      var list = Friends.Values.Where(u => !u.IsOffline).OrderBy(u => u.GetValue()).ToList();
+    private void ResetList(bool force) {
+      var list = Friends.Values.Where(u => !u.IsOffline && u.Status != null).OrderBy(u => u.GetValue()).ToList();
       for (int i = 0; i < Math.Max(FriendList.Count, list.Count); i++) {
         if (i >= list.Count) {
           FriendList.RemoveAt(i);
           i--;
         } else if (i == FriendList.Count) {
           FriendList.Add(list[i]);
-        } else if (FriendList[i] != list[i]) {
+        } else if (force || FriendList[i] != list[i]) {
           FriendList[i] = list[i];
         }
       }
     }
 
     private void UpdateProc(object src, ElapsedEventArgs args) {
-      try { App.Current.Dispatcher.Invoke(ResetList); } catch { timer.Dispose(); }
+      try { Application.Current.Dispatcher.MyInvoke(ResetList, false); } catch { timer.Dispose(); }
       Tick?.Invoke(this, new EventArgs());
     }
 
@@ -115,7 +115,7 @@ namespace LeagueClient.Logic.Chat {
       var s = Presence.GetAll(bare);
       if (s.Length == 0) Friends[bare.User].UpdatePresence(null);
       else Friends[bare.User].UpdatePresence(s[0]);
-      App.Current.Dispatcher.Invoke(ResetList);
+      Application.Current.Dispatcher.MyInvoke(ResetList, false);
     }
 
     private void OnChatOpen(object src, EventArgs args) {
@@ -137,7 +137,7 @@ namespace LeagueClient.Logic.Chat {
       if (msg.From.User.Equals(msg.To.User)) {
         return;
       }
-      App.Current.Dispatcher.Invoke(() => {
+      Application.Current.Dispatcher.Invoke(() => {
         var convo = Friends[user].Conversation;
         if (!OpenChats.Contains(convo)) {
           AddChat(Friends[user]);
@@ -283,6 +283,10 @@ namespace LeagueClient.Logic.Chat {
       if (!OpenChats.Contains(friend.Conversation))
         OpenChats.Add(friend.Conversation);
       friend.Conversation.Open = !friend.Conversation.Open;
+    }
+
+    public void ForceUpdate() {
+      Application.Current.Dispatcher.MyInvoke(ResetList, true);
     }
 
     public void Logout() {

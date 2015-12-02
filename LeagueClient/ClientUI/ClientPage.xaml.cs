@@ -84,8 +84,6 @@ namespace LeagueClient.ClientUI {
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;
 
       UpdatePlayButton();
-
-      ShowPage(new LandingPage());
     }
 
     private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
@@ -253,7 +251,7 @@ namespace LeagueClient.ClientUI {
     private void Play_Click(object sender, RoutedEventArgs e) {
       PlayButton.IsEnabled = false;
       CloseStuff();
-      ShowPage(new PlaySelectPage());
+      //ShowPage(new PlaySelectPage());
     }
 
     private void Home_Click(object sender, RoutedEventArgs e) {

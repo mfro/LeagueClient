@@ -3,30 +3,27 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
-      SnapsToDevicePixels="True" Width="{StaticResource Width}" Height="{StaticResource PageHeight}">
+      SnapsToDevicePixels="True" Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}">
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="50"/>
+      <RowDefinition/>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="auto"/>
       <RowDefinition/>
-      <RowDefinition Height="50"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="47"/>
       <ColumnDefinition Width="840"/>
       <ColumnDefinition/>
-      <ColumnDefinition Width="47"/>
     </Grid.ColumnDefinitions>
 
-    <StackPanel Name="PlayerList" Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 0 10 0" Height="180">
+    <StackPanel Grid.Row="1" Name="PlayerList" Orientation="Horizontal" Margin="0 0 10 0" Height="180">
       <my:CapOtherPlayer2 Margin="0 0 10 0"/>
       <my:CapOtherPlayer2 Margin="0 0 10 0"/>
       <my:CapOtherPlayer2 Margin="0 0 10 0"/>
       <my:CapOtherPlayer2/>
     </StackPanel>
 
-    <Grid Grid.Row="2" Grid.Column="1" Name="MyGrid">
+    <Grid Grid.Row="2" Name="MyGrid">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="Auto"/>
@@ -54,26 +51,14 @@
       </StackPanel>
     </Grid>
 
-    <Border Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" VerticalAlignment="Top" Height="346" Width="346">
-      <my:CapMap x:Name="GameMap"/>
-    </Border>
-
-    <ScrollViewer Grid.Row="3" Grid.Column="2" Margin="0 10 0 0">
+    <ScrollViewer Grid.Row="1" Grid.Column="1">
       <StackPanel Background="{StaticResource Back1Brush}" Name="InviteList"/>
     </ScrollViewer>
-    <!--<Button Content="Invite" HorizontalAlignment="Left" Padding="20 2" Name="InviteButt" Click="InviteButt_Click"/>-->
 
-    <ScrollViewer Grid.Column="1" Grid.Row="3" Margin="0 10 10 30" Name="ChatScroller">
-      <RichTextBox Name="ChatHistory" Style="{StaticResource Control}"  Background="{StaticResource Back1Brush}" BorderThickness="0" IsReadOnly="True">
-        <RichTextBox.Resources>
-          <Style TargetType="Paragraph">
-            <Setter Property="Margin" Value="0" />
-          </Style>
-        </RichTextBox.Resources>
-      </RichTextBox>
-    </ScrollViewer>
-    <TextBox Grid.Column="1" Grid.Row="3" Margin="0 0 80 0" VerticalAlignment="Bottom" Name="SendBox"/>
-    <Button  Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="60" Margin="0 0 10 0" Name="SendButt">Send</Button>
+    <Border BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Grid.Row="2" Grid.ColumnSpan="2" Margin="0 10 0 0" HorizontalAlignment="Right" Height="350" Width="350">
+      <my:CapMap x:Name="GameMap"/>
+    </Border>
+    <!--<Button Content="Invite" HorizontalAlignment="Left" Padding="20 2" Name="InviteButt" Click="InviteButt_Click"/>-->
 
     <!--<my:InvitePopup Grid.RowSpan="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center"
                     Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>-->

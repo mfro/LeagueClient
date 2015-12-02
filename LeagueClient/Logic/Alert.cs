@@ -20,7 +20,7 @@ namespace LeagueClient.Logic {
     private static T Create<T>(params object[] args) where T : Alert {
       var types = new Type[args.Length];
       for (int i = 0; i < args.Length; i++) types[i] = args[i]?.GetType();
-      return (T) App.Current.Dispatcher.MyInvoke(typeof(T).GetConstructor(types).Invoke, args);
+      return (T) Application.Current.Dispatcher.MyInvoke(typeof(T).GetConstructor(types).Invoke, args);
     }
 
     public static OkAlert KickedFromCap() => Create<OkAlert>("Kicked from Group", "You have been kicked from a teambuilder group and returned to the queue.");

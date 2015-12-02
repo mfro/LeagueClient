@@ -239,7 +239,7 @@ namespace LeagueClient.Logic {
       info.WorkingDirectory = GameDirectory;
       GameProcess = Process.Start(info);
 
-      App.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
+      System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
       ChatManager.UpdateStatus(ChatStatus.inGame);
       CurrentGame = RiotAPI.CurrentGameAPI.BySummonerAsync("NA", LoginPacket.AllSummonerData.Summoner.SumId);
     }

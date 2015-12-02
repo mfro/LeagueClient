@@ -31,7 +31,7 @@ namespace LeagueClient {
   public partial class MainWindow : Window {
     private IClientPage currentPage;
 
-    private ClientPage mainPage;
+    private LandingPage landing;
 
     public MainWindow() {
       Client.Log("Pre-Init");
@@ -42,7 +42,7 @@ namespace LeagueClient {
 
       InitializeComponent();
 
-      ((App) App.Current).LoadResources();
+      ((App) Application.Current).LoadResources();
       if (!PatcherPage.NeedsPatch()) {
         PatchComplete();
       } else {
@@ -61,10 +61,10 @@ namespace LeagueClient {
     }
 
     public void LoginComplete() {
-      var page = mainPage = new ClientPage();
-      Client.QueueManager = page;
+      var page = landing = new LandingPage();
+      Client.QueueManager = landing;
       ContentFrame.Content = page;
-      this.currentPage = page;
+      currentPage = page;
 
       if(Client.QueuedCredentials != null) {
         Client.JoinGame(Client.QueuedCredentials);
@@ -88,9 +88,9 @@ namespace LeagueClient {
     }
 
     public void ShowInGamePage() {
-      currentPage = mainPage;
-      ContentFrame.Content = mainPage;
-      mainPage.ShowPage(new InGamePage());
+      currentPage = landing;
+      ContentFrame.Content = landing;
+      landing.ShowPage(new InGamePage());
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) {

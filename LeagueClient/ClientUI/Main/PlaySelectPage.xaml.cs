@@ -28,7 +28,7 @@ namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for PlaySelectPage.xaml
   /// </summary>
-  public partial class PlaySelectPage : Page, IClientSubPage {
+  public partial class PlaySelectPage : UserControl {
     private static readonly Duration
       MoveDuration = new Duration(TimeSpan.FromMilliseconds(200)),
       ButtonDuration = new Duration(TimeSpan.FromMilliseconds(80));
@@ -97,6 +97,9 @@ namespace LeagueClient.ClientUI.Main {
       }
 
       currentUI = SummonersRift;
+    }
+
+    public void Reset() {
       MapSelected();
     }
 
@@ -327,15 +330,6 @@ namespace LeagueClient.ClientUI.Main {
       PopupPanel.BeginStoryboard(App.FadeOut);
     }
     #endregion
-
-    public Page Page => this;
-    public bool CanPlay => false;
-    public bool CanClose => true;
-
-    public void ForceClose() { }
-    public IQueuer HandleClose() => null;
-
-    public bool HandleMessage(MessageReceivedEventArgs args) => false;
 
     private class PlayableBotsQueue : IPlayableQueue {
       public string Name { get; private set; }

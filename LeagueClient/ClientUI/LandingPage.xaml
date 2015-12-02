@@ -1,0 +1,111 @@
+﻿<Page x:Class="LeagueClient.ClientUI.LandingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+      xmlns:main="clr-namespace:LeagueClient.ClientUI.Main"
+      SnapsToDevicePixels="True" Width="{StaticResource Width}" Height="{StaticResource Height}">
+  <Page.Resources>
+    <Style TargetType="Border" x:Key="TabButton">
+      <Setter Property="Padding" Value="5 8"/>
+      <!--<Setter Property="Background" Value="{StaticResource Back2Brush}"/>-->
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <EventSetter Event="MouseEnter" Handler="Tab_MouseEnter"/>
+      <EventSetter Event="MouseLeave" Handler="Tab_MouseLeave"/>
+      <EventSetter Event="MouseUp" Handler="Tab_MousePress"/>
+      <!--<Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Background="{TemplateBinding Background}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.Foreground="{StaticResource FontBrush}"
+                                TextBlock.FontSize="{TemplateBinding FontSize}" Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"/>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>-->
+    </Style>
+    <Style TargetType="Border" x:Key="Separator">
+      <Setter Property="BorderThickness" Value="1 1 0 0"/>
+      <Setter Property="BorderBrush" Value="{StaticResource FontBrush}"/>
+      <Setter Property="Opacity" Value=".25"/>
+    </Style>
+  </Page.Resources>
+  <Grid Background="{StaticResource Back2Brush}" MouseDown="Grid_MouseDown">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="200"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="20"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="20"/>
+      <ColumnDefinition Width="150"/>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="20"/>
+    </Grid.ColumnDefinitions>
+    <Path Grid.Row="1" Grid.Column="1" Stroke="{StaticResource FontBrush}" Name="Arrows" Data="M 0 0 L 10 8 L 0 16 M 120 0 L 110 8 L 120 16" Margin="15 95 15 0" VerticalAlignment="Top"/>
+    <StackPanel Grid.Row="1" Grid.Column="1">
+      <Border Style="{StaticResource Separator}" Margin="30 0"/>
+      <Border Style="{StaticResource TabButton}" Margin="30 0" Width="90" Name="LogoutTab">
+        <TextBlock Foreground="{StaticResource FontBrush}" FontSize="16">Logout</TextBlock>
+      </Border>
+      <Border Style="{StaticResource Separator}" Margin="15 0"/>
+      <Border Style="{StaticResource TabButton}" Margin="30 0" Width="120" Name="PlayTab">
+        <TextBlock Foreground="{StaticResource FontBrush}" FontSize="22">Play</TextBlock>
+      </Border>
+      <Border Style="{StaticResource Separator}" Margin="15 0"/>
+      <Border Style="{StaticResource TabButton}" Margin="30 0" Width="90" Name="FriendsTab">
+        <TextBlock Foreground="{StaticResource FontBrush}" FontSize="16">Friends</TextBlock>
+      </Border>
+      <Border Style="{StaticResource Separator}" Margin="30 0"/>
+      <Border Style="{StaticResource TabButton}" Margin="30 0" Width="90" Name="ProfileTab">
+        <TextBlock Foreground="{StaticResource FontBrush}" FontSize="16">Profile</TextBlock>
+      </Border>
+      <Border Style="{StaticResource Separator}" Margin="30 0"/>
+      <Border Style="{StaticResource TabButton}" Margin="30 0" Width="90" Name="ShopTab">
+        <TextBlock Foreground="{StaticResource FontBrush}" FontSize="16">Shop</TextBlock>
+      </Border>
+      <Border Style="{StaticResource Separator}" Margin="30 0"/>
+    </StackPanel>
+
+    <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" ClipToBounds="True" Margin="0 20 0 0">
+      <UniformGrid Rows="4" Margin="0 -660 0 0" Height="2640" Name="SlidingGrid">
+        <Grid>
+          <main:PlaySelectPage x:Name="PlayPage"/>
+          <Frame Background="{StaticResource Back2Brush}" Name="SubPageArea" Visibility="Collapsed"/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="2" Name="GroupList" Grid.RowSpan="2">
+          <StackPanel.Resources>
+            <Style TargetType="ItemsControl">
+              <Setter Property="ItemTemplate">
+                <Setter.Value>
+                  <DataTemplate>
+                    <my:FriendListItem2 DataContext="{Binding}" MouseUp="Friend_MouseUp" Margin="0 0 10 10"/>
+                  </DataTemplate>
+                </Setter.Value>
+              </Setter>
+              <Setter Property="ItemsPanel">
+                <Setter.Value>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"/>
+                  </ItemsPanelTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </StackPanel.Resources>
+        </StackPanel>
+        
+        <Grid/>
+        
+        <Grid/>
+      </UniformGrid>
+    </Border>
+
+    <Border Grid.Row="2" Grid.Column="1" Name="ChatArea" VerticalAlignment="Bottom" Height="450" Width="150">
+      
+    </Border>
+  </Grid>
+</Page>
