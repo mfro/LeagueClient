@@ -10,7 +10,7 @@
     <sys:Double x:Key="Width">1280</sys:Double>
     <sys:Double x:Key="Height">720</sys:Double>
     <sys:Double x:Key="PageWidth">1090</sys:Double>
-    <sys:Double x:Key="PageHeight">660</sys:Double>
+    <sys:Double x:Key="PageHeight">600</sys:Double>
 
     <sys:Double x:Key="AlertWidth">300</sys:Double>
     <sys:Double x:Key="AlertHeight">180</sys:Double>

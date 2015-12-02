@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,12 +16,14 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using jabber.protocol.client;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
+using MFroehlich.League.Assets;
 using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI {
@@ -29,6 +32,7 @@ namespace LeagueClient.ClientUI {
   /// </summary>
   public partial class LandingPage : Page, IClientPage, IQueueManager {
     public IClientSubPage CurrentPage { get; private set; }
+    public BindingList<ChatFriend> OpenChatsList { get; } = new BindingList<ChatFriend>();
 
     private Border currentButton;
 
@@ -39,10 +43,26 @@ namespace LeagueClient.ClientUI {
       InitializeComponent();
       Buttons = new List<Border> { LogoutTab, PlayTab, FriendsTab, ProfileTab, ShopTab };
 
+      ShowPage(2);
+      IPAmount.Content = Client.LoginPacket.IpBalance.ToString();
+      RPAmount.Content = Client.LoginPacket.RpBalance.ToString();
+      NameLabel.Content = Client.LoginPacket.AllSummonerData.Summoner.Name;
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId));
+
       Client.ChatManager.FriendList.ListChanged += FriendList_ListChanged;
+      Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
+      Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
+
+      OpenChats.ItemsSource = OpenChatsList;
+      Popup.IconSelector.IconSelected += IconSelector_IconSelected;
     }
 
-    private void FriendList_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e) {
+    private void ChatManager_MessageReceived(object sender, Message e) {
+      var friend = Client.ChatManager.Friends[e.From.User];
+      if (!OpenChatsList.Contains(friend)) Dispatcher.Invoke(() => OpenChatsList.Add(friend));
+    }
+
+    private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
       var groups = new Dictionary<object, List<ChatFriend>> {
         ["Chat"] = new List<ChatFriend>(),
         ["Away"] = new List<ChatFriend>(),
@@ -71,11 +91,34 @@ namespace LeagueClient.ClientUI {
       });
     }
 
-    private void Friend_MouseUp(object sender, MouseButtonEventArgs e) {
-      if (e.ChangedButton == MouseButton.Left)
-        Client.ChatManager.AddChat(((FriendListItem2) sender).friend);
+    private void ChatManager_StatusUpdated(object sender, StatusUpdatedEventArgs e) {
+      Dispatcher.Invoke(() => {
+        switch (e.PresenceType) {
+          case jabber.protocol.client.PresenceType.available:
+            if (e.Status.GameStatus == ChatStatus.outOfGame) {
+              if (!string.IsNullOrWhiteSpace(e.Status.Message))
+                CurrentStatus.Content = e.Status.Message;
+              else if (e.Show == StatusShow.Chat)
+                CurrentStatus.Content = "Online";
+              else CurrentStatus.Content = "Away";
+            } else CurrentStatus.Content = e.Status.GameStatus.Value;
+
+            switch (e.Show) {
+              case StatusShow.Away: CurrentStatus.Foreground = App.AwayBrush; break;
+              case StatusShow.Chat: CurrentStatus.Foreground = App.ChatBrush; break;
+              case StatusShow.Dnd: CurrentStatus.Foreground = App.BusyBrush; break;
+            }
+
+            break;
+          case jabber.protocol.client.PresenceType.invisible:
+            CurrentStatus.Content = "Invisible";
+            CurrentStatus.Foreground = App.ForeBrush;
+            break;
+        }
+      });
     }
 
+    #region Tab Events
     private void Tab_MouseEnter(object sender, RoutedEventArgs e) {
       var text = ((Border) sender).Child as TextBlock;
       text.Foreground = Brushes.White;
@@ -96,17 +139,22 @@ namespace LeagueClient.ClientUI {
       if (currentButton != null) ((TextBlock) currentButton.Child).Foreground = App.FontBrush;
       currentButton = Buttons[index];
 
+      int pageHeight = (int) (double) FindResource("PageHeight");
+      SlidingGrid.Height = pageHeight * (Buttons.Count - 1);
+
       if (index == 0) Client.Logout();
 
       var arrowAnim = new ThicknessAnimation(new Thickness(15, ArrowLocations[index], 15, 0), new Duration(TimeSpan.FromMilliseconds(100)));
       Arrows.BeginAnimation(MarginProperty, arrowAnim);
 
-      var slideAnim = new ThicknessAnimation(new Thickness(0, -680 * (index - 1), 0, 0), new Duration(TimeSpan.FromMilliseconds(100)));
+      var slideAnim = new ThicknessAnimation(new Thickness(0, -pageHeight * (index - 1), 0, 0), new Duration(TimeSpan.FromMilliseconds(100)));
       SlidingGrid.BeginAnimation(MarginProperty, slideAnim);
 
       if (index == 1) PlayPage.Reset();
     }
+    #endregion
 
+    #region Other Events
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
       if (e.GetPosition((Grid) sender).Y < 20) {
         if (e.ClickCount == 2) Client.MainWindow.Center();
@@ -114,8 +162,44 @@ namespace LeagueClient.ClientUI {
       }
     }
 
-    private void Animate(Button butt, string key) => butt.BeginStoryboard((Storyboard) butt.FindResource(key));
+    private void Friend_MouseUp(object sender, MouseButtonEventArgs e) {
+      if (e.ChangedButton == MouseButton.Left && !OpenChatsList.Contains(((FriendListItem2) sender).friend))
+        OpenChatsList.Add(((FriendListItem2) sender).friend);
+    }
 
+    private void CurrentStatus_MouseUp(object sender, MouseButtonEventArgs e) {
+      switch (Client.ChatManager.Show) {
+        case StatusShow.Away:
+          Client.ChatManager.UpdateStatus(StatusShow.Chat);
+          break;
+        case StatusShow.Chat:
+          Client.ChatManager.UpdateStatus(StatusShow.Away);
+          break;
+      }
+    }
+
+    private void ProfileIcon_Click(object sender, MouseButtonEventArgs e) {
+      Popup.CurrentSelector = PopupSelector.Selector.ProfileIcons;
+      Popup.BeginStoryboard(App.FadeIn);
+    }
+
+    private void IconSelector_IconSelected(object sender, Icon e) {
+      Popup.BeginStoryboard(App.FadeOut);
+      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(e.IconId));
+    }
+
+    private void Popup_Close(object sender, EventArgs e) {
+      Popup.BeginStoryboard(App.FadeOut);
+    }
+
+    private void ChatConversation_ChatClosed(object sender, EventArgs e) {
+      OpenChatsList.Remove(((ChatConversation) sender).friend);
+    }
+
+    private void Animate(Button butt, string key) => butt.BeginStoryboard((Storyboard) butt.FindResource(key));
+    #endregion
+
+    #region Interface
     public bool HandleMessage(MessageReceivedEventArgs args) {
       if (CurrentPage?.HandleMessage(args) ?? false) return true;
       return false;
@@ -142,6 +226,7 @@ namespace LeagueClient.ClientUI {
     public void BeginChampionSelect(GameDTO game) {
       //throw new NotImplementedException();
     }
+    #endregion
 
     private void CloseSubPage(bool notifyPage) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(CloseSubPage, notifyPage); return; }

@@ -28,6 +28,7 @@ namespace LeagueClient.Logic.Chat {
     };
 
     public event EventHandler<StatusUpdatedEventArgs> StatusUpdated;
+    public event EventHandler<Message> MessageReceived;
 
     public State ChatState { get; private set; }
     public Dictionary<string, ChatFriend> Friends { get; } = new Dictionary<string, ChatFriend>();
@@ -118,73 +119,20 @@ namespace LeagueClient.Logic.Chat {
       Application.Current.Dispatcher.MyInvoke(ResetList, false);
     }
 
-    private void OnChatOpen(object src, EventArgs args) {
-      var user = ((ChatConversation) src).User;
-      foreach (var chat in OpenChats)
-        if (!chat.User.Equals(user)) chat.Open = false;
-        else chat.ChatSendBox.MyFocus();
-    }
-
-    private void OnChatClose(object src, EventArgs args) {
-      var user = ((ChatConversation) src).User;
-      Friends[user].Conversation.Open = false;
-      OpenChats.Remove(Friends[user].Conversation);
-    }
-
     private void OnReceiveMessage(object sender, Message msg) {
       if (!Friends.ContainsKey(msg.From.User)) return;
-      string user = msg.From.User;
-      if (msg.From.User.Equals(msg.To.User)) {
-        return;
-      }
-      Application.Current.Dispatcher.Invoke(() => {
-        var convo = Friends[user].Conversation;
-        if (!OpenChats.Contains(convo)) {
-          AddChat(Friends[user]);
-          convo.Open = false;
-        }
-        if (!convo.Open) {
-          convo.Unread = true;
-        }
-        convo.History += $"[{Friends[user].User.Nickname}]: {msg.Body}\n";
-      });
-    }
-
-    private void OnSendMessage(object sender, MessageSentEventArgs msg) {
-      conn.Message(msg.User + "@pvp.net", msg.Message);
-      Friends[msg.User].Conversation.History += $"[{Client.LoginPacket.AllSummonerData.Summoner.Name}]: {msg.Message}\n";
+      if (msg.From.User.Equals(msg.To.User)) return;
+      MessageReceived?.Invoke(this, msg);
+      Friends[msg.From.User].ReceiveMessage(msg.Body);
     }
 
     private void OnRosterItem(object sender, Item item) {
       if (!Friends.ContainsKey(item.JID.User)) {
-        Application.Current.Dispatcher.MyInvoke(CreateChatFriend, item);
+        Application.Current.Dispatcher.Invoke(() => Friends.Add(item.JID.User, new ChatFriend(item)));
       }
       if (!fullyAuthed) OnPrimarySessionChange(sender, item.JID);
-      //if (!Users.ContainsKey(item.JID.User)) {
-      //  Users.Add(item.JID.User, item);
-
-      //  App.Current.Dispatcher.Invoke(() => {
-      //    var convo = new ChatConversation(item.Nickname, item.JID.User);
-      //    convo.MessageSent += OnSendMessage;
-      //    convo.ChatOpened += OnChatOpen;
-      //    convo.ChatClosed += OnChatClose;
-      //    var friend = new Friend(item, convo);
-      //    friend.MouseUp += (src, e) => OnChatAdd(friend);
-      //    Friends.Add(item.JID.User, friend);
-      //  });
-      //}
-      //if (!fullyAuthed)
-      //  OnPrimarySessionChange(sender, item.JID);
     }
     #endregion
-
-    private void CreateChatFriend(Item item) {
-      var chatFriend = new ChatFriend(item);
-      chatFriend.Conversation.MessageSent += OnSendMessage;
-      chatFriend.Conversation.ChatOpened += OnChatOpen;
-      chatFriend.Conversation.ChatClosed += OnChatClose;
-      Friends.Add(item.JID.User, chatFriend);
-    }
 
     #region Status
     /// <summary>
@@ -279,10 +227,13 @@ namespace LeagueClient.Logic.Chat {
       foreach (var item in OpenChats) item.Open = false;
     }
 
-    public void AddChat(ChatFriend friend) {
-      if (!OpenChats.Contains(friend.Conversation))
-        OpenChats.Add(friend.Conversation);
-      friend.Conversation.Open = !friend.Conversation.Open;
+    /// <summary>
+    /// Sends a message
+    /// </summary>
+    /// <param name="user">The user to send the message to</param>
+    /// <param name="message">The message to send</param>
+    public void SendMessage(JID user, string message) {
+      conn.Message(user.User + "@pvp.net", message);
     }
 
     public void ForceUpdate() {

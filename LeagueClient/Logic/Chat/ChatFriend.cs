@@ -13,27 +13,36 @@ using MFroehlich.League.RiotAPI;
 
 namespace LeagueClient.Logic.Chat {
   public class ChatFriend {
+    public event EventHandler HistoryUpdated;
     public Dictionary<string, object> Data { get; } = new Dictionary<string, object>();
 
     public Item User { get; }
-    public ChatConversation Conversation { get; }
 
     public PublicSummoner Summoner { get; private set; }
     public LeagueStatus Status { get; private set; }
     public bool IsOffline { get; private set; }
+    public string History { get; private set; }
     public string Group { get; }
 
     public RiotAPI.CurrentGameAPI.CurrentGameInfo CurrentGameInfo { get; private set; }
     public GameDTO CurrentGameDTO { get; private set; }
 
     public ChatFriend(Item item) {
-      Conversation = new ChatConversation(item.Nickname, item.JID.User);
       User = item;
 
       var groups = item.GetGroups();
       Group = groups[0].InnerText;
 
       RiotServices.SummonerService.GetSummonerByName(User.Nickname).ContinueWith(GotSummoner);
+    }
+
+    public void ReceiveMessage(string message) {
+      AppendMessage(User.Nickname, message);
+    }
+
+    public void SendMessage(string message) {
+      AppendMessage(Client.LoginPacket.AllSummonerData.Summoner.Name, message);
+      Client.ChatManager.SendMessage(User.JID, message);
     }
 
     public void UpdatePresence(Presence p) {
@@ -60,6 +69,11 @@ namespace LeagueClient.Logic.Chat {
         return Status.GameStatus.Priority + 100;
       } else
         return Status.GameStatus.Priority;
+    }
+
+    private void AppendMessage(string sender, string message) {
+      History += $"[{sender}]: {message}\n";
+      HistoryUpdated?.Invoke(this, new EventArgs());
     }
 
     #region Async Handlers

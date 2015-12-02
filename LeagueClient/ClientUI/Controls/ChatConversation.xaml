@@ -7,11 +7,11 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
-    <Grid Name="ChatDisplayPanel" Opacity="0" Visibility="Collapsed">
-      <Border BorderThickness="3 3 3 0" BorderBrush="{StaticResource Back1Brush}">
-        <Border BorderThickness="1 1 1 0" BorderBrush="{StaticResource ForeBrush}"/>
+    <Grid Name="ChatDisplayPanel" Opacity="0" Visibility="Collapsed" Margin="0 0 0 4">
+      <Border BorderThickness="3 3 3 3" BorderBrush="{StaticResource Back1Brush}">
+        <Border BorderThickness="1 1 1 1" BorderBrush="{StaticResource ForeBrush}"/>
       </Border>
-      <Grid Margin="4 4 4 0">
+      <Grid Margin="4 4 4 4">
         <Grid.RowDefinitions>
           <RowDefinition Height="*"/>
           <RowDefinition Height="auto"/>
@@ -20,13 +20,19 @@
           <TextBlock Style="{StaticResource Control}" Name="ChatHistory" Background="{StaticResource Back1Brush}"
                      Padding="2 0" TextWrapping="Wrap" FontSize="12"/>
         </ScrollViewer>
-        <TextBox Name="ChatSendBox" Grid.Row="1" KeyUp="ChatSendBox_KeyUp"/>
+        <TextBox Name="ChatSendBox" Grid.Row="1" BorderThickness="0 1 0 0" KeyUp="ChatSendBox_KeyUp"/>
       </Grid>
     </Grid>
-    <Button Name="ChatOpenButt" Grid.Row="2" HorizontalAlignment="Left"
-            Margin="2" Padding="5 1 5 0" Content="BorisTheMinstrel" Click="ChatOpenButt_Click" Width="112"/>
+    <Button Name="ChatOpenButt" Grid.Row="2" HorizontalAlignment="Left" Padding="0" Click="ChatOpenButt_Click" Width="112">
+      <Grid Width="110" Height="18">
+        <Label Name="NameLabel" HorizontalAlignment="Center" Padding="0">master mor</Label>
+        <Grid HorizontalAlignment="Right" Width="18" Name="UnreadIndicator">
+          <Ellipse Width="8" Height="8" Fill="{StaticResource FocusBrush}"/>
+        </Grid>
+      </Grid>
+    </Button>
     <Button Name="CloseButton" Grid.Row="2" HorizontalAlignment="Left" Width="20" Height="20"
-            Margin="116 2" Padding="4" Click="CloseButton_Click">
+            Margin="114 0" Padding="4" Click="CloseButton_Click">
       <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
     </Button>
   </Grid>

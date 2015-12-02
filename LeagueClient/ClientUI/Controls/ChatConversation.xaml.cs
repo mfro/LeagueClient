@@ -13,29 +13,21 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LeagueClient.Logic;
+using LeagueClient.Logic.Chat;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for ChatConversation.xaml
   /// </summary>
   public partial class ChatConversation : UserControl {
-    public event EventHandler<MessageSentEventArgs> MessageSent;
-    public event EventHandler ChatOpened;
     public event EventHandler ChatClosed;
 
-    public string UserName { get; private set; }
-    public string User { get; private set; }
-    public string History {
-      get { return ChatHistory.Text; }
-      set { ChatHistory.Text = value; }
-    }
+    public ChatFriend friend { get; private set; }
     public bool Unread {
       get { return unread; }
       set {
-        //if (value)
-        //  (App.UnreadPulse).Begin(ChatOpenButt, true);
-        //else
-        //  (App.UnreadPulse).Remove(ChatOpenButt);
+        UnreadIndicator.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         unread = value;
       }
     }
@@ -47,7 +39,6 @@ namespace LeagueClient.ClientUI.Controls {
         else {
           if (Unread) Unread = false;
           ChatDisplayPanel.BeginStoryboard(App.FadeIn);
-          ChatOpened?.Invoke(this, new EventArgs());
           ChatSendBox.Focus();
         }
         open = value;
@@ -56,12 +47,19 @@ namespace LeagueClient.ClientUI.Controls {
 
     private bool unread;
     private bool open;
-    public ChatConversation(string name, string user) {
+
+    public ChatConversation() {
       InitializeComponent();
-      this.UserName = name;
-      this.User = user;
-      this.ChatOpenButt.Content = name;
-      this.GotFocus += OnFocus;
+
+      if (Client.Connected) {
+        Unread = false;
+        Loaded += (src, e) => {
+          friend = (ChatFriend) DataContext;
+          friend.HistoryUpdated += Friend_HistoryUpdated;
+          NameLabel.Content = friend.User.Nickname;
+          GotFocus += OnFocus;
+        };
+      }
     }
 
     private void ChatOpenButt_Click(object sender, RoutedEventArgs e) {
@@ -71,8 +69,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void ChatSendBox_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key != Key.Enter || ChatSendBox.Text.Length == 0) return;
-      if (MessageSent != null)
-        MessageSent(this, new MessageSentEventArgs(User, ChatSendBox.Text));
+      friend.SendMessage(ChatSendBox.Text);
       ChatSendBox.Text = "";
     }
 
@@ -83,14 +80,12 @@ namespace LeagueClient.ClientUI.Controls {
     private void OnFocus(object sender, RoutedEventArgs e) {
       if (!Open) ChatSendBox.MyFocus();
     }
-  }
 
-  public class MessageSentEventArgs : EventArgs {
-    public string User { get; }
-    public string Message { get; }
-    public MessageSentEventArgs(string user, string message) {
-      User = user;
-      Message = message;
+    private void Friend_HistoryUpdated(object sender, EventArgs e) {
+      Dispatcher.Invoke(() => {
+        ChatHistory.Text = friend.History;
+        if (!Open) Unread = true;
+      });
     }
   }
 }
