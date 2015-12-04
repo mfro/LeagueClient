@@ -29,11 +29,12 @@ namespace LeagueClient.ClientUI.Controls {
     public long SummonerId;
     public string SummonerName;
 
-    public LobbyPlayer2() { InitializeComponent(); }
-
-    public LobbyPlayer2(bool amCaptain, Member member) {
-      RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
+    public LobbyPlayer2() {
       InitializeComponent();
+    }
+
+    public LobbyPlayer2(bool amCaptain, Member member) : this() {
+      RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
       this.amCaptain = amCaptain;
       NameLabel.Content = member.SummonerName;

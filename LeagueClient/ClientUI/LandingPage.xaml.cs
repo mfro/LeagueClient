@@ -25,12 +25,15 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using RtmpSharp.Messaging;
+using LeagueClient.Logic.Riot;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for LandingPage.xaml
   /// </summary>
   public partial class LandingPage : Page, IClientPage, IQueueManager {
+    public IQueuer CurrentQueuer { get; private set; }
+    public IQueuePopup CurrentPopup { get; private set; }
     public IClientSubPage CurrentPage { get; private set; }
     public BindingList<ChatFriend> OpenChatsList { get; } = new BindingList<ChatFriend>();
 
@@ -118,6 +121,14 @@ namespace LeagueClient.ClientUI {
       });
     }
 
+    private void ShowPopup(IQueuePopup popup) {
+      CurrentPopup = popup;
+      CurrentPopup.Close += CurrentPopup_Close;
+
+      PopupPanel.BeginStoryboard(App.FadeIn);
+      PopupPanel.Child = popup.Control;
+    }
+
     #region Tab Events
     private void Tab_MouseEnter(object sender, RoutedEventArgs e) {
       var text = ((Border) sender).Child as TextBlock;
@@ -155,6 +166,17 @@ namespace LeagueClient.ClientUI {
     #endregion
 
     #region Other Events
+    private void Queuer_Popped(object sender, QueuePoppedEventArgs e) {
+      QueuerArea.Child = null;
+      CurrentQueuer = null;
+
+      if (e.QueuePopup != null) ShowPopup(e.QueuePopup);
+    }
+
+    private void CurrentPopup_Close(object sender, EventArgs e) {
+      PopupPanel.BeginStoryboard(App.FadeOut);
+    }
+
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
       if (e.GetPosition((Grid) sender).Y < 20) {
         if (e.ClickCount == 2) Client.MainWindow.Center();
@@ -202,11 +224,14 @@ namespace LeagueClient.ClientUI {
     #region Interface
     public bool HandleMessage(MessageReceivedEventArgs args) {
       if (CurrentPage?.HandleMessage(args) ?? false) return true;
-      return false;
+      if (CurrentQueuer?.HandleMessage(args) ?? false) return true;
+      return CurrentPopup?.HandleMessage(args) ?? false;
     }
 
     public void ShowQueuer(IQueuer queuer) {
-      //throw new NotImplementedException();
+      QueuerArea.Child = queuer.Control;
+      queuer.Popped += Queuer_Popped;
+      CurrentQueuer = queuer;
     }
 
     public void ShowPage(IClientSubPage page) {
@@ -224,7 +249,10 @@ namespace LeagueClient.ClientUI {
     }
 
     public void BeginChampionSelect(GameDTO game) {
-      //throw new NotImplementedException();
+      var page = new ChampSelectPage(game);
+      ShowPage(page);
+      Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
+      RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
     #endregion
 
@@ -233,10 +261,6 @@ namespace LeagueClient.ClientUI {
 
       if (CurrentPage != null) {
         CurrentPage.Close -= HandlePageClose;
-        if (notifyPage) {
-          var x = CurrentPage.HandleClose();
-          if (x != null) ShowQueuer(x);
-        }
         SubPageArea.Content = null;
         CurrentPage = null;
         SubPageArea.Visibility = Visibility.Collapsed;

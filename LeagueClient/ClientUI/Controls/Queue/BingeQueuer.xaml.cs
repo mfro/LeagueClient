@@ -27,9 +27,11 @@ namespace LeagueClient.ClientUI.Controls {
     private DateTime start;
     private TimeSpan timeout;
 
-    public BingeQueuer(int timeout) {
+    public BingeQueuer() {
       InitializeComponent();
+    }
 
+    public BingeQueuer(int timeout) : this() {
       this.timeout = TimeSpan.FromMilliseconds(timeout);
       ElapsedText.Text = this.timeout.ToString("m\\:ss");
       start = DateTime.Now;
@@ -44,12 +46,8 @@ namespace LeagueClient.ClientUI.Controls {
       Dispatcher.Invoke(() => ElapsedText.Text = time.ToString("m\\:ss"));
     }
 
-    public Control GetControl() {
-      return this;
-    }
-
+    public Control Control => this;
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
-
     public void Dispose() => timer.Dispose();
   }
 }

@@ -32,7 +32,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void WaitForGameClient() {
       Client.GameProcess.WaitForExit();
-
+      Console.WriteLine("POOP");
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
@@ -50,10 +50,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public Page Page => this;
-    public bool CanPlay => false;
-    public bool CanClose => false;
 
     public void ForceClose() { }
-    public IQueuer HandleClose() => null;
   }
 }

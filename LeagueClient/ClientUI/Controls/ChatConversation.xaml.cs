@@ -20,41 +20,36 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for ChatConversation.xaml
   /// </summary>
-  public partial class ChatConversation : UserControl {
+  public partial class ChatConversation : UserControl, IDisposable {
     public event EventHandler ChatClosed;
 
     public ChatFriend friend { get; private set; }
-    public bool Unread {
-      get { return unread; }
-      set {
-        UnreadIndicator.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
-        unread = value;
-      }
-    }
+
     public bool Open {
       get { return open; }
       set {
         if (!value)
           ChatDisplayPanel.BeginStoryboard(App.FadeOut);
         else {
-          if (Unread) Unread = false;
+          UnreadIndicator.Visibility = Visibility.Collapsed;
+          friend.Unread = false;
           ChatDisplayPanel.BeginStoryboard(App.FadeIn);
           ChatSendBox.Focus();
         }
         open = value;
       }
     }
-
-    private bool unread;
     private bool open;
 
     public ChatConversation() {
       InitializeComponent();
 
       if (Client.Connected) {
-        Unread = false;
         Loaded += (src, e) => {
           friend = (ChatFriend) DataContext;
+          ChatHistory.Text = friend.History;
+          if (!friend.Unread) Open = true;
+
           friend.HistoryUpdated += Friend_HistoryUpdated;
           NameLabel.Content = friend.User.Nickname;
           GotFocus += OnFocus;
@@ -75,6 +70,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) {
       ChatClosed?.Invoke(this, new EventArgs());
+      Dispose();
     }
 
     private void OnFocus(object sender, RoutedEventArgs e) {
@@ -83,9 +79,14 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Friend_HistoryUpdated(object sender, EventArgs e) {
       Dispatcher.Invoke(() => {
+        if (!Open) UnreadIndicator.Visibility = Visibility.Visible;
+        else friend.Unread = false;
         ChatHistory.Text = friend.History;
-        if (!Open) Unread = true;
       });
+    }
+
+    public void Dispose() {
+      friend.HistoryUpdated -= Friend_HistoryUpdated;
     }
   }
 }

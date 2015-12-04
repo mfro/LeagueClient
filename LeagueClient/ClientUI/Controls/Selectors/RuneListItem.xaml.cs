@@ -23,8 +23,11 @@ namespace LeagueClient.ClientUI.Controls {
   public partial class RuneListItem : UserControl {
     public SummonerRune Rune { get; private set; }
 
-    public RuneListItem(SummonerRune item, int count) {
+    public RuneListItem() {
       InitializeComponent();
+    }
+
+    public RuneListItem(SummonerRune item, int count) : this() {
       Rune = item;
 
       var rune = LeagueData.RuneData.Value.data[item.RuneId.ToString()];

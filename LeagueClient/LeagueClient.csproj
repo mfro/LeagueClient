@@ -145,16 +145,10 @@
     <Compile Include="ClientUI\Controls\Selectors\PopupSelector.xaml.cs">
       <DependentUpon>PopupSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Queue\ReturnToLobbyQueuer.xaml.cs">
-      <DependentUpon>ReturnToLobbyQueuer.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ClientUI\Controls\GameInviteAlert.xaml.cs">
       <DependentUpon>GameInviteAlert.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\IClientPage.cs" />
-    <Compile Include="ClientUI\ClientPage.xaml.cs">
-      <DependentUpon>ClientPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ClientUI\Controls\Selectors\ChampSelector.xaml.cs">
       <DependentUpon>ChampSelector.xaml</DependentUpon>
     </Compile>
@@ -193,6 +187,7 @@
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\harassment\HarassmentReport.cs" />
+    <Compile Include="Logic\com\riotgames\platform\messaging\ClientLoginKickNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
     <Compile Include="Logic\Region.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
@@ -435,15 +430,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Queue\ReturnToLobbyQueuer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ClientUI\Controls\GameInviteAlert.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ClientUI\ClientPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

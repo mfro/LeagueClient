@@ -35,17 +35,11 @@ namespace LeagueClient.ClientUI.Main {
 
     #region Constructors
 
-    public CustomLobbyPage(GameDTO game) {
-      SharedInit();
-
+    public CustomLobbyPage(GameDTO game) : this() {
       GotGameData(game);
     }
 
     public CustomLobbyPage() {
-      SharedInit();
-    }
-
-    private void SharedInit() {
       InitializeComponent();
       chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
       Client.ChatManager.UpdateStatus(ChatStatus.teamSelect);
@@ -60,10 +54,10 @@ namespace LeagueClient.ClientUI.Main {
       if ((game = e.Body as GameDTO) != null) {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
-      } else if((status = e.Body as LobbyStatus) != null) {
+      } else if ((status = e.Body as LobbyStatus) != null) {
         GotLobbyStatus(status);
         return true;
-      } else if((invite = e.Body as InvitePrivileges) != null) {
+      } else if ((invite = e.Body as InvitePrivileges) != null) {
         Client.CanInviteFriends = invite.canInvite;
         //Dispatcher.Invoke(() => InviteButt.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
       }
@@ -76,7 +70,7 @@ namespace LeagueClient.ClientUI.Main {
         Client.CanInviteFriends = true;
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();
-        
+
         foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
           InviteList.Children.Add(new InvitedPlayer(player));
         }
@@ -158,16 +152,10 @@ namespace LeagueClient.ClientUI.Main {
     public event EventHandler Close;
 
     public Page Page => this;
-    public bool CanPlay => false;
-    public bool CanClose => true;
 
     public void ForceClose() {
       RiotServices.GameService.QuitGame();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
-    }
-
-    public IQueuer HandleClose() {
-      return new ReturnToLobbyQueuer(this);
     }
 
     #endregion

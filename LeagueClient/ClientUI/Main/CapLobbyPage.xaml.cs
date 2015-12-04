@@ -53,11 +53,15 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     #region Constructors
-    public CapLobbyPage(bool isCreating) {
+
+    public CapLobbyPage() {
+      InitializeComponent();
+    }
+
+    public CapLobbyPage(bool isCreating) : this() {
       me = new CapPlayer(isCreating ? 0 : -1);
       me.PropertyChanged += Me_PropertyChanged;
       myControl = new CapMePlayer(me) { Margin = new Thickness(0, 10, 0, 0), VerticalAlignment = VerticalAlignment.Top };
-      InitializeComponent();
       FindAnotherButt.Visibility = Visibility.Collapsed;
       state = CapLobbyState.Inviting;
 
@@ -65,10 +69,10 @@ namespace LeagueClient.ClientUI.Main {
       CanInvite = isCreating;
     }
 
-    public CapLobbyPage(CapPlayer solo) {
+
+    public CapLobbyPage(CapPlayer solo) : this() {
       me = solo;
       myControl = new CapMePlayer(me) { Editable = false, Margin = new Thickness(0, 10, 0, 0), VerticalAlignment = VerticalAlignment.Top };
-      InitializeComponent();
       state = CapLobbyState.Searching;
 
       SharedInit();
@@ -645,10 +649,6 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public Page Page => this;
-    public bool CanPlay => false;
-    public bool CanClose => true;
-
-    public IQueuer HandleClose() => new ReturnToLobbyQueuer(this);
     #endregion
 
     private void CheckBox_Checked(object sender, RoutedEventArgs e) {

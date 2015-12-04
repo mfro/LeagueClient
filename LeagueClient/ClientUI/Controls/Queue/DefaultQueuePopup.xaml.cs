@@ -28,9 +28,11 @@ namespace LeagueClient.ClientUI.Controls {
 
     public GameDTO GameData { get; private set; }
 
-    public DefaultQueuePopup(GameDTO game) {
+    public DefaultQueuePopup() {
       InitializeComponent();
+    }
 
+    public DefaultQueuePopup(GameDTO game) : this() {
       GotGameData(game);
 
       TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(game.JoinTimerDuration)));
@@ -66,6 +68,8 @@ namespace LeagueClient.ClientUI.Controls {
       } else if (game.GameState.Equals("CHAMP_SELECT")) {
         Close?.Invoke(this, new EventArgs());
         Client.QueueManager.BeginChampionSelect(game);
+      } else if (game.GameState.Equals("TERMINATED")) {
+        Close?.Invoke(this, new EventArgs());
       } else { }
     }
 

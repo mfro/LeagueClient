@@ -46,9 +46,11 @@ namespace LeagueClient.ClientUI.Controls {
 
     private LoginAccountState state;
 
-    public LoginAccount(string login, string name, int profileicon) {
+    public LoginAccount() {
       InitializeComponent();
+    }
 
+    public LoginAccount(string login, string name, int profileicon) : this() {
       ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileicon));
       NameLabel.Content = name;
       Username = login;

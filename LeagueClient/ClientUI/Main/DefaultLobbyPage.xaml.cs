@@ -29,14 +29,16 @@ namespace LeagueClient.ClientUI.Main {
 
     private MatchMakerParams mmp;
     private GameQueueConfig config;
-    //private ChatRoomController chatRoom;
+    private ChatRoomController chatRoom;
     private LobbyStatus lobby;
 
-    public DefaultLobbyPage(MatchMakerParams mmp) {
+    public DefaultLobbyPage() {
       InitializeComponent();
+    }
 
+    public DefaultLobbyPage(MatchMakerParams mmp) : this() {
       this.mmp = mmp;
-      //chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
+      chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
       Client.ChatManager.UpdateStatus(ChatStatus.hostingNormalGame);
 
       //InviteButton.Visibility = Visibility.Hidden;
@@ -85,8 +87,8 @@ namespace LeagueClient.ClientUI.Main {
 
     public void GotLobbyStatus(LobbyStatus lobby) {
       this.lobby = lobby;
-      //if (!chatRoom.IsJoined)
-      //  chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
+      if (!chatRoom.IsJoined)
+        chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
 
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();
@@ -143,13 +145,10 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     public Page Page => this;
-    public bool CanClose => true;
-    public bool CanPlay => false;
-    public IQueuer HandleClose() => new ReturnToLobbyQueuer(this);
 
     public void ForceClose() {
       RiotServices.GameInvitationService.Leave();
-      //chatRoom.LeaveChat();
+      chatRoom.LeaveChat();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
   }

@@ -30,9 +30,12 @@ namespace LeagueClient.ClientUI.Controls {
     private DateTime start;
     private Logic.Cap.CapPlayer player;
 
-    public CapSoloQueuer(Logic.Cap.CapPlayer player) {
-      this.player = player;
+    public CapSoloQueuer() {
       InitializeComponent();
+    }
+
+    public CapSoloQueuer(Logic.Cap.CapPlayer player) : this() {
+      this.player = player;
       QueryPane.DataContext = player;
       PositionText.Text = player.Position.Value;
       RoleText.Text = player.Role.Value;
@@ -77,7 +80,7 @@ namespace LeagueClient.ClientUI.Controls {
       Popped?.Invoke(this, new QueuePoppedEventArgs(null));
     }
 
-    public Control GetControl() => this;
+    public Control Control => this;
     public void Dispose() => timer.Dispose();
   }
 }

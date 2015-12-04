@@ -31,8 +31,11 @@ namespace LeagueClient.ClientUI.Controls {
     private JSONObject payload;
     private Logic.Cap.CapPlayer player;
 
-    public CapSoloQueuePopup(JSONObject payload, Logic.Cap.CapPlayer player) {
+    public CapSoloQueuePopup() {
       InitializeComponent();
+    }
+
+    public CapSoloQueuePopup(JSONObject payload, Logic.Cap.CapPlayer player) : this() {
       this.payload = payload;
       this.player = player;
 

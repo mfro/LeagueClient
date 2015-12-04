@@ -34,11 +34,10 @@ namespace LeagueClient.ClientUI.Controls {
       InitializeComponent();
     }
 
-    public CapOtherPlayer2(CapPlayer player, bool editable = false) {
+    public CapOtherPlayer2(CapPlayer player, bool editable = false) : this() {
       Player = player;
       this.editable = editable;
 
-      InitializeComponent();
       PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
       RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.UNSELECTED);
 

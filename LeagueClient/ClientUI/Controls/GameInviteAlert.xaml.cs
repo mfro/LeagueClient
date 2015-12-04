@@ -58,7 +58,11 @@ namespace LeagueClient.ClientUI.Controls {
     private InvitationRequest invite;
     private JSONObject metaData;
 
-    public GameInviteAlert(InvitationRequest invite) {
+    public GameInviteAlert() {
+      InitializeComponent();
+    }
+
+    public GameInviteAlert(InvitationRequest invite) : this() {
       this.invite = invite;
       this.metaData = JSON.ParseObject(invite.GameMetaData);
       var map = GameMap.Maps.FirstOrDefault(m => m.MapId == metaData["mapId"]);
@@ -77,8 +81,6 @@ namespace LeagueClient.ClientUI.Controls {
           default: break;
         }
       }
-
-      InitializeComponent();
 
       HistoryGrid.DataContext = this;
       PopupGrid.DataContext = this;

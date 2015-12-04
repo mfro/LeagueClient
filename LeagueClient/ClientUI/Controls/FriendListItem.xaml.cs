@@ -28,10 +28,13 @@ namespace LeagueClient.ClientUI.Controls {
   public partial class FriendListItem : UserControl {
     private ChatFriend friend;
 
-    public FriendListItem(ChatFriend friend) {
+    public FriendListItem() {
+      InitializeComponent();
+    }
+
+    public FriendListItem(ChatFriend friend) : this() {
       this.friend = friend;
 
-      InitializeComponent();
       Update();
     }
 

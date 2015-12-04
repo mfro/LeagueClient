@@ -42,8 +42,11 @@ namespace LeagueClient.ClientUI.Main {
     private GameMap selected;
     private Border current;
 
-    public CustomCreatePage(GameMap map) {
+    public CustomCreatePage() {
       InitializeComponent();
+    }
+
+    public CustomCreatePage(GameMap map) : this() {
       SummonersRift.Tag = GameMap.SummonersRift;
       CrystalScar.Tag = GameMap.TheCrystalScar;
       TwistedTreeline.Tag = GameMap.TheTwistedTreeline;
@@ -131,10 +134,7 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     public Page Page => this;
-    public bool CanPlay => false;
-    public bool CanClose => true;
 
-    public IQueuer HandleClose() => null;
     public void ForceClose() { }
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }

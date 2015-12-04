@@ -59,13 +59,15 @@ namespace LeagueClient.ClientUI.Controls {
     private string rankString;
 
     private bool forceExpand;
+
+    public LobbyPlayer() {
+      InitializeComponent();
+    }
       
-    public LobbyPlayer(PlayerParticipant player, bool expanded) {
+    public LobbyPlayer(PlayerParticipant player, bool expanded) : this() {
       RiotServices.SummonerService.GetSummonerByName(player.SummonerName).ContinueWith(GotSummonerData);
       SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(player.ProfileIconId));
       UserName = player.SummonerName;
-      
-      InitializeComponent();
 
       forceExpand = expanded;
       if (!expanded) {
@@ -74,11 +76,9 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
-    public LobbyPlayer(Member member, bool expanded) {
+    public LobbyPlayer(Member member, bool expanded) : this() {
       RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
 
-      InitializeComponent();
-
       forceExpand = expanded;
       if (!expanded) {
         Image.Height = Image.Width = 0;
@@ -86,13 +86,11 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
-    public LobbyPlayer(BotParticipant bot, bool expanded) {
+    public LobbyPlayer(BotParticipant bot, bool expanded) : this() {
       var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
       SummonerIcon = LeagueData.GetChampIconImage(champ);
       UserName = champ.name;
       RankString = bot.BotSkillLevelName;
-
-      InitializeComponent();
 
       forceExpand = expanded;
       if (!expanded) {

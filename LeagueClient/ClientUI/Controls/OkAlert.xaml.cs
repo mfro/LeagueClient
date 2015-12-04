@@ -35,11 +35,13 @@ namespace LeagueClient.ClientUI.Controls {
     private string message;
     private string title;
 
-    public OkAlert(string title, string message) {
+    public OkAlert() {
+      InitializeComponent();
+    }
+
+    public OkAlert(string title, string message) : this() {
       Title = title;
       Message = message;
-
-      InitializeComponent();
 
       HistoryGrid.DataContext = this;
       PopupGrid.DataContext = this;

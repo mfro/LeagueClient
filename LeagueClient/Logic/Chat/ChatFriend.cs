@@ -21,8 +21,10 @@ namespace LeagueClient.Logic.Chat {
     public PublicSummoner Summoner { get; private set; }
     public LeagueStatus Status { get; private set; }
     public bool IsOffline { get; private set; }
-    public string History { get; private set; }
     public string Group { get; }
+
+    public bool Unread { get; set; }
+    public string History { get; private set; }
 
     public RiotAPI.CurrentGameAPI.CurrentGameInfo CurrentGameInfo { get; private set; }
     public GameDTO CurrentGameDTO { get; private set; }
@@ -73,6 +75,7 @@ namespace LeagueClient.Logic.Chat {
 
     private void AppendMessage(string sender, string message) {
       History += $"[{sender}]: {message}\n";
+      Unread = true;
       HistoryUpdated?.Invoke(this, new EventArgs());
     }
 

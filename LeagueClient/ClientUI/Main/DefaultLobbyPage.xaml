@@ -6,55 +6,31 @@
       Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}">
   <Grid>
     <Grid.RowDefinitions>
+      <RowDefinition Height="20"/>
       <RowDefinition Height="*"/>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="auto"/>
       <RowDefinition Height="*"/>
+      <RowDefinition Height="20"/>
     </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
 
     <Grid Grid.Column="1" Grid.Row="1">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="auto"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="auto"/>
-      </Grid.RowDefinitions>
-      <WrapPanel Name="PlayerList" Margin="0 0 -10 0" Width="770">
-        <WrapPanel.Resources>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <StackPanel Orientation="Horizontal" Name="PlayerList" Margin="0 0 -10 0" Width="770" VerticalAlignment="Bottom">
+        <StackPanel.Resources>
           <Style TargetType="my:LobbyPlayer2">
             <Setter Property="Margin" Value="0 0 10 0"/>
           </Style>
-        </WrapPanel.Resources>
+        </StackPanel.Resources>
         <my:LobbyPlayer2/>
         <my:LobbyPlayer2/>
         <my:LobbyPlayer2/>
         <my:LobbyPlayer2/>
         <my:LobbyPlayer2/>
-      </WrapPanel>
+      </StackPanel>
 
-      <!--<ScrollViewer Name="ChatScroller" Margin="0 10" Grid.Row="1">
-        <RichTextBox Name="ChatHistory" Background="{StaticResource ForeBrush}" BorderThickness="0" IsReadOnly="True">
-          <RichTextBox.Resources>
-            <Style TargetType="Paragraph">
-              <Setter Property="Margin" Value="0" />
-            </Style>
-          </RichTextBox.Resources>
-        </RichTextBox>
-      </ScrollViewer>
-      <TextBox Name="SendBox" Grid.Row="6" Margin="0 0 70 0"/>
-      <Button Name="ChatSend" Grid.Row="6" HorizontalAlignment="Right" Width="60">Send</Button>-->
-    </Grid>
-    <Grid Grid.Column="1" Grid.Row="2" Margin="0 10 0 0">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="auto"/>
-        <ColumnDefinition/>
-        <ColumnDefinition Width="auto"/>
-      </Grid.ColumnDefinitions>
-      <Grid Name="QueueDetailsGrid" Background="{StaticResource ForeBrush}">
+      <Grid Name="QueueDetailsGrid" Background="{StaticResource ForeBrush}" Grid.Column="1" Margin="10 0 0 35">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto"/>
           <RowDefinition Height="auto"/>
@@ -67,10 +43,6 @@
         <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
       </Grid>
 
-      <ScrollViewer Grid.Column="1" Margin="10 0 0 35">
-        <StackPanel Background="{StaticResource ForeBrush}" Name="InviteList"/>
-      </ScrollViewer>
-
       <Grid Grid.Column="1" VerticalAlignment="Bottom" Height="25" Margin="10 0 0 0">
         <Grid.ColumnDefinitions>
           <ColumnDefinition/>
@@ -80,8 +52,33 @@
         <Button Grid.Column="0" Name="QuitButton" Click="QuitButton_Click">Quit Game</Button>
         <Button Grid.Column="2" Name="StartButton" Click="StartButton_Click">Start Game</Button>
       </Grid>
+
     </Grid>
-    <!--<my:InvitePopup Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Close="InvitePopup_Close" x:Name="InvitePopup" Visibility="Collapsed" Opacity="0"></my:InvitePopup>-->
+    <Grid Grid.Column="1" Grid.Row="2" Margin="0 10 0 0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition/>
+        <ColumnDefinition Width="auto"/>
+      </Grid.ColumnDefinitions>
+
+      <ScrollViewer Name="ChatScroller" Margin="0 0 0 10">
+        <RichTextBox Name="ChatHistory" Background="{StaticResource ForeBrush}" BorderThickness="0" IsReadOnly="True">
+          <RichTextBox.Resources>
+            <Style TargetType="Paragraph">
+              <Setter Property="Margin" Value="0" />
+            </Style>
+          </RichTextBox.Resources>
+        </RichTextBox>
+      </ScrollViewer>
+      <TextBox Name="SendBox" Margin="0 0 70 0" Grid.Row="1"/>
+      <Button Name="ChatSend" HorizontalAlignment="Right" Width="60" Grid.Row="1">Send</Button>
+
+      <ScrollViewer Grid.Column="1" Width="320" Margin="10 0 0 0" HorizontalAlignment="Right" Grid.RowSpan="2">
+        <StackPanel Background="{StaticResource ForeBrush}" Name="InviteList"/>
+      </ScrollViewer>
+    </Grid>
   </Grid>
 </Page>

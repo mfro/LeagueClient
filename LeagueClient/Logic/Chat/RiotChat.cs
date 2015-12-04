@@ -122,8 +122,8 @@ namespace LeagueClient.Logic.Chat {
     private void OnReceiveMessage(object sender, Message msg) {
       if (!Friends.ContainsKey(msg.From.User)) return;
       if (msg.From.User.Equals(msg.To.User)) return;
-      MessageReceived?.Invoke(this, msg);
       Friends[msg.From.User].ReceiveMessage(msg.Body);
+      MessageReceived?.Invoke(this, msg);
     }
 
     private void OnRosterItem(object sender, Item item) {

@@ -21,9 +21,11 @@ namespace LeagueClient.ClientUI.Controls {
   /// </summary>
   public partial class ChampSelectPlayer : UserControl {
 
-    public ChampSelectPlayer(PlayerParticipant player, PlayerChampionSelectionDTO selection) {
+    public ChampSelectPlayer() {
       InitializeComponent();
+    }
 
+    public ChampSelectPlayer(PlayerParticipant player, PlayerChampionSelectionDTO selection) : this() {
       if (selection?.ChampionId > 0)
         ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId));
       if (selection?.Spell1Id > 0)
@@ -32,20 +34,19 @@ namespace LeagueClient.ClientUI.Controls {
         Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
 
       if (!string.IsNullOrWhiteSpace(player.SummonerName))
-        SummonerName.Content = player.SummonerName;
+        NameLabel.Content = player.SummonerName;
+      else
+        NameLabel.Visibility = Visibility.Collapsed;
 
     }
 
-    public ChampSelectPlayer(BotParticipant bot) {
-      InitializeComponent();
-
+    public ChampSelectPlayer(BotParticipant bot) : this() {
       var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
       ChampImage.Source = LeagueData.GetChampIconImage(champ);
-      SummonerName.Content = champ.name;
+      NameLabel.Content = champ.name;
     }
 
-    public ChampSelectPlayer(ObfuscatedParticipant obfusc) {
-      InitializeComponent();
+    public ChampSelectPlayer(ObfuscatedParticipant obfusc) : this()  {
     }
   }
 }

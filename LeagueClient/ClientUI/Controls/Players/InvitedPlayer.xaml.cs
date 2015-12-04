@@ -19,9 +19,12 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for InvitedPlayer.xaml
   /// </summary>
   public partial class InvitedPlayer : UserControl {
-    public InvitedPlayer(Invitee player) {
-      InitializeComponent();
 
+    public InvitedPlayer() {
+      InitializeComponent();
+    }
+
+    public InvitedPlayer(Invitee player) : this() {
       NameText.Content = player.SummonerName;
       switch (player.InviteeState) {
         case "PENDING": StateText.Content = "Pending"; break;

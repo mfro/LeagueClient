@@ -22,7 +22,7 @@
           </ItemsControl.ItemTemplate>
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8"/>
+              <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8" Width="752"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
         </ItemsControl>

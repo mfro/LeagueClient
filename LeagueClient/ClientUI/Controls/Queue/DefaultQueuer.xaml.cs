@@ -30,8 +30,11 @@ namespace LeagueClient.ClientUI.Controls {
     private Timer timer;
     private DateTime start;
 
-    public DefaultQueuer(QueueInfo queue) {
+    public DefaultQueuer() {
       InitializeComponent();
+    }
+
+    public DefaultQueuer(QueueInfo queue) : this() {
       Config = Client.AvailableQueues[queue.QueueId];
       QueueName.Text = QueueType.Values[Config.Type].Value;
       ElapsedText.Text = "In queue for 0:00";
@@ -68,9 +71,7 @@ namespace LeagueClient.ClientUI.Controls {
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 
-    public Control GetControl() {
-      return this;
-    }
+    public Control Control => this;
 
     public void Dispose() => timer.Dispose();
   }

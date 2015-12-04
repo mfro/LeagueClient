@@ -53,11 +53,11 @@ namespace LeagueClient.ClientUI.Controls {
 
     private bool editable;
 
-    public CapMePlayer() : this(null) { }
+    public CapMePlayer() : this(null) {}
 
     public CapMePlayer(CapPlayer player) {
-      CapPlayer = player ?? new CapPlayer (-1) { Status = CapStatus.Present };
       InitializeComponent();
+      CapPlayer = player ?? new CapPlayer (-1) { Status = CapStatus.Present };
       if (!Client.Connected) return;
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
 

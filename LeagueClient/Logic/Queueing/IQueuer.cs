@@ -9,7 +9,7 @@ namespace LeagueClient.Logic.Queueing {
   public interface IQueuer {
     event EventHandler<QueuePoppedEventArgs> Popped;
 
-    System.Windows.Controls.Control GetControl();
+    System.Windows.Controls.Control Control { get; }
 
     bool HandleMessage(MessageReceivedEventArgs args);
   }
