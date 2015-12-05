@@ -3,29 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave"
              SnapsToDevicePixels="True">
-  <UserControl.Resources>
-    <Style x:Key="HoverButton" TargetType="Button">
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Width" Value="30"/>
-      <Setter Property="Height" Value="30"/>
-      <Setter Property="VerticalAlignment" Value="Top"/>
-      <Setter Property="Padding" Value="5"/>
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="Button">
-            <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="Black">
-              <Border Margin="0" Background="{TemplateBinding Background}">
-                <Grid Margin="{TemplateBinding Padding}">
-                  <ContentPresenter Name="content" HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.Foreground="{StaticResource FontBrush}"
-                                    TextBlock.FontSize="{TemplateBinding FontSize}" Content="{TemplateBinding Content}"/>
-                </Grid>
-              </Border>
-            </Border>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
-  </UserControl.Resources>
   <Grid Background="{StaticResource ForeBrush}" Width="144">
     <Grid.RowDefinitions>
       <RowDefinition Height="136"/>
@@ -37,11 +14,11 @@
     <Label Grid.Row="2" Margin="4 0 0 4" HorizontalAlignment="Left" Name="RankLabel" FontSize="10">Gold V</Label>
     <Label Grid.Row="2" Margin="4 0 0 4" HorizontalAlignment="Right" Name="WinsLabel" FontSize="10">167 Wins</Label>
 
-    <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Right" Margin="8" Background="#B50000" ToolTip="Kick from group" Click="Kick_Click" Name="KickButton">
+    <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Right" Margin="8" Background="#B50000" ToolTip="Kick from group" Click="Kick_Click" Name="KickButton" Width="30" Height="30">
       <Path Data="M 0 0 L 20 20 M 20 0 L 0 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
     </Button>
 
-    <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Margin="8" Background="#018A26" ToolTip="Give invite powers" Click="GiveInvite_Click" Name="GiveInviteButt">
+    <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Margin="8" Background="#018A26" ToolTip="Give invite powers" Click="GiveInvite_Click" Name="GiveInviteButt" Width="30" Height="30">
       <Grid Width="20" Height="20">
         <Path Data="M 0 10 L 20 10" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
         <Path Data="M 10 0 L 10 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False" Name="PlusPath"/>

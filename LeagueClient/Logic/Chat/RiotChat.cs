@@ -220,6 +220,12 @@ namespace LeagueClient.Logic.Chat {
       else throw new FormatException(user.User + " is not correctly formatted");
     }
 
+    public ChatFriend GetUser(long summonerId) {
+      var user = "sum" + summonerId;
+      if (Friends.ContainsKey(user)) return Friends[user];
+      else return null;
+    }
+
     /// <summary>
     /// Minimizes any open chat conversations
     /// </summary>

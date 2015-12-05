@@ -26,6 +26,8 @@ using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using RtmpSharp.Messaging;
 using LeagueClient.Logic.Riot;
+using MFroehlich.Parsing.DynamicJSON;
+using LeagueClient.Logic.Riot.Team;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -46,7 +48,7 @@ namespace LeagueClient.ClientUI {
       InitializeComponent();
       Buttons = new List<Border> { LogoutTab, PlayTab, FriendsTab, ProfileTab, ShopTab };
 
-      ShowPage(2);
+      ShowTab(Tab.Friends);
       IPAmount.Content = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Content = Client.LoginPacket.RpBalance.ToString();
       NameLabel.Content = Client.LoginPacket.AllSummonerData.Summoner.Name;
@@ -143,25 +145,25 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Tab_MousePress(object sender, RoutedEventArgs e) {
-      ShowPage(Buttons.IndexOf((Border) sender));
+      ShowTab((Tab) Buttons.IndexOf((Border) sender));
     }
 
-    private void ShowPage(int index) {
+    private void ShowTab(Tab tab) {
       if (currentButton != null) ((TextBlock) currentButton.Child).Foreground = App.FontBrush;
-      currentButton = Buttons[index];
+      currentButton = Buttons[(int) tab];
 
       int pageHeight = (int) (double) FindResource("PageHeight");
       SlidingGrid.Height = pageHeight * (Buttons.Count - 1);
 
-      if (index == 0) Client.Logout();
+      if (tab == Tab.Logout) Client.Logout();
 
-      var arrowAnim = new ThicknessAnimation(new Thickness(15, ArrowLocations[index], 15, 0), new Duration(TimeSpan.FromMilliseconds(100)));
+      var arrowAnim = new ThicknessAnimation(new Thickness(15, ArrowLocations[(int) tab], 15, 0), new Duration(TimeSpan.FromMilliseconds(100)));
       Arrows.BeginAnimation(MarginProperty, arrowAnim);
 
-      var slideAnim = new ThicknessAnimation(new Thickness(0, -pageHeight * (index - 1), 0, 0), new Duration(TimeSpan.FromMilliseconds(100)));
+      var slideAnim = new ThicknessAnimation(new Thickness(0, -pageHeight * ((int) tab - 1), 0, 0), new Duration(TimeSpan.FromMilliseconds(100)));
       SlidingGrid.BeginAnimation(MarginProperty, slideAnim);
 
-      if (index == 1) PlayPage.Reset();
+      if (tab == Tab.Play) PlayPage.Reset();
     }
     #endregion
 
@@ -232,6 +234,7 @@ namespace LeagueClient.ClientUI {
       QueuerArea.Child = queuer.Control;
       queuer.Popped += Queuer_Popped;
       CurrentQueuer = queuer;
+      ShowTab(Tab.Friends);
     }
 
     public void ShowPage(IClientSubPage page) {
@@ -242,6 +245,7 @@ namespace LeagueClient.ClientUI {
       CurrentPage = page;
       SubPageArea.Content = page?.Page;
       SubPageArea.Visibility = Visibility.Visible;
+      ShowTab(Tab.Play);
     }
 
     public void ShowNotification(Alert alert) {
@@ -253,6 +257,35 @@ namespace LeagueClient.ClientUI {
       ShowPage(page);
       Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
       RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
+    }
+
+    public void AcceptInvite(InvitationRequest invite) {
+      var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
+      var metaData = JSON.ParseObject(invite.GameMetaData);
+      if (metaData["gameTypeConfigId"] == 12) {
+        var lobby = new CapLobbyPage(false);
+        task.ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+        RiotServices.CapService.JoinGroupAsInvitee(metaData["groupFinderId"]);
+        Client.QueueManager.ShowPage(lobby);
+      } else {
+        switch ((string) metaData["gameType"]) {
+          case "PRACTICE_GAME":
+            var custom = new CustomLobbyPage();
+            task.ContinueWith(t => custom.GotLobbyStatus(t.Result));
+            Client.QueueManager.ShowPage(custom);
+            break;
+          case "NORMAL_GAME":
+            var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] } });
+            task.ContinueWith(t => normal.GotLobbyStatus(t.Result));
+            Client.QueueManager.ShowPage(normal);
+            break;
+          case "RANKED_TEAM_GAME":
+            var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] }, TeamId = new TeamId { FullId = metaData["rankedTeamId"] } });
+            task.ContinueWith(t => ranked.GotLobbyStatus(t.Result));
+            Client.QueueManager.ShowPage(ranked);
+            break;
+        }
+      }
     }
     #endregion
 
@@ -272,6 +305,14 @@ namespace LeagueClient.ClientUI {
         Dispatcher.MyInvoke(CloseSubPage, false);
       else
         CloseSubPage(false);
+    }
+
+    private enum Tab {
+      Logout = 0,
+      Play = 1,
+      Friends = 2,
+      Profile = 3,
+      Shop = 4
     }
   }
 }

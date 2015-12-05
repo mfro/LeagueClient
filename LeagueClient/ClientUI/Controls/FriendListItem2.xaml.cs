@@ -17,6 +17,8 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
+using LeagueClient.Logic.Riot.Platform;
+using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -99,14 +101,39 @@ namespace LeagueClient.ClientUI.Controls {
         }
         StatusText.Content = QueueType.Values[friend.CurrentGameDTO.QueueTypeName].Value;
         if (!string.IsNullOrEmpty(friend.Status.Champion)) {
-          ChampText.Visibility = Visibility;
+          ChampText.Visibility = Visibility.Visible;
           ChampText.Content = LeagueData.ChampData.Value.data[friend.Status.Champion].name;
         }
       } else StatusText.Content = friend.Status.GameStatus.Value;
+      if (friend.Invite != null) {
+        ChampText.Visibility = Visibility.Visible;
+        ChampText.Content = "Invited you";
+      }
     }
 
     private void This_DoubleClick(object sender, MouseButtonEventArgs e) {
       ForceExpand = !ForceExpand;
+    }
+
+    private void DeclineButt_Click(object sender, RoutedEventArgs e) {
+      RiotServices.GameInvitationService.Decline(friend.Invite.InvitationId);
+    }
+
+    private void AcceptButt_Click(object sender, RoutedEventArgs e) {
+      Client.QueueManager.AcceptInvite(friend.Invite);
+      friend.Invite = null;
+    }
+
+    private void Champ_MouseEnter(object sender, MouseEventArgs e) {
+      if(friend.Invite != null) {
+        AcceptButt.BeginStoryboard(App.FadeIn);
+        DeclineButt.BeginStoryboard(App.FadeIn);
+      }
+    }
+
+    private void Champ_MouseLeave(object sender, MouseEventArgs e) {
+      AcceptButt.BeginStoryboard(App.FadeOut);
+      DeclineButt.BeginStoryboard(App.FadeOut);
     }
   }
 }

@@ -12,6 +12,6 @@ namespace LeagueClient.Logic.Riot.Platform {
     [SerializedName("summonerName")]
     public System.String summonerName { get; set; }
     [SerializedName("summonerId")]
-    public System.Double summonerId { get; set; }
+    public System.Int64 summonerId { get; set; }
   }
 }

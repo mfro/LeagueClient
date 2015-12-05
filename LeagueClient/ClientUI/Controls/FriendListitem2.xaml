@@ -11,6 +11,15 @@
       <ColumnDefinition Width="auto"/>
     </Grid.ColumnDefinitions>
     <Image Margin="8 8 8 8" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Name="SummonerIcon"/>
+    <Grid Background="Transparent" Margin="8" MouseEnter="Champ_MouseEnter" MouseLeave="Champ_MouseLeave">
+      <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Right" Background="#B50000" ToolTip="Decline invite" Click="DeclineButt_Click" Name="DeclineButt" Width="30" Height="30" Visibility="Collapsed" Opacity="0">
+        <Path Data="M 0 0 L 20 20 M 20 0 L 0 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+      </Button>
+
+      <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Background="#018A26" ToolTip="Accept invite" Click="AcceptButt_Click" Name="AcceptButt" Padding="0" Width="30" Height="30" Visibility="Collapsed" Opacity="0">
+        <Path Data="M 1 10 L 8 17 L 22 2" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+      </Button>
+    </Grid>
     <Grid Grid.Column="1" Grid.RowSpan="2" Margin="0 4 8 5" Width="120" Name="Sidebar">
       <Grid.RowDefinitions>
         <RowDefinition Height="auto"/>
@@ -21,9 +30,9 @@
       <Label Padding="0" FontSize="16" Name="NameText">KombatProwess</Label>
       <TextBlock Style="{StaticResource Control}" TextWrapping="Wrap" Grid.Row="1" FontSize="12" Padding="0" Width="120" Name="MsgText">New Computer :D</TextBlock>
 
-      <Label Grid.Row="1" Padding="0" FontSize="11" VerticalAlignment="Bottom" HorizontalAlignment="Right" Name="TimeText">99:99</Label>
-      <Label Grid.Row="2" Padding="0" FontSize="11" HorizontalAlignment="Right" Name="ChampText">Annie</Label>
-      <Label Grid.Row="10" Padding="0" HorizontalAlignment="Right" Name="StatusText">Ranked Team 3v3</Label>
+      <Label Grid.Row="1" Padding="0" FontSize="11" VerticalAlignment="Bottom" HorizontalAlignment="Right" Name="TimeText"></Label>
+      <Label Grid.Row="2" Padding="0" FontSize="11" HorizontalAlignment="Right" Name="ChampText">Invited You</Label>
+      <Label Grid.Row="10" Padding="0" HorizontalAlignment="Right" Name="StatusText">In Teambuilder</Label>
     </Grid>
   </Grid>
   <UserControl.ContextMenu>

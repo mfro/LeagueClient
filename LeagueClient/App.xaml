@@ -283,6 +283,28 @@
         </Trigger>
       </Style.Triggers>
     </Style>
+
+    <Style x:Key="HoverButton" TargetType="Button">
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="SnapsToDevicePixels" Value="True"/>
+      <Setter Property="VerticalAlignment" Value="Top"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Padding" Value="5"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="Black">
+              <Border Margin="0" Background="{TemplateBinding Background}">
+                <Grid Margin="{TemplateBinding Padding}">
+                  <ContentPresenter Name="content" HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.Foreground="{StaticResource FontBrush}"
+                                    TextBlock.FontSize="{TemplateBinding FontSize}" Content="{TemplateBinding Content}"/>
+                </Grid>
+              </Border>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
     <Style TargetType="Button">
       <Style.Resources>
         <Color x:Key="BorderColor" R="32" G="32" B="36" A="255"/>

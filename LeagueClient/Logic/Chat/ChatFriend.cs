@@ -16,6 +16,7 @@ namespace LeagueClient.Logic.Chat {
     public event EventHandler HistoryUpdated;
     public Dictionary<string, object> Data { get; } = new Dictionary<string, object>();
 
+    public InvitationRequest Invite { get; set; }
     public Item User { get; }
 
     public PublicSummoner Summoner { get; private set; }

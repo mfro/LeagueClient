@@ -105,7 +105,11 @@
     </Border>
 
     <Grid Grid.Row="2" Grid.Column="2" VerticalAlignment="Bottom" Margin="11">
-      <ItemsControl Name="OpenChats">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="239*"/>
+        <ColumnDefinition Width="829*"/>
+      </Grid.ColumnDefinitions>
+      <ItemsControl Name="OpenChats" Grid.ColumnSpan="2">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <my:ChatConversation DataContext="{Binding}" ChatClosed="ChatConversation_ChatClosed" Margin="-160 0 0 0"/>
@@ -118,27 +122,32 @@
         </ItemsControl.ItemsPanel>
       </ItemsControl>
     </Grid>
-    
+
     <Grid Grid.Row="2" Grid.Column="1" Margin="11">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="80"/>
         <RowDefinition Height="auto"/>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
-      <Border Grid.Row="1" Name="QueuerArea"/>
-      
-      <Image Source="{StaticResource RPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="3"/>
-      <Label FontSize="13" Name="RPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 0 17 0" Grid.Row="3"/>
-      <Image Source="{StaticResource IPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="4"/>
-      <Label FontSize="13" Name="IPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 2 0 2" Grid.Row="4"/>
-      <Label FontSize="13" Name="CurrentStatus" Foreground="{StaticResource ChatBrush}" Grid.Row="5" Content="Online" Background="Transparent" MouseUp="CurrentStatus_MouseUp" Padding="0"/>
-      <Label FontSize="18" Grid.Row="6" Padding="0 0 0 5" Name="NameLabel">master mor</Label>
-      <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Grid.Row="7" MouseUp="ProfileIcon_Click" Name="ProfileIcon"/>
+
+      <Border Grid.Row="1" Name="QueuerArea" Margin="-11 0"/>
+
+      <Button Grid.Row="3">Notifications  - 3</Button>
+
+      <Image Source="{StaticResource RPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="5"/>
+      <Label FontSize="13" Name="RPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 0 17 0" Grid.Row="5"/>
+      <Image Source="{StaticResource IPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="6"/>
+      <Label FontSize="13" Name="IPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 2 0 2" Grid.Row="6"/>
+      <Label FontSize="13" Name="CurrentStatus" Foreground="{StaticResource ChatBrush}" Grid.Row="7" Content="Online" Background="Transparent" MouseUp="CurrentStatus_MouseUp" Padding="0"/>
+      <Label FontSize="18" Grid.Row="8" Padding="0 0 0 5" Name="NameLabel">master mor</Label>
+      <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Grid.Row="9" MouseUp="ProfileIcon_Click" Name="ProfileIcon"/>
     </Grid>
     <my:PopupSelector Grid.RowSpan="10" Grid.ColumnSpan="10" x:Name="Popup" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Opacity="0" Close="Popup_Close"/>
     <Border Grid.ColumnSpan="100" Grid.RowSpan="100" Name="PopupPanel" Background="#4F101010" Visibility="Collapsed"/>

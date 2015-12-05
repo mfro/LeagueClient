@@ -3,29 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
-  <UserControl.Resources>
-    <Style x:Key="HoverButton" TargetType="Button">
-      <Setter Property="SnapsToDevicePixels" Value="True"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="BorderBrush" Value="White"/>
-      <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="Padding" Value="0"/>
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="Button">
-            <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="Black">
-              <Border Margin="0" Background="{TemplateBinding Background}">
-                <Grid Margin="{TemplateBinding Padding}">
-                  <ContentPresenter Name="content" HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.Foreground="{StaticResource FontBrush}"
-                                    TextBlock.FontSize="{TemplateBinding FontSize}" Content="{TemplateBinding Content}"/>
-                </Grid>
-              </Border>
-            </Border>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
-  </UserControl.Resources>
   <Grid Background="{StaticResource Back1Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="8"/>
@@ -82,12 +59,12 @@
     </ComboBox>
 
     <Button Style="{StaticResource HoverButton}" Grid.Row="1" Grid.Column="3" Background="#018A26" ToolTip="Accept" 
-            Click="AcceptButton_Click" Name="AcceptButton" VerticalAlignment="Top">
+            Click="AcceptButton_Click" Name="AcceptButton" VerticalAlignment="Top" Padding="0">
       <Path Data="M 7 29 L 20 41 L 49 12" Width="56" Height="56" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
     </Button>
 
     <Button Style="{StaticResource HoverButton}" Grid.Row="1" Grid.Column="3" Background="#B50000" ToolTip="Accept" 
-            Click="DeclineButton_Click" Name="DeclineButton" VerticalAlignment="Bottom">
+            Click="DeclineButton_Click" Name="DeclineButton" VerticalAlignment="Bottom" Padding="0">
       <Path Data="M 10 10 L 46 46 M 10 46 L 46 10" Width="56" Height="56" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
     </Button>
     

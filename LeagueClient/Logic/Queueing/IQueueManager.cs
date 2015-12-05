@@ -31,6 +31,8 @@ namespace LeagueClient.Logic.Queueing {
     /// <param name="game"></param>
     void BeginChampionSelect(GameDTO game);
 
+    void AcceptInvite(InvitationRequest invite);
+
     /// <summary>
     /// Creates a teambuilder solo query selection and displays it
     /// </summary>

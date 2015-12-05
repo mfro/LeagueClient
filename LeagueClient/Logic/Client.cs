@@ -85,7 +85,7 @@ namespace LeagueClient.Logic {
     internal static Process GameProcess { get; set; }
     internal static InGameCredentials QueuedCredentials { get; set; }
     internal static AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
-    
+
     internal static bool CanInviteFriends { get; set; }
     #endregion
 
@@ -247,18 +247,24 @@ namespace LeagueClient.Logic {
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
     public static void ShowInvite(InvitationRequest invite) {
       if (invite.InvitationState.Equals("ACTIVE")) {
-        var payload = JSON.ParseObject(invite.GameMetaData);
-        string type = payload["gameType"];
-        GameInviteAlert alert = AlertFactory.InviteAlert(invite);
+        //var payload = JSON.ParseObject(invite.GameMetaData);
+        //string type = payload["gameType"];
+        //GameInviteAlert alert = AlertFactory.InviteAlert(invite);
 
-        invites[invite.InvitationId] = alert;
-        QueueManager.ShowNotification(alert);
+        //invites[invite.InvitationId] = alert;
+        //QueueManager.ShowNotification(alert);
+        var friend = ChatManager.GetUser(invite.Inviter.summonerId);
+        if (friend != null) {
+          friend.Invite = invite;
+        } else {
+
+        }
       }
     }
 
     public static void Logout() {
       if (Connected) {
-        Client.SaveSettings(Client.Settings.Username, JSONObject.From(Client.Settings));
+        SaveSettings(Settings.Username, JSONObject.From(Settings));
         RiotServices.GameService.QuitGame();
         RiotServices.LoginService.Logout().ContinueWith(t => RtmpConn.LogoutAsync().ContinueWith(t2 => RtmpConn.Close()));
         Connected = false;
