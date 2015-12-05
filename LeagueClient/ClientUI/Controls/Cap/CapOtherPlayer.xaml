@@ -3,65 +3,73 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
-  <Grid Width="450" Height="68">
+  <Grid Background="{StaticResource Back1Brush}">
     <Grid.RowDefinitions>
-      <RowDefinition/>
-      <RowDefinition/>
+      <RowDefinition Height="8"/>
+      <RowDefinition Height="120"/>
+      <RowDefinition Height="24"/>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="8"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="4"/>
-      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="8"/>
+      <ColumnDefinition Width="120"/>
+      <ColumnDefinition Width="8"/>
+      <ColumnDefinition Width="56"/>
+      <ColumnDefinition Width="8"/>
     </Grid.ColumnDefinitions>
-    <Grid Name="Images" Grid.Column="0" Grid.RowSpan="2">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="68"/>
-        <ColumnDefinition Width="4"/>
-        <ColumnDefinition Width="32"/>
-      </Grid.ColumnDefinitions>
-      <Border Name="ChampBorder" BorderBrush="{StaticResource ForeBrush}"  BorderThickness="2">
-        <Image Source="{Binding Player.ChampionImage}"/>
-      </Border>
-      <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource Control}"
-                  FontSize="50" Name="Unknown" Margin="0 0 0 5">?</TextBlock>
-      <Border Name="Spell1Border" BorderBrush="{StaticResource ForeBrush}"
-            BorderThickness="2" Grid.Column="2" VerticalAlignment="Top"
-            Height="32">
-        <Image Source="{Binding Player.Spell1Image}"/>
-      </Border>
-      <Border Name="Spell2Border" BorderBrush="{StaticResource ForeBrush}"
-            BorderThickness="2" Grid.Column="2" VerticalAlignment="Bottom"
-            Height="32">
-        <Image Source="{Binding Player.Spell2Image}"/>
-      </Border>
-      <Button Name="AcceptButt" Grid.Column="2" VerticalAlignment="Top" Margin="2" Height="28" Padding="0" Click="Accept_Click">
-        <Path Stroke="White" Data="M 4 11 L 9 16 L 18 6" Width="22" Height="22" StrokeThickness="2"/>
+    <Grid Grid.Row="1" Grid.Column="1" MouseEnter="Champ_MouseEnter" MouseLeave="Champ_MouseLeave" Background="Transparent">
+      <Image Name="ChampionImage"/>
+
+      <Button Style="{StaticResource HoverButton}" Background="#B50000" ToolTip="Kick from group" 
+              Click="KickButton_Click" Name="KickButton" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Right" Visibility="Collapsed">
+        <Path Data="M 5 5 L 31 31 M 31 5 L 5 31" Width="36" Height="36" StrokeThickness="6" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
-      <Button Name="DeclineButt" Grid.Column="2" VerticalAlignment="Bottom" Margin="2" Height="28" Padding="0" Click="Decline_Click">
-        <Path Stroke="White" Data="M 5 5 L 17 17 M 17 5 L 5 17" Width="22" Height="22" StrokeThickness="2"/>
+
+      <Button Style="{StaticResource HoverButton}" Background="#018A26" ToolTip="Give invite powers"
+              Click="GiveInvite_Click" Name="GiveInviteButt" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Collapsed">
+        <Path Data="M 18 2 L 18 34 M 2 18 L 34 18" Width="36" Height="36" StrokeThickness="6" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
     </Grid>
-    <TextBlock Style="{StaticResource Control}" Name="SummonerText" Grid.Column="3" VerticalAlignment="Bottom" FontSize="16"/>
-    <TextBlock Style="{StaticResource Control}" Name="RoleText" Grid.Column="3" VerticalAlignment="Top" Grid.Row="1" FontSize="13"/>
-    <Path Stroke="{StaticResource FocusBrush}" Data="M 0 10 L 10 20 L 28 0" StrokeThickness="5" Name="Check" Grid.RowSpan="2"
-          HorizontalAlignment="Right" VerticalAlignment="Center" Margin="15 0" Grid.Column="2"/>
-    <ComboBox Name="PositionBox" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left"
-              SelectedItem="{Binding Path=Player.Position,Mode=TwoWay}">
+    <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource Control}" Grid.Column="1" Grid.ColumnSpan="3"
+                  FontSize="90" Name="Unknown" Margin="0 0 0 5">?</TextBlock>
+
+    <Image Grid.Row="1" Grid.Column="3" Name="Spell1Image" VerticalAlignment="Top"/>
+    <Image Grid.Row="1" Grid.Column="3" Name="Spell2Image" VerticalAlignment="Bottom"/>
+    <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 0 0" HorizontalAlignment="Center" Name="SummonerText" FontSize="14">master mor</Label>
+
+    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Name="PositionText" FontSize="12">Middle lane</Label>
+    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Right" Name="RoleText" FontSize="12">Assassin</Label>
+    <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Padding="0" Margin="0 -5" HorizontalAlignment="Center" Name="TimerText" FontSize="18">99</Label>
+    <ComboBox Name="PositionBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Top"
+              SelectionChanged="PositionBox_SelectionChanged" Visibility="Collapsed">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <ContentPresenter Content="{Binding Value}"/>
         </DataTemplate>
       </ComboBox.ItemTemplate>
     </ComboBox>
-    <ComboBox Name="RoleBox" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left"
-              SelectedItem="{Binding Path=Player.Role,Mode=TwoWay}" Margin="130 0 0 0">
+    <ComboBox Name="RoleBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Top"
+              SelectionChanged="RoleBox_SelectionChanged" Visibility="Collapsed">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <ContentPresenter Content="{Binding Value}"/>
         </DataTemplate>
       </ComboBox.ItemTemplate>
     </ComboBox>
-    <TextBlock Style="{StaticResource Control}" Name="TimeoutText" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontSize="16" Grid.RowSpan="2" Margin="70 0"/>
+
+    <Button Style="{StaticResource HoverButton}" Grid.Row="1" Grid.Column="3" Background="#018A26" ToolTip="Accept" 
+            Click="AcceptButton_Click" Name="AcceptButton" VerticalAlignment="Top" Padding="0">
+      <Path Data="M 7 29 L 20 41 L 49 12" Width="56" Height="56" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+    </Button>
+
+    <Button Style="{StaticResource HoverButton}" Grid.Row="1" Grid.Column="3" Background="#B50000" ToolTip="Accept" 
+            Click="DeclineButton_Click" Name="DeclineButton" VerticalAlignment="Bottom" Padding="0">
+      <Path Data="M 10 10 L 46 46 M 10 46 L 46 10" Width="56" Height="56" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+    </Button>
+    
+    <!--<Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Margin="8" Background="{StaticResource Back1Brush}" ToolTip="View Profile">
+      <Path Data="M 5 14 C -5 -5 25 -5 15 14 L 19 16 L 19 20 L 1 20 L 1 16 Z" Fill="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+    </Button>-->
   </Grid>
 </UserControl>

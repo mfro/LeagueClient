@@ -15,18 +15,18 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Cap;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
-using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
-  /// Interaction logic for TeambuilderPlayer.xaml
+  /// Interaction logic for CapOtherPlayer2.xaml
   /// </summary>
   public partial class CapOtherPlayer : UserControl {
     public CapPlayer Player { get; private set; }
 
     public event EventHandler<bool> CandidateReacted;
+    public event EventHandler GiveInvite;
+    public event EventHandler Kicked;
 
     private Timer timer;
     public bool editable;
@@ -48,84 +48,112 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void PlayerUpdate() {
-      if (Player.Position != null) {
-        RoleText.Text = Player.Position.Value;
-        if (Player.Role != null) RoleText.Text += " / " + Player.Role.Value;
-      } else if (Player.Role != null) {
-        RoleText.Text = Player.Role.Value;
-      } else RoleText.Text = "";
+      PositionText.Content = Player.Position?.Value;
+      RoleText.Content = Player.Role?.Value;
+      PositionBox.SelectedItem = Player.Position;
+      RoleBox.SelectedItem = Player.Role;
 
-      Check.Visibility = Visibility.Collapsed;
-      if(editable && Player.Status == CapStatus.ChoosingAdvert) {
-        PositionBox.Visibility = Visibility.Visible;
-        RoleBox.Visibility = Visibility.Visible;
+      TimerText.Visibility = Visibility.Collapsed;
+
+      if (Player.Champion != null)
+        ChampionImage.Source = LeagueData.GetChampIconImage(Player.Champion);
+      if (Player.Spell1 != null)
+        Spell1Image.Source = LeagueData.GetSpellImage(Player.Spell1);
+      if (Player.Spell2 != null)
+        Spell2Image.Source = LeagueData.GetSpellImage(Player.Spell2);
+
+      //Glow.Opacity = 0;
+      if (editable && Player.Status == CapStatus.ChoosingAdvert) {
+        PositionBox.Visibility = RoleBox.Visibility = Visibility.Visible;
+        PositionText.Visibility = RoleText.Visibility = Visibility.Collapsed;
       } else {
-        PositionBox.Visibility = Visibility.Collapsed;
-        RoleBox.Visibility = Visibility.Collapsed;
+        PositionBox.Visibility = RoleBox.Visibility = Visibility.Collapsed;
+        PositionText.Visibility = RoleText.Visibility = Visibility.Visible;
       }
 
-      if(editable && Player.Status == CapStatus.Found) {
-        AcceptButt.Visibility = Visibility.Visible;
-        DeclineButt.Visibility = Visibility.Visible;
+      if (editable && Player.Status == CapStatus.Found) {
+        AcceptButton.Visibility = Visibility.Visible;
+        DeclineButton.Visibility = Visibility.Visible;
       } else {
-        AcceptButt.Visibility = Visibility.Collapsed;
-        DeclineButt.Visibility = Visibility.Collapsed;
+        AcceptButton.Visibility = Visibility.Collapsed;
+        DeclineButton.Visibility = Visibility.Collapsed;
       }
 
-      TimeoutText.Visibility = Visibility.Collapsed;
+      Unknown.Visibility = Visibility.Collapsed;
+      TimerText.Visibility = Visibility.Collapsed;
       switch (Player.Status) {
         case CapStatus.ChoosingAdvert:
-          SummonerText.Text = "Select Position and Role";
+          SummonerText.Content = "Select Position and Role";
           break;
         case CapStatus.Searching:
           Unknown.Visibility = Visibility.Visible;
-          SummonerText.Text = "Searching for candidate...";
+          Unknown.Text = "?";
+          SummonerText.Content = "Searching for candidate...";
           break;
         case CapStatus.Found:
-          SummonerText.Text = "A candidate has been found";
-          TimeoutText.Visibility = Visibility.Visible;
-          TimeoutText.Text = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
+          SummonerText.Content = "A candidate has been found";
+          TimerText.Visibility = Visibility.Visible;
+          TimerText.Content = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
           timer = new Timer { Interval = 1000, Enabled = true };
           timer.Elapsed += Timer_Elapsed;
           break;
         case CapStatus.Joining:
-          SummonerText.Text = "Waiting for candidate to join group...";
+          SummonerText.Content = "Waiting for candidate...";
           break;
         case CapStatus.Present:
-          SummonerText.Text = Player.Name;
+          SummonerText.Content = Player.Name;
           break;
         case CapStatus.Ready:
-          Check.Visibility = Visibility.Visible;
+          //Glow.Opacity = 1;
           goto case CapStatus.Present;
         case CapStatus.Penalty:
-          SummonerText.Text = "Player kicked";
-          TimeoutText.Visibility = Visibility.Visible;
-          TimeoutText.Text = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
+          SummonerText.Content = "Player kicked";
+          Unknown.Visibility = Visibility.Visible;
+          Unknown.Text = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
           timer = new Timer { Interval = 1000, Enabled = true };
           timer.Elapsed += Timer_Elapsed;
           break;
         case CapStatus.SearchingDeclined:
-          SummonerText.Text = "The player was not found, searching for another candidate...";
+          SummonerText.Content = "Searching for candidate...";
           break;
       }
     }
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       var t = (int) Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds);
-      if(t > 0) {
-        Dispatcher.Invoke(() => TimeoutText.Text = t + "");
+      if (t > 0) {
+        try {
+          Dispatcher.Invoke(() => TimerText.Content = Unknown.Text = t + "");
+        } catch {
+          timer.Dispose();
+        }
       } else {
         timer.Dispose();
         Player.Status = CapStatus.Searching;
       }
     }
 
-    private void Accept_Click(object sender, RoutedEventArgs e) {
-      CandidateReacted?.Invoke(this, true);
+    private void AcceptButton_Click(object sender, RoutedEventArgs e) => CandidateReacted?.Invoke(this, true);
+    private void DeclineButton_Click(object sender, RoutedEventArgs e) => CandidateReacted?.Invoke(this, false);
+    private void KickButton_Click(object sender, RoutedEventArgs e) => Kicked?.Invoke(this, new EventArgs());
+    private void GiveInvite_Click(object sender, RoutedEventArgs e) => GiveInvite?.Invoke(this, new EventArgs());
+
+    private void Champ_MouseEnter(object sender, MouseEventArgs e) {
+      if (editable && Player.Status == CapStatus.Present) KickButton.BeginStoryboard(App.FadeIn);
+      if (editable && Player.Status == CapStatus.Choosing) GiveInviteButt.BeginStoryboard(App.FadeIn);
     }
 
-    private void Decline_Click(object sender, RoutedEventArgs e) {
-      CandidateReacted?.Invoke(this, false);
+    private void Champ_MouseLeave(object sender, MouseEventArgs e) {
+      KickButton.BeginStoryboard(App.FadeOut);
+      GiveInviteButt.BeginStoryboard(App.FadeOut);
+    }
+
+    private void PositionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      Player.Position = (Position) PositionBox.SelectedItem;
+    }
+
+    private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      Player.Role = (Role) RoleBox.SelectedItem;
     }
   }
 }

@@ -17,10 +17,10 @@
     </Grid.ColumnDefinitions>
 
     <StackPanel Grid.Row="1" Name="PlayerList" Orientation="Horizontal" Margin="0 0 10 0" Height="180" VerticalAlignment="Bottom">
-      <my:CapOtherPlayer2 Margin="0 0 10 0"/>
-      <my:CapOtherPlayer2 Margin="0 0 10 0"/>
-      <my:CapOtherPlayer2 Margin="0 0 10 0"/>
-      <my:CapOtherPlayer2/>
+      <my:CapOtherPlayer Margin="0 0 10 0"/>
+      <my:CapOtherPlayer Margin="0 0 10 0"/>
+      <my:CapOtherPlayer Margin="0 0 10 0"/>
+      <my:CapOtherPlayer/>
     </StackPanel>
 
     <Grid Grid.Row="2" Name="MyGrid">

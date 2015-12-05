@@ -18,6 +18,7 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
 using RtmpSharp.Messaging;
+using MFroehlich.League.Assets;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -36,9 +37,11 @@ namespace LeagueClient.ClientUI.Controls {
 
     public CapSoloQueuer(Logic.Cap.CapPlayer player) : this() {
       this.player = player;
-      QueryPane.DataContext = player;
       PositionText.Text = player.Position.Value;
       RoleText.Text = player.Role.Value;
+      ChampionImage.Source = LeagueData.GetChampIconImage(player.Champion);
+      Spell1Image.Source = LeagueData.GetSpellImage(player.Spell1);
+      Spell2Image.Source = LeagueData.GetSpellImage(player.Spell2);
       ElapsedText.Text = "0:00";
       start = DateTime.Now;
       timer = new Timer(1000);
@@ -57,7 +60,7 @@ namespace LeagueClient.ClientUI.Controls {
         switch (response.methodName) {
           case "acceptedByGroupV2":
             timer.Dispose();
-            Dispatcher.Invoke(() => Popped?.Invoke(this, new QueuePoppedEventArgs(new CapSoloQueuePopup(JSON.ParseObject(response.payload), this.player))));
+            Dispatcher.Invoke(() => Popped?.Invoke(this, new QueuePoppedEventArgs(new CapSoloQueuePopup(JSON.ParseObject(response.payload), player))));
             return true;
         }
       }

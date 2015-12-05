@@ -176,7 +176,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void CurrentPopup_Close(object sender, EventArgs e) {
-      PopupPanel.BeginStoryboard(App.FadeOut);
+      Dispatcher.Invoke(() => PopupPanel.BeginStoryboard(App.FadeOut));
     }
 
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {

@@ -2,8 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+             xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
   <Grid Width="450" Background="{StaticResource Back1Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="8"/>
@@ -20,7 +19,7 @@
     </Grid.ColumnDefinitions>
     <Border Grid.Row="1" Grid.Column="1" BorderBrush="{StaticResource ForeBrush}" Name="ChampionBorder"
               BorderThickness="2" MouseUp="Champion_Click" Cursor="Hand" Background="Transparent">
-      <Image Source="{Binding CapPlayer.ChampionImage}"/>
+      <Image Name="ChampionImage"/>
     </Border>
     <Grid Grid.Row="1" Grid.Column="3">
       <Grid.ColumnDefinitions>
@@ -42,16 +41,16 @@
       <TextBlock Style="{StaticResource Control}" Name="ChampionName" FontSize="12" Grid.Row="1"/>
       <TextBlock Style="{StaticResource Control}" VerticalAlignment="Bottom" FontSize="12" Grid.Row="2" Name="PositionLabel">Position</TextBlock>
       <TextBlock Style="{StaticResource Control}" VerticalAlignment="Bottom" Grid.Column="2" FontSize="12" Grid.Row="2" Name="RoleLabel">Role</TextBlock>
-      <TextBlock Style="{StaticResource Control}" Grid.Row="3" FontSize="14" VerticalAlignment="Bottom" Text="{Binding CapPlayer.Position}"/>
-      <TextBlock Style="{StaticResource Control}" Grid.Row="3" Grid.Column="2" FontSize="14" VerticalAlignment="Bottom" Text="{Binding CapPlayer.Role}"/>
-      <ComboBox Name="PositionBox" Grid.Row="3" SelectedItem="{Binding Path=CapPlayer.Position,Mode=TwoWay}">
+      <TextBlock Style="{StaticResource Control}" Grid.Row="3" FontSize="14" VerticalAlignment="Bottom" Name="PositionText"/>
+      <TextBlock Style="{StaticResource Control}" Grid.Row="3" Grid.Column="2" FontSize="14" VerticalAlignment="Bottom" Name="RoleText"/>
+      <ComboBox Name="PositionBox" Grid.Row="3" SelectionChanged="PositionBox_SelectionChanged">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <ContentPresenter Content="{Binding Value}"/>
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>
-      <ComboBox Name="RoleBox" Grid.Row="3" Grid.Column="2" SelectedItem="{Binding Path=CapPlayer.Role,Mode=TwoWay}">
+      <ComboBox Name="RoleBox" Grid.Row="3" Grid.Column="2" SelectionChanged="RoleBox_SelectionChanged">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <ContentPresenter Content="{Binding Value}"/>
@@ -69,12 +68,12 @@
       <Border Width="36" Height="36" BorderBrush="{StaticResource ForeBrush}" BorderThickness="2"
                 HorizontalAlignment="Left" Grid.Row="1" Cursor="Hand" Background="Transparent"
                 MouseUp="Spell1_Click" Name="Spell1Border">
-        <Image Source="{Binding CapPlayer.Spell1Image}"/>
+        <Image Name="Spell1Image"/>
       </Border>
       <Border Width="36" Height="36" BorderBrush="{StaticResource ForeBrush}" BorderThickness="2"
                 HorizontalAlignment="Right" Grid.Row="1" Cursor="Hand" Background="Transparent"
                 MouseUp="Spell2_Click" Name="Spell2Border">
-        <Image Source="{Binding CapPlayer.Spell2Image}"/>
+        <Image Name="Spell2Image"/>
       </Border>
     </Grid>
     <Grid Grid.Row="2" Grid.Column="3" Height="64">

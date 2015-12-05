@@ -87,8 +87,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ClientUI\Controls\Cap\CapOtherPlayer2.xaml.cs">
-      <DependentUpon>CapOtherPlayer2.xaml</DependentUpon>
+    <Compile Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml.cs">
+      <DependentUpon>CapOtherPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\EditButton.cs" />
     <Compile Include="ClientUI\Controls\FriendListItem2.xaml.cs">
@@ -206,9 +206,6 @@
     </Compile>
     <Compile Include="ClientUI\Controls\Cap\CapMePlayer.xaml.cs">
       <DependentUpon>CapMePlayer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml.cs">
-      <DependentUpon>CapOtherPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\Cap\CapSoloQueuer.xaml.cs">
       <DependentUpon>CapSoloQueuer.xaml</DependentUpon>
@@ -362,7 +359,7 @@
     <Compile Include="Logic\SWF\SWFTypes\Tag.cs" />
     <Compile Include="Logic\SWF\SWFTypes\TagCodes.cs" />
     <Compile Include="Logic\Settings.cs" />
-    <Page Include="ClientUI\Controls\Cap\CapOtherPlayer2.xaml">
+    <Page Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -463,10 +460,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\Cap\CapMePlayer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -24,8 +24,10 @@
             BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Height="310">
       <my:CapMap x:Name="GameMap"/>
     </Border>
+
+    <Button Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 8" Width="100">Quit</Button>
       
-    <Button Name="EnterQueueButt" Grid.Row="2" Grid.Column="1" Margin="0 8" Click="EnterQueue"
+    <Button Name="EnterQueueButt" Grid.Row="2" Grid.Column="1" Margin="0 8" Click="EnterQueue" Width="100"
             VerticalAlignment="Top" HorizontalAlignment="Right" Visibility="Collapsed" Opacity="0">Enter Queue</Button>
 
     <my:PopupSelector Grid.RowSpan="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center"

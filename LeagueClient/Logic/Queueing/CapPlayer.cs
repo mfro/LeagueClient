@@ -53,10 +53,6 @@ namespace LeagueClient.Logic.Cap {
       get { return status; }
       set { SetField(ref status, value); }
     }
-
-    public BitmapImage ChampionImage => Champion != null ? LeagueData.GetChampIconImage(Champion) : null;
-    public BitmapImage Spell1Image => Spell1 != null ? LeagueData.GetSpellImage(Spell1) : null;
-    public BitmapImage Spell2Image => Spell2 != null ? LeagueData.GetSpellImage(Spell2) : null;
     #endregion
 
     private ChampionDto champion;
@@ -78,8 +74,6 @@ namespace LeagueClient.Logic.Cap {
       if(!(field?.Equals(value) ?? false)) {
         field = value;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        if (GetType().GetProperty(name + "Image") != null)
-          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name + "Image"));
       }
     }
 

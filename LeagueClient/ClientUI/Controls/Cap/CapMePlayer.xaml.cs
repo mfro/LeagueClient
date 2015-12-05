@@ -53,26 +53,46 @@ namespace LeagueClient.ClientUI.Controls {
 
     private bool editable;
 
-    public CapMePlayer() : this(null) {}
+    public CapMePlayer() : this(null) { }
 
     public CapMePlayer(CapPlayer player) {
       InitializeComponent();
-      CapPlayer = player ?? new CapPlayer (-1) { Status = CapStatus.Present };
       if (!Client.Connected) return;
-      SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
 
-      CapPlayer.PropertyChanged += (s, e) => Dispatcher.MyInvoke(UpdateChild, e.PropertyName);
+      if (player == null) {
+        CapPlayer = new CapPlayer(-1) { Status = CapStatus.Present };
+        var spells = Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
+        CapPlayer.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
+        CapPlayer.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
+      } else {
+        CapPlayer = player;
+      }
+
+      SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
       PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
       RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED);
+
+      CapPlayer.PropertyChanged += (s, e) => Dispatcher.MyInvoke(UpdateChild, e.PropertyName);
       UpdateBooks();
-      var spells = Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
-      CapPlayer.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
-      CapPlayer.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
+      UpdateChild(null);
     }
 
     private void UpdateChild(string property) {
       PlayerUpdate?.Invoke(this, new EventArgs());
       ChampionName.Text = CapPlayer.Champion?.name;
+
+      PositionBox.SelectedItem = CapPlayer.Position;
+      RoleBox.SelectedItem = CapPlayer.Role;
+      PositionText.Text = CapPlayer.Position?.Value;
+      RoleText.Text = CapPlayer.Role?.Value;
+
+      if (CapPlayer.Champion != null)
+        ChampionImage.Source = LeagueData.GetChampIconImage(CapPlayer.Champion);
+      if (CapPlayer.Spell1 != null)
+        Spell1Image.Source = LeagueData.GetSpellImage(CapPlayer.Spell1);
+      if (CapPlayer.Spell2 != null)
+        Spell2Image.Source = LeagueData.GetSpellImage(CapPlayer.Spell2);
+
       Check.Visibility = (CapPlayer.Status == CapStatus.Ready) ? Visibility.Visible : Visibility.Collapsed;
     }
 
@@ -104,6 +124,14 @@ namespace LeagueClient.ClientUI.Controls {
     private void Mastery_Selected(object sender, SelectionChangedEventArgs e) {
       Client.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
       if (PlayerUpdate != null) PlayerUpdate(this, e);
+    }
+
+    private void PositionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      CapPlayer.Position = (Position) PositionBox.SelectedItem;
+    }
+
+    private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      CapPlayer.Role = (Role) RoleBox.SelectedItem;
     }
   }
 }

@@ -59,9 +59,8 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public CapLobbyPage(bool isCreating) : this() {
-      me = new CapPlayer(isCreating ? 0 : -1);
-      me.PropertyChanged += Me_PropertyChanged;
-      myControl = new CapMePlayer(me) { Margin = new Thickness(0, 10, 0, 0), VerticalAlignment = VerticalAlignment.Top };
+      myControl = new CapMePlayer() { Margin = new Thickness(0, 10, 0, 0), VerticalAlignment = VerticalAlignment.Top };
+      me = myControl.CapPlayer;
       FindAnotherButt.Visibility = Visibility.Collapsed;
       state = CapLobbyState.Inviting;
 
@@ -80,6 +79,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void SharedInit() {
       MyGrid.Children.Add(myControl);
+      me.PropertyChanged += Me_PropertyChanged;
       me.Status = CapStatus.Present;
       SoloSearchButt.Visibility = Visibility.Collapsed;
       ReadyButt.Visibility = Visibility.Collapsed;
@@ -165,7 +165,7 @@ namespace LeagueClient.ClientUI.Main {
         }
 
         if (player.SlotId != me.SlotId) {
-          var control = new CapOtherPlayer2(player, IsCaptain);
+          var control = new CapOtherPlayer(player, IsCaptain);
           if (PlayerList.Children.Count < 3) control.Margin = new Thickness(0, 0, 10, 0);
           else control.Margin = new Thickness(0);
           control.CandidateReacted += Candidate_Reacted;
@@ -491,21 +491,21 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Candidate_Reacted(object sender, bool e) {
       if (e) {
-        RiotServices.CapService.AcceptCandidate((sender as CapOtherPlayer2).Player.SlotId);
+        RiotServices.CapService.AcceptCandidate((sender as CapOtherPlayer).Player.SlotId);
       } else {
-        RiotServices.CapService.DeclineCandidate((sender as CapOtherPlayer2).Player.SlotId);
+        RiotServices.CapService.DeclineCandidate((sender as CapOtherPlayer).Player.SlotId);
       }
     }
 
     private void Candidate_Kicked(object sender, EventArgs e) {
-      var player = (CapOtherPlayer2) sender;
+      var player = (CapOtherPlayer) sender;
       if (state == CapLobbyState.Searching) {
         RiotServices.CapService.KickPlayer(player.Player.SlotId);
       }
     }
 
     private void Candidate_GiveInvite(object sender, EventArgs e) {
-      var player = (CapOtherPlayer2) sender;
+      var player = (CapOtherPlayer) sender;
       var member = Status.PlayerIds.FirstOrDefault(m => m.SummonerName.Equals(player.Player.Name));
       RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
     }
