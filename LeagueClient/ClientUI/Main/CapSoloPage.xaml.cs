@@ -111,6 +111,11 @@ namespace LeagueClient.ClientUI.Main {
       if (Close != null) Close(this, new EventArgs());
     }
 
+    private void Button_Click(object sender, RoutedEventArgs e) {
+      ForceClose();
+      Close?.Invoke(this, new EventArgs());
+    }
+
     public Page Page => this;
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
     public void ForceClose() => Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);

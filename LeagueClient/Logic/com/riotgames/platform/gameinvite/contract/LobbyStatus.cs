@@ -17,7 +17,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public Player Owner { get; set; }
 
         [SerializedName("members")]
-        public Member[] PlayerIds { get; set; }
+        public Member[] Members { get; set; }
 
         [SerializedName("invitees")]
         public Invitee[] InvitedPlayers { get; set; }

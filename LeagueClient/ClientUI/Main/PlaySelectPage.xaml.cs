@@ -200,18 +200,7 @@ namespace LeagueClient.ClientUI.Main {
       switch (button) {
         case 0:
           var search = await RiotServices.MatchmakerService.AttachToQueue(mmp);
-          if (search.PlayerJoinFailures?.Count > 0) {
-            switch (search.PlayerJoinFailures[0].ReasonFailed) {
-              case "QUEUE_DODGER":
-                Client.QueueManager.ShowQueuer(new BingeQueuer(search.PlayerJoinFailures[0].PenaltyRemainingTime));
-                break;
-              default:
-                Client.TryBreak(search.PlayerJoinFailures[0].ReasonFailed);
-                break;
-            }
-          } else {
-            Client.QueueManager.ShowQueuer(new DefaultQueuer(search.JoinedQueues[0]));
-          }
+          Client.QueueManager.AttachToQueue(search);
           break;
         case 1:
           var lobby = new DefaultLobbyPage(mmp);
@@ -228,18 +217,7 @@ namespace LeagueClient.ClientUI.Main {
       switch (button) {
         case 0:
           var search = await RiotServices.MatchmakerService.AttachToQueue(mmp);
-          if (search.PlayerJoinFailures?.Count > 0) {
-            switch (search.PlayerJoinFailures[0].ReasonFailed) {
-              case "QUEUE_DODGER":
-                Client.QueueManager.ShowQueuer(new BingeQueuer(search.PlayerJoinFailures[0].PenaltyRemainingTime));
-                break;
-              default:
-                Client.TryBreak(search.PlayerJoinFailures[0].ReasonFailed);
-                break;
-            }
-          } else {
-            Client.QueueManager.ShowQueuer(new DefaultQueuer(search.JoinedQueues[0]));
-          }
+          Client.QueueManager.AttachToQueue(search);
           break;
         case 1:
           //TODO Ranked Duo Lobby
@@ -309,11 +287,12 @@ namespace LeagueClient.ClientUI.Main {
       ButtonAction?.Invoke(1);
     }
 
-    private void RankedCreate_Click(object sender, RoutedEventArgs e) {
+    private async void RankedCreate_Click(object sender, RoutedEventArgs e) {
       var team = (TeamInfo) TeamCombo.SelectedItem;
       var mmp = new MatchMakerParams { QueueIds = new[] { currentConfig.Id }, TeamId = team.TeamId };
       var lobby = new DefaultLobbyPage(mmp);
-      RiotServices.GameInvitationService.CreateArrangedRankedTeamLobby(mmp.QueueIds[0], team.Name).ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+      var status = await RiotServices.GameInvitationService.CreateArrangedRankedTeamLobby(mmp.QueueIds[0], team.Name);
+      lobby.GotLobbyStatus(status);
       Client.QueueManager.ShowPage(lobby);
     }
 

@@ -31,9 +31,14 @@ namespace LeagueClient.ClientUI.Controls {
       InitializeComponent();
     }
 
-    public BingeQueuer(int timeout) : this() {
+    public BingeQueuer(int timeout, string name = null) : this() {
       this.timeout = TimeSpan.FromMilliseconds(timeout);
-      ElapsedText.Text = this.timeout.ToString("m\\:ss");
+      ElapsedText.Content = this.timeout.ToString("m\\:ss");
+
+      if(name != null) {
+        Body.Text = name + " has dodged too many games recently";
+      }
+
       start = DateTime.Now;
       timer = new Timer(1000);
       timer.Elapsed += Timer_Elapsed; ;
@@ -43,7 +48,7 @@ namespace LeagueClient.ClientUI.Controls {
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       var time = timeout.Subtract(DateTime.Now.Subtract(start));
       if (time.TotalMilliseconds < 0) Popped?.Invoke(this, new QueuePoppedEventArgs(null));
-      Dispatcher.Invoke(() => ElapsedText.Text = time.ToString("m\\:ss"));
+      Dispatcher.Invoke(() => ElapsedText.Content = time.ToString("m\\:ss"));
     }
 
     public Control Control => this;

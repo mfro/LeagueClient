@@ -43,7 +43,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private CapMePlayer myControl;
     private CapPlayer me;
-    //private ChatRoomController chatRoom;
+    private ChatRoomController chatRoom;
     private CapLobbyState state;
     private bool autoReady;
 
@@ -96,15 +96,15 @@ namespace LeagueClient.ClientUI.Main {
                                     select spell);
 
       PlayerList.Children.Clear();
-      //chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
+      chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
       Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
     }
     #endregion
 
     #region Message and Lobby handling
     private void JoinChat() {
-      //if (!chatRoom.IsJoined)
-      //  chatRoom.JoinChat(RiotChat.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
+      if (!chatRoom.IsJoined)
+        chatRoom.JoinChat(RiotChat.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
@@ -254,20 +254,20 @@ namespace LeagueClient.ClientUI.Main {
       Dispatcher.Invoke(UpdateList);
     }
 
-    private void groupCreatedV3(JSONObject json) {
+    private async void groupCreatedV3(JSONObject json) {
       GotGroupData(json.To<CapGroupData>());
-      Task<LobbyStatus> task = RiotServices.GameInvitationService.CreateGroupFinderLobby(61, GroupId);
-      task.ContinueWith(t => GotLobbyStatus(t.Result));
+      var status = await RiotServices.GameInvitationService.CreateGroupFinderLobby(61, GroupId);
+      GotLobbyStatus(status);
     }
 
     private void matchMadeV1(JSONObject json) {
-      //Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Match Found");
+      Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Match Found");
     }
 
     private void matchmakingPhaseStartedV1(JSONObject json) {
       state = CapLobbyState.Matching;
       players[0].Status = CapStatus.Ready;
-      //Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Matchmaking Started");
+      Dispatcher.MyInvoke(chatRoom.ShowLobbyMessage, "Matchmaking Started");
     }
 
     private void readinessIndicatedV1(JSONObject json) {
@@ -415,10 +415,10 @@ namespace LeagueClient.ClientUI.Main {
             var method = GetMethod(response);
             method(json);
           } catch (Exception x) {
-            Client.TryBreak(x.ToString());
+            Client.Log(x);
           }
           return true;
-        } else if (!response.status.Equals("ACK")) Client.TryBreak(response.status + ": " + response.payload);
+        } else if (!response.status.Equals("ACK")) Client.Log(response.status + ": " + response.payload);
       } else if ((privelage = e.Body as InvitePrivileges) != null) {
         Client.CanInviteFriends = privelage.canInvite;
         Dispatcher.Invoke(UpdateList);
@@ -426,7 +426,7 @@ namespace LeagueClient.ClientUI.Main {
       } else if ((removed = e.Body as RemovedFromLobbyNotification) != null) {
         switch (removed.removalReason) {
           case "PROGRESSED": break;
-          default: Client.TryBreak("Unknown removal reason " + removed.removalReason); break;
+          default: Client.Log("Unknown removal reason " + removed.removalReason); break;
         }
         return true;
       } else if ((creds = e.Body as PlayerCredentialsDto) != null) {
@@ -506,8 +506,11 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Candidate_GiveInvite(object sender, EventArgs e) {
       var player = (CapOtherPlayer) sender;
-      var member = Status.PlayerIds.FirstOrDefault(m => m.SummonerName.Equals(player.Player.Name));
-      RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
+      var member = Status.Members.FirstOrDefault(m => m.SummonerName.Equals(player.Player.Name));
+      if (member.HasInvitePower)
+        RiotServices.GameInvitationService.RevokeInvitePrivileges(member.SummonerId);
+      else
+        RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
     }
 
     private static void DoTimeout(CapPlayer player, int timeoutSecs) {
@@ -616,20 +619,6 @@ namespace LeagueClient.ClientUI.Main {
         RiotServices.CapService.SearchForCandidates();
     }
 
-    //private void InviteButt_Click(object sender, RoutedEventArgs e) {
-    //  InvitePopup.BeginStoryboard(App.FadeIn);
-    //}
-
-    //private void InvitePopup_Close(object sender, EventArgs e) {
-    //  InvitePopup.BeginStoryboard(App.FadeOut);
-    //  foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
-    //    double id;
-    //    if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-    //      RiotServices.GameInvitationService.Invite(id);
-    //    } else Client.TryBreak("Cannot parse user " + user.Key);
-    //  }
-    //}
-
     private void QuitButt_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());
 
@@ -644,7 +633,7 @@ namespace LeagueClient.ClientUI.Main {
     public void ForceClose() {
       RiotServices.GameInvitationService.Leave();
       RiotServices.CapService.Quit();
-      //chatRoom?.LeaveChat();
+      chatRoom?.LeaveChat();
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
     }
 

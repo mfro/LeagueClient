@@ -24,8 +24,8 @@ namespace LeagueClient.ClientUI.Controls {
   public partial class LobbyPlayer2 : UserControl {
     public event EventHandler KickClicked;
     public event EventHandler GiveInviteClicked;
+    public bool CanControl { get; set; }
 
-    private bool amCaptain;
     public long SummonerId;
     public string SummonerName;
 
@@ -36,7 +36,7 @@ namespace LeagueClient.ClientUI.Controls {
     public LobbyPlayer2(bool amCaptain, Member member) : this() {
       RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
-      this.amCaptain = amCaptain;
+      CanControl = amCaptain;
       NameLabel.Content = member.SummonerName;
       SummonerName = member.SummonerName;
       SummonerId = member.SummonerId;
@@ -44,7 +44,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void UserControl_MouseEnter(object sender, MouseEventArgs e) {
-      if (amCaptain && SummonerId != Client.LoginPacket.AllSummonerData.Summoner.SumId)
+      if (CanControl && SummonerId != Client.LoginPacket.AllSummonerData.Summoner.SumId)
         KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Visible;
     }
 

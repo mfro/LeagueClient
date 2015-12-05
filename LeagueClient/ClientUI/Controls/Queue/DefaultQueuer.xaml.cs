@@ -65,7 +65,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Cancel_Click(object src, EventArgs args) {
       timer.Dispose();
-      Logic.Riot.RiotServices.MatchmakerService.CancelFromQueueIfPossible(Client.LoginPacket.AllSummonerData.Summoner.SumId);
+      Logic.Riot.RiotServices.MatchmakerService.PurgeFromQueues();
       Popped?.Invoke(this, new QueuePoppedEventArgs(null));
 
       Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);

@@ -20,7 +20,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for ChatConversation.xaml
   /// </summary>
-  public partial class ChatConversation : UserControl, IDisposable {
+  public sealed partial class ChatConversation : UserControl, IDisposable {
     public event EventHandler ChatClosed;
 
     public ChatFriend friend { get; private set; }

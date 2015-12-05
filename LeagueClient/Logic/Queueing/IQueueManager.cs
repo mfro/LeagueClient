@@ -20,6 +20,8 @@ namespace LeagueClient.Logic.Queueing {
     /// </summary>
     /// <param name="page"></param>
     void ShowPage(IClientSubPage page);
+
+    void ShowPage();
     /// <summary>
     /// Shows a generic alert notification in the alerts area
     /// </summary>
@@ -30,6 +32,8 @@ namespace LeagueClient.Logic.Queueing {
     /// </summary>
     /// <param name="game"></param>
     void BeginChampionSelect(GameDTO game);
+
+    void AttachToQueue(SearchingForMatchNotification parms);
 
     void AcceptInvite(InvitationRequest invite);
 

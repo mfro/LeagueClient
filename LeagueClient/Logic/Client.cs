@@ -184,7 +184,7 @@ namespace LeagueClient.Logic {
       foreach (var item in LoginPacket.ClientSystemStates.gameMapEnabledDTOList)
         EnabledMaps.Add((int) item["gameMapId"]);
 
-      if (!state.Equals("ENABLED")) TryBreak("state is not ENABLED");
+      if (state?.Equals("ENABLED") != true) Console.WriteLine(state);
 
       Settings.ProfileIcon = LoginPacket.AllSummonerData.Summoner.ProfileIconId;
       Settings.SummonerName = LoginPacket.AllSummonerData.Summoner.Name;
@@ -262,11 +262,13 @@ namespace LeagueClient.Logic {
       }
     }
 
-    public static void Logout() {
+    public static async void Logout() {
       if (Connected) {
         SaveSettings(Settings.Username, JSONObject.From(Settings));
-        RiotServices.GameService.QuitGame();
-        RiotServices.LoginService.Logout().ContinueWith(t => RtmpConn.LogoutAsync().ContinueWith(t2 => RtmpConn.Close()));
+        await RiotServices.GameService.QuitGame();
+        await RiotServices.LoginService.Logout();
+        await RtmpConn.LogoutAsync();
+        RtmpConn.Close();
         Connected = false;
       }
       ChatManager?.Logout();
@@ -281,14 +283,13 @@ namespace LeagueClient.Logic {
     /// updates the contents of the local and server-side mastery books
     /// </summary>
     /// <param name="page">The page to select</param>
-    public static void SelectMasteryPage(MasteryBookPageDTO page) {
+    public static async void SelectMasteryPage(MasteryBookPageDTO page) {
       if (page == SelectedMasteryPage) return;
       foreach (var item in Masteries.BookPages) item.Current = false;
       page.Current = true;
       SelectedMasteryPage = page;
-      RiotServices.MasteryBookService.SelectDefaultMasteryBookPage(page).ContinueWith(t =>
-        RiotServices.MasteryBookService.SaveMasteryBook(Masteries)
-      );
+      await RiotServices.MasteryBookService.SelectDefaultMasteryBookPage(page);
+      await RiotServices.MasteryBookService.SaveMasteryBook(Masteries);
     }
 
     /// <summary>
@@ -296,14 +297,13 @@ namespace LeagueClient.Logic {
     /// updates the contents of the local and server-side spell books
     /// </summary>
     /// <param name="page">The page to select</param>
-    public static void SelectRunePage(SpellBookPageDTO page) {
+    public static async void SelectRunePage(SpellBookPageDTO page) {
       if (page == SelectedRunePage) return;
       foreach (var item in Runes.BookPages) item.Current = false;
       page.Current = true;
       SelectedRunePage = page;
-      RiotServices.SpellBookService.SelectDefaultSpellBookPage(page).ContinueWith(t =>
-        RiotServices.SpellBookService.SaveSpellBook(Runes)
-      );
+      await RiotServices.SpellBookService.SelectDefaultSpellBookPage(page);
+      await RiotServices.SpellBookService.SaveSpellBook(Runes);
     }
 
     /// <summary>
@@ -342,21 +342,18 @@ namespace LeagueClient.Logic {
     private static TextWriter LogDebug = Console.Out;
     public static void Log(object msg) {
       lock (_lock) {
-        using (var log = new StreamWriter(File.Open(LogFilePath, FileMode.Append))) {
-          LogDebug.WriteLine(msg);
-          log.WriteLine(msg);
-        }
+        try {
+          using (var log = new StreamWriter(File.Open(LogFilePath, FileMode.Append))) {
+            LogDebug.WriteLine(msg);
+            log.WriteLine(msg);
+          }
+        } catch { }
       }
     }
 
     public static void Log(string msg, params object[] args) {
       if (args.Length == 0) Log((object) msg);
       else Log((object) string.Format(msg, args));
-    }
-
-    public static void TryBreak(string reason) {
-      Log("Attempt Break: " + reason);
-      if (Debugger.IsAttached) Debugger.Break();
     }
 
     public static long GetMilliseconds() => (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
@@ -368,7 +365,6 @@ namespace LeagueClient.Logic {
         if (MainWindow.HandleMessage(e)) return;
       } catch (Exception x) {
         Log("Exception while dispatching message: " + x.Message);
-        TryBreak(x.Message);
       }
 
       var response = e.Body as LcdsServiceProxyResponse;
@@ -394,7 +390,6 @@ namespace LeagueClient.Logic {
         }
       } catch (Exception x) {
         Log("Exception while handling message: " + x.Message);
-        TryBreak(x.Message);
       }
     }
   }

@@ -105,6 +105,10 @@ namespace LeagueClient.Logic.Riot {
     public static class MatchmakerService {
       public const string Destination = "matchmakerService";
 
+      public static Task<Boolean> IsMatchmakingEnabled() {
+        return InvokeAsync<Boolean>(Destination, "isMatchmakingEnabled");
+      }
+
       /// <summary>
       /// Attemps to leave a queue
       /// </summary>
@@ -123,8 +127,8 @@ namespace LeagueClient.Logic.Riot {
         return InvokeAsync<QueueInfo>(Destination, "getQueueInfo", QueueId);
       }
 
-      public static Task<AsObject> PurgeFromQueues() {
-        return InvokeAsync<AsObject>(Destination, "purgeFromQueues");
+      public static Task<Object> PurgeFromQueues() {
+        return InvokeAsync<Object>(Destination, "purgeFromQueues");
       }
 
       /// <summary>
@@ -141,9 +145,8 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <param name="MatchMakerParams">The parameters for the queue</param>
       /// <returns>Returns a notification to tell you if it was successful</returns>
-      [Obsolete]
       public static Task<SearchingForMatchNotification> AttachTeamToQueue(MatchMakerParams matchMakerParams) {
-        return InvokeAsync<SearchingForMatchNotification>(Destination, "attachTeamToQueue", matchMakerParams);
+        return InvokeAsync<SearchingForMatchNotification>("matchmakerService", "attachTeamToQueue", matchMakerParams);
       }
 
       /// <summary>
@@ -152,15 +155,6 @@ namespace LeagueClient.Logic.Riot {
       /// <returns>Returns an array of queues that are enabled</returns>
       public static Task<GameQueueConfig[]> GetAvailableQueues() {
         return InvokeAsync<GameQueueConfig[]>(Destination, "getAvailableQueues");
-      }
-
-      /// <summary>
-      /// Accepts an invite to a matchmaking game
-      /// </summary>
-      /// <param name="InviteId">The invite id</param>
-      [Obsolete]
-      public static Task<Object> AcceptInviteForMatchmakingGame(String InviteId) {
-        return InvokeAsync<Object>(Destination, "acceptInviteForMatchmakingGame", InviteId);
       }
     }
 
@@ -389,8 +383,8 @@ namespace LeagueClient.Logic.Riot {
         return InvokeAsync<AllSummonerData>(Destination, "getallSummonerDataByAccount");
       }
 
-      public static Task<AsObject> GetSummonerCatalog() {
-        return InvokeAsync<AsObject>(Destination, "getSummonerCatalog");
+      public static Task<Object> GetSummonerCatalog() {
+        return InvokeAsync<Object>(Destination, "getSummonerCatalog");
       }
 
       /// <summary>
@@ -792,8 +786,8 @@ namespace LeagueClient.Logic.Riot {
       /// Gets the allowed traders in the current game
       /// </summary>
       /// <returns>Returns a list of traders</returns>
-      public static Task<AsObject> GetPotentialTraders() {
-        return InvokeAsync<AsObject>(Destination, "getPotentialTraders");
+      public static Task<Object> GetPotentialTraders() {
+        return InvokeAsync<Object>(Destination, "getPotentialTraders");
       }
 
       /// <summary>
@@ -1076,6 +1070,15 @@ namespace LeagueClient.Logic.Riot {
       /// <returns></returns>
       public static Task GrantInvitePrivileges(double summonerId) {
         return InvokeAsync<LobbyStatus>(Destination, "grantInvitePrivileges", summonerId);
+      }
+
+      /// <summary>
+      /// Grants invite privelages to a summoner in an arranged lobby
+      /// </summary>
+      /// <param name="summonerId">The summoner to give invite privelages</param>
+      /// <returns></returns>
+      public static Task RevokeInvitePrivileges(double summonerId) {
+        return InvokeAsync<LobbyStatus>(Destination, "revokeInvitePrivileges", summonerId);
       }
 
       /// <summary>

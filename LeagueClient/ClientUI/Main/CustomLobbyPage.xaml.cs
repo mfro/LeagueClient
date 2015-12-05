@@ -167,18 +167,6 @@ namespace LeagueClient.ClientUI.Main {
       ForceClose();
     }
 
-    //private void Invite_Click(object sender, RoutedEventArgs e) => InvitePopup.BeginStoryboard(App.FadeIn);
-
-    //private void InvitePopup_Close(object sender, EventArgs e) {
-    //  InvitePopup.BeginStoryboard(App.FadeOut);
-    //  foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
-    //    double id;
-    //    if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-    //      RiotServices.GameInvitationService.Invite(id);
-    //    } else Client.TryBreak("Cannot parse user " + user.Key);
-    //  }
-    //}
-
     private void RedJoin_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.SwitchTeams(GameDto.Id);
     }

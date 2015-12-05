@@ -37,12 +37,10 @@ namespace LeagueClient.ClientUI.Controls {
 
     public CapSoloQueuer(Logic.Cap.CapPlayer player) : this() {
       this.player = player;
-      PositionText.Text = player.Position.Value;
-      RoleText.Text = player.Role.Value;
       ChampionImage.Source = LeagueData.GetChampIconImage(player.Champion);
       Spell1Image.Source = LeagueData.GetSpellImage(player.Spell1);
       Spell2Image.Source = LeagueData.GetSpellImage(player.Spell2);
-      ElapsedText.Text = "0:00";
+      ElapsedText.Content = "0:00";
       start = DateTime.Now;
       timer = new Timer(1000);
       timer.Elapsed += Time_Elapsed;
@@ -51,7 +49,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Time_Elapsed(object sender, ElapsedEventArgs e) {
       var elapsed = DateTime.Now.Subtract(start);
-      Dispatcher.Invoke(() => ElapsedText.Text = "" + elapsed.ToString("m\\:ss"));
+      Dispatcher.Invoke(() => ElapsedText.Content = "" + elapsed.ToString("m\\:ss"));
     }
 
     public bool HandleMessage(MessageReceivedEventArgs e) {

@@ -188,7 +188,7 @@ namespace LeagueClient.ClientUI {
         } else if (obfusc != null) {
           control = new ChampSelectPlayer(obfusc);
         } else {
-          Client.TryBreak(thing.GetType().Name);
+          Client.Log(thing.GetType().Name);
           control = null;
         }
 

@@ -79,8 +79,10 @@ namespace LeagueClient.ClientUI.Controls {
     private void Reset() {
       var positions = new Dictionary<Position, int>();
       var counts = new Dictionary<Position, int>();
-      foreach(var pos in onMap.Keys) {
-        positions[pos] = (from p in players where p.Position == pos && p.Champion != null select p).Count();
+      foreach (var pos in onMap.Keys) {
+        positions[pos] = (from p in players
+                          where p.Position == pos && p.Champion != null
+                          select p).Count();
         counts[pos] = 0;
       }
 

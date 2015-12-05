@@ -56,6 +56,7 @@ namespace LeagueClient.ClientUI.Main {
     #region RTMP Messages
     public bool HandleMessage(MessageReceivedEventArgs args) {
       var lobby = args.Body as LobbyStatus;
+      var notify = args.Body as GameNotification;
       var invite = args.Body as InvitePrivileges;
       var queue = args.Body as SearchingForMatchNotification;
 
@@ -66,20 +67,10 @@ namespace LeagueClient.ClientUI.Main {
         Client.CanInviteFriends = invite.canInvite;
         //Dispatcher.Invoke(() => InviteButton.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
       } else if (queue != null) {
-        if (queue.PlayerJoinFailures?.Count > 0) {
-          switch (queue.PlayerJoinFailures[0].ReasonFailed) {
-            case "QUEUE_DODGER":
-              Client.QueueManager.ShowNotification(AlertFactory.QueueDodger());
-              break;
-            default:
-              Client.TryBreak(queue.PlayerJoinFailures[0].ReasonFailed);
-              break;
-          }
-        } else {
-          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new DefaultQueuer(queue.JoinedQueues[0])));
-          Close?.Invoke(this, new EventArgs());
-        }
+        EnterQueue(queue);
         return true;
+      } else if (notify != null) {
+        SetEditable(true);
       }
 
       return false;
@@ -87,6 +78,10 @@ namespace LeagueClient.ClientUI.Main {
 
     public void GotLobbyStatus(LobbyStatus lobby) {
       this.lobby = lobby;
+
+      mmp.InvitationId = lobby.InvitationID;
+      mmp.Team = lobby.Members.Select(m => (int) m.SummonerId).ToList();
+
       if (!chatRoom.IsJoined)
         chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
 
@@ -96,7 +91,7 @@ namespace LeagueClient.ClientUI.Main {
           InviteList.Children.Add(new InvitedPlayer(player));
         }
         PlayerList.Children.Clear();
-        foreach (var player in lobby.PlayerIds) {
+        foreach (var player in lobby.Members) {
           var control = new LobbyPlayer2(lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId, player);
           control.GiveInviteClicked += GiveInviteClicked;
           control.KickClicked += KickClicked;
@@ -112,16 +107,21 @@ namespace LeagueClient.ClientUI.Main {
 
     #region UI Events
     private void GiveInviteClicked(object sender, EventArgs e) {
-      var member = lobby.PlayerIds.FirstOrDefault(m => m.SummonerId == ((LobbyPlayer2) sender).SummonerId);
-      RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
+      var member = lobby.Members.FirstOrDefault(m => m.SummonerId == ((LobbyPlayer2) sender).SummonerId);
+      if (member.HasInvitePower)
+        RiotServices.GameInvitationService.RevokeInvitePrivileges(member.SummonerId);
+      else
+        RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
+      member.HasInvitePower = !member.HasInvitePower;
     }
 
     private void KickClicked(object sender, EventArgs e) {
       throw new NotImplementedException();
     }
 
-    private void StartButton_Click(object sender, RoutedEventArgs e) {
-      RiotServices.MatchmakerService.AttachToQueue(mmp);
+    private async void StartButton_Click(object sender, RoutedEventArgs e) {
+      var search = await RiotServices.MatchmakerService.AttachTeamToQueue(mmp);
+      EnterQueue(search);
     }
 
     //private void InviteButton_Click(object sender, RoutedEventArgs e) {
@@ -143,6 +143,17 @@ namespace LeagueClient.ClientUI.Main {
     //  }
     //}
     #endregion
+
+    private void SetEditable(bool canEdit) {
+      QuitButton.IsEnabled = StartButton.IsEnabled = canEdit;
+      foreach (var control in PlayerList.Children)
+        ((LobbyPlayer2) control).CanControl = canEdit;
+    }
+
+    private void EnterQueue(SearchingForMatchNotification search) {
+      Client.QueueManager.AttachToQueue(search);
+      SetEditable(false);
+    }
 
     public Page Page => this;
 

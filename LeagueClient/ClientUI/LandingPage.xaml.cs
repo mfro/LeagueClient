@@ -237,6 +237,12 @@ namespace LeagueClient.ClientUI {
       ShowTab(Tab.Friends);
     }
 
+    public void ShowPage() {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.Invoke(ShowPage); return; }
+
+      ShowTab(Tab.Play);
+    }
+
     public void ShowPage(IClientSubPage page) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowPage, page); return; }
 
@@ -259,29 +265,46 @@ namespace LeagueClient.ClientUI {
       RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
 
-    public void AcceptInvite(InvitationRequest invite) {
-      var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
+    public void AttachToQueue(SearchingForMatchNotification result) {
+      if (result.PlayerJoinFailures != null) {
+        var leaver = result.PlayerJoinFailures[0];
+        bool me = leaver.Summoner.SumId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+        switch (leaver.ReasonFailed) {
+          case "LEAVER_BUSTER":
+            //TODO Leaverbuster
+            break;
+          case "QUEUE_DODGER":
+            Dispatcher.Invoke(() => ShowQueuer(new BingeQueuer(leaver.PenaltyRemainingTime, me ? null : leaver.Summoner.Name)));
+            break;
+        }
+      } else if (result.JoinedQueues != null) {
+        Dispatcher.Invoke(() => ShowQueuer(new DefaultQueuer(result.JoinedQueues[0])));
+      }
+    }
+
+    public async void AcceptInvite(InvitationRequest invite) {
+      var status = await RiotServices.GameInvitationService.Accept(invite.InvitationId);
       var metaData = JSON.ParseObject(invite.GameMetaData);
       if (metaData["gameTypeConfigId"] == 12) {
         var lobby = new CapLobbyPage(false);
-        task.ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+        lobby.GotLobbyStatus(status);
         RiotServices.CapService.JoinGroupAsInvitee(metaData["groupFinderId"]);
         Client.QueueManager.ShowPage(lobby);
       } else {
         switch ((string) metaData["gameType"]) {
           case "PRACTICE_GAME":
             var custom = new CustomLobbyPage();
-            task.ContinueWith(t => custom.GotLobbyStatus(t.Result));
+            custom.GotLobbyStatus(status);
             Client.QueueManager.ShowPage(custom);
             break;
           case "NORMAL_GAME":
             var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] } });
-            task.ContinueWith(t => normal.GotLobbyStatus(t.Result));
+            normal.GotLobbyStatus(status);
             Client.QueueManager.ShowPage(normal);
             break;
           case "RANKED_TEAM_GAME":
             var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] }, TeamId = new TeamId { FullId = metaData["rankedTeamId"] } });
-            task.ContinueWith(t => ranked.GotLobbyStatus(t.Result));
+            ranked.GotLobbyStatus(status);
             Client.QueueManager.ShowPage(ranked);
             break;
         }
