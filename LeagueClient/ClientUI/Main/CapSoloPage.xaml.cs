@@ -33,8 +33,7 @@ namespace LeagueClient.ClientUI.Main {
   public sealed partial class CapSoloPage : Page, IClientSubPage, IDisposable {
     private bool spell1;
     private CapMePlayer me;
-    private Timer timer;
-    private DateTime start;
+    private QueueController queue;
 
     public event EventHandler Close;
 
@@ -60,33 +59,25 @@ namespace LeagueClient.ClientUI.Main {
 
       Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
 
-      timer = new Timer(1000);
-      timer.Elapsed += Time_Elapsed; ;
+      queue = new QueueController(QueueInfoLabel, ChatStatus.inTeamBuilder, ChatStatus.inTeamBuilder);
       if (me != null) SetInQueue(true);
     }
 
     private void SetInQueue(bool inQueue) {
       if (inQueue) {
-        start = DateTime.Now;
-        timer.Start();
+        queue.Start();
       } else {
-        timer.Stop();
+        queue.Cancel();
       }
 
-      Time_Elapsed(timer, null);
       Dispatcher.Invoke(() => PlayerUpdate(null, null));
-    }
-
-    private void Time_Elapsed(object sender, ElapsedEventArgs e) {
-      var elapsed = DateTime.Now.Subtract(start);
-      Dispatcher.Invoke(() => QueueInfoLabel.Content = "In queue for " + elapsed.ToString("m\\:ss"));
     }
 
     private void PlayerUpdate(object sender, EventArgs e) {
       GameMap.UpdateList(new[] { me.CapPlayer });
 
-      me.Editable = !timer.Enabled;
-      if (timer.Enabled) {
+      me.Editable = !queue.InQueue;
+      if (queue.InQueue) {
         EnterQueueButt.BeginStoryboard(App.FadeOut);
         QueueInfoLabel.Visibility = Visibility.Visible;
         QuitButt.Content = "Cancel";
@@ -109,7 +100,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) {
-      if (timer.Enabled) {
+      if (queue.InQueue) {
         RiotServices.CapService.Quit();
         SetInQueue(false);
       } else {
@@ -123,7 +114,7 @@ namespace LeagueClient.ClientUI.Main {
       if (response != null) {
         switch (response.methodName) {
           case "acceptedByGroupV2":
-            timer.Dispose();
+            queue.Dispose();
             Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new CapSoloQueuePopup(JSON.ParseObject(response.payload), me.CapPlayer)));
             return true;
         }
@@ -182,7 +173,7 @@ namespace LeagueClient.ClientUI.Main {
     public void ForceClose() => Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
 
     public void Dispose() {
-      timer.Dispose();
+      queue.Dispose();
     }
   }
 }

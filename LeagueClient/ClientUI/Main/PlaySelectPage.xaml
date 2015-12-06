@@ -68,7 +68,7 @@
       <Image Name="SummonersRift" Source="pack://application:,,,/RiotAPI;component/Resources/SRiftImage.png"/>
     </Border>
 
-    <UniformGrid Columns="3" Margin="00 10 0 10" Grid.RowSpan="2">
+    <UniformGrid Rows="1" Margin="00 10 0 10" Grid.RowSpan="2">
       <Grid Margin="10 0 0 0">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto"/>
@@ -99,13 +99,13 @@
     </UniformGrid>
 
     <StackPanel HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1" Margin="10 0">
-      <Button FontSize="14" Name="JoinCustomButton" Margin="0 0 0 10" Width="169" Padding="0 4" Click="JoinCustomButton_Click">Join Custom Lobby</Button>
-      <Button FontSize="14" Name="CreateCustomButton" Margin="0 0 0 10" Width="169" Padding="0 4" Click="CreateCustomButton_Click">Create Custom Lobby</Button>
+      <Button FontSize="14" Name="JoinCustomButton" Margin="0 0 0 10" Width="164" Padding="0 4" Click="JoinCustomButton_Click">Join Custom Lobby</Button>
+      <Button FontSize="14" Name="CreateCustomButton" Margin="0 0 0 10" Width="164" Padding="0 4" Click="CreateCustomButton_Click">Create Custom Lobby</Button>
     </StackPanel>
 
     <StackPanel HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" Margin="10 0">
-      <Button Name="QueueButton1" Visibility="Collapsed" Margin="0 0 0 10" Width="169" Padding="0 4" FontSize="14" Click="QueueButton1_Click">Enter Soloqueue</Button>
-      <Button Name="QueueButton2" Visibility="Collapsed" Margin="0 0 0 10" Width="169" Padding="0 4" FontSize="14" Click="QueueButton2_Click">Create Lobby</Button>
+      <Button Name="QueueButton1" Visibility="Collapsed" Margin="0 0 0 10" Width="164" Padding="0 4" FontSize="14" Click="QueueButton1_Click">Enter Soloqueue</Button>
+      <Button Name="QueueButton2" Visibility="Collapsed" Margin="0 0 0 10" Width="164" Padding="0 4" FontSize="14" Click="QueueButton2_Click">Create Lobby</Button>
     </StackPanel>
 
     <Label Grid.Row="1" Grid.Column="1" Margin="10 0" Padding="0" FontSize="18" Name="QueueLabel" Visibility="Collapsed">In queue for 99:99</Label>

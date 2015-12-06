@@ -34,7 +34,7 @@ namespace LeagueClient.ClientUI {
   /// Interaction logic for LandingPage.xaml
   /// </summary>
   public partial class LandingPage : Page, IClientPage, IQueueManager {
-    //public IQueuer CurrentQueuer { get; private set; }
+    public IQueueInfo CurrentInfo { get; private set; }
     public IQueuePopup CurrentPopup { get; private set; }
     public IClientSubPage CurrentPage { get; private set; }
     public BindingList<ChatFriend> OpenChatsList { get; } = new BindingList<ChatFriend>();
@@ -160,6 +160,10 @@ namespace LeagueClient.ClientUI {
     #endregion
 
     #region Other Events
+    private void Info_Popped(object sender, EventArgs e) {
+      Client.QueueManager.ShowInfo(null);
+    }
+
     private void CurrentPopup_Close(object sender, EventArgs e) {
       Dispatcher.Invoke(() => PopupPanel.BeginStoryboard(App.FadeOut));
     }
@@ -211,7 +215,9 @@ namespace LeagueClient.ClientUI {
     #region Interface
     bool IClientPage.HandleMessage(MessageReceivedEventArgs args) {
       if (CurrentPopup?.HandleMessage(args) ?? false) return true;
-      return CurrentPage?.HandleMessage(args) ?? false;
+      if (CurrentInfo?.HandleMessage(args) ?? false) return true;
+      if (CurrentPage != null) return CurrentPage.HandleMessage(args);
+      return PlayPage.HandleMessage(args);
     }
 
     void IQueueManager.ShowQueuePopup(IQueuePopup popup) {
@@ -243,6 +249,14 @@ namespace LeagueClient.ClientUI {
       //throw new NotImplementedException();
     }
 
+    void IQueueManager.ShowInfo(IQueueInfo info) {
+      CurrentInfo = info;
+      if (info != null) {
+        info.Popped += Info_Popped;
+        Dispatcher.Invoke(() => QueuerArea.Child = info.Control);
+      }
+    }
+
     void IQueueManager.BeginChampionSelect(GameDTO game) {
       var page = new ChampSelectPage(game);
       Client.QueueManager.ShowPage(page);
@@ -259,9 +273,9 @@ namespace LeagueClient.ClientUI {
             //TODO Leaverbuster
             break;
           case "QUEUE_DODGER":
+            Dispatcher.Invoke(() => Client.QueueManager.ShowInfo(new BingeQueuer(leaver.PenaltyRemainingTime, me ? null : leaver.Summoner.Name)));
             //TODO Show Binge notification
             break;
-            //Dispatcher.Invoke(() => ShowQueuer(new BingeQueuer(leaver.PenaltyRemainingTime, me ? null : leaver.Summoner.Name)));
         }
         return false;
       } else if (result.JoinedQueues != null) {

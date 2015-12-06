@@ -15,6 +15,7 @@ namespace LeagueClient.Logic.Queueing {
     /// </summary>
     /// <param name="queuer">The queue manager</param>
     void ShowQueuePopup(IQueuePopup queuer);
+
     /// <summary>
     /// Shows a page UI in the main area
     /// </summary>
@@ -27,6 +28,9 @@ namespace LeagueClient.Logic.Queueing {
     /// </summary>
     /// <param name="alert">The alert to show</param>
     void ShowNotification(Alert alert);
+
+    void ShowInfo(IQueueInfo info);
+
     /// <summary>
     /// Begins champion select with the game
     /// </summary>

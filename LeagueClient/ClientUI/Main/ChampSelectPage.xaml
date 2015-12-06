@@ -155,7 +155,7 @@
               <Image Name="Spell2Image" Height="48" Width="48"/>
             </Border>
           </Grid>
-          <Button Grid.Row="4" HorizontalAlignment="Right" Height="40" Width="100" Name="LockInButt">Lock In</Button>
+          <Button Grid.Row="4" HorizontalAlignment="Right" Height="40" Width="100" Name="LockInButt" Click="LockIn_Click">Lock In</Button>
 
           <Label Grid.Row="6" Padding="0 2" FontSize="18" Name="MapLabel">Summoner's Rift</Label>
           <Label Grid.Row="7" Margin="0 0 0 -4" Padding="0 2" FontSize="18" Name="QueueLabel">Blind Pick</Label>

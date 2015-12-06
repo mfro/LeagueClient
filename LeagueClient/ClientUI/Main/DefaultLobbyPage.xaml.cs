@@ -33,14 +33,12 @@ namespace LeagueClient.ClientUI.Main {
     private ChatRoomController chatRoom;
     private LobbyStatus lobby;
 
-    private Timer timer;
-    private DateTime start;
+    private QueueController queue;
 
     public DefaultLobbyPage() {
       InitializeComponent();
 
-      timer = new Timer(1000);
-      timer.Elapsed += Timer_Elapsed;
+      queue = new QueueController(QueueTimeLabel, ChatStatus.inQueue, ChatStatus.outOfGame);
     }
 
     public DefaultLobbyPage(MatchMakerParams mmp) : this() {
@@ -58,11 +56,6 @@ namespace LeagueClient.ClientUI.Main {
       QueueLabel.Content = GameConfig.Values[config.GameTypeConfigId].Value;
       ModeLabel.Content = config.Ranked ? "Ranked" : ModeLabel.Content = GameMode.Values[config.GameMode].Value;
       TeamSizeLabel.Content = $"{config.NumPlayersPerTeam}v{config.NumPlayersPerTeam}";
-    }
-
-    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
-      var elapsed = DateTime.Now.Subtract(start);
-      Dispatcher.Invoke(() => QueueTimeLabel.Content = "In queue for " + elapsed.ToString("m\\:ss"));
     }
 
     #region RTMP Messages
@@ -143,7 +136,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void QuitButton_Click(object sender, RoutedEventArgs e) {
-      if (timer.Enabled) {
+      if (queue.InQueue) {
         RiotServices.MatchmakerService.PurgeFromQueues();
         SetInQueue(false);
       } else {
@@ -160,18 +153,14 @@ namespace LeagueClient.ClientUI.Main {
       });
 
       if (inQueue) {
-        Client.ChatManager.UpdateStatus(ChatStatus.inQueue);
-        start = DateTime.Now;
-        timer.Start();
+        queue.Start();
         Dispatcher.Invoke(() => {
           QuitButton.Content = "Cancel";
           StartButton.Visibility = Visibility.Collapsed;
           QueueTimeLabel.Visibility = Visibility.Visible;
-          QueueTimeLabel.Content = "In queue for 00:00";
         });
       } else {
-        Client.ChatManager.UpdateStatus(ChatStatus.hostingNormalGame);
-        timer.Stop();
+        queue.Cancel();
         Dispatcher.Invoke(() => {
           QuitButton.Content = "Quit";
           QueueTimeLabel.Visibility = Visibility.Collapsed;

@@ -96,14 +96,17 @@ namespace LeagueClient.ClientUI {
       LoginBar.IsIndeterminate = true;
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
-      new Thread(async () => {
+      new Thread(() => {
         try {
-          var success = await Client.Initialize(user, pass);
-          if (success) {
-            Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
-            Client.SaveSettings(SettingsKey, settings);
-            Dispatcher.Invoke(Client.MainWindow.LoginComplete);
-          } else Dispatcher.Invoke(Reset);
+          Client.Initialize(user, pass).ContinueWith(t => {
+            if (!t.IsFaulted && t.Result) {
+              Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
+              Client.SaveSettings(SettingsKey, settings);
+              Dispatcher.Invoke(Client.MainWindow.LoginComplete);
+            } else {
+              Dispatcher.Invoke(Reset);
+            }
+          });
         } catch { }
       }).Start();
     }

@@ -241,7 +241,10 @@ namespace LeagueClient.Logic {
 
       System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
       ChatManager.UpdateStatus(ChatStatus.inGame);
-      CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => RiotAPI.CurrentGameAPI.BySummoner("NA", LoginPacket.AllSummonerData.Summoner.SumId));
+      new Thread(() => {
+        Thread.Sleep(20000);
+        CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => RiotAPI.CurrentGameAPI.BySummoner("NA", LoginPacket.AllSummonerData.Summoner.SumId));
+      }).Start();
     }
 
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();

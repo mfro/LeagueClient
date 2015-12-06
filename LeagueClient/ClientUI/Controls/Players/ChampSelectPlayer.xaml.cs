@@ -28,10 +28,15 @@ namespace LeagueClient.ClientUI.Controls {
     public ChampSelectPlayer(PlayerParticipant player, PlayerChampionSelectionDTO selection) : this() {
       if (selection?.ChampionId > 0)
         ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId));
+      else ChampImage.Source = null;
+
       if (selection?.Spell1Id > 0)
         Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id));
+      else Spell1Image.Source = null;
+
       if (selection?.Spell2Id > 0)
         Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
+      else Spell2Image.Source = null;
 
       NameLabel.Content = player.SummonerName;
     }

@@ -49,10 +49,8 @@ namespace LeagueClient.ClientUI.Main {
 
     private Thread update;
     private Queue selected;
+    private QueueController queue;
     private Dictionary<ListBox, List<Queue>> queues = new Dictionary<ListBox, List<Queue>>();
-
-    private System.Timers.Timer timer;
-    private DateTime start;
 
     public PlaySelectPage() {
       InitializeComponent();
@@ -80,35 +78,38 @@ namespace LeagueClient.ClientUI.Main {
 
       #endregion
 
-      timer = new System.Timers.Timer(1000);
-      timer.Elapsed += Timer_Elapsed;
+      queue = new QueueController(QueueLabel, ChatStatus.inQueue, ChatStatus.outOfGame);
       SummonersRift.Tag = GameMap.SummonersRift;
       update = new Thread(UpdateLoop) { IsBackground = true, Name = "PlaySelectUpdateLoop" };
       update.Start();
     }
 
-    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
-      var elapsed = DateTime.Now.Subtract(start);
-      Dispatcher.Invoke(() => QueueLabel.Content = "In queue for " + elapsed.ToString("m\\:ss"));
+    public bool HandleMessage(MessageReceivedEventArgs args) {
+      var game = args.Body as GameDTO;
+
+      if (game != null) {
+        Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new DefaultQueuePopup(game)));
+        return true;
+      }
+
+      return false;
     }
 
     private void SetInQueue(bool inQueue) {
       if (inQueue) {
-        start = DateTime.Now;
-        timer.Start();
+        queue.Start();
         Dispatcher.Invoke(() => {
           CreateCustomButton.Visibility = JoinCustomButton.Visibility = QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Collapsed;
           QueueLabel.Visibility = CancelButton.Visibility = Visibility.Visible;
         });
       } else {
-        timer.Stop();
+        queue.Cancel();
         Dispatcher.Invoke(() => {
           CreateCustomButton.Visibility = JoinCustomButton.Visibility = QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Visible;
           QueueLabel.Visibility = CancelButton.Visibility = Visibility.Collapsed;
         });
       }
-
-      Timer_Elapsed(timer, null);
+      ClassicQueues.IsEnabled = SpecialQueues.IsEnabled = RankedQueues.IsEnabled = !inQueue;
     }
 
     private void UpdateLoop() {
@@ -147,12 +148,14 @@ namespace LeagueClient.ClientUI.Main {
         var list = from item in category.Value
                    where Client.AvailableQueues.ContainsKey(item.ID)
                    select item;
+        ((Grid) category.Key.Parent).Visibility = list.Count() > 0 ? Visibility.Visible : Visibility.Collapsed;
         category.Key.ItemsSource = list;
       }
     }
 
     public void Dispose() {
       update.Abort();
+      queue.Dispose();
     }
 
     #region Plays
