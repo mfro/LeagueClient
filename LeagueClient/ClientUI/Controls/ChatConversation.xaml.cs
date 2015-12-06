@@ -51,7 +51,7 @@ namespace LeagueClient.ClientUI.Controls {
           if (!friend.Unread) Open = true;
 
           friend.HistoryUpdated += Friend_HistoryUpdated;
-          NameLabel.Content = friend.User.Nickname;
+          NameLabel.Content = friend.User.Name;
           GotFocus += OnFocus;
         };
       }

@@ -14,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using jabber.connection;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Cap;
@@ -97,7 +96,7 @@ namespace LeagueClient.ClientUI.Main {
 
       PlayerList.Children.Clear();
       chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
-      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
+      Client.ChatManager.Status = ChatStatus.inTeamBuilder;
     }
     #endregion
 
@@ -634,7 +633,7 @@ namespace LeagueClient.ClientUI.Main {
       RiotServices.GameInvitationService.Leave();
       RiotServices.CapService.Quit();
       chatRoom?.LeaveChat();
-      Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+      Client.ChatManager.Status = ChatStatus.outOfGame;
     }
 
     public Page Page => this;

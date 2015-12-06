@@ -81,7 +81,7 @@ namespace LeagueClient {
     }
 
     public static void MyFocus(this UIElement el) {
-      Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, (Func<bool>) el.Focus);
+      Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (Func<bool>) el.Focus);
     }
 
     public static void MyInvoke<T1>(this Dispatcher dispatch, Action<T1> func, T1 t) => dispatch.Invoke(func, t);

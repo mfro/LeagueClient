@@ -44,7 +44,7 @@ namespace LeagueClient.ClientUI.Main {
     public DefaultLobbyPage(MatchMakerParams mmp) : this() {
       this.mmp = mmp;
       chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
-      Client.ChatManager.UpdateStatus(ChatStatus.hostingNormalGame);
+      Client.ChatManager.Status = ChatStatus.hostingNormalGame;
 
       //InviteButton.Visibility = Visibility.Hidden;
 
@@ -96,6 +96,8 @@ namespace LeagueClient.ClientUI.Main {
       if (!chatRoom.IsJoined)
         chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
 
+      bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();
         foreach (var player in lobby.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
@@ -103,13 +105,16 @@ namespace LeagueClient.ClientUI.Main {
         }
         PlayerList.Children.Clear();
         foreach (var player in lobby.Members) {
-          var control = new LobbyPlayer2(lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId, player);
+          var user = RiotChat.GetUser(player.SummonerId);
+          int icon = Client.Settings.ProfileIcon;
+          if (!owner && chatRoom.Statuses.ContainsKey(user)) icon = chatRoom.Statuses[RiotChat.GetUser(player.SummonerId)].ProfileIcon;
+
+          var control = new LobbyPlayer2(owner, player, icon);
           control.GiveInviteClicked += GiveInviteClicked;
           control.KickClicked += KickClicked;
           PlayerList.Children.Add(control);
         }
 
-        bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
         StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
         Client.CanInviteFriends = owner;
       });
@@ -180,7 +185,7 @@ namespace LeagueClient.ClientUI.Main {
     public void ForceClose() {
       RiotServices.GameInvitationService.Leave();
       chatRoom.LeaveChat();
-      Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+      Client.ChatManager.Status = ChatStatus.outOfGame;
     }
   }
 }

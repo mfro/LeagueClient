@@ -13,13 +13,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using jabber.protocol.client;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
+using agsXMPP.protocol.client;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -40,7 +40,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public void Update() {
       if (friend.Status == null) return;
-      NameText.Text = friend.User.Nickname;
+      NameText.Text = friend.User.Name;
       MsgText.Text = friend.Status.Message;
       if (string.IsNullOrWhiteSpace(friend.Status.Message)) {
         MsgText.Visibility = Visibility.Collapsed;
@@ -49,9 +49,9 @@ namespace LeagueClient.ClientUI.Controls {
       }
       SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(friend.Status.ProfileIcon));
       switch (friend.Status.Show) {
-        case StatusShow.Chat: InGameText.Foreground = App.ChatBrush; break;
-        case StatusShow.Away: InGameText.Foreground = App.AwayBrush; break;
-        case StatusShow.Dnd: InGameText.Foreground = App.BusyBrush; break;
+        case ShowType.chat: InGameText.Foreground = App.ChatBrush; break;
+        case ShowType.away: InGameText.Foreground = App.AwayBrush; break;
+        case ShowType.dnd: InGameText.Foreground = App.BusyBrush; break;
       }
 
       string status;
@@ -70,7 +70,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void MenuItem_Click(object sender, RoutedEventArgs e) {
-      RiotServices.GameInvitationService.Invite(RiotChat.GetSummonerId(friend.User.JID));
+      RiotServices.GameInvitationService.Invite(RiotChat.GetSummonerId(friend.User.Jid));
     }
 
     private void UserControl_MouseUp(object sender, MouseButtonEventArgs e) {

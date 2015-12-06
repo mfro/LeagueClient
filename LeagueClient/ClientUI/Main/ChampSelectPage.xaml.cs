@@ -24,6 +24,7 @@ using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using RtmpSharp.Messaging;
+using agsXMPP;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -52,7 +53,7 @@ namespace LeagueClient.ClientUI {
 
     public ChampSelectPage(GameDTO game) : this() {
       chatRoom = new ChatRoomController(ChatBox, ChatHistory, ChatButt, ChatScroller);
-      chatRoom.JoinChat(new jabber.JID(game.RoomName + ".pvp.net"), game.RoomPassword);
+      chatRoom.JoinChat(new Jid(game.RoomName.ToLower() + ".pvp.net"), game.RoomPassword);
 
       Popup.ChampSelector.ChampSelected += ChampsGrid_ChampSelected;
       Popup.ChampSelector.SkinSelected += ChampsGrid_SkinSelected;
@@ -145,6 +146,11 @@ namespace LeagueClient.ClientUI {
         state = State.Watching;
         Popup.ChampSelector.IsReadOnly = true;
         header = PostString;
+      } else if (game.GameState.Equals("TEAM_SELECT")) {
+        Dispatcher.Invoke(() => {
+          var page = new CustomLobbyPage(game);
+          Client.QueueManager.ShowPage(page);
+        });
       } else {
 
       }

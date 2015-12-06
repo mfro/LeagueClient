@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using jabber.connection;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
@@ -29,6 +28,7 @@ namespace LeagueClient.ClientUI.Main {
   /// </summary>
   public partial class CustomLobbyPage : Page, IClientSubPage {
     public GameDTO GameDto { get; private set; }
+    public bool IsCaptain => lobby?.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
 
     private LobbyStatus lobby;
     private ChatRoomController chatRoom;
@@ -37,12 +37,13 @@ namespace LeagueClient.ClientUI.Main {
 
     public CustomLobbyPage(GameDTO game) : this() {
       GotGameData(game);
+      Client.ChatManager.Status = ChatStatus.teamSelect;
     }
 
     public CustomLobbyPage() {
       InitializeComponent();
       chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
-      Client.ChatManager.UpdateStatus(ChatStatus.teamSelect);
+      Client.ChatManager.Status = ChatStatus.hostingPracticeGame;
     }
 
     #endregion
@@ -66,11 +67,15 @@ namespace LeagueClient.ClientUI.Main {
 
     public void GotLobbyStatus(LobbyStatus status) {
       lobby = status;
-      if (status.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
-        Client.CanInviteFriends = true;
       Dispatcher.Invoke(() => {
-        InviteList.Children.Clear();
+        if (IsCaptain) {
+          Client.CanInviteFriends = true;
+          StartButt.Visibility = Visibility.Visible;
+        } else {
+          StartButt.Visibility = Visibility.Collapsed;
+        }
 
+        InviteList.Children.Clear();
         foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
           InviteList.Children.Add(new InvitedPlayer(player));
         }
@@ -94,6 +99,7 @@ namespace LeagueClient.ClientUI.Main {
           TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
         });
       }
+
       if (game.GameState.Equals("TEAM_SELECT")) {
         Dispatcher.Invoke(() => {
           BlueTeam.Children.Clear();
@@ -142,6 +148,7 @@ namespace LeagueClient.ClientUI.Main {
           }
         });
       } else if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
+        chatRoom.LeaveChat();
         Close?.Invoke(this, new EventArgs());
         Client.QueueManager.BeginChampionSelect(game);
       }
@@ -155,7 +162,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public void ForceClose() {
       RiotServices.GameService.QuitGame();
-      Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+      Client.ChatManager.Status = ChatStatus.outOfGame;
     }
 
     #endregion

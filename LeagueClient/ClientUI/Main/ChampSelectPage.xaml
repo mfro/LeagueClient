@@ -115,8 +115,7 @@
           </RichTextBox>
         </ScrollViewer>
         <TextBox Name="ChatBox" Grid.Row="1" Margin="0 8 68 0"/>
-        <Button Name="ChatButt" Grid.Row="1" Margin="0 8 0 0" Width="60"
-              HorizontalAlignment="Right" Padding="0 0">Send</Button>
+        <Button Name="ChatButt" Grid.Row="1" Margin="0 8 0 0" Width="60" HorizontalAlignment="Right" Padding="0 0">Send</Button>
       </Grid>
 
       <Grid Grid.Column="1" Background="{StaticResource Back1Brush}">

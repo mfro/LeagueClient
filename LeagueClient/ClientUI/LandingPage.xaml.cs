@@ -16,7 +16,6 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using jabber.protocol.client;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic;
@@ -28,6 +27,7 @@ using RtmpSharp.Messaging;
 using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing.DynamicJSON;
 using LeagueClient.Logic.Riot.Team;
+using agsXMPP.protocol.client;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -63,15 +63,16 @@ namespace LeagueClient.ClientUI {
     }
 
     private void ChatManager_MessageReceived(object sender, Message e) {
+      if (!Client.ChatManager.Friends.ContainsKey(e.From.User)) return;
       var friend = Client.ChatManager.Friends[e.From.User];
       if (!OpenChatsList.Contains(friend)) Dispatcher.Invoke(() => OpenChatsList.Add(friend));
     }
 
     private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
       var groups = new Dictionary<object, List<ChatFriend>> {
-        ["Chat"] = new List<ChatFriend>(),
-        ["Away"] = new List<ChatFriend>(),
-        ["Dnd"] = new List<ChatFriend>()
+        [ShowType.chat] = new List<ChatFriend>(),
+        [ShowType.away] = new List<ChatFriend>(),
+        [ShowType.dnd] = new List<ChatFriend>()
       };
       foreach (var item in Client.ChatManager.FriendList) {
         if (item.CurrentGameInfo != null) {
@@ -86,7 +87,7 @@ namespace LeagueClient.ClientUI {
 
       foreach (var item in Client.ChatManager.FriendList) {
         if (groups.Any(pair => pair.Value.Contains(item))) continue;
-        groups[item.Status.Show.ToString()].Add(item);
+        groups[item.Status.Show].Add(item);
       }
       Dispatcher.Invoke(() => {
         GroupList.Children.Clear();
@@ -99,23 +100,23 @@ namespace LeagueClient.ClientUI {
     private void ChatManager_StatusUpdated(object sender, StatusUpdatedEventArgs e) {
       Dispatcher.Invoke(() => {
         switch (e.PresenceType) {
-          case jabber.protocol.client.PresenceType.available:
+          case PresenceType.available:
             if (e.Status.GameStatus == ChatStatus.outOfGame) {
               if (!string.IsNullOrWhiteSpace(e.Status.Message))
                 CurrentStatus.Content = e.Status.Message;
-              else if (e.Show == StatusShow.Chat)
+              else if (e.Show == ShowType.chat)
                 CurrentStatus.Content = "Online";
               else CurrentStatus.Content = "Away";
             } else CurrentStatus.Content = e.Status.GameStatus.Value;
 
             switch (e.Show) {
-              case StatusShow.Away: CurrentStatus.Foreground = App.AwayBrush; break;
-              case StatusShow.Chat: CurrentStatus.Foreground = App.ChatBrush; break;
-              case StatusShow.Dnd: CurrentStatus.Foreground = App.BusyBrush; break;
+              case ShowType.away: CurrentStatus.Foreground = App.AwayBrush; break;
+              case ShowType.chat: CurrentStatus.Foreground = App.ChatBrush; break;
+              case ShowType.dnd: CurrentStatus.Foreground = App.BusyBrush; break;
             }
 
             break;
-          case jabber.protocol.client.PresenceType.invisible:
+          case PresenceType.invisible:
             CurrentStatus.Content = "Invisible";
             CurrentStatus.Foreground = App.ForeBrush;
             break;
@@ -182,11 +183,11 @@ namespace LeagueClient.ClientUI {
 
     private void CurrentStatus_MouseUp(object sender, MouseButtonEventArgs e) {
       switch (Client.ChatManager.Show) {
-        case StatusShow.Away:
-          Client.ChatManager.UpdateStatus(StatusShow.Chat);
+        case ShowType.away:
+          Client.ChatManager.Show = ShowType.chat;
           break;
-        case StatusShow.Chat:
-          Client.ChatManager.UpdateStatus(StatusShow.Away);
+        case ShowType.chat:
+          Client.ChatManager.Show = ShowType.away;
           break;
       }
     }
@@ -260,7 +261,7 @@ namespace LeagueClient.ClientUI {
     void IQueueManager.BeginChampionSelect(GameDTO game) {
       var page = new ChampSelectPage(game);
       Client.QueueManager.ShowPage(page);
-      Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
+      Client.ChatManager.Status = ChatStatus.championSelect;
       RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
 
@@ -274,7 +275,6 @@ namespace LeagueClient.ClientUI {
             break;
           case "QUEUE_DODGER":
             Dispatcher.Invoke(() => Client.QueueManager.ShowInfo(new BingeQueuer(leaver.PenaltyRemainingTime, me ? null : leaver.Summoner.Name)));
-            //TODO Show Binge notification
             break;
         }
         return false;
@@ -283,29 +283,29 @@ namespace LeagueClient.ClientUI {
       } else return false;
     }
 
-    public async void AcceptInvite(InvitationRequest invite) {
-      var status = await RiotServices.GameInvitationService.Accept(invite.InvitationId);
+    public void AcceptInvite(InvitationRequest invite) {
+      var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
       var metaData = JSON.ParseObject(invite.GameMetaData);
       if (metaData["gameTypeConfigId"] == 12) {
         var lobby = new CapLobbyPage(false);
-        lobby.GotLobbyStatus(status);
+        task.ContinueWith(t => lobby.GotLobbyStatus(task.Result));
         RiotServices.CapService.JoinGroupAsInvitee(metaData["groupFinderId"]);
         Client.QueueManager.ShowPage(lobby);
       } else {
         switch ((string) metaData["gameType"]) {
           case "PRACTICE_GAME":
             var custom = new CustomLobbyPage();
-            custom.GotLobbyStatus(status);
+            task.ContinueWith(t => custom.GotLobbyStatus(task.Result));
             Client.QueueManager.ShowPage(custom);
             break;
           case "NORMAL_GAME":
             var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] } });
-            normal.GotLobbyStatus(status);
+            task.ContinueWith(t => normal.GotLobbyStatus(task.Result));
             Client.QueueManager.ShowPage(normal);
             break;
           case "RANKED_TEAM_GAME":
             var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] }, TeamId = new TeamId { FullId = metaData["rankedTeamId"] } });
-            ranked.GotLobbyStatus(status);
+            task.ContinueWith(t => ranked.GotLobbyStatus(task.Result));
             Client.QueueManager.ShowPage(ranked);
             break;
         }

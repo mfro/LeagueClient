@@ -13,12 +13,11 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
-using jabber;
-using jabber.client;
-using jabber.connection;
-using jabber.protocol.client;
-using jabber.protocol.iq;
 using LeagueClient.ClientUI.Controls;
+using agsXMPP;
+using agsXMPP.protocol.client;
+using agsXMPP.protocol.iq.roster;
+using agsXMPP.protocol.x.muc;
 
 namespace LeagueClient.Logic.Chat {
   public sealed class RiotChat : IDisposable {
@@ -28,61 +27,97 @@ namespace LeagueClient.Logic.Chat {
     };
 
     public event EventHandler<StatusUpdatedEventArgs> StatusUpdated;
+    public event EventHandler<Presence> PresenceRecieved;
     public event EventHandler<Message> MessageReceived;
 
-    public State ChatState { get; private set; }
     public Dictionary<string, ChatFriend> Friends { get; } = new Dictionary<string, ChatFriend>();
     public BindingList<ChatConversation> OpenChats { get; } = new BindingList<ChatConversation>();
     public BindingList<ChatFriend> FriendList { get; } = new BindingList<ChatFriend>();
 
-    private JabberClient conn;
-    private RosterManager Roster = new RosterManager();
-    private PresenceManager Presence = new PresenceManager();
-    private ConferenceManager Conference = new ConferenceManager();
-    private bool fullyAuthed;
+    public ChatStatus Status {
+      get { return status; }
+      set {
+        status = value;
+        SendPresence();
+      }
+    }
+    public ShowType Show {
+      get { return show; }
+      set {
+        show = value;
+        SendPresence();
+      }
+    }
+    public string Message {
+      get { return Client.Settings.ChatStatus; }
+      set {
+        Client.Settings.ChatStatus = value;
+        SendPresence();
+      }
+    }
+
+    private XmppClientConnection xmpp;
+    private PresenceManager presence;
+    private RosterManager roster;
+    private MucManager lobby;
     private Timer timer;
 
-    public ChatStatus Status { get; private set; }
-    public StatusShow Show { get; private set; }
+    private ChatStatus status;
+    private ShowType show;
 
     public RiotChat(string user, string pass) {
-      Status = ChatStatus.outOfGame;
-      Show = StatusShow.Chat;
-      conn = new JabberClient {
-        Server = "pvp.net",
-        Port = 5223,
-        SSL = true,
-        AutoReconnect = 30,
-        KeepAlive = 10,
-        NetworkHost = Client.Region.ChatServer,
-        User = user,
-        Password = "AIR_" + pass,
+      xmpp = new XmppClientConnection("pvp.net", 5223) {
+        AutoResolveConnectServer = false,
+        ConnectServer = Client.Region.ChatServer,
         Resource = "xiff",
-        AutoPresence = false
+        UseSSL = true,
+        KeepAliveInterval = 10,
+        KeepAlive = true,
+        UseCompression = true,
+        AutoPresence = true,
+        Status = new LeagueStatus(Client.Settings.ChatStatus, ChatStatus.outOfGame).ToXML(),
+        Show = ShowType.chat,
+        Priority = 0
       };
-      conn.OnInvalidCertificate += (src, cert, poop, poo2) => true;
-      conn.OnMessage += OnReceiveMessage;
-      conn.OnAuthenticate += s => UpdateStatus(Client.Settings.ChatStatus);
-      ChatState = State.Connecting;
-      conn.Connect();
-      Roster.Stream = conn;
-      Roster.AutoSubscribe = true;
-      Roster.AutoAllow = AutoSubscriptionHanding.AllowAll;
-      Roster.OnRosterItem += OnRosterItem;
-      Roster.OnRosterEnd += src => {
-        fullyAuthed = true;
-        Presence.OnPrimarySessionChange += OnPrimarySessionChange;
-        if (conn.IsAuthenticated)
-          SendPresence();
-      };
-      Presence.Stream = conn;
-      Conference.Stream = conn;
+      xmpp.OnMessage += Xmpp_OnMessage;
+      xmpp.OnError += (o, e) => Client.Log(e);
+      xmpp.OnLogin += o => Client.Log("Connected to chat server");
+      xmpp.Open(user, "AIR_" + pass);
+
+      presence = new PresenceManager(xmpp);
+      roster = new RosterManager(xmpp);
+      lobby = new MucManager(xmpp);
+
+      xmpp.OnRosterItem += Xmpp_OnRosterItem;
+      xmpp.OnPresence += Xmpp_OnPresence;
 
       timer = new Timer(1000) { AutoReset = true };
       timer.Elapsed += UpdateProc;
       timer.Start();
     }
+    #region Event Handlers
+    private void Xmpp_OnPresence(object sender, Presence pres) {
+      if (Friends.ContainsKey(pres.From.User)) {
+        Friends[pres.From.User].UpdatePresence(pres);
+        Application.Current.Dispatcher.MyInvoke(ResetList, false);
+      } else { }
+      PresenceRecieved?.Invoke(this, pres);
+    }
 
+    private void Xmpp_OnRosterItem(object sender, RosterItem item) {
+      if (!Friends.ContainsKey(item.Jid.User))
+        Friends.Add(item.Jid.User, new ChatFriend(item));
+    }
+
+    private void Xmpp_OnMessage(object sender, Message msg) {
+      if (Friends.ContainsKey(msg.From.User) && !msg.From.User.Equals(msg.To.User)) {
+        Friends[msg.From.User].ReceiveMessage(msg.Body);
+      } else { }
+      MessageReceived?.Invoke(this, msg);
+    }
+    #endregion
+
+    #region Private Methods
     private void ResetList(bool force) {
       var list = Friends.Values.Where(u => !u.IsOffline && u.Status != null).OrderBy(u => u.GetValue()).ToList();
       for (int i = 0; i < Math.Max(FriendList.Count, list.Count); i++) {
@@ -102,65 +137,16 @@ namespace LeagueClient.Logic.Chat {
       Tick?.Invoke(this, new EventArgs());
     }
 
-    #region Event Handlers
-    private void OnPrimarySessionChange(object sender, jabber.JID bare) {
-      if (!Friends.ContainsKey(bare.User)) {
-        if (!bare.User.Equals(conn.JID.User)) {
-          var p = Presence.GetAll(bare);
-          if (p.Any(s2 => Client.LoginPacket.AllSummonerData.Summoner.Name.Equals(s2.From.Resource))) return;
-          SendPresence();
-        }
-        return;
-      }
-
-      var s = Presence.GetAll(bare);
-      if (s.Length == 0) Friends[bare.User].UpdatePresence(null);
-      else Friends[bare.User].UpdatePresence(s[0]);
-      Application.Current.Dispatcher.MyInvoke(ResetList, false);
-    }
-
-    private void OnReceiveMessage(object sender, Message msg) {
-      if (!Friends.ContainsKey(msg.From.User)) return;
-      if (msg.From.User.Equals(msg.To.User)) return;
-      Friends[msg.From.User].ReceiveMessage(msg.Body);
-      MessageReceived?.Invoke(this, msg);
-    }
-
-    private void OnRosterItem(object sender, Item item) {
-      if (!Friends.ContainsKey(item.JID.User)) {
-        Application.Current.Dispatcher.Invoke(() => Friends.Add(item.JID.User, new ChatFriend(item)));
-      }
-      if (!fullyAuthed) OnPrimarySessionChange(sender, item.JID);
-    }
-    #endregion
-
-    #region Status
-    /// <summary>
-    /// Updates the current status string
-    /// </summary>
-    /// <param name="message">The status message to display</param>
-    public void UpdateStatus(string message) {
-      Client.Settings.ChatStatus = message;
-      SendPresence();
-    }
-
-    public void UpdateStatus(ChatStatus status) {
-      this.Status = status;
-      SendPresence();
-    }
-
-    public void UpdateStatus(StatusShow show) {
-      this.Show = show;
-      SendPresence();
-    }
-
-    public void SendPresence() {
+    private void SendPresence() {
       var status = new LeagueStatus(Client.Settings.ChatStatus, Status);
-      var computed = DndStatuses.Contains(Status) ? StatusShow.Dnd : Show;
+      var computed = DndStatuses.Contains(Status) ? ShowType.dnd : Show;
 
       var args = new StatusUpdatedEventArgs(status, PresenceType.available, computed);
-      conn.Presence(args.PresenceType, args.Status.ToXML(), args.Show.ToString().ToLower(), 0);
       StatusUpdated?.Invoke(this, args);
+
+      xmpp.Status = status.ToXML();
+      xmpp.Show = computed;
+      xmpp.SendMyPresence();
     }
     #endregion
 
@@ -181,7 +167,7 @@ namespace LeagueClient.Logic.Chat {
       }
       obfuscatedName = Regex.Replace(obfuscatedName, @"/\s+/gx", "");
       obfuscatedName = Regex.Replace(obfuscatedName, @"/[^a-zA-Z0-9_~]/gx", "");
-      return Type + "~" + obfuscatedName;
+      return (Type + "~" + obfuscatedName).ToLower();
     }
 
     private static string GetChatroomJID(string obfuscatedName, bool isPublic, string pass = null) {
@@ -190,40 +176,42 @@ namespace LeagueClient.Logic.Chat {
       else return obfuscatedName + "@conference.pvp.net";
     }
 
-    public static JID GetTeambuilderRoom(string groupId, string pass) {
-      return new JID(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass));
+    public static Jid GetTeambuilderRoom(string groupId, string pass) {
+      return new Jid(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass));
     }
 
-    public static JID GetCustomRoom(string roomname, double roomId, string pass) {
-      return new JID(GetChatroomJID(GetObfuscatedChatroomName(roomname.ToLower() + (int) roomId, "ap"), false, pass));
+    public static Jid GetCustomRoom(string roomname, double roomId, string pass) {
+      return new Jid(GetChatroomJID(GetObfuscatedChatroomName(roomname.ToLower() + (int) roomId, "ap"), false, pass));
     }
 
-    public static JID GetLobbyRoom(string inviteId, string pass) {
-      return new JID(GetChatroomJID(GetObfuscatedChatroomName(inviteId.ToLower(), "ag"), false, pass));
+    public static Jid GetLobbyRoom(string inviteId, string pass) {
+      return new Jid(GetChatroomJID(GetObfuscatedChatroomName(inviteId.ToLower(), "ag"), false, pass));
     }
 
-    public Room JoinRoom(JID jid) {
-      var room = Conference.GetRoom(jid);
-      room.Nickname = Client.LoginPacket.AllSummonerData.Summoner.Name;
-      return room;
+    public void JoinRoom(Jid jid, string pass) {
+      lobby.AcceptDefaultConfiguration(jid);
+      lobby.JoinRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name, pass, false);
+    }
+
+    public void LeaveRoom(Jid jid) {
+      lobby.LeaveRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name);
     }
     #endregion
 
+    #region Other Public Methods
     /// <summary>
     /// Parses the internal summoner ID of a friend from the JID used in the XMPP chat service
     /// </summary>
     /// <param name="user">The summoner's JID</param>
     /// <returns>The summoner ID</returns>
-    public static double GetSummonerId(JID user) {
+    public static double GetSummonerId(Jid user) {
       double d;
       if (double.TryParse(user.User.Substring(3), out d)) return d;
       else throw new FormatException(user.User + " is not correctly formatted");
     }
 
-    public ChatFriend GetUser(long summonerId) {
-      var user = "sum" + summonerId;
-      if (Friends.ContainsKey(user)) return Friends[user];
-      else return null;
+    public static string GetUser(long summonerId) {
+      return "sum" + summonerId;
     }
 
     /// <summary>
@@ -238,8 +226,8 @@ namespace LeagueClient.Logic.Chat {
     /// </summary>
     /// <param name="user">The user to send the message to</param>
     /// <param name="message">The message to send</param>
-    public void SendMessage(JID user, string message) {
-      conn.Message(user.User + "@pvp.net", message);
+    public void SendMessage(Jid user, string message, MessageType type = MessageType.normal) {
+      xmpp.Send(new Message(user, MessageType.chat, message) { Type = type });
     }
 
     public void ForceUpdate() {
@@ -247,27 +235,22 @@ namespace LeagueClient.Logic.Chat {
     }
 
     public void Logout() {
-      conn.Close();
+      xmpp.Close();
     }
 
     public void Dispose() {
       timer.Dispose();
-      Conference.Dispose();
-      Presence.Dispose();
-      Roster.Dispose();
+      xmpp.Close();
     }
-
-    public enum State {
-      Disconnected, Connecting, Connected
-    }
+    #endregion
   }
 
   public class StatusUpdatedEventArgs : EventArgs {
     public LeagueStatus Status { get; set; }
     public PresenceType PresenceType { get; set; }
-    public StatusShow Show { get; set; }
+    public ShowType Show { get; set; }
 
-    public StatusUpdatedEventArgs(LeagueStatus status, PresenceType presenceType, StatusShow show) {
+    public StatusUpdatedEventArgs(LeagueStatus status, PresenceType presenceType, ShowType show) {
       Status = status;
       PresenceType = presenceType;
       Show = show;

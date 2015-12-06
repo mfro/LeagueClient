@@ -47,7 +47,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public event EventHandler Close;
 
-    private Thread update;
+    //private Thread update;
     private Queue selected;
     private QueueController queue;
     private Dictionary<ListBox, List<Queue>> queues = new Dictionary<ListBox, List<Queue>>();
@@ -80,14 +80,14 @@ namespace LeagueClient.ClientUI.Main {
 
       queue = new QueueController(QueueLabel, ChatStatus.inQueue, ChatStatus.outOfGame);
       SummonersRift.Tag = GameMap.SummonersRift;
-      update = new Thread(UpdateLoop) { IsBackground = true, Name = "PlaySelectUpdateLoop" };
-      update.Start();
+      //update = new Thread(UpdateLoop) { IsBackground = true, Name = "PlaySelectUpdateLoop" };
+      //update.Start();
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
       var game = args.Body as GameDTO;
 
-      if (game != null) {
+      if (game != null && game.GameState.Equals("JOINING_CHAMP_SELECT")) {
         Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new DefaultQueuePopup(game)));
         return true;
       }
@@ -112,16 +112,16 @@ namespace LeagueClient.ClientUI.Main {
       ClassicQueues.IsEnabled = SpecialQueues.IsEnabled = RankedQueues.IsEnabled = !inQueue;
     }
 
-    private void UpdateLoop() {
-      while (true) {
-        foreach (var category in queues.Values) {
-          foreach (var item in category)
-            RiotServices.MatchmakerService.GetQueueInformation(item.ID)
-                .ContinueWith(task => item.Details = task.Result.QueueLength + " People in queue");
-        }
-        Thread.Sleep(30000);
-      }
-    }
+    //private void UpdateLoop() {
+    //  while (true) {
+    //    foreach (var category in queues.Values) {
+    //      foreach (var item in category)
+    //        RiotServices.MatchmakerService.GetQueueInformation(item.ID)
+    //            .ContinueWith(task => item.Details = task.Result.QueueLength + " People in queue");
+    //    }
+    //    Thread.Sleep(30000);
+    //  }
+    //}
 
     private void QueueList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
       var src = sender as ListBox;
@@ -154,7 +154,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void Dispose() {
-      update.Abort();
+      //update.Abort();
       queue.Dispose();
     }
 
@@ -290,7 +290,6 @@ namespace LeagueClient.ClientUI.Main {
       public int ID { get; }
       public string Action1 { get; }
       public string Action2 { get; }
-      public string Details { get; set; }
       public Action<int> EnterQueue;
 
       public Queue(string name, int id, string act1, string act2, Action<int> enter) {

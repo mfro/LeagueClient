@@ -1,4 +1,5 @@
-﻿using System;
+﻿using agsXMPP.protocol.client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,14 +23,14 @@ namespace LeagueClient.Logic.Chat {
     public string Raw { get; private set; }
 
     public ChatStatus GameStatus { get; private set; }
-    public StatusShow Show { get; private set; }
+    public ShowType Show { get; private set; }
 
     public LeagueStatus(string message, ChatStatus ingame) {
       Message = message;
       GameStatus = ingame;
     }
 
-    public LeagueStatus(string status, string show) {
+    public LeagueStatus(string status, ShowType show) {
       var doc = new XmlDocument();
       doc.LoadXml(status);
       Raw = status;
@@ -52,17 +53,11 @@ namespace LeagueClient.Logic.Chat {
             break;
         }
       }
-      Show = (StatusShow) Enum.Parse(typeof(StatusShow), show, true);
+      Show = show;
     }
 
     public string ToXML() {
       return string.Format(StatusTemplate, Message, GameStatus.Key);
     }
-  }
-
-  public enum StatusShow {
-    Chat,
-    Dnd,
-    Away
   }
 }

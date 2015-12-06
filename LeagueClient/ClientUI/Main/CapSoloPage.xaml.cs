@@ -57,7 +57,7 @@ namespace LeagueClient.ClientUI.Main {
       Popup.SpellSelector.SpellSelected += Spell_Select;
       Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
 
-      Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
+      Client.ChatManager.Status = ChatStatus.inTeamBuilder;
 
       queue = new QueueController(QueueInfoLabel, ChatStatus.inTeamBuilder, ChatStatus.inTeamBuilder);
       if (me != null) SetInQueue(true);
@@ -170,7 +170,7 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     public Page Page => this;
-    public void ForceClose() => Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+    public void ForceClose() => Client.ChatManager.Status = ChatStatus.outOfGame;
 
     public void Dispose() {
       queue.Dispose();

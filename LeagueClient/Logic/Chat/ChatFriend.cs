@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using jabber.protocol.client;
-using jabber.protocol.iq;
 using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.RiotAPI;
+using agsXMPP.protocol.Base;
+using agsXMPP.protocol.client;
 
 namespace LeagueClient.Logic.Chat {
   public class ChatFriend {
@@ -17,7 +17,7 @@ namespace LeagueClient.Logic.Chat {
     public Dictionary<string, object> Data { get; } = new Dictionary<string, object>();
 
     public InvitationRequest Invite { get; set; }
-    public Item User { get; }
+    public RosterItem User { get; }
 
     public PublicSummoner Summoner { get; private set; }
     public LeagueStatus Status { get; private set; }
@@ -30,29 +30,30 @@ namespace LeagueClient.Logic.Chat {
     public RiotAPI.CurrentGameAPI.CurrentGameInfo CurrentGameInfo { get; private set; }
     public GameDTO CurrentGameDTO { get; private set; }
 
-    public ChatFriend(Item item) {
+    public ChatFriend(RosterItem item) {
       User = item;
 
       var groups = item.GetGroups();
-      Group = groups[0].InnerText;
+      Group = groups.Item(0).InnerXml;
 
-      RiotServices.SummonerService.GetSummonerByName(User.Nickname).ContinueWith(GotSummoner);
+      RiotServices.SummonerService.GetSummonerByName(User.Name).ContinueWith(GotSummoner);
     }
 
     public void ReceiveMessage(string message) {
-      AppendMessage(User.Nickname, message);
+      AppendMessage(User.Name, message);
     }
 
     public void SendMessage(string message) {
       AppendMessage(Client.LoginPacket.AllSummonerData.Summoner.Name, message);
-      Client.ChatManager.SendMessage(User.JID, message);
+      Client.ChatManager.SendMessage(User.Jid, message);
     }
 
     public void UpdatePresence(Presence p) {
-      if (!(IsOffline = (p?.Status == null))) {
+      IsOffline = p.Status == null;
+      if (!IsOffline) {
         Status = new LeagueStatus(p.Status, p.Show);
         if (Status.GameStatus == ChatStatus.inGame) {
-          RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Nickname).ContinueWith(GotGameDTO);
+          RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Name).ContinueWith(GotGameDTO);
           if (Summoner != null) RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Summoner.SummonerId).ContinueWith(GotGameInfo);
         } else {
           CurrentGameDTO = null;
@@ -68,7 +69,7 @@ namespace LeagueClient.Logic.Chat {
           return Status.GameStatus.Priority + .99;
         else
           return Status.GameStatus.Priority + 1.0 / CurrentGameInfo.gameStartTime;
-      } else if (Status.Show == StatusShow.Away) {
+      } else if (Status.Show == ShowType.away) {
         return Status.GameStatus.Priority + 100;
       } else
         return Status.GameStatus.Priority;

@@ -33,13 +33,14 @@ namespace LeagueClient.ClientUI.Controls {
       InitializeComponent();
     }
 
-    public LobbyPlayer2(bool amCaptain, Member member) : this() {
+    public LobbyPlayer2(bool amCaptain, Member member, int profileIconId) : this() {
       RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
       CanControl = amCaptain;
       NameLabel.Content = member.SummonerName;
       SummonerName = member.SummonerName;
       SummonerId = member.SummonerId;
+      ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileIconId));
       PlusPath.Visibility = member.HasInvitePower ? Visibility.Collapsed : Visibility.Visible;
     }
 

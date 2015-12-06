@@ -1,4 +1,7 @@
-﻿using System;
+﻿using agsXMPP;
+using agsXMPP.protocol.client;
+using agsXMPP.protocol.x.muc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using jabber;
 
 namespace LeagueClient.Logic.Chat {
   public class ChatRoomController {
@@ -18,10 +20,12 @@ namespace LeagueClient.Logic.Chat {
     private Button send;
     private ScrollViewer scroller;
 
-    private jabber.connection.Room chatRoom;
+    private Jid chatRoom;
     private Dispatcher dispatch = Application.Current.Dispatcher;
 
     public bool IsJoined { get; private set; }
+    public Dictionary<string, LeagueStatus> Statuses { get; } = new Dictionary<string, LeagueStatus>();
+    public Dictionary<string, Item> Users { get; } = new Dictionary<string, Item>();
 
     public ChatRoomController(TextBox input, RichTextBox output, Button send, ScrollViewer scroller) {
       this.input = input;
@@ -33,43 +37,66 @@ namespace LeagueClient.Logic.Chat {
       send.Click += Button_Click;
     }
 
-    public void JoinChat(JID jid, string pass) {
+    public void JoinChat(Jid jid, string pass) {
       if (IsJoined) return;
-      chatRoom = Client.ChatManager.JoinRoom(jid);
-      chatRoom.OnRoomMessage += (s, e) => dispatch.MyInvoke(ShowMessage, chatRoom.Participants[e.From].Nick, e.Body);
-      chatRoom.OnParticipantJoin += (s, e) => dispatch.MyInvoke(ShowLobbyMessage, e.Nick + " has joined the lobby");
-      chatRoom.OnParticipantLeave += (s, e) => dispatch.MyInvoke(ShowLobbyMessage, e.Nick + " has left the lobby");
-      chatRoom.OnJoin += room => dispatch.MyInvoke(ShowLobbyMessage, "Joined chat lobby");
-      chatRoom.Join(pass);
+      chatRoom = jid;
+      Client.ChatManager.JoinRoom(jid, pass);
+      Client.ChatManager.PresenceRecieved += ChatManager_PresenceRecieved;
+      Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
       IsJoined = true;
     }
 
+    private void ChatManager_MessageReceived(object sender, Message e) {
+      if (!e.From.User.Equals(chatRoom.User) || e.Type != MessageType.groupchat) return;
+
+      Application.Current.Dispatcher.MyInvoke(ShowChatMessage, e.From.Resource, e.Body);
+    }
+
+    private void ChatManager_PresenceRecieved(object sender, Presence e) {
+      if (!e.From.User.Equals(chatRoom.User)) return;
+      if (e.Status == null && e.Type == PresenceType.available) return;
+
+      var user = e.MucUser.Item;
+      if (e.Type == PresenceType.available) {
+        if (!Users.ContainsKey(user.Jid.User)) Application.Current.Dispatcher.MyInvoke(ShowLobbyMessage, $"{e.From.Resource} has joined the lobby");
+        Statuses[user.Jid.User] = new LeagueStatus(e.Status, e.Show);
+        Users[user.Jid.User] = user;
+      } else {
+        if (Users.ContainsKey(user.Jid.User)) Application.Current.Dispatcher.MyInvoke(ShowLobbyMessage, $"{e.From.Resource} has left the lobby");
+        Statuses.Remove(user.Jid.User);
+        Users.Remove(user.Jid.User);
+      }
+    }
+
     public void LeaveChat() {
-      chatRoom?.Leave("bye");
+      Client.ChatManager.LeaveRoom(chatRoom);
+      Client.ChatManager.PresenceRecieved -= ChatManager_PresenceRecieved;
+      Client.ChatManager.MessageReceived -= ChatManager_MessageReceived;
     }
 
     public void ShowLobbyMessage(string message) {
       var tr = new TextRange(output.Document.ContentEnd, output.Document.ContentEnd);
       tr.Text = message + '\n';
       tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
-      scroller.ScrollToBottom();
+      if (scroller.VerticalOffset == scroller.ScrollableHeight)
+        scroller.ScrollToBottom();
     }
 
     private void SendMessage() {
       if (string.IsNullOrWhiteSpace(input.Text)) return;
-      chatRoom.PublicMessage(input.Text);
-      ShowMessage(Client.LoginPacket.AllSummonerData.Summoner.Name, input.Text);
+      Client.ChatManager.SendMessage(chatRoom, input.Text, MessageType.groupchat);
       input.Text = "";
     }
 
-    private void ShowMessage(string user, string message) {
+    private void ShowChatMessage(string user, string message) {
       var tr = new TextRange(output.Document.ContentEnd, output.Document.ContentEnd);
       tr.Text = user + ": ";
       tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.CornflowerBlue);
       tr = new TextRange(output.Document.ContentEnd, output.Document.ContentEnd);
       tr.Text = message + '\n';
       tr.ApplyPropertyValue(TextElement.ForegroundProperty, App.FontBrush);
-      scroller.ScrollToBottom();
+      if (scroller.VerticalOffset == scroller.ScrollableHeight)
+        scroller.ScrollToBottom();
     }
 
     private void TextBox_KeyUp(object sender, KeyEventArgs e) {

@@ -31,14 +31,7 @@
       <Setter Property="ItemTemplate">
         <Setter.Value>
           <DataTemplate>
-            <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-              </Grid.RowDefinitions>
-              <Label FontSize="18" Content="{Binding Name}"/>
-              <Label FontSize="14" Grid.Row="1" Padding="5 0 5 5" Content="{Binding Details}"/>
-            </Grid>
+            <Label FontSize="18" Content="{Binding Name}"/>
             <!--<TextBlock Style="{StaticResource Control}" Text="{Binding Name}" Padding="4 2" FontSize="14"/>-->
           </DataTemplate>
         </Setter.Value>

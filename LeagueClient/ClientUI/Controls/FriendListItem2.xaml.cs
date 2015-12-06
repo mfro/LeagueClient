@@ -19,6 +19,7 @@ using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.Parsing.DynamicJSON;
+using agsXMPP.protocol.client;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -73,7 +74,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Update() {
       if (friend.Status == null) return;
-      NameText.Content = friend.User.Nickname;
+      NameText.Content = friend.User.Name;
       MsgText.Text = friend.Status.Message;
       if (string.IsNullOrWhiteSpace(friend.Status.Message)) {
         MsgText.Visibility = Visibility.Collapsed;
@@ -82,9 +83,9 @@ namespace LeagueClient.ClientUI.Controls {
       }
       SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(friend.Status.ProfileIcon));
       switch (friend.Status.Show) {
-        case StatusShow.Chat: StatusText.Foreground = NameText.Foreground = App.ChatBrush; break;
-        case StatusShow.Away: StatusText.Foreground = NameText.Foreground = App.AwayBrush; break;
-        case StatusShow.Dnd: StatusText.Foreground = NameText.Foreground = App.BusyBrush; break;
+        case ShowType.chat: StatusText.Foreground = NameText.Foreground = App.ChatBrush; break;
+        case ShowType.away: StatusText.Foreground = NameText.Foreground = App.AwayBrush; break;
+        case ShowType.dnd: StatusText.Foreground = NameText.Foreground = App.BusyBrush; break;
       }
 
       TimeText.Visibility = ChampText.Visibility = Visibility.Collapsed;

@@ -39,7 +39,7 @@ namespace LeagueClient.ClientUI.Main {
       var game = args.Body as GameDTO;
       if (game != null) {
         if (game.GameState.Equals("TERMINATED_IN_ERROR")) {
-          Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+          Client.ChatManager.Status = ChatStatus.outOfGame;
           Close?.Invoke(this, new EventArgs());
           return true;
         } else if (game.GameState.Equals("TERMINATED")) {

@@ -53,9 +53,8 @@
     <ApplicationIcon>ikonica-lol.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="jabber-net, Version=2.1.0.702, Culture=neutral, PublicKeyToken=924c5b18328d6f09, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Libraries\jabber-net.dll</HintPath>
+    <Reference Include="agsXMPP">
+      <HintPath>..\..\..\Libraries\agsXMPP.dll</HintPath>
     </Reference>
     <Reference Include="Parsing">
       <HintPath>..\..\..\Libraries\Parsing.dll</HintPath>

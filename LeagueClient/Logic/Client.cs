@@ -240,7 +240,7 @@ namespace LeagueClient.Logic {
       GameProcess = Process.Start(info);
 
       System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
-      ChatManager.UpdateStatus(ChatStatus.inGame);
+      ChatManager.Status = ChatStatus.inGame;
       new Thread(() => {
         Thread.Sleep(20000);
         CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => RiotAPI.CurrentGameAPI.BySummoner("NA", LoginPacket.AllSummonerData.Summoner.SumId));
@@ -256,9 +256,9 @@ namespace LeagueClient.Logic {
 
         //invites[invite.InvitationId] = alert;
         //QueueManager.ShowNotification(alert);
-        var friend = ChatManager.GetUser(invite.Inviter.summonerId);
-        if (friend != null) {
-          friend.Invite = invite;
+        var user = RiotChat.GetUser(invite.Inviter.summonerId);
+        if (ChatManager.Friends.ContainsKey(user)) {
+          ChatManager.Friends[user].Invite = invite;
         } else {
 
         }
