@@ -21,42 +21,117 @@ using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using RtmpSharp.Messaging;
+using LeagueClient.Logic.Cap;
+using System.Timers;
+using LeagueClient.Logic.Riot.Platform;
+using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for TeambuilderSoloPage.xaml
   /// </summary>
-  public partial class CapSoloPage : Page, IClientSubPage {
+  public sealed partial class CapSoloPage : Page, IClientSubPage, IDisposable {
     private bool spell1;
+    private CapMePlayer me;
+    private Timer timer;
+    private DateTime start;
 
     public event EventHandler Close;
 
-    public CapSoloPage() {
+    public CapSoloPage(CapPlayer me = null) {
       InitializeComponent();
       Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
                                     where spell.modes.Contains("CLASSIC")
                                     select spell);
 
-      Player.Editable = true;
-      Player.PlayerUpdate += PlayerUpdate;
-      Player.ChampClicked += Champion_Click;
-      Player.Spell1Clicked += Spell1_Click;
-      Player.Spell2Clicked += Spell2_Click;
-      Player.MasteryClicked += Player_MasteryClicked;
-      Player.RuneClicked += Player_RuneClicked;
+      this.me = new CapMePlayer(me);
+      this.me.Editable = true;
+      this.me.PlayerUpdate += PlayerUpdate;
+      this.me.ChampClicked += Champion_Click;
+      this.me.Spell1Clicked += Spell1_Click;
+      this.me.Spell2Clicked += Spell2_Click;
+      this.me.MasteryClicked += Player_MasteryClicked;
+      this.me.RuneClicked += Player_RuneClicked;
+
+      MeArea.Child = this.me;
 
       Popup.SpellSelector.SpellSelected += Spell_Select;
       Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
 
       Client.ChatManager.UpdateStatus(ChatStatus.inTeamBuilder);
+
+      timer = new Timer(1000);
+      timer.Elapsed += Time_Elapsed; ;
+      if (me != null) SetInQueue(true);
+    }
+
+    private void SetInQueue(bool inQueue) {
+      if (inQueue) {
+        start = DateTime.Now;
+        timer.Start();
+      } else {
+        timer.Stop();
+      }
+
+      Time_Elapsed(timer, null);
+      Dispatcher.Invoke(() => PlayerUpdate(null, null));
+    }
+
+    private void Time_Elapsed(object sender, ElapsedEventArgs e) {
+      var elapsed = DateTime.Now.Subtract(start);
+      Dispatcher.Invoke(() => QueueInfoLabel.Content = "In queue for " + elapsed.ToString("m\\:ss"));
     }
 
     private void PlayerUpdate(object sender, EventArgs e) {
-      GameMap.UpdateList(new[] { Player.CapPlayer });
-      if (Player.CanBeReady()) EnterQueueButt.BeginStoryboard(App.FadeIn);
-      else EnterQueueButt.BeginStoryboard(App.FadeOut);
+      GameMap.UpdateList(new[] { me.CapPlayer });
+
+      me.Editable = !timer.Enabled;
+      if (timer.Enabled) {
+        EnterQueueButt.BeginStoryboard(App.FadeOut);
+        QueueInfoLabel.Visibility = Visibility.Visible;
+        QuitButt.Content = "Cancel";
+      } else {
+        QuitButt.Content = "Quit";
+        QueueInfoLabel.Visibility = Visibility.Collapsed;
+        if (me.CanBeReady()) {
+          EnterQueueButt.BeginStoryboard(App.FadeIn);
+        }
+      }
     }
 
+    private void EnterQueue(object sender, RoutedEventArgs e) {
+      var id = RiotServices.CapService.CreateSoloQuery(me.CapPlayer);
+      RiotServices.AddHandler(id, response => {
+        if (response.status.Equals("OK")) {
+          SetInQueue(true);
+        }
+      });
+    }
+
+    private void Close_Click(object sender, RoutedEventArgs e) {
+      if (timer.Enabled) {
+        RiotServices.CapService.Quit();
+        SetInQueue(false);
+      } else {
+        ForceClose();
+        Close?.Invoke(this, new EventArgs());
+      }
+    }
+
+    public bool HandleMessage(MessageReceivedEventArgs e) {
+      var response = e.Body as LcdsServiceProxyResponse;
+      if (response != null) {
+        switch (response.methodName) {
+          case "acceptedByGroupV2":
+            timer.Dispose();
+            Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new CapSoloQueuePopup(JSON.ParseObject(response.payload), me.CapPlayer)));
+            return true;
+        }
+      }
+      return false;
+    }
+
+    #region Player Editing
     private void Player_MasteryClicked(object src, EventArgs args) {
       Popup.BeginStoryboard(App.FadeIn);
       Popup.CurrentSelector = PopupSelector.Selector.Masteries;
@@ -87,37 +162,27 @@ namespace LeagueClient.ClientUI.Main {
     private void Popup_Close(object sender, EventArgs e) {
       Popup.BeginStoryboard(App.FadeOut);
       Popup.MasteryEditor.Save().Wait();
-      Player.UpdateBooks();
+      me.UpdateBooks();
     }
 
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-      Player.CapPlayer.Champion = Popup.ChampSelector.SelectedChampion;
-      Player.Skin = e;
+      me.CapPlayer.Champion = Popup.ChampSelector.SelectedChampion;
+      me.Skin = e;
       Popup_Close(sender, null);
     }
 
     private void Spell_Select(object sender, SpellDto spell) {
-      if (spell1) Player.CapPlayer.Spell1 = spell;
-      else Player.CapPlayer.Spell2 = spell;
+      if (spell1) me.CapPlayer.Spell1 = spell;
+      else me.CapPlayer.Spell2 = spell;
       Popup.BeginStoryboard(App.FadeOut);
     }
-
-    private void EnterQueue(object sender, RoutedEventArgs e) {
-      var id = RiotServices.CapService.CreateSoloQuery(Player.CapPlayer);
-      RiotServices.AddHandler(id, response => {
-        if (response.status.Equals("OK"))
-          Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(Player.CapPlayer)));
-      });
-      if (Close != null) Close(this, new EventArgs());
-    }
-
-    private void Button_Click(object sender, RoutedEventArgs e) {
-      ForceClose();
-      Close?.Invoke(this, new EventArgs());
-    }
+    #endregion
 
     public Page Page => this;
-    public bool HandleMessage(MessageReceivedEventArgs args) => false;
     public void ForceClose() => Client.ChatManager.UpdateStatus(ChatStatus.outOfGame);
+
+    public void Dispose() {
+      timer.Dispose();
+    }
   }
 }

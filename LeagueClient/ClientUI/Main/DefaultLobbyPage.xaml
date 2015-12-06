@@ -51,6 +51,7 @@
         </Grid.ColumnDefinitions>
         <Button Grid.Column="0" Name="QuitButton" Click="QuitButton_Click">Quit Game</Button>
         <Button Grid.Column="2" Name="StartButton" Click="StartButton_Click">Start Game</Button>
+        <Label Name="QueueTimeLabel" HorizontalAlignment="Right" Grid.Column="2" FontSize="16" Visibility="Collapsed">In queue for 10:10</Label>
       </Grid>
 
     </Grid>

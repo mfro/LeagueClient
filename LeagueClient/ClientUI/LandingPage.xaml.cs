@@ -34,7 +34,7 @@ namespace LeagueClient.ClientUI {
   /// Interaction logic for LandingPage.xaml
   /// </summary>
   public partial class LandingPage : Page, IClientPage, IQueueManager {
-    public IQueuer CurrentQueuer { get; private set; }
+    //public IQueuer CurrentQueuer { get; private set; }
     public IQueuePopup CurrentPopup { get; private set; }
     public IClientSubPage CurrentPage { get; private set; }
     public BindingList<ChatFriend> OpenChatsList { get; } = new BindingList<ChatFriend>();
@@ -123,14 +123,6 @@ namespace LeagueClient.ClientUI {
       });
     }
 
-    private void ShowPopup(IQueuePopup popup) {
-      CurrentPopup = popup;
-      CurrentPopup.Close += CurrentPopup_Close;
-
-      PopupPanel.BeginStoryboard(App.FadeIn);
-      PopupPanel.Child = popup.Control;
-    }
-
     #region Tab Events
     private void Tab_MouseEnter(object sender, RoutedEventArgs e) {
       var text = ((Border) sender).Child as TextBlock;
@@ -168,13 +160,6 @@ namespace LeagueClient.ClientUI {
     #endregion
 
     #region Other Events
-    private void Queuer_Popped(object sender, QueuePoppedEventArgs e) {
-      QueuerArea.Child = null;
-      CurrentQueuer = null;
-
-      if (e.QueuePopup != null) ShowPopup(e.QueuePopup);
-    }
-
     private void CurrentPopup_Close(object sender, EventArgs e) {
       Dispatcher.Invoke(() => PopupPanel.BeginStoryboard(App.FadeOut));
     }
@@ -224,27 +209,27 @@ namespace LeagueClient.ClientUI {
     #endregion
 
     #region Interface
-    public bool HandleMessage(MessageReceivedEventArgs args) {
-      if (CurrentPage?.HandleMessage(args) ?? false) return true;
-      if (CurrentQueuer?.HandleMessage(args) ?? false) return true;
-      return CurrentPopup?.HandleMessage(args) ?? false;
+    bool IClientPage.HandleMessage(MessageReceivedEventArgs args) {
+      if (CurrentPopup?.HandleMessage(args) ?? false) return true;
+      return CurrentPage?.HandleMessage(args) ?? false;
     }
 
-    public void ShowQueuer(IQueuer queuer) {
-      QueuerArea.Child = queuer.Control;
-      queuer.Popped += Queuer_Popped;
-      CurrentQueuer = queuer;
-      ShowTab(Tab.Friends);
+    void IQueueManager.ShowQueuePopup(IQueuePopup popup) {
+      CurrentPopup = popup;
+      CurrentPopup.Close += CurrentPopup_Close;
+
+      PopupPanel.BeginStoryboard(App.FadeIn);
+      PopupPanel.Child = popup.Control;
     }
 
-    public void ShowPage() {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.Invoke(ShowPage); return; }
+    void IQueueManager.ShowPage() {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.Invoke(Client.QueueManager.ShowPage); return; }
 
       ShowTab(Tab.Play);
     }
 
-    public void ShowPage(IClientSubPage page) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(ShowPage, page); return; }
+    void IQueueManager.ShowPage(IClientSubPage page) {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(Client.QueueManager.ShowPage, page); return; }
 
       CloseSubPage(true);
       page.Close += HandlePageClose;
@@ -254,18 +239,18 @@ namespace LeagueClient.ClientUI {
       ShowTab(Tab.Play);
     }
 
-    public void ShowNotification(Alert alert) {
+    void IQueueManager.ShowNotification(Alert alert) {
       //throw new NotImplementedException();
     }
 
-    public void BeginChampionSelect(GameDTO game) {
+    void IQueueManager.BeginChampionSelect(GameDTO game) {
       var page = new ChampSelectPage(game);
-      ShowPage(page);
+      Client.QueueManager.ShowPage(page);
       Client.ChatManager.UpdateStatus(ChatStatus.championSelect);
       RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
 
-    public void AttachToQueue(SearchingForMatchNotification result) {
+    bool IQueueManager.AttachToQueue(SearchingForMatchNotification result) {
       if (result.PlayerJoinFailures != null) {
         var leaver = result.PlayerJoinFailures[0];
         bool me = leaver.Summoner.SumId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
@@ -274,12 +259,14 @@ namespace LeagueClient.ClientUI {
             //TODO Leaverbuster
             break;
           case "QUEUE_DODGER":
-            Dispatcher.Invoke(() => ShowQueuer(new BingeQueuer(leaver.PenaltyRemainingTime, me ? null : leaver.Summoner.Name)));
+            //TODO Show Binge notification
             break;
+            //Dispatcher.Invoke(() => ShowQueuer(new BingeQueuer(leaver.PenaltyRemainingTime, me ? null : leaver.Summoner.Name)));
         }
+        return false;
       } else if (result.JoinedQueues != null) {
-        Dispatcher.Invoke(() => ShowQueuer(new DefaultQueuer(result.JoinedQueues[0])));
-      }
+        return true;
+      } else return false;
     }
 
     public async void AcceptInvite(InvitationRequest invite) {

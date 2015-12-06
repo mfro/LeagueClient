@@ -20,9 +20,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for BingeQueuer.xaml
   /// </summary>
-  public sealed partial class BingeQueuer : UserControl, IQueuer, IDisposable {
-    public event EventHandler<QueuePoppedEventArgs> Popped;
-
+  public sealed partial class BingeQueuer : UserControl, IDisposable {
     private Timer timer;
     private DateTime start;
     private TimeSpan timeout;
@@ -47,7 +45,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       var time = timeout.Subtract(DateTime.Now.Subtract(start));
-      if (time.TotalMilliseconds < 0) Popped?.Invoke(this, new QueuePoppedEventArgs(null));
+      //if (time.TotalMilliseconds < 0) Popped?.Invoke(this, new QueuePoppedEventArgs(null));
       Dispatcher.Invoke(() => ElapsedText.Content = time.ToString("m\\:ss"));
     }
 

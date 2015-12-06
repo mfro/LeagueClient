@@ -350,7 +350,7 @@ namespace LeagueClient.ClientUI.Main {
     private void soloSearchedForAnotherGroupV2(JSONObject json) {
       var slot = json.To<CapSlotData>();
       if (slot.SlotId == me.SlotId) {
-        Dispatcher.Invoke(() => Client.QueueManager.ShowQueuer(new CapSoloQueuer(me)));
+        Dispatcher.Invoke(() => Client.QueueManager.ShowPage(new CapSoloPage(me)));
         if (Close != null) Close(this, new EventArgs());
         if (json["reason"].Equals("KICKED"))
           Client.QueueManager.ShowNotification(AlertFactory.KickedFromCap());

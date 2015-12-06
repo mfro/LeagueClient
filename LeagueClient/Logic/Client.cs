@@ -241,7 +241,7 @@ namespace LeagueClient.Logic {
 
       System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
       ChatManager.UpdateStatus(ChatStatus.inGame);
-      CurrentGame = RiotAPI.CurrentGameAPI.BySummonerAsync("NA", LoginPacket.AllSummonerData.Summoner.SumId);
+      CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => RiotAPI.CurrentGameAPI.BySummoner("NA", LoginPacket.AllSummonerData.Summoner.SumId));
     }
 
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
@@ -264,12 +264,14 @@ namespace LeagueClient.Logic {
 
     public static async void Logout() {
       if (Connected) {
-        SaveSettings(Settings.Username, JSONObject.From(Settings));
-        await RiotServices.GameService.QuitGame();
-        await RiotServices.LoginService.Logout();
-        await RtmpConn.LogoutAsync();
-        RtmpConn.Close();
-        Connected = false;
+        try {
+          SaveSettings(Settings.Username, JSONObject.From(Settings));
+          await RiotServices.GameService.QuitGame();
+          await RiotServices.LoginService.Logout();
+          await RtmpConn.LogoutAsync();
+          RtmpConn.Close();
+          Connected = false;
+        } catch { }
       }
       ChatManager?.Logout();
       MainWindow.PatchComplete();

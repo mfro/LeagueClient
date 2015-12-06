@@ -44,19 +44,16 @@ namespace LeagueClient.ClientUI.Main {
 
     public CustomCreatePage() {
       InitializeComponent();
-    }
-
-    public CustomCreatePage(GameMap map) : this() {
       SummonersRift.Tag = GameMap.SummonersRift;
       CrystalScar.Tag = GameMap.TheCrystalScar;
       TwistedTreeline.Tag = GameMap.TheTwistedTreeline;
       HowlingAbyss.Tag = GameMap.HowlingAbyss;
       foreach(var border in new[] { SummonersRift, CrystalScar, TwistedTreeline, HowlingAbyss }) {
-        if (map == border.Tag) current = border;
         border.MouseEnter += Border_MouseEnter;
         border.MouseLeave += Border_MouseLeave;
         border.MouseUp += Border_MouseUp;
       }
+      current = SummonersRift;
       Spectators.ItemsSource = SpectatorState.Values.Values;
       Spectators.SelectedItem = SpectatorState.ALL;
       GameType.ItemsSource = new[] { GameConfig.Blind, GameConfig.Draft, GameConfig.AllRandom };

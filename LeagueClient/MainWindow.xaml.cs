@@ -90,7 +90,7 @@ namespace LeagueClient {
     public void ShowInGamePage() {
       currentPage = landing;
       ContentFrame.Content = landing;
-      landing.ShowPage(new InGamePage());
+      Client.QueueManager.ShowPage(new InGamePage());
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) {

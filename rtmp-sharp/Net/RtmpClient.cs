@@ -120,9 +120,11 @@ namespace RtmpSharp.Net {
       client.SendTimeout = SendTimeout;
       client.ExclusiveAddressUse = ExclusiveAddressUse;
 
-      await client.ConnectAsync(uri.Host, uri.Port);
-      var stream = await GetRtmpStreamAsync(client);
+      var result = client.BeginConnect(uri.Host, uri.Port, null, null);
+      var success = result.AsyncWaitHandle.WaitOne(1000);
+      if (!success) throw new TimeoutException("Took too long to connect");
 
+      var stream = await GetRtmpStreamAsync(client);
 
       var random = new Random();
       var randomBytes = new byte[1528];

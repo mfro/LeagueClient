@@ -171,7 +171,7 @@ namespace LeagueClient.ClientUI {
         var player = thing as PlayerParticipant;
         var bot = thing as BotParticipant;
         var obfusc = thing as ObfuscatedParticipant;
-        bool blue = game.TeamOne.Contains(player);
+        bool blue = game.TeamOne.Contains(thing);
 
         UserControl control;
         if (player != null) {

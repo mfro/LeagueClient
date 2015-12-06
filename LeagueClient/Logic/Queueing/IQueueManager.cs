@@ -14,7 +14,7 @@ namespace LeagueClient.Logic.Queueing {
     /// Shows a queue manager UI in the status panel area
     /// </summary>
     /// <param name="queuer">The queue manager</param>
-    void ShowQueuer(IQueuer queuer);
+    void ShowQueuePopup(IQueuePopup queuer);
     /// <summary>
     /// Shows a page UI in the main area
     /// </summary>
@@ -33,7 +33,7 @@ namespace LeagueClient.Logic.Queueing {
     /// <param name="game"></param>
     void BeginChampionSelect(GameDTO game);
 
-    void AttachToQueue(SearchingForMatchNotification parms);
+    bool AttachToQueue(SearchingForMatchNotification parms);
 
     void AcceptInvite(InvitationRequest invite);
 

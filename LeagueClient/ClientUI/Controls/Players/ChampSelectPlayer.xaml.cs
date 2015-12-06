@@ -33,11 +33,7 @@ namespace LeagueClient.ClientUI.Controls {
       if (selection?.Spell2Id > 0)
         Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
 
-      if (!string.IsNullOrWhiteSpace(player.SummonerName))
-        NameLabel.Content = player.SummonerName;
-      else
-        NameLabel.Visibility = Visibility.Collapsed;
-
+      NameLabel.Content = player.SummonerName;
     }
 
     public ChampSelectPlayer(BotParticipant bot) : this() {
@@ -46,7 +42,10 @@ namespace LeagueClient.ClientUI.Controls {
       NameLabel.Content = champ.name;
     }
 
-    public ChampSelectPlayer(ObfuscatedParticipant obfusc) : this()  {
+    public ChampSelectPlayer(ObfuscatedParticipant obfusc) : this() {
+      ChampImage.Source = Spell1Image.Source = Spell2Image.Source = null;
+      NameLabel.Visibility = Visibility.Collapsed;
+      Unknown.Visibility = Visibility.Visible;
     }
   }
 }

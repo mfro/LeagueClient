@@ -132,9 +132,6 @@
     <Compile Include="ClientUI\Controls\Queue\DefaultQueuePopup.xaml.cs">
       <DependentUpon>DefaultQueuePopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Queue\DefaultQueuer.xaml.cs">
-      <DependentUpon>DefaultQueuer.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ClientUI\Controls\ICollapsable.cs" />
     <Compile Include="ClientUI\Controls\Players\LoginAccount.xaml.cs">
       <DependentUpon>LoginAccount.xaml</DependentUpon>
@@ -206,9 +203,6 @@
     </Compile>
     <Compile Include="ClientUI\Controls\Cap\CapMePlayer.xaml.cs">
       <DependentUpon>CapMePlayer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ClientUI\Controls\Cap\CapSoloQueuer.xaml.cs">
-      <DependentUpon>CapSoloQueuer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\Cap\CapSoloQueuePopup.xaml.cs">
       <DependentUpon>CapSoloQueuePopup.xaml</DependentUpon>
@@ -407,10 +401,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Queue\DefaultQueuer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ClientUI\Controls\Players\LoginAccount.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -460,10 +450,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\Cap\CapMePlayer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ClientUI\Controls\Cap\CapSoloQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -552,9 +538,6 @@
     <Resource Include="Media\ip.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Media\rp.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Enums\Position.txt" />
     <Resource Include="Enums\Role.txt" />
     <Resource Include="Enums\QueueType.txt" />
@@ -569,6 +552,7 @@
       <LastGenOutput>RiotEnums.cs</LastGenOutput>
     </Content>
     <Resource Include="ikonica-lol.ico" />
+    <Resource Include="Media\rp.png" />
     <Content Include="Resources\ffmpeg.exe" />
     <Compile Include="Logic\com\riotgames\platform\serviceproxy\dispatch\LcdsServiceProxyResponse.cs" />
     <None Include="RiotLCDSResponses.txt" />

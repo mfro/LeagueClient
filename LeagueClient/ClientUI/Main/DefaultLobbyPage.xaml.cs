@@ -19,6 +19,7 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
+using System.Timers;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -32,8 +33,14 @@ namespace LeagueClient.ClientUI.Main {
     private ChatRoomController chatRoom;
     private LobbyStatus lobby;
 
+    private Timer timer;
+    private DateTime start;
+
     public DefaultLobbyPage() {
       InitializeComponent();
+
+      timer = new Timer(1000);
+      timer.Elapsed += Timer_Elapsed;
     }
 
     public DefaultLobbyPage(MatchMakerParams mmp) : this() {
@@ -53,12 +60,18 @@ namespace LeagueClient.ClientUI.Main {
       TeamSizeLabel.Content = $"{config.NumPlayersPerTeam}v{config.NumPlayersPerTeam}";
     }
 
+    private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
+      var elapsed = DateTime.Now.Subtract(start);
+      Dispatcher.Invoke(() => QueueTimeLabel.Content = "In queue for " + elapsed.ToString("m\\:ss"));
+    }
+
     #region RTMP Messages
     public bool HandleMessage(MessageReceivedEventArgs args) {
       var lobby = args.Body as LobbyStatus;
       var notify = args.Body as GameNotification;
       var invite = args.Body as InvitePrivileges;
       var queue = args.Body as SearchingForMatchNotification;
+      var game = args.Body as GameDTO;
 
       if (lobby != null) {
         GotLobbyStatus(lobby);
@@ -66,11 +79,16 @@ namespace LeagueClient.ClientUI.Main {
       } else if (invite != null) {
         Client.CanInviteFriends = invite.canInvite;
         //Dispatcher.Invoke(() => InviteButton.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
+        return true;
       } else if (queue != null) {
         EnterQueue(queue);
         return true;
       } else if (notify != null) {
-        SetEditable(true);
+        SetInQueue(false);
+        return true;
+      } else if (game != null) {
+        Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new DefaultQueuePopup(game)));
+        return true;
       }
 
       return false;
@@ -124,35 +142,48 @@ namespace LeagueClient.ClientUI.Main {
       EnterQueue(search);
     }
 
-    //private void InviteButton_Click(object sender, RoutedEventArgs e) {
-    //  InvitePopup.BeginStoryboard(App.FadeIn);
-    //}
-
     private void QuitButton_Click(object sender, RoutedEventArgs e) {
-      ForceClose();
-      Close?.Invoke(this, new EventArgs());
+      if (timer.Enabled) {
+        RiotServices.MatchmakerService.PurgeFromQueues();
+        SetInQueue(false);
+      } else {
+        ForceClose();
+        Close?.Invoke(this, new EventArgs());
+      }
     }
-
-    //private void InvitePopup_Close(object sender, EventArgs e) {
-    //  InvitePopup.BeginStoryboard(App.FadeOut);
-    //  foreach (var user in InvitePopup.Users.Where(u => u.Value)) {
-    //    double id;
-    //    if (double.TryParse(user.Key.Replace("sum", ""), out id)) {
-    //      RiotServices.GameInvitationService.Invite(id);
-    //    } else Client.TryBreak("Cannot parse user " + user.Key);
-    //  }
-    //}
     #endregion
 
-    private void SetEditable(bool canEdit) {
-      QuitButton.IsEnabled = StartButton.IsEnabled = canEdit;
-      foreach (var control in PlayerList.Children)
-        ((LobbyPlayer2) control).CanControl = canEdit;
+    private void SetInQueue(bool inQueue) {
+      Dispatcher.Invoke(() => {
+        foreach (var control in PlayerList.Children)
+          ((LobbyPlayer2) control).CanControl = !inQueue;
+      });
+
+      if (inQueue) {
+        Client.ChatManager.UpdateStatus(ChatStatus.inQueue);
+        start = DateTime.Now;
+        timer.Start();
+        Dispatcher.Invoke(() => {
+          QuitButton.Content = "Cancel";
+          StartButton.Visibility = Visibility.Collapsed;
+          QueueTimeLabel.Visibility = Visibility.Visible;
+          QueueTimeLabel.Content = "In queue for 00:00";
+        });
+      } else {
+        Client.ChatManager.UpdateStatus(ChatStatus.hostingNormalGame);
+        timer.Stop();
+        Dispatcher.Invoke(() => {
+          QuitButton.Content = "Quit";
+          QueueTimeLabel.Visibility = Visibility.Collapsed;
+          bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+          StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
+        });
+      }
     }
 
     private void EnterQueue(SearchingForMatchNotification search) {
-      Client.QueueManager.AttachToQueue(search);
-      SetEditable(false);
+      if (Client.QueueManager.AttachToQueue(search))
+        SetInQueue(true);
     }
 
     public Page Page => this;

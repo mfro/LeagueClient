@@ -114,6 +114,9 @@ namespace LeagueClient.ClientUI {
         Login(user, pass);
         return;
       }
+
+      foreach (var obj in AccountList.Children)
+        if (obj is LoginAccount) ((LoginAccount) obj).State = LoginAccountState.Normal;
       Progress.Visibility = Visibility.Hidden;
       LoginBar.IsIndeterminate = false;
       PassBox.Password = "";

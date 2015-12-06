@@ -16,5 +16,8 @@
     <Image Name="Spell1Image" Grid.Column="2" VerticalAlignment="Top" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerFlash.png"/>
     <Image Name="Spell2Image" Grid.Column="2" VerticalAlignment="Bottom" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
     <Label Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontSize="16" Padding="0" Margin="0 0 0 -4" Name="NameLabel">master mor</Label>
+
+    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource Control}" Grid.ColumnSpan="3"
+                  FontSize="90" Name="Unknown" Visibility="Collapsed">?</TextBlock>
   </Grid>
 </UserControl>
