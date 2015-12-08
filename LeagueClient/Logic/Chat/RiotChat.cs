@@ -227,7 +227,7 @@ namespace LeagueClient.Logic.Chat {
     /// </summary>
     /// <param name="user">The user to send the message to</param>
     /// <param name="message">The message to send</param>
-    public void SendMessage(Jid user, string message, MessageType type = MessageType.normal) {
+    public void SendMessage(Jid user, string message, MessageType type = MessageType.chat) {
       xmpp.Send(new Message(user, MessageType.chat, message) { Type = type });
     }
 
