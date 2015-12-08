@@ -41,6 +41,8 @@ namespace LeagueClient.Logic.Queueing {
 
     void AcceptInvite(InvitationRequest invite);
 
+    void ViewProfile(string summonerName);
+
     /// <summary>
     /// Creates a teambuilder solo query selection and displays it
     /// </summary>

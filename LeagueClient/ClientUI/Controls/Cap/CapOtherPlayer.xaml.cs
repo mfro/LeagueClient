@@ -57,10 +57,15 @@ namespace LeagueClient.ClientUI.Controls {
 
       if (Player.Champion != null)
         ChampionImage.Source = LeagueData.GetChampIconImage(Player.Champion);
+      else ChampionImage.Source = null;
+
       if (Player.Spell1 != null)
         Spell1Image.Source = LeagueData.GetSpellImage(Player.Spell1);
+      else Spell1Image.Source = null;
+
       if (Player.Spell2 != null)
         Spell2Image.Source = LeagueData.GetSpellImage(Player.Spell2);
+      else Spell2Image.Source = null;
 
       //Glow.Opacity = 0;
       if (editable && Player.Status == CapStatus.ChoosingAdvert) {
@@ -81,6 +86,7 @@ namespace LeagueClient.ClientUI.Controls {
 
       Unknown.Visibility = Visibility.Collapsed;
       TimerText.Visibility = Visibility.Collapsed;
+      ChampGlow.Opacity = Spell1Glow.Opacity = Spell2Glow.Opacity = 0;
       switch (Player.Status) {
         case CapStatus.ChoosingAdvert:
           SummonerText.Content = "Select Position and Role";
@@ -104,7 +110,7 @@ namespace LeagueClient.ClientUI.Controls {
           SummonerText.Content = Player.Name;
           break;
         case CapStatus.Ready:
-          //Glow.Opacity = 1;
+          ChampGlow.Opacity = Spell1Glow.Opacity = Spell2Glow.Opacity = 1;
           goto case CapStatus.Present;
         case CapStatus.Penalty:
           SummonerText.Content = "Player kicked";

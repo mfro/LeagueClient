@@ -19,7 +19,7 @@ namespace LeagueClient.Logic.Chat {
     public InvitationRequest Invite { get; set; }
     public RosterItem User { get; }
 
-    public PublicSummoner Summoner { get; private set; }
+    public SummonerCache.Item Cache { get; private set; }
     public LeagueStatus Status { get; private set; }
     public bool IsOffline { get; private set; }
     public string Group { get; }
@@ -36,7 +36,7 @@ namespace LeagueClient.Logic.Chat {
       var groups = item.GetGroups();
       Group = groups.Item(0).InnerXml;
 
-      RiotServices.SummonerService.GetSummonerByName(User.Name).ContinueWith(GotSummoner);
+      Client.SummonerCache.GetData(User.Name, GotSummoner);
     }
 
     public void ReceiveMessage(string message) {
@@ -54,7 +54,7 @@ namespace LeagueClient.Logic.Chat {
         Status = new LeagueStatus(p.Status, p.Show);
         if (Status.GameStatus == ChatStatus.inGame) {
           RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Name).ContinueWith(GotGameDTO);
-          if (Summoner != null) RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Summoner.SummonerId).ContinueWith(GotGameInfo);
+          if (Cache != null) RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Summoner.SummonerId).ContinueWith(GotGameInfo);
         } else {
           CurrentGameDTO = null;
           CurrentGameInfo = null;
@@ -82,15 +82,10 @@ namespace LeagueClient.Logic.Chat {
     }
 
     #region Async Handlers
-    private void GotSummoner(Task<PublicSummoner> task) {
-      if (task.IsFaulted) {
-        Client.Log(task.Exception);
-        return;
-      }
-      if (task.Result == null) return;
-      Summoner = task.Result;
+    private void GotSummoner(SummonerCache.Item item) {
+      Cache = item;
       if (Status?.GameStatus == ChatStatus.inGame) {
-        RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Summoner.SummonerId).ContinueWith(GotGameInfo);
+        RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Summoner.SummonerId).ContinueWith(GotGameInfo);
       }
     }
 
@@ -113,8 +108,8 @@ namespace LeagueClient.Logic.Chat {
       if (CurrentGameInfo.gameStartTime == 0) {
         new Thread(() => {
           Thread.Sleep(30000);
-          RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Summoner.SummonerId).ContinueWith(GotGameInfo);
-        }) { IsBackground = true, Name = "GameFetch-" + Summoner.InternalName }.Start();
+          RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Summoner.SummonerId).ContinueWith(GotGameInfo);
+        }) { IsBackground = true, Name = "GameFetch-" + Cache.Summoner.InternalName }.Start();
       } else Client.ChatManager.ForceUpdate();
     }
     #endregion

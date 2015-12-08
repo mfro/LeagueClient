@@ -379,7 +379,7 @@ namespace LeagueClient.Logic.Riot {
       /// </summary>
       /// <param name="AccountId">The account id</param>
       /// <returns>Returns all the summoner data for an account</returns>
-      public static Task<AllSummonerData> GetallSummonerDataByAccount(Double AccountId) {
+      public static Task<AllSummonerData> GetAllSummonerDataByAccount(Double AccountId) {
         return InvokeAsync<AllSummonerData>(Destination, "getallSummonerDataByAccount");
       }
 
@@ -843,11 +843,12 @@ namespace LeagueClient.Logic.Riot {
     }
 
     public static class CapService {
+      public const string Destination = "cap";
 
       private static Guid Invoke(string method, JSONObject args = null) {
         var str = (args == null) ? "{}" : JSON.Stringify(args);
         var id = Guid.NewGuid();
-        LcdsService.CallLCDS(id.ToString(), "cap", method, str);
+        LcdsService.CallLCDS(id.ToString(), Destination, method, str);
         return id;
       }
 
@@ -1132,6 +1133,38 @@ namespace LeagueClient.Logic.Riot {
       /// <returns></returns>
       public static Task Decline(string InvitationId) {
         return InvokeAsync<LobbyStatus>(Destination, "decline", InvitationId);
+      }
+    }
+
+    public static class ChampionMasteryService {
+      public const string Destination = "championMastery";
+
+      private static Guid Invoke(string method, JSONArray args) {
+        var id = Guid.NewGuid();
+        LcdsService.CallLCDS(id.ToString(), Destination, method, JSON.Stringify(args));
+        return id;
+      }
+
+      /// <summary>
+      /// Fetches total champion mastery points
+      /// </summary>
+      /// <param name="summonerId">The summoner to fetch score for</param>
+      /// <returns></returns>
+      public static Guid GetChampionMasteryScore(long summonerId) {
+        var json = new JSONArray();
+        json.Add(summonerId);
+        return Invoke("getChampionMasteryScore", json);
+      }
+
+      /// <summary>
+      /// Fetches champion mastery scores
+      /// </summary>
+      /// <param name="summonerId">The summoner to fetch masteries for</param>
+      /// <returns></returns>
+      public static Guid GetAllChampionMasteries(long summonerId) {
+        var json = new JSONArray();
+        json.Add(summonerId);
+        return Invoke("getAllChampionMasteries", json);
       }
     }
 

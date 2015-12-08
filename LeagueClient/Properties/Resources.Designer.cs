@@ -69,15 +69,5 @@ namespace LeagueClient.Properties {
                 return ((byte[])(obj));
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Games {
-            get {
-                object obj = ResourceManager.GetObject("Games", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

@@ -34,7 +34,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public LobbyPlayer2(bool amCaptain, Member member, int profileIconId) : this() {
-      RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
+      Client.SummonerCache.GetData(member.SummonerName, GotSummoner);
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
       CanControl = amCaptain;
       NameLabel.Content = member.SummonerName;
@@ -53,20 +53,14 @@ namespace LeagueClient.ClientUI.Controls {
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
     }
 
-    private void GotSummonerData(Task<PublicSummoner> task) {
+    private void GotSummoner(SummonerCache.Item item) {
       Dispatcher.Invoke(() => {
-        ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(task.Result.ProfileIconId));
-        RiotServices.LeaguesService.GetAllLeaguesForPlayer(task.Result.SummonerId).ContinueWith(GotLeagueData);
-        RankLabel.Content = "Level " + task.Result.SummonerLevel;
-        NameLabel.Content = task.Result.Name;
+        ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Summoner.ProfileIconId));
+        RankLabel.Content = "Level " + item.Summoner.SummonerLevel;
+        NameLabel.Content = item.Summoner.Name;
+        var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
+        if (league != null) RankLabel.Content = RankedTier.Values[league.Tier] + " " + league.RequestorsRank;
       });
-    }
-
-    private void GotLeagueData(Task<SummonerLeaguesDTO> task) {
-      var league = task.Result.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
-      if (league != null) {
-        Dispatcher.Invoke(() => RankLabel.Content = RankedTier.Values[league.Tier] + " " + league.RequestorsRank);
-      }
     }
 
     private void Kick_Click(object sender, RoutedEventArgs e) => KickClicked?.Invoke(this, new EventArgs());

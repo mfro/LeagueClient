@@ -65,7 +65,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
       
     public LobbyPlayer(PlayerParticipant player, bool expanded) : this() {
-      RiotServices.SummonerService.GetSummonerByName(player.SummonerName).ContinueWith(GotSummonerData);
+      Client.SummonerCache.GetData(player.SummonerName, GotSummonerData);
       SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(player.ProfileIconId));
       UserName = player.SummonerName;
 
@@ -77,7 +77,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public LobbyPlayer(Member member, bool expanded) : this() {
-      RiotServices.SummonerService.GetSummonerByName(member.SummonerName).ContinueWith(GotSummonerData);
+      Client.SummonerCache.GetData(member.SummonerName, GotSummonerData);
 
       forceExpand = expanded;
       if (!expanded) {
@@ -98,11 +98,11 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
-    private void GotSummonerData(Task<PublicSummoner> task) {
-      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(task.Result.ProfileIconId));
-      RiotServices.LeaguesService.GetAllLeaguesForPlayer(task.Result.SummonerId).ContinueWith(GotLeagueData);
-      LevelString = "Level " + task.Result.SummonerLevel;
-      UserName = task.Result.Name;
+    private void GotSummonerData(SummonerCache.Item item) {
+      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Summoner.ProfileIconId));
+      RiotServices.LeaguesService.GetAllLeaguesForPlayer(item.Summoner.SummonerId).ContinueWith(GotLeagueData);
+      LevelString = "Level " + item.Summoner.SummonerLevel;
+      UserName = item.Summoner.Name;
       RankString = "Challenjour";
     }
 

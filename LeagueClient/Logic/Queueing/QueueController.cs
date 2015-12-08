@@ -40,7 +40,7 @@ namespace LeagueClient.Logic.Queueing {
 
     public void Cancel() {
       Client.ChatManager.Status = Idle;
-      timer.Start();
+      timer.Stop();
     }
 
     public void Dispose() {

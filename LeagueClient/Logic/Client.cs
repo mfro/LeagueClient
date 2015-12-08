@@ -55,8 +55,6 @@ namespace LeagueClient.Logic {
 
     internal static string AirVersion { get; set; }
 
-    internal static RiotChat ChatManager { get; set; }
-
     internal static string AirDirectory { get; set; }
     internal static string GameDirectory { get; set; }
 
@@ -64,7 +62,9 @@ namespace LeagueClient.Logic {
 
     internal static MainWindow MainWindow { get; set; }
 
+    internal static RiotChat ChatManager { get; set; }
     internal static IQueueManager QueueManager { get; set; }
+    internal static SummonerCache SummonerCache { get; set; }
 
     internal static Dictionary<int, GameQueueConfig> AvailableQueues { get; set; }
 
@@ -188,6 +188,7 @@ namespace LeagueClient.Logic {
 
       Settings.ProfileIcon = LoginPacket.AllSummonerData.Summoner.ProfileIconId;
       Settings.SummonerName = LoginPacket.AllSummonerData.Summoner.Name;
+      SummonerCache = new SummonerCache();
 
       if (queue.InGameCredentials.InGame)
         QueuedCredentials = queue.InGameCredentials;

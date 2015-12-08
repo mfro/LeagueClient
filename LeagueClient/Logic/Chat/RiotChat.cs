@@ -48,7 +48,7 @@ namespace LeagueClient.Logic.Chat {
         SendPresence();
       }
     }
-    public string Message {
+    public string StatusMessage {
       get { return Client.Settings.ChatStatus; }
       set {
         Client.Settings.ChatStatus = value;
@@ -62,8 +62,8 @@ namespace LeagueClient.Logic.Chat {
     private MucManager lobby;
     private Timer timer;
 
-    private ChatStatus status;
-    private ShowType show;
+    private ChatStatus status = ChatStatus.outOfGame;
+    private ShowType show = ShowType.chat;
 
     public RiotChat(string user, string pass) {
       xmpp = new XmppClientConnection("pvp.net", 5223) {
@@ -75,7 +75,7 @@ namespace LeagueClient.Logic.Chat {
         KeepAlive = true,
         UseCompression = true,
         AutoPresence = true,
-        Status = new LeagueStatus(Client.Settings.ChatStatus, ChatStatus.outOfGame).ToXML(),
+        Status = new LeagueStatus(StatusMessage, Status).ToXML(),
         Show = ShowType.chat,
         Priority = 0
       };
@@ -95,6 +95,7 @@ namespace LeagueClient.Logic.Chat {
       timer.Elapsed += UpdateProc;
       timer.Start();
     }
+
     #region Event Handlers
     private void Xmpp_OnPresence(object sender, Presence pres) {
       if (Friends.ContainsKey(pres.From.User)) {
@@ -138,7 +139,7 @@ namespace LeagueClient.Logic.Chat {
     }
 
     private void SendPresence() {
-      var status = new LeagueStatus(Client.Settings.ChatStatus, Status);
+      var status = new LeagueStatus(StatusMessage, Status);
       var computed = DndStatuses.Contains(Status) ? ShowType.dnd : Show;
 
       var args = new StatusUpdatedEventArgs(status, PresenceType.available, computed);

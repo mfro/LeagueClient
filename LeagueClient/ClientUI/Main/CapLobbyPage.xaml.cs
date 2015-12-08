@@ -184,11 +184,10 @@ namespace LeagueClient.ClientUI.Main {
       if (IsCaptain) {
         AutoReadyBox.Content = "Auto Start Matchmaking";
         ReadyButt.Content = "Start Matchmaking";
-        ReadyButt.Visibility = canMatch ? Visibility.Visible : Visibility.Collapsed;
       } else {
-        ReadyButt.Visibility = canReady ? Visibility.Visible : Visibility.Collapsed;
         ReadyButt.Content = me.Status == CapStatus.Ready ? "Not Ready" : "Ready";
       }
+      ReadyButt.Visibility = canReady ? Visibility.Visible : Visibility.Collapsed;
       GameMap.UpdateList(players);
 
       if (!canReady) {

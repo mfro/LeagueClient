@@ -9,7 +9,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     public String InternalName { get; set; }
 
     [SerializedName("acctId")]
-    public Double AcctId { get; set; }
+    public Int64 AcctId { get; set; }
 
     [SerializedName("name")]
     public String Name { get; set; }
@@ -24,7 +24,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     public Double RevisionId { get; set; }
 
     [SerializedName("summonerLevel")]
-    public Double SummonerLevel { get; set; }
+    public Int32 SummonerLevel { get; set; }
 
     [SerializedName("summonerId")]
     public Int64 SummonerId { get; set; }

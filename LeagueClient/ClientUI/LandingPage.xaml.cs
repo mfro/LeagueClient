@@ -283,7 +283,7 @@ namespace LeagueClient.ClientUI {
       } else return false;
     }
 
-    public void AcceptInvite(InvitationRequest invite) {
+    void IQueueManager.AcceptInvite(InvitationRequest invite) {
       var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
       var metaData = JSON.ParseObject(invite.GameMetaData);
       if (metaData["gameTypeConfigId"] == 12) {
@@ -310,6 +310,11 @@ namespace LeagueClient.ClientUI {
             break;
         }
       }
+    }
+
+    void IQueueManager.ViewProfile(string summonerName) {
+      Client.SummonerCache.GetData(summonerName, Profile.GotSummoner);
+      Dispatcher.MyInvoke(ShowTab, Tab.Profile);
     }
     #endregion
 

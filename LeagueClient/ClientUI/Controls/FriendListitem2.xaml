@@ -38,6 +38,7 @@
   <UserControl.ContextMenu>
     <ContextMenu>
       <MenuItem Header="Invite to game" Click="Invite_Click"/>
+      <MenuItem Header="View profile" Click="ViewProfile_Click"/>
       <!--<MenuItem Header="Contract" Click="SizeToggle_Click"/>-->
     </ContextMenu>
   </UserControl.ContextMenu>

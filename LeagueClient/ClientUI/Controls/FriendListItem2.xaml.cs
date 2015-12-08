@@ -60,7 +60,11 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Invite_Click(object sender, RoutedEventArgs e) {
-      RiotServices.GameInvitationService.Invite(friend.Summoner.SummonerId);
+      RiotServices.GameInvitationService.Invite(friend.Cache.Summoner.SummonerId);
+    }
+
+    private void ViewProfile_Click(object sender, RoutedEventArgs e) {
+      Client.QueueManager.ViewProfile(friend.Cache.Summoner.Name);
     }
 
     private void SizeToggle_Click(object sender, RoutedEventArgs e) {
@@ -126,7 +130,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Champ_MouseEnter(object sender, MouseEventArgs e) {
-      if(friend.Invite != null) {
+      if (friend.Invite != null) {
         AcceptButt.BeginStoryboard(App.FadeIn);
         DeclineButt.BeginStoryboard(App.FadeIn);
       }
