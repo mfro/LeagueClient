@@ -49,9 +49,9 @@ namespace LeagueClient.Logic.Chat {
       }
     }
     public string StatusMessage {
-      get { return Client.Settings.ChatStatus; }
+      get { return Client.Settings.StatusMessage; }
       set {
-        Client.Settings.ChatStatus = value;
+        Client.Settings.StatusMessage = value;
         SendPresence();
       }
     }

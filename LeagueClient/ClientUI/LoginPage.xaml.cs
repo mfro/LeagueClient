@@ -13,6 +13,11 @@ using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
 using MFroehlich.Parsing.DynamicJSON;
 using MFroehlich.Parsing.MFro;
+using LeagueClient.Logic.Riot.Platform;
+using RtmpSharp.Messaging;
+using MFroehlich.League.Assets;
+using System.Threading.Tasks;
+using LeagueClient.Logic.Settings;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -20,7 +25,7 @@ namespace LeagueClient.ClientUI {
   /// </summary>
   public partial class LoginPage : Page {
     private const string SettingsKey = "LoginSettings";
-    private static JSONObject settings = Client.LoadSettings(SettingsKey);
+    private static LoginSettings settings = Client.LoadSettings<LoginSettings>(SettingsKey);
 
     public Uri BackAnimationURI { get; private set; }
 
@@ -32,12 +37,9 @@ namespace LeagueClient.ClientUI {
       BackAnimationURI = new Uri(Client.LoginVideoPath);
       InitializeComponent();
 
-      if (!settings.Dictionary.ContainsKey("Accounts"))
-        settings["Accounts"] = new JSONArray();
-      var accounts = (List<string>) settings["Accounts"];
-      if (accounts.Count > 0) {
-        foreach (var name in accounts) {
-          var user = Client.LoadSettings(name).To<Settings>();
+      if (settings.Accounts.Count > 0) {
+        foreach (var name in settings.Accounts) {
+          var user = Client.LoadSettings<UserSettings>(name);
           var login = new LoginAccount(user.Username, user.SummonerName, user.ProfileIcon);
           login.Click += Account_Click;
           login.Remove += Account_Remove;
@@ -45,12 +47,14 @@ namespace LeagueClient.ClientUI {
         }
       } else LoginGrid.BeginStoryboard(App.FadeIn);
 
-      BackStatic.Source = new BitmapImage(new Uri(Path.Combine(Client.AirDirectory, "mod\\lgn\\themes", Client.LoginTheme, "cs_bg_champions.png")));
+      var url = Path.Combine(Client.Region.UpdateBase, $"projects/lol_air_client/releases/{Client.Latest.AirVersion}/files/mod/lgn/themes/{Client.LoginTheme}/cs_bg_champions.png");
+      BackStatic.Source = new BitmapImage(new Uri(url));
     }
 
+    #region UI Handlers
     private void Account_Remove(object sender, EventArgs e) {
       AccountList.Children.Remove(sender as UIElement);
-      settings["Accounts"].Remove(((LoginAccount) sender).Username);
+      settings.Accounts.Remove(((LoginAccount) sender).Username);
       Client.SaveSettings(SettingsKey, settings);
     }
 
@@ -60,7 +64,8 @@ namespace LeagueClient.ClientUI {
       foreach (var obj in AccountList.Children)
         if (obj is LoginAccount) ((LoginAccount) obj).State = LoginAccountState.Readonly;
       (sender as LoginAccount).State = LoginAccountState.Loading;
-      Client.Settings = Client.LoadSettings(login).To<Settings>();
+
+      Client.Settings = Client.LoadSettings<UserSettings>(login);
       var raw = Client.Settings.Password;
       var decrypted = ProtectedData.Unprotect(Convert.FromBase64String(raw), null, DataProtectionScope.CurrentUser);
       var junk = "";
@@ -81,13 +86,29 @@ namespace LeagueClient.ClientUI {
       Login(user, pass);
     }
 
+    private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+      Client.MainWindow.DragMove();
+    }
+
+    private void AddAccountButt_Click(object sender, RoutedEventArgs e) {
+      LoginGrid.BeginStoryboard(App.FadeIn);
+      AccountList.BeginStoryboard(App.FadeOut);
+      Dispatcher.Invoke(UserBox.Focus, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+    }
+
+    private void ShowSavedAccounts_Click(object sender, RoutedEventArgs e) {
+      LoginGrid.BeginStoryboard(App.FadeOut);
+      AccountList.BeginStoryboard(App.FadeIn);
+    }
+    #endregion
+
     private void SaveAccount(string name, string pass) {
-      Client.Settings = Client.LoadSettings(name).To<Settings>();
+      Client.Settings = Client.LoadSettings<UserSettings>(name);
       var rawPass = ProtectedData.Protect(Encoding.UTF8.GetBytes(pass), null, DataProtectionScope.CurrentUser);
       Client.Settings.Password = Convert.ToBase64String(rawPass);
       Client.Settings.Username = name;
 
-      settings["Accounts"].Add(name);
+      settings.Accounts.Add(name);
       Client.SaveSettings(SettingsKey, settings);
     }
 
@@ -96,19 +117,20 @@ namespace LeagueClient.ClientUI {
       LoginBar.IsIndeterminate = true;
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
-      new Thread(() => {
-        try {
-          Client.Initialize(user, pass).ContinueWith(t => {
-            if (!t.IsFaulted && t.Result) {
-              Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
-              Client.SaveSettings(SettingsKey, settings);
-              Dispatcher.Invoke(Client.MainWindow.LoginComplete);
-            } else {
-              Dispatcher.Invoke(Reset);
-            }
-          });
-        } catch { }
-      }).Start();
+      Client.Initialize(user, pass).ContinueWith(HandleLogin);
+    }
+
+    private void HandleLogin(Task<bool> task) {
+      if (!task.IsFaulted && task.Result) {
+        Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
+        Client.SaveSettings(SettingsKey, settings);
+        Dispatcher.Invoke(Client.MainWindow.LoginComplete);
+        return;
+      } else if (task.IsFaulted) {
+        var error = task.Exception.InnerException as InvocationException;
+        var cause = error?.RootCause as RiotException;
+      }
+      Dispatcher.Invoke(Reset);
     }
 
     private void Reset() {
@@ -125,21 +147,6 @@ namespace LeagueClient.ClientUI {
       PassBox.Password = "";
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = true;
       PassBox.Focus();
-    }
-
-    private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-      Client.MainWindow.DragMove();
-    }
-
-    private void AddAccountButt_Click(object sender, RoutedEventArgs e) {
-      LoginGrid.BeginStoryboard(App.FadeIn);
-      AccountList.BeginStoryboard(App.FadeOut);
-      Dispatcher.Invoke(UserBox.Focus, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-    }
-
-    private void ShowSavedAccounts_Click(object sender, RoutedEventArgs e) {
-      LoginGrid.BeginStoryboard(App.FadeOut);
-      AccountList.BeginStoryboard(App.FadeIn);
     }
   }
 }

@@ -8,17 +8,15 @@ using System.Threading.Tasks;
 using System.Xml;
 using MFroehlich.Parsing;
 using MFroehlich.Parsing.DynamicJSON;
+using System.Xml.Serialization;
 
-namespace LeagueClient.Logic {
-  [JSONSerializable]
-  public class Settings {
+namespace LeagueClient.Logic.Settings {
+  public class UserSettings : ISettings {
     public string Username { get; set; }
     public string Password { get; set; }
     public int ProfileIcon { get; set; }
     public string SummonerName { get; set; }
 
-    public string ChatStatus { get; set; }
-
-    public Dictionary<string, int> RecentQueuesByMapId;
+    public string StatusMessage { get; set; }
   }
 }

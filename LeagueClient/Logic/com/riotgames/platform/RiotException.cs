@@ -20,7 +20,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     public object Cause { get; set; }
 
     [SerializedName("substitutionArguments")]
-    public object SubstitutionArguments { get; set; }
+    public Object[] SubstitutionArguments { get; set; }
 
     [SerializedName("errorCode")]
     public String ErrorCode { get; set; }

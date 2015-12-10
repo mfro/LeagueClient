@@ -6,6 +6,8 @@ using System.Windows.Controls;
 using LeagueClient.Logic;
 using MFroehlich.League.Assets;
 using MFroehlich.Parsing.DynamicJSON;
+using LeagueClient.Logic.Settings;
+using System.Net;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -13,7 +15,7 @@ namespace LeagueClient.ClientUI {
   /// </summary>
   public partial class PatcherPage : Page {
     private const string SettingsKey = "PatcherSettings";
-    private static JSONObject settings = Client.LoadSettings(SettingsKey);
+    private static PatcherSettings settings = Client.LoadSettings<PatcherSettings>(SettingsKey);
 
     public PatcherPage() {
       InitializeComponent();
@@ -52,18 +54,22 @@ namespace LeagueClient.ClientUI {
     }
 
     void CreateLoginPage() {
-      if (!settings.Dictionary.ContainsKey("theme") || !Client.LoginTheme.Equals(settings["theme"]) || !File.Exists(Client.LoginVideoPath)) {
+      if (!Client.LoginTheme.Equals(settings.Theme) || !File.Exists(Client.LoginVideoPath)) {
+        var file = Path.GetTempFileName();
+        using (var web = new WebClient()) {
+          var url = Path.Combine(Client.Region.UpdateBase, $"projects/lol_air_client/releases/{Client.Latest.AirVersion}/files/mod/lgn/themes/{Client.LoginTheme}/flv/login-loop.flv");
+          web.DownloadFile(url, file);
+        }
         var info = new ProcessStartInfo {
           FileName = Client.FFMpegPath,
-          Arguments = "-i \"" + Path.Combine(Client.AirDirectory, @"mod\lgn\themes",
-          Client.LoginTheme, @"flv\login-loop.flv") + "\" \"" + Client.LoginVideoPath + "\"",
+          Arguments = "-i \"" + file + "\"",
           UseShellExecute = false,
-          CreateNoWindow = true
+          //CreateNoWindow = true
         };
         File.Delete(Client.LoginVideoPath);
         Process.Start(info).WaitForExit();
 
-        settings["theme"] = Client.LoginTheme;
+        settings.Theme = Client.LoginTheme;
         Client.SaveSettings(SettingsKey, settings);
       }
 
@@ -71,7 +77,7 @@ namespace LeagueClient.ClientUI {
     }
 
     public static bool NeedsPatch() {
-      return !File.Exists(Client.LoginVideoPath) || !LeagueData.IsCurrent || !settings.Dictionary.ContainsKey("theme") || !Client.LoginTheme.Equals(settings["theme"]);
+      return !File.Exists(Client.LoginVideoPath) || !LeagueData.IsCurrent || !Client.LoginTheme.Equals(settings.Theme);
     }
   }
 }

@@ -23,7 +23,7 @@ namespace LeagueClient.Logic {
       UpdateBase = "http://l3cdn.riotgames.com/releases/live",
       SolutionListing = "http://l3cdn.riotgames.com/releases/live/solutions/lol_game_client_sln/releases/releaselisting_NA",
       AirListing = "http://l3cdn.riotgames.com/releases/live/projects/lol_air_client/releases/releaselisting_NA",
-      GameListing = "http://l3cdn.riotgames.com/releases/live/solutions/lol_game_client_sln/releases/releaselisting_NA",
+      GameListing = "http://l3cdn.riotgames.com/releases/live/projects/lol_game_client/releases/releaselisting_NA",
 
     };
     public static readonly Region PBE = new Region {

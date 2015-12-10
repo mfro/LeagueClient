@@ -192,6 +192,7 @@
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\harassment\HarassmentReport.cs" />
+    <Compile Include="Logic\com\riotgames\platform\login\ClientVersionMismatchException.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\ClientLoginKickNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
     <Compile Include="Logic\Queueing\QueueController.cs" />
@@ -250,7 +251,7 @@
     <Compile Include="Logic\com\riotgames\platform\catalog\runes\RuneType.cs" />
     <Compile Include="Logic\com\riotgames\platform\clientfacade\domain\LoginDataPacket.cs" />
     <Compile Include="Logic\com\riotgames\platform\client\dynamic\configuration\ClientDynamicConfigurationNotification.cs" />
-    <Compile Include="Logic\com\riotgames\platform\Exception.cs" />
+    <Compile Include="Logic\com\riotgames\platform\RiotException.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\error\AlreadyMemberOfInvitationLobbyException.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitationRequest.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Invitee.cs" />
@@ -353,16 +354,13 @@
     <Compile Include="Logic\RiotServices.cs" />
     <Compile Include="Logic\Chat\RiotChat.cs" />
     <Compile Include="Logic\RiotPatcher.cs" />
+    <Compile Include="Logic\RiotVersionManager.cs" />
+    <Compile Include="Logic\Settings\PatcherSettings.cs" />
+    <Compile Include="Logic\Settings\LoginSettings.cs" />
+    <Compile Include="Logic\Settings\SerializableDictionary.cs" />
+    <Compile Include="Logic\Settings\Settings.cs" />
     <Compile Include="Logic\SummonerCache.cs" />
-    <Compile Include="Logic\SWF\SWFCompression.cs" />
-    <Compile Include="Logic\SWF\SWFReader.cs" />
-    <Compile Include="Logic\SWF\SWFTypes\DoABC.cs" />
-    <Compile Include="Logic\SWF\SWFTypes\End.cs" />
-    <Compile Include="Logic\SWF\SWFTypes\RecordHeader.cs" />
-    <Compile Include="Logic\SWF\SWFTypes\Rect.cs" />
-    <Compile Include="Logic\SWF\SWFTypes\Tag.cs" />
-    <Compile Include="Logic\SWF\SWFTypes\TagCodes.cs" />
-    <Compile Include="Logic\Settings.cs" />
+    <Compile Include="Logic\Settings\UserSettings.cs" />
     <Page Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

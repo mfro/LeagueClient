@@ -16,7 +16,6 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using LeagueClient.Logic.Riot.Team;
-using LegendaryClient.Logic.SWF;
 using MFroehlich.League;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
@@ -25,6 +24,9 @@ using RtmpSharp.IO;
 using RtmpSharp.Messaging;
 using RtmpSharp.Net;
 using MyChampDTO = MFroehlich.League.DataDragon.ChampionDto;
+using LeagueClient.Logic.Settings;
+using System.Xml.Serialization;
+using System.Net;
 
 namespace LeagueClient.Logic {
   public static class Client {
@@ -36,8 +38,6 @@ namespace LeagueClient.Logic {
     internal static readonly string
       RiotGamesDir = @"D:\Riot Games\" + (Region == Region.PBE ? "PBE" : "League of Legends"),
       Locale = "en_US",
-      AirClientParentDir = Path.Combine(RiotGamesDir, @"RADS\projects\lol_air_client"),
-      GameClientParentDir = Path.Combine(RiotGamesDir, @"RADS\solutions\lol_game_client_sln"),
       DataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MFro\LeagueClient\",
       SettingsFile = Path.Combine(DataPath, "settings.xml"),
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
@@ -53,10 +53,8 @@ namespace LeagueClient.Logic {
     internal static LoginDataPacket LoginPacket { get; set; }
     internal static bool Connected { get; set; }
 
-    internal static string AirVersion { get; set; }
-
-    internal static string AirDirectory { get; set; }
-    internal static string GameDirectory { get; set; }
+    internal static RiotVersionManager Latest { get; set; }
+    internal static RiotVersionManager Installed { get; set; }
 
     internal static string LoginTheme { get; set; }
 
@@ -80,18 +78,18 @@ namespace LeagueClient.Logic {
 
     internal static List<int> EnabledMaps { get; set; }
 
-    internal static Settings Settings { get; set; }
+    internal static UserSettings Settings { get; set; }
 
     internal static Process GameProcess { get; set; }
     internal static InGameCredentials QueuedCredentials { get; set; }
     internal static AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
 
     internal static bool CanInviteFriends { get; set; }
-    #endregion
+    #endregion 
 
     #region Initailization
 
-    public static void PreInitialize(MainWindow window) {
+    public static async Task PreInitialize(MainWindow window) {
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
       Console.SetOut(TextWriter.Null);
@@ -99,40 +97,15 @@ namespace LeagueClient.Logic {
 
       MainWindow = window;
 
-      MFroehlich.League.RiotAPI.RiotAPI.UrlFormat
-        = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
+      RiotAPI.UrlFormat = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
 
-      var parents = new[] { AirClientParentDir, GameClientParentDir };
-
-      for (int i = 0; i < parents.Length; i++) {
-        var versions = Directory.EnumerateDirectories(Path.Combine(parents[i], "releases"));
-        Version newest = new Version(0, 0, 0, 0);
-        foreach (var dir in versions) {
-          Version parsed;
-          if (Version.TryParse(Path.GetFileName(dir), out parsed) && parsed > newest) newest = parsed;
-        }
-        switch (i) {
-          case 0: AirDirectory = Path.Combine(parents[i], "releases", newest.ToString(), "deploy"); break;
-          case 1: GameDirectory = Path.Combine(parents[i], "releases", newest.ToString(), "deploy"); break;
-        }
+      Installed = RiotVersionManager.FetchInstalled(RiotGamesDir);
+      Latest = await RiotVersionManager.FetchLatest(Region);
+      using (var web = new WebClient()) {
+        var url = Path.Combine(Region.UpdateBase, $"projects/lol_air_client/releases/{Latest.AirVersion}/files/theme.properties");
+        var content = web.DownloadString(url);
+        LoginTheme = content.Substring("themeConfig=", ",");
       }
-
-      var reader = new SWFReader(Path.Combine(AirDirectory, "lib", "ClientLibCommon.dat"));
-      foreach (var tag in reader.Tags) {
-        if (tag is LegendaryClient.Logic.SWF.SWFTypes.DoABC) {
-          var abcTag = (LegendaryClient.Logic.SWF.SWFTypes.DoABC) tag;
-          if (abcTag.Name.Contains("riotgames/platform/gameclient/application/Version")) {
-            var str = System.Text.Encoding.Default.GetString(abcTag.ABCData);
-            //Ugly hack ahead - turn back now! (http://pastebin.com/yz1X4HBg)
-            string[] firstSplit = str.Split((char) 6);
-            string[] secondSplit = firstSplit[0].Split((char) 19);
-            Client.AirVersion = secondSplit[1];
-          }
-        }
-      }
-
-      var theme = File.ReadAllText(Path.Combine(AirDirectory, "theme.properties"));
-      LoginTheme = theme.Substring("themeConfig=", ",");
 
       if (!File.Exists(FFMpegPath))
         using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
@@ -148,7 +121,7 @@ namespace LeagueClient.Logic {
       var creds = new AuthenticationCredentials();
       creds.Username = user;
       creds.Password = pass;
-      creds.ClientVersion = AirVersion;
+      creds.ClientVersion = LeagueData.CurrentVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
       var queue = await RiotServices.GetAuthKey(creds.Username, creds.Password);
@@ -234,10 +207,13 @@ namespace LeagueClient.Logic {
 
     private static void JoinGame(string ip, int port, string encKey, double summId) {
       //"8394" "LoLPatcher.exe" "" "ip port key id"
-      var info = new ProcessStartInfo(Path.Combine(GameDirectory, "League of Legends.exe"));
+      var game = Path.Combine(RiotGamesDir, RiotVersionManager.SolutionPath, Latest.SolutionVersion.ToString(), "deploy");
+      var lolclient = Path.Combine(RiotGamesDir, RiotVersionManager.AirPath, Latest.AirVersion.ToString(), "deploy", "LolClient.exe");
+
+      var info = new ProcessStartInfo(Path.Combine(game, "League of Legends.exe"));
       var str = $"{ip} {port} {encKey} {summId}";
-      info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLPatcher.exe", Path.Combine(AirDirectory, "LolClient.exe"), str);
-      info.WorkingDirectory = GameDirectory;
+      info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLPatcher.exe", lolclient, str);
+      info.WorkingDirectory = game;
       GameProcess = Process.Start(info);
 
       System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
@@ -269,7 +245,7 @@ namespace LeagueClient.Logic {
     public static async void Logout() {
       if (Connected) {
         try {
-          SaveSettings(Settings.Username, JSONObject.From(Settings));
+          SaveSettings(Settings.Username, Settings);
           await RiotServices.GameService.QuitGame();
           await RiotServices.LoginService.Logout();
           await RtmpConn.LogoutAsync();
@@ -329,19 +305,23 @@ namespace LeagueClient.Logic {
 
     #region My Client Methods
 
-    public static JSONObject LoadSettings(string name) {
+    public static T LoadSettings<T>(string name) where T : ISettings, new() {
       name = name.RemoveAllWhitespace();
       var file = Path.Combine(DataPath, name + ".settings");
-      if (!File.Exists(file))
-        return new JSONObject();
-      var json = JSON.ParseObject(File.ReadAllBytes(file));
-      return json;
+      if (File.Exists(file)) {
+        using (var stream = new FileStream(file, FileMode.Open)) {
+          var xml = new XmlSerializer(typeof(T));
+          return (T) xml.Deserialize(stream);
+        }
+      } else return new T();
     }
 
-    public static void SaveSettings(string name, JSONObject json) {
+    public static void SaveSettings<T>(string name, T settings) where T : ISettings {
       name = name.RemoveAllWhitespace();
-      var file = Path.Combine(DataPath, name + ".settings");
-      File.WriteAllText(file, JSON.Stringify(json, 2, 0));
+      using (var stream = new FileStream(Path.Combine(DataPath, name + ".settings"), FileMode.Create)) {
+        var xml = new XmlSerializer(typeof(T));
+        xml.Serialize(stream, settings);
+      }
     }
 
     private static object _lock = new object();
@@ -355,11 +335,6 @@ namespace LeagueClient.Logic {
           }
         } catch { }
       }
-    }
-
-    public static void Log(string msg, params object[] args) {
-      if (args.Length == 0) Log((object) msg);
-      else Log((object) string.Format(msg, args));
     }
 
     public static long GetMilliseconds() => (long) DateTime.UtcNow.Subtract(Epoch).TotalMilliseconds;
@@ -380,19 +355,19 @@ namespace LeagueClient.Logic {
       try {
         if (response != null) {
           if (response.status.Equals("ACK"))
-            Log("Acknowledged call of method {0} [{1}]", response.methodName, response.messageId);
+            Log($"Acknowledged call of method {response.methodName} [{response.messageId}]");
           else if (response.messageId != null && RiotServices.Delegates.ContainsKey(response.messageId)) {
             RiotServices.Delegates[response.messageId](response);
             RiotServices.Delegates.Remove(response.messageId);
           } else {
-            Log("Unhandled LCDS response of method {0} [{1}], {2}", response.methodName, response.messageId, response.payload);
+            Log($"Unhandled LCDS response of method {response.methodName} [{response.messageId}], {response.payload}");
           }
         } else if (config != null) {
           Log("Received Configuration Notification");
         } else if (invite != null) {
           ShowInvite(invite);
         } else {
-          Log("Receive [{1}, {2}]: '{0}'", e.Body, e.Subtopic, e.ClientId);
+          Log($"Receive [{e.Subtopic}, {e.ClientId}]: '{e.Body}'");
         }
       } catch (Exception x) {
         Log("Exception while handling message: " + x.Message);

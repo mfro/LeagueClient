@@ -23,6 +23,9 @@ using LeagueClient.Logic;
 using System.Windows.Threading;
 using RtmpSharp.Messaging;
 using LeagueClient.ClientUI.Main;
+using System.Xml.Serialization;
+using System.IO;
+using LeagueClient.Logic.Settings;
 
 namespace LeagueClient {
   /// <summary>
@@ -34,13 +37,20 @@ namespace LeagueClient {
     private LandingPage landing;
 
     public MainWindow() {
-      Client.Log("Pre-Init");
-      Client.PreInitialize(this);
-      Client.Log(LeagueData.CurrentVersion);
-
       Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
       InitializeComponent();
+
+      Init();
+    }
+    
+    private async void Init() {
+      Client.Log("Pre-Init");
+      await Client.PreInitialize(this);
+      Client.Log(LeagueData.CurrentVersion);
+      Client.Log($"Air: {Client.Installed.AirVersion} / {Client.Latest.AirVersion}");
+      Client.Log($"Game: {Client.Installed.GameVersion} / {Client.Latest.GameVersion}");
+      Client.Log($"Solution: {Client.Installed.SolutionVersion} / {Client.Latest.SolutionVersion}");
 
       ((App) Application.Current).LoadResources();
       if (!PatcherPage.NeedsPatch()) {
