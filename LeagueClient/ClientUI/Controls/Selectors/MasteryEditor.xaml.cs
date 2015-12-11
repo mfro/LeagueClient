@@ -20,21 +20,19 @@ namespace LeagueClient.ClientUI.Controls {
   /// </summary>
   public partial class MasteryEditor : UserControl {
     private const int
-      ImageSize = 40,
-      ImageBorder = 2,
       HorizontalSpace = 15,
-      VerticalSpace = 22;
+      VerticalSpace = 18;
 
     public MasteryEditor() {
       InitializeComponent();
-      offense = new MasteryTree(OffenseTree);
-      defense = new MasteryTree(DefenseTree);
-      utility = new MasteryTree(UtilityTree);
+      ferocity = new MasteryTree(OffenseTree);
+      cunning = new MasteryTree(DefenseTree);
+      resolve = new MasteryTree(UtilityTree);
 
       if (Client.Connected) {
-        LoadMasteries(offense, LeagueData.MasteryData.Value.tree.Ferocity, 1);
-        LoadMasteries(defense, LeagueData.MasteryData.Value.tree.Cunning, 2);
-        LoadMasteries(utility, LeagueData.MasteryData.Value.tree.Resolve, 3);
+        CreateTree(ferocity, LeagueData.MasteryData.Value.tree.Ferocity, 1);
+        CreateTree(cunning, LeagueData.MasteryData.Value.tree.Cunning, 2);
+        CreateTree(resolve, LeagueData.MasteryData.Value.tree.Resolve, 3);
 
         Reset();
       }
@@ -77,24 +75,24 @@ namespace LeagueClient.ClientUI.Controls {
         Icons[talent.TalentId + ""].Points = talent.Rank;
       }
       loading = false;
-      UpdateMasteries();
+      CheckPoints();
       unsaved = false;
       Changed.Text = "";
       Client.SelectMasteryPage(page);
     }
 
-    private MasteryTree offense;
-    private MasteryTree defense;
-    private MasteryTree utility;
+    private MasteryTree ferocity;
+    private MasteryTree cunning;
+    private MasteryTree resolve;
     private int usedPoints;
     private Dictionary<string, MasteryIcon> Icons = new Dictionary<string, MasteryIcon>();
 
-    private void UpdateMasteries() {
+    private void CheckPoints() {
       if (loading) return;
       usedPoints = 0;
-      int total = offense.Points + defense.Points + utility.Points;
+      int total = ferocity.Points + cunning.Points + resolve.Points;
       for (int r = 0; r < 6; r++) {
-        foreach (var tree in new[] { offense, defense, utility }) {
+        foreach (var tree in new[] { ferocity, cunning, resolve }) {
           foreach (var item in tree.Rows[r].Icons) {
             bool enabled = true;
             if (total == 30 && item.Points == 0)
@@ -108,23 +106,26 @@ namespace LeagueClient.ClientUI.Controls {
       }
       unsaved = true;
       Changed.Text = "*Unsaved*";
-      OffenseTotal.Text = "Offense: " + offense.Points;
-      DefenseTotal.Text = "Defense: " + defense.Points;
-      UtilityTotal.Text = "Utility: " + utility.Points;
+      OffenseTotal.Text = "Offense: " + ferocity.Points;
+      DefenseTotal.Text = "Defense: " + cunning.Points;
+      UtilityTotal.Text = "Utility: " + resolve.Points;
       PointStatus.Text = "Available Points: " + (30 - usedPoints);
     }
 
-    private void LoadMasteries(MasteryTree tree, List<List<MasteryTreeDto.BranchDto>> src, int col) {
+    private void CreateTree(MasteryTree tree, List<List<MasteryTreeDto.BranchDto>> src, int col) {
       tree.Control.Rows = src.Count;
       tree.Control.Columns = 1;
       for (int y = 0; y < src.Count; y++) {
         var row = new MasteryRow(y, tree);
+        row.Control.Columns = src[y].Count;
         for (int x = 0; x < src[y].Count; x++) {
           var item = src[y][x];
           if (item == null) row.AddBlank();
           else {
             var icon = new MasteryIcon(LeagueData.MasteryData.Value.data[item.masteryId], row);
-            icon.Control.Margin = new Thickness(HorizontalSpace / 2, 0, HorizontalSpace / 2, 0);
+            icon.MouseEnter += Icon_MouseEnter;
+            icon.MouseLeave += Icon_MouseLeave;
+            icon.Margin = new Thickness(HorizontalSpace / 2, 0, HorizontalSpace / 2, 0);
 
             Icons.Add(item.masteryId, icon);
             row.Add(icon);
@@ -132,8 +133,34 @@ namespace LeagueClient.ClientUI.Controls {
         }
         tree.Add(row);
       }
-      tree.PointChanged += (s, p) => UpdateMasteries();
+      tree.PointChanged += (s, p) => CheckPoints();
       //tree.Control.Height = src.Count * (ImageSize + ImageBorder * 2 + VerticalSpace) + VerticalSpace;
+    }
+
+    private void Icon_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) {
+      var icon = sender as MasteryIcon;
+      var pos = icon.TransformToAncestor(BackGrid).Transform(new Point(0, 0));
+      ToolTipGrid.Visibility = Visibility.Visible;
+      double x = pos.X + 50;
+      if (icon.Row.Tree == resolve)
+        x = pos.X - 210;
+      if (icon.Row.Row == 5) {
+        ToolTipGrid.Margin = new Thickness(x, -1000, -1000, BackGrid.ActualHeight - pos.Y - icon.ActualHeight);
+        ToolTipGrid.VerticalAlignment = VerticalAlignment.Bottom;
+      } else {
+        ToolTipGrid.Margin = new Thickness(x, pos.Y, -1000, -1000);
+        ToolTipGrid.VerticalAlignment = VerticalAlignment.Top;
+      }
+
+      NameLabel.Content = icon.Data.name;
+      if (icon.Data.description.Count == 1 || icon.Points == 0)
+        DescriptionBlock.Text = icon.Data.description.First().Replace("<br>", "\n");
+      else
+        DescriptionBlock.Text = icon.Data.description[icon.Points - 1].Replace("<br>", "\n");
+    }
+
+    private void Icon_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
+      ToolTipGrid.Visibility = Visibility.Collapsed;
     }
 
     private void ItemsControl_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e) {
@@ -156,7 +183,7 @@ namespace LeagueClient.ClientUI.Controls {
       loading = true;
       foreach (var item in Icons.Values) item.Points = 0;
       loading = false;
-      UpdateMasteries();
+      CheckPoints();
     }
 
     private void DeleteButt_Click(object sender, RoutedEventArgs e) {
@@ -168,86 +195,20 @@ namespace LeagueClient.ClientUI.Controls {
     }
     #endregion
 
-    public class MasteryIcon {
-      public event EventHandler<int> PointChanged;
-      public Border Control { get; private set; }
-      public TextBlock PointsLabel { get; private set; }
-      public MasteryDto Data { get; private set; }
-      public int Points {
-        get { return points; }
-        set {
-          var old = points;
-          points = value;
-          PointsLabel.Text = points + "/" + Data.ranks;
-          if (points == Data.ranks) Control.BorderBrush = App.FocusBrush;
-          else Control.BorderBrush = App.ForeBrush;
-          if (PointChanged != null && old != value)
-            PointChanged(this, value);
-        }
-      }
-      public bool Enabled {
-        get { return enabled; }
-        set {
-          enabled = value;
-          image.Source = LeagueData.GetMasteryImage(Data, !enabled);
-          if (!enabled && points > 0) Points = 0;
-        }
-      }
-
-      private int points;
-      private Image image;
-      private bool enabled;
-      private MasteryRow row;
-
-      public MasteryIcon(MasteryDto dto, MasteryRow row) {
-        Data = dto;
-        var grid = new Grid();
-        Control = new Border();
-        Control.Width = Control.Height = ImageSize + ImageBorder * 2;
-        Control.BorderBrush = App.ForeBrush;
-        Control.BorderThickness = new Thickness(ImageBorder);
-        Control.Child = grid;
-        PointsLabel = new TextBlock { Text = "0/" + Data.ranks };
-        PointsLabel.Style = App.Control;
-        PointsLabel.Background = App.ForeBrush;
-        PointsLabel.Margin = new Thickness(0, 0, -6, -10);
-        PointsLabel.VerticalAlignment = VerticalAlignment.Bottom;
-        PointsLabel.HorizontalAlignment = HorizontalAlignment.Right;
-        PointsLabel.FontSize = 11;
-        grid.Children.Add(image = new Image());
-        grid.Children.Add(PointsLabel);
-
-        this.row = row;
-
-        Control.MouseWheel += Control_MouseWheel;
-      }
-
-      void Control_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e) {
-        int d = (e.Delta > 0) ? 1 : -1;
-        //If not enabled or removing any points in higher rows
-        if (!enabled || (d < 0 && row.Tree.Rows.Any(row => row.Row > this.row.Row && row.Points > 0)))
-          return;
-        if (points + d <= Data.ranks && points + d >= 0) {
-          Points += d;
-          row.PointsChanged(this, d);
-        }
-      }
-    }
-
     public class MasteryRow {
       public List<MasteryIcon> Icons { get; } = new List<MasteryIcon>();
-      public StackPanel Control { get; }
+      public UniformGrid Control { get; }
       public MasteryTree Tree { get; }
       public int Row { get; }
 
       public int? Ranks => Icons.FirstOrDefault()?.Data?.ranks;
-      public int Points { get; private set; }
+      public int Points => Icons.Sum(item => item.Points);
       public bool Complete => Points == Ranks;
 
       public MasteryRow(int row, MasteryTree tree) {
-        Control = new StackPanel {
-          Margin = new Thickness(0, 0, 0, VerticalSpace),
-          Orientation = Orientation.Horizontal,
+        Control = new UniformGrid {
+          Rows = 1,
+          Margin = new Thickness(0, VerticalSpace / 2, 0, VerticalSpace / 2),
           HorizontalAlignment = HorizontalAlignment.Center
         };
         Tree = tree;
@@ -256,23 +217,18 @@ namespace LeagueClient.ClientUI.Controls {
 
       public void Add(MasteryIcon icon) {
         Icons.Add(icon);
-        Control.Children.Add(icon.Control);
+        Control.Children.Add(icon);
       }
 
       public void PointsChanged(MasteryIcon src, int amount) {
-        Points = 0;
-        foreach (var item in Icons) Points += item.Points;
         if (Points > Ranks) {
           Icons.FirstOrDefault(item => item != src && item.Points >= Points - Ranks.Value).Points -= Points - Ranks.Value;
-          Points = Ranks.Value;
         }
         Tree.PointsChanged(src, Points);
       }
 
       public void AddBlank() {
         Control.Children.Add(new Control {
-          Width = ImageSize + ImageBorder * 2,
-          Height = ImageSize + ImageBorder * 2,
           Margin = new Thickness(HorizontalSpace / 2, 0, HorizontalSpace / 2, 0)
         });
       }

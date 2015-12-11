@@ -51,6 +51,7 @@
       <Button Name="DeleteButt" Grid.Row="7" Margin="10 4" Click="DeleteButt_Click">Delete Mastery Page</Button>
       <Button Name="RevertButt" Grid.Row="8" Margin="10 4" Click="RevertButt_Click">Revert Changes</Button>
     </Grid>
+    
     <Border Padding="4" Grid.Column="1" Margin="4 4 4 24" Background="{StaticResource Back1Brush}" Grid.Row="1">
       <UniformGrid Name="OffenseTree"/>
     </Border>
@@ -66,5 +67,14 @@
                FontSize="16" Margin="5,0,5,1" Grid.Row="1">Defense: 0</TextBlock>
     <TextBlock Style="{StaticResource Control}" Name="UtilityTotal" Grid.Column="3" VerticalAlignment="Bottom"
                FontSize="16" Margin="5,0,5,1" Grid.Row="1">Utility: 0</TextBlock>
+
+    <Grid Width="200" Visibility="Collapsed" Grid.RowSpan="10" Grid.ColumnSpan="10" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{StaticResource ForeBrush}" Name="ToolTipGrid">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Label Name="NameLabel" FontSize="16"/>
+      <TextBlock Style="{StaticResource Control}" Name="DescriptionBlock" TextWrapping="Wrap" Grid.Row="1" Padding="4"/>
+    </Grid>
   </Grid>
 </UserControl>

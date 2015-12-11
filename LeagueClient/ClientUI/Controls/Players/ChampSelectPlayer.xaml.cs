@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
+using LeagueClient.Logic;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -26,17 +27,22 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public ChampSelectPlayer(PlayerParticipant player, PlayerChampionSelectionDTO selection) : this() {
-      if (selection?.ChampionId > 0)
+      if (player.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+        Glow.Opacity = 1;
+      if (selection?.Spell1Id > 0 && selection?.Spell2Id > 0 && selection?.ChampionId > 0) {
         ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId));
-      else ChampImage.Source = null;
-
-      if (selection?.Spell1Id > 0)
         Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id));
-      else Spell1Image.Source = null;
-
-      if (selection?.Spell2Id > 0)
         Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
-      else Spell2Image.Source = null;
+        Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;
+      } else if (selection?.Spell1Id > 0 && selection?.Spell2Id > 0) {
+        Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id));
+        Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
+        Grid.SetColumnSpan(Unknown, 1);
+        Grid.SetColumnSpan(Obscure, 1);
+        Unknown.Visibility = Obscure.Visibility = Visibility.Visible;
+      } else {
+        Unknown.Visibility = Obscure.Visibility = Visibility.Visible;
+      }
 
       NameLabel.Content = player.SummonerName;
     }
@@ -45,12 +51,13 @@ namespace LeagueClient.ClientUI.Controls {
       var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
       ChampImage.Source = LeagueData.GetChampIconImage(champ);
       NameLabel.Content = champ.name;
+      Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;
     }
 
     public ChampSelectPlayer(ObfuscatedParticipant obfusc) : this() {
       ChampImage.Source = Spell1Image.Source = Spell2Image.Source = null;
       NameLabel.Visibility = Visibility.Collapsed;
-      Unknown.Visibility = Visibility.Visible;
+      Unknown.Visibility = Obscure.Visibility = Visibility.Visible;
     }
   }
 }

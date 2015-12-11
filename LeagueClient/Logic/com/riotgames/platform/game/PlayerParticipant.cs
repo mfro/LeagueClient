@@ -47,7 +47,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public Boolean TeamOwner { get; set; }
 
         [SerializedName("summonerId")]
-        public Double SummonerId { get; set; }
+        public Int64 SummonerId { get; set; }
 
         [SerializedName("badges")]
         public Int32 Badges { get; set; }

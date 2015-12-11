@@ -101,6 +101,9 @@
     <Compile Include="ClientUI\Controls\Players\LobbyPlayer2.xaml.cs">
       <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\Selectors\MasteryIcon.xaml.cs">
+      <DependentUpon>MasteryIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\Selectors\ProfileIconSelector.xaml.cs">
       <DependentUpon>ProfileIconSelector.xaml</DependentUpon>
     </Compile>
@@ -374,6 +377,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\Players\LobbyPlayer2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\Selectors\MasteryIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

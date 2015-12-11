@@ -15,9 +15,13 @@
     <Image Name="ChampImage" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Blitzcrank.png"/>
     <Image Name="Spell1Image" Grid.Column="2" VerticalAlignment="Top" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerFlash.png"/>
     <Image Name="Spell2Image" Grid.Column="2" VerticalAlignment="Bottom" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
-    <Label Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontSize="16" Padding="0" Margin="0 0 0 -4" Name="NameLabel">master mor</Label>
+    <Label Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontSize="16" Padding="0" Margin="0 0 0 -4" Name="NameLabel" Visibility="Collapsed">KombatProwess</Label>
+    <Border Background="{StaticResource Back1Brush}" Grid.ColumnSpan="3" Name="Obscure"/>
 
     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource Control}" Grid.ColumnSpan="3"
-                  FontSize="90" Name="Unknown" Visibility="Collapsed">?</TextBlock>
+                  FontSize="90" Name="Unknown" Margin="0 0 0 10">?</TextBlock>
   </Grid>
+  <UserControl.Effect>
+    <DropShadowEffect Color="{StaticResource ChatColor}" ShadowDepth="0" BlurRadius="10" Opacity="0" x:Name="Glow"/>
+  </UserControl.Effect>
 </UserControl>

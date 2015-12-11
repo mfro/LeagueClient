@@ -10,22 +10,72 @@
   <Grid Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="0"/>
-      <RowDefinition Height="133"/>
-      <RowDefinition Height="40"/>
-      <RowDefinition Height="133"/>
       <RowDefinition Height="*"/>
+      <RowDefinition Height="0"/>
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
 
-    <UniformGrid Grid.RowSpan="4" Rows="3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Name="MyBansGrid">
-      <UniformGrid.Resources>
-        <Style TargetType="Border">
-          <Setter Property="BorderThickness" Value="2"/>
-          <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
-          <Setter Property="Margin" Value="0 0 0 8"/>
-        </Style>
-      </UniformGrid.Resources>
-      <!--<Border>
+    <Grid Grid.Row="1" HorizontalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Name="MyTeam" Margin="0 8 -8 8">
+        <StackPanel.Resources>
+          <Style TargetType="my:ChampSelectPlayer">
+            <Setter Property="Margin" Value="0 0 8 0"/>
+          </Style>
+        </StackPanel.Resources>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+      </StackPanel>
+      
+      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="64" Name="MyBansGrid" Margin="50 0">
+        <UniformGrid.Resources>
+          <Style TargetType="Border">
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
+            <Setter Property="Margin" Value="0 0 8 0"/>
+          </Style>
+        </UniformGrid.Resources>
+        <Border>
+          <Image Name="Ban4" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+        </Border>
+        <Border>
+          <Image Name="Ban5" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+        </Border>
+        <Border>
+          <Image Name="Ban6" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+        </Border>
+      </UniformGrid>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Name="OtherTeam" Grid.Row="2" Margin="0 8 -8 8">
+        <StackPanel.Resources>
+          <Style TargetType="my:ChampSelectPlayer">
+            <Setter Property="Margin" Value="0 0 8 0"/>
+          </Style>
+        </StackPanel.Resources>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+        <my:ChampSelectPlayer/>
+      </StackPanel>
+      
+      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="64" Name="OtherBansGrid" Margin="50 0">
+        <UniformGrid.Resources>
+          <Style TargetType="Border">
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
+            <Setter Property="Margin" Value="8 0 0 0"/>
+          </Style>
+        </UniformGrid.Resources>
+        <Border>
           <Image Name="Ban1" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
         </Border>
         <Border>
@@ -33,67 +83,14 @@
         </Border>
         <Border>
           <Image Name="Ban3" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
-        </Border>-->
-      <Border>
-        <Image Name="Ban4" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
-      </Border>
-      <Border>
-        <Image Name="Ban5" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
-      </Border>
-      <Border>
-        <Image Name="Ban6" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
-      </Border>
-    </UniformGrid>
+        </Border>
+      </UniformGrid>
+    </Grid>
 
-    <UniformGrid Grid.RowSpan="4" Rows="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="64" Name="OtherBansGrid">
-      <UniformGrid.Resources>
-        <Style TargetType="Border">
-          <Setter Property="BorderThickness" Value="2"/>
-          <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
-          <Setter Property="Margin" Value="0 8 0 0"/>
-        </Style>
-      </UniformGrid.Resources>
-      <Border>
-        <Image Name="Ban1" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
-      </Border>
-      <Border>
-        <Image Name="Ban2" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
-      </Border>
-      <Border>
-        <Image Name="Ban3" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
-      </Border>
-    </UniformGrid>
+    <Label Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="24" Name="GameStatusLabel"
+           Cursor="Hand" MouseUp="GameStatusLabel_MouseUp" Grid.Row="1">Your turn to pick!</Label>
 
-    <Label Grid.Row="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="24" Name="GameStatusLabel"
-           Cursor="Hand" MouseUp="GameStatusLabel_MouseUp">Your turn to pick!</Label>
-
-    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 0 -8 0" Name="MyTeam">
-      <StackPanel.Resources>
-        <Style TargetType="my:ChampSelectPlayer">
-          <Setter Property="Margin" Value="0 0 8 0"/>
-        </Style>
-      </StackPanel.Resources>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-    </StackPanel>
-
-    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 0 -8 0" Name="OtherTeam">
-      <StackPanel.Resources>
-        <Style TargetType="my:ChampSelectPlayer">
-          <Setter Property="Margin" Value="0 0 8 0"/>
-        </Style>
-      </StackPanel.Resources>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-      <my:ChampSelectPlayer/>
-    </StackPanel>
-
-    <Grid Grid.Row="5">
+    <Grid Grid.Row="5" Grid.ColumnSpan="2">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="300"/>
@@ -166,6 +163,6 @@
 
     </Grid>
 
-    <my:PopupSelector x:Name="Popup" Grid.RowSpan="100" Grid.ColumnSpan="100" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Opacity="0"/>
+    <my:PopupSelector x:Name="Popup" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Opacity="0" Grid.RowSpan="10" Grid.ColumnSpan="10"/>
   </Grid>
 </Page>
