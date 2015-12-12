@@ -4,31 +4,35 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
   <Grid Name="parentGrid">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
       <RowDefinition/>
     </Grid.RowDefinitions>
-    <Button Margin="0 0 0 4" Padding="8 2" Width="90" Name="ChampButt" Click="ChampButt_Click" HorizontalAlignment="Left">Champions</Button>
-    <my:HintedTextBox Margin="0 0 0 4" Padding="1 1" Width="200" x:Name="SearchBox" HorizontalAlignment="Right" Hint="Search" KeyUp="SearchBox_KeyUp"/>
-    <Grid Name="ChampSelect" Visibility="Visible" Grid.Row="1">
+    <Button Grid.Column="1" Margin="0 0 0 4" Padding="8 2" Width="90" Name="ChampButt" Click="ChampButt_Click" HorizontalAlignment="Left">Champions</Button>
+    <my:HintedTextBox Grid.Column="1" Margin="0 0 0 4" Padding="1 1" Width="200" x:Name="SearchBox" HorizontalAlignment="Right" Hint="Search" KeyUp="SearchBox_KeyUp"/>
+    <Grid Name="ChampSelect" Visibility="Visible" Grid.Column="1" Grid.Row="1">
       <ScrollViewer VerticalScrollBarVisibility="Visible">
         <ItemsControl Name="ChampsGrid">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2" Width="68" Margin="0 0 8 8" ToolTip="{Binding Name}" MouseUp="Champion_Select" MouseEnter="Champ_Hover">
+              <Border BorderBrush="Transparent" BorderThickness="2" Width="80" Margin="0 0 8 8" ToolTip="{Binding Name}" MouseUp="Champion_Select" MouseEnter="Champ_Hover">
                 <Image Source="{Binding Image}"/>
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8" Width="752"/>
+              <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
         </ItemsControl>
       </ScrollViewer>
     </Grid>
-    <Grid Name="SkinSelect" Visibility="Collapsed" Grid.Row="1">
+    <Grid Name="SkinSelect" Visibility="Collapsed" Grid.Column="1" Grid.Row="1">
       <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" Name="SkinScroll" Grid.Row="1">
         <Grid MouseWheel="SkinGrid_Scroll" Background="Transparent">
           <Grid.ColumnDefinitions>

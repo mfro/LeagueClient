@@ -64,6 +64,7 @@ namespace LeagueClient.ClientUI.Main {
       var notify = args.Body as GameNotification;
       var invite = args.Body as InvitePrivileges;
       var queue = args.Body as SearchingForMatchNotification;
+      var msg = args.Body as SimpleDialogMessage;
       var game = args.Body as GameDTO;
 
       if (lobby != null) {
@@ -79,8 +80,17 @@ namespace LeagueClient.ClientUI.Main {
       } else if (notify != null) {
         SetInQueue(false);
         return true;
+      } else if (msg != null) {
+        if (msg.titleCode.Equals("ready_check.penalty.applied")) {
+          //TODO Failed to accept notifcation
+          return true;
+        }
       } else if (game != null) {
-        Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new DefaultQueuePopup(game)));
+        Dispatcher.Invoke(() => {
+          var popup = new DefaultQueuePopup(game);
+          popup.Close += (src, e) => SetInQueue(false);
+          Client.QueueManager.ShowQueuePopup(popup);
+        });
         return true;
       }
 

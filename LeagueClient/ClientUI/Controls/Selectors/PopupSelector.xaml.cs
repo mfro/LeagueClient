@@ -36,7 +36,7 @@ namespace LeagueClient.ClientUI.Controls {
             IconSelector.Visibility = Visibility.Collapsed;
             RuneEditor.Visibility = Visibility.Collapsed;
             ChampSelector.Visibility = Visibility.Visible;
-            TitleBlock.Text = "Select a Champion";
+            TitleBlock.Content = "Select a Champion";
             break;
           case Selector.Masteries:
             MasteryEditor.Reset();
@@ -45,7 +45,7 @@ namespace LeagueClient.ClientUI.Controls {
             IconSelector.Visibility = Visibility.Collapsed;
             RuneEditor.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Visible;
-            TitleBlock.Text = "Select Masteries";
+            TitleBlock.Content = "Select Masteries";
             break;
           case Selector.Spells:
             ChampSelector.Visibility = Visibility.Collapsed;
@@ -53,14 +53,14 @@ namespace LeagueClient.ClientUI.Controls {
             IconSelector.Visibility = Visibility.Collapsed;
             RuneEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Visible;
-            TitleBlock.Text = "Select Summoner Spells";
+            TitleBlock.Content = "Select Summoner Spells";
             break;
           case Selector.ProfileIcons:
             ChampSelector.Visibility = Visibility.Collapsed;
             MasteryEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
             IconSelector.Visibility = Visibility.Visible;
-            TitleBlock.Text = "Select Summoner Icon";
+            TitleBlock.Content = "Select Summoner Icon";
             break;
           case Selector.Runes:
             ChampSelector.Visibility = Visibility.Collapsed;
@@ -68,7 +68,7 @@ namespace LeagueClient.ClientUI.Controls {
             SpellSelector.Visibility = Visibility.Collapsed;
             IconSelector.Visibility = Visibility.Collapsed;
             RuneEditor.Visibility = Visibility.Visible;
-            TitleBlock.Text = "Select Runes";
+            TitleBlock.Content = "Select Runes";
             break;
         }
       }

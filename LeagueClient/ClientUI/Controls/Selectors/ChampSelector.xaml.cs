@@ -106,7 +106,7 @@ namespace LeagueClient.ClientUI.Controls {
         foreach (var item in ChampsGrid.Items)
           VisualTreeHelper
             .GetChild(ChampsGrid.ItemContainerGenerator.ContainerFromItem(item), 0)
-            .SetValue(Border.BorderBrushProperty, App.ForeBrush);
+            .SetValue(Border.BorderBrushProperty, Brushes.Transparent);
 
         src.BorderBrush = App.FocusBrush;
         if (data == null) return;

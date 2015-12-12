@@ -68,6 +68,7 @@ namespace LeagueClient.ClientUI.Main {
         new Queue("Blind Pick Dominion", 16, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("Draft Pick Dominion", 17, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("ARAM", 65, "Enter Soloqueue", "Create Lobby", PlayStandard),
+        new Queue("King Poro", 300, "Enter Soloqueue", "Create Lobby", PlayStandard),
       };
 
       queues[RankedQueues] = new List<Queue> {
