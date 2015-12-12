@@ -17,13 +17,13 @@ namespace LeagueClient.Logic.Riot.Platform
         public String SeasonOneTier { get; set; }
 
         [SerializedName("acctId")]
-        public Double AcctId { get; set; }
+        public Int64 AccountId { get; set; }
 
         [SerializedName("name")]
         public String Name { get; set; }
 
         [SerializedName("sumId")]
-        public Double SumId { get; set; }
+        public Int64 SummonerId { get; set; }
 
         [SerializedName("profileIconId")]
         public Int32 ProfileIconId { get; set; }

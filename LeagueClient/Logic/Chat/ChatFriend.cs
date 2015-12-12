@@ -54,7 +54,7 @@ namespace LeagueClient.Logic.Chat {
         Status = new LeagueStatus(p.Status, p.Show);
         if (Status.GameStatus == ChatStatus.inGame) {
           RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Name).ContinueWith(GotGameDTO);
-          if (Cache != null) RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Summoner.SummonerId).ContinueWith(GotGameInfo);
+          if (Cache != null) RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Data.Summoner.SummonerId).ContinueWith(GotGameInfo);
         } else {
           CurrentGameDTO = null;
           CurrentGameInfo = null;
@@ -85,7 +85,7 @@ namespace LeagueClient.Logic.Chat {
     private void GotSummoner(SummonerCache.Item item) {
       Cache = item;
       if (Status?.GameStatus == ChatStatus.inGame) {
-        RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Summoner.SummonerId).ContinueWith(GotGameInfo);
+        RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Data.Summoner.SummonerId).ContinueWith(GotGameInfo);
       }
     }
 
@@ -108,8 +108,8 @@ namespace LeagueClient.Logic.Chat {
       if (CurrentGameInfo.gameStartTime == 0) {
         new Thread(() => {
           Thread.Sleep(30000);
-          RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Summoner.SummonerId).ContinueWith(GotGameInfo);
-        }) { IsBackground = true, Name = "GameFetch-" + Cache.Summoner.InternalName }.Start();
+          RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Data.Summoner.SummonerId).ContinueWith(GotGameInfo);
+        }) { IsBackground = true, Name = "GameFetch-" + Cache.Data.Summoner.InternalName }.Start();
       } else Client.ChatManager.ForceUpdate();
     }
     #endregion

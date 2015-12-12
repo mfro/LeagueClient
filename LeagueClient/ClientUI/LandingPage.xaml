@@ -137,7 +137,7 @@
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
 
-      <Border Grid.Row="1" Name="QueuerArea" Margin="-11 0"/>
+      <Border Grid.Row="3" Name="QueuerArea" Margin="-11 0"/>
 
       <!--<Button Grid.Row="3">Notifications  - 3</Button>-->
 

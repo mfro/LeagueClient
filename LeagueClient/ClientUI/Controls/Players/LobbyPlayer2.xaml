@@ -12,7 +12,7 @@
     <Image Margin="8 8 8 0" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Name="ProfileIconImage"/>
     <Label Grid.Row="1" Margin="0 2 0 0" HorizontalAlignment="Center" Name="NameLabel">master mor</Label>
     <Label Grid.Row="2" Margin="4 0 0 4" HorizontalAlignment="Left" Name="RankLabel" FontSize="10">Gold V</Label>
-    <Label Grid.Row="2" Margin="4 0 0 4" HorizontalAlignment="Right" Name="WinsLabel" FontSize="10">167 Wins</Label>
+    <Label Grid.Row="2" Margin="4 0 4 4" HorizontalAlignment="Right" Name="WinsLabel" FontSize="10">167 Wins</Label>
 
     <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Right" Margin="8" Background="#B50000" ToolTip="Kick from group" Click="Kick_Click" Name="KickButton" Width="30" Height="30">
       <Path Data="M 0 0 L 20 20 M 20 0 L 0 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>

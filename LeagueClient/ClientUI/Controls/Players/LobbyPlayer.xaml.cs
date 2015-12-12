@@ -99,16 +99,16 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void GotSummonerData(SummonerCache.Item item) {
-      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Summoner.ProfileIconId));
+      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
 
-      LevelString = "Level " + item.Summoner.SummonerLevel;
+      LevelString = "Level " + item.Data.SummonerLevel;
 
       var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
       if (league != null) {
-        LevelString = RankedTier.Values[league.Tier] + " " + league.RequestorsRank;
+        LevelString = RankedTier.Values[league.Tier] + " " + league.Rank;
       }
 
-      UserName = item.Summoner.Name;
+      UserName = item.Data.Summoner.Name;
       RankString = "Challenjour";
     }
 

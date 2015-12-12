@@ -55,11 +55,11 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void GotSummoner(SummonerCache.Item item) {
       Dispatcher.Invoke(() => {
-        ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Summoner.ProfileIconId));
-        RankLabel.Content = "Level " + item.Summoner.SummonerLevel;
-        NameLabel.Content = item.Summoner.Name;
+        ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
+        RankLabel.Content = "Level " + item.Data.SummonerLevel.Level;
+        NameLabel.Content = item.Data.Summoner.Name;
         var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
-        if (league != null) RankLabel.Content = RankedTier.Values[league.Tier] + " " + league.RequestorsRank;
+        if (league != null) RankLabel.Content = RankedTier.Values[league.Tier] + " " + league.Rank;
       });
     }
 

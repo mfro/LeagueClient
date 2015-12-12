@@ -17,7 +17,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public Int32 QueueRating { get; set; }
 
         [SerializedName("accountId")]
-        public Double AccountId { get; set; }
+        public Int64 AccountId { get; set; }
 
         [SerializedName("botDifficulty")]
         public String BotDifficulty { get; set; }

@@ -72,7 +72,6 @@ namespace LeagueClient.ClientUI.Main {
         return true;
       } else if (invite != null) {
         Client.CanInviteFriends = invite.canInvite;
-        //Dispatcher.Invoke(() => InviteButton.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
         return true;
       } else if (queue != null) {
         EnterQueue(queue);

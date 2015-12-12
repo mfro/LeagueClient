@@ -198,6 +198,7 @@
     <Compile Include="Logic\com\riotgames\platform\login\ClientVersionMismatchException.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\ClientLoginKickNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
+    <Compile Include="Logic\com\riotgames\platform\summoner\BaseSummoner.cs" />
     <Compile Include="Logic\Queueing\QueueController.cs" />
     <Compile Include="Logic\Region.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />

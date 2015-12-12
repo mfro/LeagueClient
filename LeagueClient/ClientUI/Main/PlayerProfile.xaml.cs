@@ -46,14 +46,14 @@ namespace LeagueClient.ClientUI.Main {
     private void LoadSummoner(SummonerCache.Item item) {
       SearchBox.BorderBrush = App.ForeBrush;
       HistoryList.SelectedItem = item;
-      SummonerName.Content = item.Summoner.Name;
-      SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Summoner.ProfileIconId));
+      SummonerName.Content = item.Data.Summoner.Name;
+      SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
 
-      if (item.Summoner.SummonerLevel < 30) {
-        SummonerRank.Content = "Level " + item.Summoner.SummonerLevel;
+      if (item.Data.SummonerLevel.Level < 30) {
+        SummonerRank.Content = "Level " + item.Data.SummonerLevel;
       } else {
         var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
-        if (league != null) SummonerRank.Content = RankedTier.Values[league.Tier] + " " + league.RequestorsRank;
+        if (league != null) SummonerRank.Content = RankedTier.Values[league.Tier] + " " + league.Rank;
       }
     }
 

@@ -7,38 +7,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LeagueClient.Logic {
   public class SummonerCache {
     public class Item {
-      public AllPublicSummonerDataDTO AllData { get; private set; }
+      public AllPublicSummonerDataDTO Data { get; private set; }
       public SummonerLeaguesDTO Leagues { get; private set; }
-      public PublicSummoner Summoner { get; private set; }
       public List<ChampionMasteryDTO> ChampionMastery { get; private set; }
 
       public static async Task<Item> Generate(string summonerName) {
         try {
-          string mastery = null;
-          var pubSumm = await RiotServices.SummonerService.GetSummonerByName(summonerName);
-          var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(pubSumm.SummonerId);
-          RiotServices.AddHandler(guid, res => mastery = res.payload);
-          var leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(pubSumm.SummonerId);
-          var all = await RiotServices.SummonerService.GetAllPublicSummonerDataByAccount(pubSumm.AcctId);
-          var masteryList = (List<ChampionMasteryDTO>) (dynamic) (JSON.ParseArray(mastery));
-
-          return new Item { AllData = all, Summoner = pubSumm, Leagues = leagues, ChampionMastery = masteryList };
+          var summ = await RiotServices.SummonerService.GetSummonerByName(summonerName);
+          return await Generate(summ.AccountId);
         } catch (Exception x) {
           Client.Log("Exception fetching summoner: " + x);
           return null;
         }
       }
 
-      public override int GetHashCode() => Summoner.AcctId.GetHashCode();
-      public override bool Equals(object obj) => obj is Item && ((Item) obj).Summoner.AcctId == Summoner.AcctId;
+      public static async Task<Item> Generate(long accountId) {
+        try {
+          var all = await RiotServices.SummonerService.GetAllPublicSummonerDataByAccount(accountId);
+
+          var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(all.Summoner.SummonerId);
+          var handle = new AutoResetEvent(false);
+          string mastery = null;
+          RiotServices.AddHandler(guid, res => {
+            mastery = res.payload;
+            handle.Set();
+          });
+
+          var leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(all.Summoner.SummonerId);
+          handle.WaitOne(2000);
+
+          if (mastery != null) {
+            var masteryList = (List<ChampionMasteryDTO>) (dynamic) (JSON.ParseArray(mastery));
+
+            return new Item { Data = all, Leagues = leagues, ChampionMastery = masteryList };
+          } else return new Item { Data = all, Leagues = leagues };
+        } catch (Exception x) {
+          Client.Log("Exception fetching summoner: " + x);
+          return null;
+        }
+      }
+
+      public override int GetHashCode() => Data.Summoner.AccountId.GetHashCode();
+      public override bool Equals(object obj) => obj is Item && ((Item) obj).Data.Summoner.AccountId == Data.Summoner.AccountId;
     }
 
     private Dictionary<long, Item> idCache = new Dictionary<long, Item>();
+    private Dictionary<long, Item> accountCache = new Dictionary<long, Item>();
     private Dictionary<string, Item> nameCache = new Dictionary<string, Item>();
 
     public SummonerCache() {
@@ -53,7 +73,22 @@ namespace LeagueClient.Logic {
 
       if (item != null) {
         nameCache[summonerName] = item;
-        idCache[item.Summoner.SummonerId] = item;
+        idCache[item.Data.Summoner.SummonerId] = item;
+        accountCache[item.Data.Summoner.AccountId] = item;
+      }
+
+      callback(item);
+    }
+
+    public async void GetData(long accountId, Action<Item> callback) {
+      if (accountCache.ContainsKey(accountId)) callback(accountCache[accountId]);
+
+      var item = await Item.Generate(accountId);
+
+      if (item != null) {
+        nameCache[Minimize(item.Data.Summoner.Name)] = item;
+        idCache[item.Data.Summoner.SummonerId] = item;
+        accountCache[item.Data.Summoner.AccountId] = item;
       }
 
       callback(item);

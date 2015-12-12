@@ -89,7 +89,11 @@ namespace LeagueClient.ClientUI.Main {
       var game = args.Body as GameDTO;
 
       if (game != null && game.GameState.Equals("JOINING_CHAMP_SELECT")) {
-        Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new DefaultQueuePopup(game)));
+        Dispatcher.Invoke(() => {
+          var popup = new DefaultQueuePopup(game);
+          popup.Close += (src, e) => SetInQueue(false);
+          Client.QueueManager.ShowQueuePopup(popup);
+        });
         return true;
       }
 

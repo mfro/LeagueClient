@@ -60,11 +60,11 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Invite_Click(object sender, RoutedEventArgs e) {
-      RiotServices.GameInvitationService.Invite(friend.Cache.Summoner.SummonerId);
+      RiotServices.GameInvitationService.Invite(friend.Cache.Data.Summoner.SummonerId);
     }
 
     private void ViewProfile_Click(object sender, RoutedEventArgs e) {
-      Client.QueueManager.ViewProfile(friend.Cache.Summoner.Name);
+      Client.QueueManager.ViewProfile(friend.Cache.Data.Summoner.Name);
     }
 
     private void SizeToggle_Click(object sender, RoutedEventArgs e) {

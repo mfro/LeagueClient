@@ -18,6 +18,10 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
+using System.Xml.Serialization;
+using System.Xml;
+using System.IO;
+using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -34,11 +38,6 @@ namespace LeagueClient.ClientUI.Controls {
 
     public DefaultQueuePopup(GameDTO game) : this() {
       GotGameData(game);
-
-      TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(game.JoinTimerDuration)));
-      var time = new Timer(game.JoinTimerDuration * 1000);
-      time.Start();
-      time.Elapsed += Time_Elapsed;
     }
 
     private void Time_Elapsed(object sender, ElapsedEventArgs e) {
@@ -46,9 +45,29 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void GotGameData(GameDTO game) {
+      if (GameData == null) {
+        TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(game.JoinTimerDuration)));
+        var time = new Timer(game.JoinTimerDuration);
+        time.Start();
+        time.Elapsed += Time_Elapsed;
+      }
       GameData = game;
       if (game.GameState.Equals("JOINING_CHAMP_SELECT")) {
         ParticipantPanel.Children.Clear();
+        Client.Log("Players:");
+        foreach (var participant in game.TeamOne.Concat(game.TeamTwo)) {
+          var player = participant as PlayerParticipant;
+          if (player != null) {
+#if DEBUG
+            Client.SummonerCache.GetData(player.AccountId, item => {
+              Client.Log($"  {player.SummonerName}, {player.SummonerId}");
+              foreach (var league in item.Leagues.SummonerLeagues) {
+                Client.Log($"    {QueueType.Values[league.Queue].Value}: {RankedTier.Values[league.Tier].Value} {league.Rank} ({league.DivisionName})");
+              }
+            });
+#endif
+          }
+        }
         foreach (char player in game.StatusOfParticipants) {
           var border = new Border { Width = 16, Height = 20 };
           border.BorderBrush = App.ForeBrush;
@@ -60,6 +79,9 @@ namespace LeagueClient.ClientUI.Controls {
               break;
             case '1':
               border.Background = App.ChatBrush;
+              break;
+            case '2':
+              border.Background = App.AwayBrush;
               break;
             default: break;
           }
