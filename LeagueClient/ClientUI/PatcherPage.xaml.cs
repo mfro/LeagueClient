@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using LeagueClient.Logic;
 using MFroehlich.League.Assets;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using LeagueClient.Logic.Settings;
 using System.Net;
 

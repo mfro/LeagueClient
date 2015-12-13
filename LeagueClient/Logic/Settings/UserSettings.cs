@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using MFroehlich.Parsing;
-using MFroehlich.Parsing.DynamicJSON;
 using System.Xml.Serialization;
 
 namespace LeagueClient.Logic.Settings {

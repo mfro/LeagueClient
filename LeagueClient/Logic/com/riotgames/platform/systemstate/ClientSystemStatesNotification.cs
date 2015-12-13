@@ -6,9 +6,10 @@ using RtmpSharp.IO.AMF3;
 using System.Text;
 using System.Linq;
 using System.Reflection;
+using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.Riot.Platform {
-  [MFroehlich.Parsing.DynamicJSON.JSONSerializable]
+  [JSONSerializable]
   [Serializable]
   [SerializedName("com.riotgames.platform.systemstate.ClientSystemStatesNotification")]
   public class ClientSystemStatesNotification : IExternalizable {
@@ -111,16 +112,16 @@ namespace LeagueClient.Logic.Riot.Platform {
     public void ReadExternal(IDataInput input) {
       Json = input.ReadUtf((int) input.ReadUInt32());
 
-      dynamic json = MFroehlich.Parsing.DynamicJSON.JSON.ParseObject(Json);
-      ClientSystemStatesNotification states = json;
+      var json = JSONParser.ParseObject(Json, 0);
+      var states = json.Fill(new ClientSystemStatesNotification());
       foreach (PropertyInfo prop in typeof(ClientSystemStatesNotification).GetProperties()) {
         prop.SetValue(this, prop.GetValue(states));
       }
       //foreach (KeyValuePair<string, object> keyPair in json) {
       //  var f = typeof(ClientSystemStatesNotification).GetProperty(keyPair.Key);
       //  if (f == null) continue;
-      //  if (keyPair.Value is MFroehlich.Parsing.DynamicJSON.JSONArray) {
-      //    var tempArrayList = keyPair.Value as MFroehlich.Parsing.DynamicJSON.JSONArray;
+      //  if (keyPair.Value is MFroehlich.Parsing.JSON.JSONArray) {
+      //    var tempArrayList = keyPair.Value as MFroehlich.Parsing.JSON.JSONArray;
       //    if (tempArrayList.Count > 0) {
       //      var array = Array.CreateInstance(f.PropertyType.GetElementType(), tempArrayList.Count);
       //      for (int i = 0; i < tempArrayList.Count; i++) array.SetValue(tempArrayList[i], i);

@@ -22,7 +22,7 @@ using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using LeagueClient.Logic.Riot.Team;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using RtmpSharp.Messaging;
 using System.Threading;
 using System.Timers;

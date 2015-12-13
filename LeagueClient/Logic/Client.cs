@@ -19,7 +19,7 @@ using LeagueClient.Logic.Riot.Team;
 using MFroehlich.League;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using RtmpSharp.IO;
 using RtmpSharp.Messaging;
 using RtmpSharp.Net;

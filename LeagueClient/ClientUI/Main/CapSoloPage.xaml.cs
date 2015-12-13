@@ -24,7 +24,7 @@ using RtmpSharp.Messaging;
 using LeagueClient.Logic.Cap;
 using System.Timers;
 using LeagueClient.Logic.Riot.Platform;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -115,7 +115,7 @@ namespace LeagueClient.ClientUI.Main {
         switch (response.methodName) {
           case "acceptedByGroupV2":
             queue.Dispose();
-            Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new CapSoloQueuePopup(JSON.ParseObject(response.payload), me.CapPlayer)));
+            Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new CapSoloQueuePopup(JSONParser.ParseObject(response.payload, 0), me.CapPlayer)));
             return true;
         }
       }

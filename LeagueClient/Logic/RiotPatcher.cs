@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MFroehlich.Parsing.JSON;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -16,7 +17,7 @@ namespace LeagueClient.Logic.Riot {
         dragonJSON = client.DownloadString("http://ddragon.leagueoflegends.com/realms/na.js");
       }
       dragonJSON = dragonJSON.Replace("Riot.DDragon.m=", "").Replace(";", "");
-      var json = MFroehlich.Parsing.DynamicJSON.JSON.ParseObject(dragonJSON);
+      var json = JSONParser.ParseObject(dragonJSON, 0);
       string Version = (string) json["v"];
       string CDN = (string) json["cdn"];
       string s = CDN + "/dragontail-" + Version + ".tgz";

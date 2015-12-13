@@ -1,7 +1,7 @@
 ﻿using LeagueClient.Logic.com.riotgames.JSON;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +43,7 @@ namespace LeagueClient.Logic {
           handle.WaitOne(2000);
 
           if (mastery != null) {
-            var masteryList = (List<ChampionMasteryDTO>) (dynamic) (JSON.ParseArray(mastery));
+            var masteryList = JSONParser.ParseArray(mastery, 0).Fill<List<ChampionMasteryDTO>>();
 
             return new Item { Data = all, Leagues = leagues, ChampionMastery = masteryList };
           } else return new Item { Data = all, Leagues = leagues };

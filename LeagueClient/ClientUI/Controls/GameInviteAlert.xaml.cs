@@ -18,7 +18,7 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using LeagueClient.Logic.Riot.Team;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -64,14 +64,14 @@ namespace LeagueClient.ClientUI.Controls {
 
     public GameInviteAlert(InvitationRequest invite) : this() {
       this.invite = invite;
-      this.metaData = JSON.ParseObject(invite.GameMetaData);
-      var map = GameMap.Maps.FirstOrDefault(m => m.MapId == metaData["mapId"]);
+      this.metaData = JSONParser.ParseObject(invite.GameMetaData, 0);
+      var map = GameMap.Maps.FirstOrDefault(m => m.MapId == (int) metaData["mapId"]);
 
       Message = invite.Inviter.summonerName + " has invited you to play a game";
       MapName = map.DisplayName;
-      ModeName = GameMode.Values[metaData["gameMode"]].Value;
-      QueueName = GameConfig.Values[metaData["gameTypeConfigId"]].Value;
-      if (metaData["gameTypeConfigId"] == 12) {
+      ModeName = GameMode.Values[(string) metaData["gameMode"]].Value;
+      QueueName = GameConfig.Values[(int) metaData["gameTypeConfigId"]].Value;
+      if ((int) metaData["gameTypeConfigId"] == 12) {
         TypeName = "Team Builder";
       } else {
         switch ((string) metaData["gameType"]) {
@@ -94,31 +94,32 @@ namespace LeagueClient.ClientUI.Controls {
     private void Accept_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, true);
 
-      var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
-      if (metaData["gameTypeConfigId"] == 12) {
-        var lobby = new CapLobbyPage(false);
-        task.ContinueWith(t => lobby.GotLobbyStatus(t.Result));
-        RiotServices.CapService.JoinGroupAsInvitee(metaData["groupFinderId"]);
-        Client.QueueManager.ShowPage(lobby);
-      } else {
-        switch ((string) metaData["gameType"]) {
-          case "PRACTICE_GAME":
-            var custom = new CustomLobbyPage();
-            task.ContinueWith(t => custom.GotLobbyStatus(t.Result));
-            Client.QueueManager.ShowPage(custom);
-            break;
-          case "NORMAL_GAME":
-            var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] } });
-            task.ContinueWith(t => normal.GotLobbyStatus(t.Result));
-            Client.QueueManager.ShowPage(normal);
-            break;
-          case "RANKED_TEAM_GAME":
-            var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] }, TeamId = new TeamId { FullId = metaData["rankedTeamId"] } });
-            task.ContinueWith(t => ranked.GotLobbyStatus(t.Result));
-            Client.QueueManager.ShowPage(ranked);
-            break;
-        }
-      }
+      Client.QueueManager.AcceptInvite(invite);
+      //var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
+      //if ((int) metaData["gameTypeConfigId"] == 12) {
+      //  var lobby = new CapLobbyPage(false);
+      //  task.ContinueWith(t => lobby.GotLobbyStatus(t.Result));
+      //  RiotServices.CapService.JoinGroupAsInvitee((string) metaData["groupFinderId"]);
+      //  Client.QueueManager.ShowPage(lobby);
+      //} else {
+      //  switch ((string) metaData["gameType"]) {
+      //    case "PRACTICE_GAME":
+      //      var custom = new CustomLobbyPage();
+      //      task.ContinueWith(t => custom.GotLobbyStatus(t.Result));
+      //      Client.QueueManager.ShowPage(custom);
+      //      break;
+      //    case "NORMAL_GAME":
+      //      var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] } });
+      //      task.ContinueWith(t => normal.GotLobbyStatus(t.Result));
+      //      Client.QueueManager.ShowPage(normal);
+      //      break;
+      //    case "RANKED_TEAM_GAME":
+      //      var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] }, TeamId = new TeamId { FullId = (string) metaData["rankedTeamId"] } });
+      //      task.ContinueWith(t => ranked.GotLobbyStatus(t.Result));
+      //      Client.QueueManager.ShowPage(ranked);
+      //      break;
+      //  }
+      //}
     }
 
     private void Decline_Click(object sender, RoutedEventArgs e) {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.com.riotgames.other {
   public class CapPlayerInfoData {

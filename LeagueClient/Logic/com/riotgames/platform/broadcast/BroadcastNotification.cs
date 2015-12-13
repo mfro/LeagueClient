@@ -4,6 +4,7 @@ using RtmpSharp.IO.AMF3;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections;
+using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.Riot.Platform {
   [Serializable]
@@ -16,7 +17,7 @@ namespace LeagueClient.Logic.Riot.Platform {
     public void ReadExternal(IDataInput input) {
       Json = input.ReadUtf((int) input.ReadUInt32());
 
-      var json = MFroehlich.Parsing.DynamicJSON.JSON.ParseObject(Json);
+      var json = JSONParser.ParseObject(Json, 0);
 
       Type classType = typeof(BroadcastNotification);
       foreach (KeyValuePair<string, object> keyPair in json) {

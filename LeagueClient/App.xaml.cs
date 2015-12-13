@@ -14,7 +14,6 @@ using System.Windows.Threading;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing;
-using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient {
   /// <summary>

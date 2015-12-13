@@ -25,7 +25,7 @@ using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using RtmpSharp.Messaging;
 using LeagueClient.Logic.Riot;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using LeagueClient.Logic.Riot.Team;
 using agsXMPP.protocol.client;
 
@@ -285,11 +285,11 @@ namespace LeagueClient.ClientUI {
 
     void IQueueManager.AcceptInvite(InvitationRequest invite) {
       var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
-      var metaData = JSON.ParseObject(invite.GameMetaData);
-      if (metaData["gameTypeConfigId"] == 12) {
+      var metaData = JSONParser.ParseObject(invite.GameMetaData, 0);
+      if ((int) metaData["gameTypeConfigId"] == 12) {
         var lobby = new CapLobbyPage(false);
         task.ContinueWith(t => lobby.GotLobbyStatus(task.Result));
-        RiotServices.CapService.JoinGroupAsInvitee(metaData["groupFinderId"]);
+        RiotServices.CapService.JoinGroupAsInvitee((string) metaData["groupFinderId"]);
         Client.QueueManager.ShowPage(lobby);
       } else {
         switch ((string) metaData["gameType"]) {
@@ -299,12 +299,12 @@ namespace LeagueClient.ClientUI {
             Client.QueueManager.ShowPage(custom);
             break;
           case "NORMAL_GAME":
-            var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] } });
+            var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] } });
             task.ContinueWith(t => normal.GotLobbyStatus(task.Result));
             Client.QueueManager.ShowPage(normal);
             break;
           case "RANKED_TEAM_GAME":
-            var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new int[] { metaData["queueId"] }, TeamId = new TeamId { FullId = metaData["rankedTeamId"] } });
+            var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] }, TeamId = new TeamId { FullId = (string) metaData["rankedTeamId"] } });
             task.ContinueWith(t => ranked.GotLobbyStatus(task.Result));
             Client.QueueManager.ShowPage(ranked);
             break;

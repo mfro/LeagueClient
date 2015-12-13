@@ -12,7 +12,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 using RtmpSharp.Messaging;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using LeagueClient.Logic.Riot.Kudos;
 using MFroehlich.League.DataDragon;
 using LeagueClient.Logic.Cap;
@@ -1200,9 +1200,9 @@ namespace LeagueClient.Logic.Riot {
       inputStream.Close();
       con.Abort();
 
-      dynamic json = JSON.ParseObject(sb.ToString());
+      var json = JSONParser.ParseObject(sb.ToString(), 0);
 
-      return (LoginQueueDto) json;
+      return json.Fill(new LoginQueueDto());
     }
 
     public static async Task<string> GetIpAddress() {
@@ -1217,7 +1217,7 @@ namespace LeagueClient.Logic.Riot {
 
       con.Abort();
 
-      var json = JSON.ParseObject(sb.ToString());
+      var json = JSONParser.ParseObject(sb.ToString(), 0);
 
       return (string) json["ip_address"];
     }

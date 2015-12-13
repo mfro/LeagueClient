@@ -1,23 +1,21 @@
-﻿using System;
+﻿using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic;
+using LeagueClient.Logic.Riot.Platform;
+using LeagueClient.Logic.Settings;
+using MFroehlich.League.Assets;
+using RtmpSharp.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xml;
-using LeagueClient.ClientUI.Controls;
-using LeagueClient.Logic;
-using MFroehlich.Parsing.DynamicJSON;
-using MFroehlich.Parsing.MFro;
-using LeagueClient.Logic.Riot.Platform;
-using RtmpSharp.Messaging;
-using MFroehlich.League.Assets;
-using System.Threading.Tasks;
-using LeagueClient.Logic.Settings;
 
 namespace LeagueClient.ClientUI {
   /// <summary>

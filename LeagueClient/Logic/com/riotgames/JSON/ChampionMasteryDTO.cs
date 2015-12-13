@@ -1,4 +1,4 @@
-﻿using MFroehlich.Parsing.DynamicJSON;
+﻿using MFroehlich.Parsing.JSON;
 using System;
 using System.Collections.Generic;
 using System.Linq;

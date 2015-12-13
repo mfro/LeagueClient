@@ -15,7 +15,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MFroehlich.League.Assets;
-using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>

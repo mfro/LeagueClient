@@ -18,7 +18,7 @@ using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using LeagueClient.Logic.Riot.Platform;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using agsXMPP.protocol.client;
 
 namespace LeagueClient.ClientUI.Controls {

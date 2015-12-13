@@ -18,7 +18,7 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
-using MFroehlich.Parsing.DynamicJSON;
+using MFroehlich.Parsing.JSON;
 using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Controls {
@@ -39,8 +39,8 @@ namespace LeagueClient.ClientUI.Controls {
       this.payload = payload;
       this.player = player;
 
-      TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(payload["candidateAutoQuitTimeout"])));
-      var time = new Timer(payload["candidateAutoQuitTimeout"] * 1000);
+      TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds((int) payload["candidateAutoQuitTimeout"])));
+      var time = new Timer((int) payload["candidateAutoQuitTimeout"]);
       time.Start();
       time.Elapsed += Time_Elapsed;
     }

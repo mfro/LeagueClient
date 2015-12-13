@@ -21,7 +21,6 @@ using RtmpSharp.Messaging;
 using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
-using MFroehlich.Parsing.DynamicJSON;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
