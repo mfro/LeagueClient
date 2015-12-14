@@ -27,7 +27,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for DefaultQueuePopup.xaml
   /// </summary>
   public partial class DefaultQueuePopup : UserControl, IQueuePopup {
-    public event EventHandler Close;
+    public event EventHandler<QueueEventArgs> Close;
 
     public GameDTO GameData { get; private set; }
 
@@ -58,12 +58,12 @@ namespace LeagueClient.ClientUI.Controls {
           var player = participant as PlayerParticipant;
           if (player != null) {
 #if DEBUG
-            Client.SummonerCache.GetData(player.AccountId, item => {
-              Client.Log($"  {player.SummonerName}, {player.SummonerId}");
-              foreach (var league in item.Leagues.SummonerLeagues) {
-                Client.Log($"    {QueueType.Values[league.Queue].Value}: {RankedTier.Values[league.Tier].Value} {league.Rank} ({league.DivisionName})");
-              }
-            });
+            //Client.SummonerCache.GetData(player.AccountId, item => {
+            //  Client.Log($"  {player.SummonerName}, {player.SummonerId}");
+            //  foreach (var league in item.Leagues.SummonerLeagues) {
+            //    Client.Log($"    {QueueType.Values[league.Queue].Value}: {RankedTier.Values[league.Tier].Value} {league.Rank} ({league.DivisionName})");
+            //  }
+            //});
 #endif
           }
         }
@@ -86,11 +86,11 @@ namespace LeagueClient.ClientUI.Controls {
           }
           ParticipantPanel.Children.Add(border);
         }
-      } else if (game.GameState.Equals("CHAMP_SELECT")) {
-        Close?.Invoke(this, new EventArgs());
+      } else if (game.GameState.Contains("CHAMP_SELECT")) {
+        Close?.Invoke(this, new QueueEventArgs(QueuePopOutcome.Accepted));
         Client.QueueManager.BeginChampionSelect(game);
       } else if (game.GameState.Equals("TERMINATED")) {
-        Close?.Invoke(this, new EventArgs());
+        Close?.Invoke(this, new QueueEventArgs(QueuePopOutcome.Cancelled));
       } else { }
     }
 
@@ -105,10 +105,12 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.AcceptPoppedGame(true);
+      AcceptButt.IsEnabled = false;
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.AcceptPoppedGame(false);
+      AcceptButt.IsEnabled = false;
     }
 
     public Control Control => this;

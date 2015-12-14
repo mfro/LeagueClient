@@ -220,7 +220,13 @@ namespace LeagueClient.Logic {
       ChatManager.Status = ChatStatus.inGame;
       new Thread(() => {
         Thread.Sleep(20000);
-        CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => RiotAPI.CurrentGameAPI.BySummoner("NA", LoginPacket.AllSummonerData.Summoner.SumId));
+        CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => {
+          try {
+            return RiotAPI.CurrentGameAPI.BySummoner("NA1", LoginPacket.AllSummonerData.Summoner.SumId);
+          } catch (Exception x) {
+            return null;
+          }
+        });
       }).Start();
     }
 

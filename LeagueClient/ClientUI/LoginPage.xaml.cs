@@ -45,8 +45,8 @@ namespace LeagueClient.ClientUI {
         }
       } else LoginGrid.BeginStoryboard(App.FadeIn);
 
-      var url = Path.Combine(Client.Region.UpdateBase, $"projects/lol_air_client/releases/{Client.Latest.AirVersion}/files/mod/lgn/themes/{Client.LoginTheme}/cs_bg_champions.png");
-      BackStatic.Source = new BitmapImage(new Uri(url));
+      var url = new Uri(new Uri(Client.Region.UpdateBase), $"projects/lol_air_client/releases/{Client.Latest.AirVersion}/files/mod/lgn/themes/{Client.LoginTheme}/cs_bg_champions.png");
+      BackStatic.Source = new BitmapImage(url);
     }
 
     #region UI Handlers

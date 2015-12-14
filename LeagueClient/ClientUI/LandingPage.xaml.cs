@@ -165,7 +165,7 @@ namespace LeagueClient.ClientUI {
       Client.QueueManager.ShowInfo(null);
     }
 
-    private void CurrentPopup_Close(object sender, EventArgs e) {
+    private void CurrentPopup_Close(object sender, QueueEventArgs e) {
       Dispatcher.Invoke(() => PopupPanel.BeginStoryboard(App.FadeOut));
     }
 

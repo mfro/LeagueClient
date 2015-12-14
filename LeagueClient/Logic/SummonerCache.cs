@@ -29,24 +29,16 @@ namespace LeagueClient.Logic {
 
       public static async Task<Item> Generate(long accountId) {
         try {
+          var item = new Item();
           var all = await RiotServices.SummonerService.GetAllPublicSummonerDataByAccount(accountId);
-
+          var leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(all.Summoner.SummonerId);
           var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(all.Summoner.SummonerId);
-          var handle = new AutoResetEvent(false);
-          string mastery = null;
           RiotServices.AddHandler(guid, res => {
-            mastery = res.payload;
-            handle.Set();
+            var masteryList = JSONParser.ParseArray(res.payload, 0).Fill<List<ChampionMasteryDTO>>();
+            item.ChampionMastery = masteryList;
           });
 
-          var leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(all.Summoner.SummonerId);
-          handle.WaitOne(2000);
-
-          if (mastery != null) {
-            var masteryList = JSONParser.ParseArray(mastery, 0).Fill<List<ChampionMasteryDTO>>();
-
-            return new Item { Data = all, Leagues = leagues, ChampionMastery = masteryList };
-          } else return new Item { Data = all, Leagues = leagues };
+          return new Item { Data = all, Leagues = leagues };
         } catch (Exception x) {
           Client.Log("Exception fetching summoner: " + x);
           return null;

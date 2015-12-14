@@ -116,7 +116,7 @@ namespace LeagueClient.ClientUI {
         LockInButt.IsEnabled = turn.IsMyTurn;
 
         if (game.GameState.Equals("PRE_CHAMP_SELECT")) {
-          if (last?.PickTurn != game.PickTurn) SetTimer(config.BanTimerDuration - 3);
+          if (last?.PickTurn != game.PickTurn) SetTimer(config.BanTimerDuration - 2);
           if (turn.IsMyTurn) state = State.Banning;
           else state = State.Watching;
           var champs = await RiotServices.GameService.GetChampionsForBan();
@@ -132,7 +132,7 @@ namespace LeagueClient.ClientUI {
           else header = OtherTeamBanString;
 
         } else {
-          if (last?.PickTurn != game.PickTurn) SetTimer(config.MainPickTimerDuration - 3);
+          if (last?.PickTurn != game.PickTurn) SetTimer(config.MainPickTimerDuration - 2);
           if (turn.IsMyTurn) state = State.Picking;
           else state = State.Watching;
           Popup.ChampSelector.UpdateChampList();
@@ -141,7 +141,7 @@ namespace LeagueClient.ClientUI {
           else header = NotPickingString;
         }
       } else if (game.GameState.Equals("POST_CHAMP_SELECT")) {
-        if (last?.PickTurn != game.PickTurn) SetTimer(config.PostPickTimerDuration - 3);
+        if (last?.PickTurn != game.PickTurn) SetTimer(config.PostPickTimerDuration - 2);
         var turn = Dispatcher.MyInvoke(RenderPlayers, game);
         state = State.Watching;
         Popup.ChampSelector.IsReadOnly = true;
@@ -155,6 +155,7 @@ namespace LeagueClient.ClientUI {
 
       }
 
+      MyTeam.Columns = OtherTeam.Columns = game.MaxNumPlayers / 2;
       UpdateHeader();
       last = game;
     }
@@ -210,10 +211,10 @@ namespace LeagueClient.ClientUI {
         var image = LeagueData.GetChampIconImage(champ);
         switch (thing.PickTurn) {
           case 1: Ban1.Source = image; break;
-          case 2: Ban2.Source = image; break;
-          case 3: Ban3.Source = image; break;
-          case 4: Ban4.Source = image; break;
-          case 5: Ban5.Source = image; break;
+          case 2: Ban3.Source = image; break;
+          case 3: Ban5.Source = image; break;
+          case 4: Ban2.Source = image; break;
+          case 5: Ban4.Source = image; break;
           case 6: Ban6.Source = image; break;
         }
       }

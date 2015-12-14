@@ -22,18 +22,18 @@
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
 
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Name="MyTeam" Margin="0 8 -8 8">
-        <StackPanel.Resources>
+      <UniformGrid Rows="1" HorizontalAlignment="Center" Name="MyTeam" Margin="0 8 -8 8">
+        <UniformGrid.Resources>
           <Style TargetType="my:ChampSelectPlayer">
             <Setter Property="Margin" Value="0 0 8 0"/>
           </Style>
-        </StackPanel.Resources>
+        </UniformGrid.Resources>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
-      </StackPanel>
+      </UniformGrid>
       
       <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="64" Name="MyBansGrid" Margin="50 0">
         <UniformGrid.Resources>
@@ -54,18 +54,18 @@
         </Border>
       </UniformGrid>
 
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Name="OtherTeam" Grid.Row="2" Margin="0 8 -8 8">
-        <StackPanel.Resources>
+      <UniformGrid Rows="1" HorizontalAlignment="Center" Name="OtherTeam" Grid.Row="2" Margin="0 8 -8 8">
+        <UniformGrid.Resources>
           <Style TargetType="my:ChampSelectPlayer">
             <Setter Property="Margin" Value="0 0 8 0"/>
           </Style>
-        </StackPanel.Resources>
+        </UniformGrid.Resources>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
         <my:ChampSelectPlayer/>
-      </StackPanel>
+      </UniformGrid>
       
       <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="64" Name="OtherBansGrid" Margin="50 0">
         <UniformGrid.Resources>

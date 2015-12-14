@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.com.riotgames.other {
+  [JSONSerializable]
   public class CapPlayerInfoData {
     [JSONField("championIds")]
     public List<int> ChampionIds { get; set; }
@@ -29,6 +30,6 @@ namespace LeagueClient.Logic.com.riotgames.other {
     public string LastRole { get; set; }
 
     [JSONField("lastSelectedSkinIdByChampionIds")]
-    public Dictionary<int, int> LastSkinsByChampion { get; set; }
+    public Dictionary<string, object> LastSkinsByChampion { get; set; }
   }
 }

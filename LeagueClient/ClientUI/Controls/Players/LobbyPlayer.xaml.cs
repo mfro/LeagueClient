@@ -101,7 +101,7 @@ namespace LeagueClient.ClientUI.Controls {
     private void GotSummonerData(SummonerCache.Item item) {
       SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
 
-      LevelString = "Level " + item.Data.SummonerLevel;
+      LevelString = "Level " + item.Data.SummonerLevel.Level;
 
       var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
       if (league != null) {

@@ -106,6 +106,7 @@ namespace LeagueClient.ClientUI.Controls {
         case CapStatus.Joining:
           SummonerText.Content = "Waiting for candidate...";
           break;
+        case CapStatus.Choosing:
         case CapStatus.Present:
           SummonerText.Content = Player.Name;
           break;

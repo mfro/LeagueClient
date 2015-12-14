@@ -151,7 +151,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public void UpdateList() {
       myControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
-      bool canReady = state == CapLobbyState.Searching;
+      bool canReady = state == CapLobbyState.Searching || state == CapLobbyState.Inviting;
       bool canSearch = state == CapLobbyState.Inviting;
       bool canMatch = true;
 
@@ -187,6 +187,7 @@ namespace LeagueClient.ClientUI.Main {
       } else {
         ReadyButt.Content = me.Status == CapStatus.Ready ? "Not Ready" : "Ready";
       }
+
       ReadyButt.Visibility = canReady ? Visibility.Visible : Visibility.Collapsed;
       GameMap.UpdateList(players);
 
@@ -294,6 +295,8 @@ namespace LeagueClient.ClientUI.Main {
       var slot = json.Fill(new CapSlotData());
       players[slot.SlotId].Champion = LeagueData.GetChampData(slot.ChampionId);
       Dispatcher.Invoke(UpdateList);
+      foreach (var cap in players)
+        if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
     }
 
     private void spellsPickedV1(JSONObject json) {
@@ -308,12 +311,16 @@ namespace LeagueClient.ClientUI.Main {
       var slot = json.Fill(new CapSlotData());
       players[slot.SlotId].Role = Role.Values[slot.Role];
       Dispatcher.Invoke(UpdateList);
+      foreach (var cap in players)
+        if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
     }
 
     private void positionSpecifiedV1(JSONObject json) {
       var slot = json.Fill(new CapSlotData());
       players[slot.SlotId].Position = Position.Values[slot.Position];
       Dispatcher.Invoke(UpdateList);
+      foreach (var cap in players)
+        if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
     }
 
     private void advertisedRoleSpecifiedV1(JSONObject json) {

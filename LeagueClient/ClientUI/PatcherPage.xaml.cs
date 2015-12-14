@@ -57,7 +57,7 @@ namespace LeagueClient.ClientUI {
       if (!Client.LoginTheme.Equals(settings.Theme) || !File.Exists(Client.LoginVideoPath)) {
         var file = Path.GetTempFileName();
         using (var web = new WebClient()) {
-          var url = Path.Combine(Client.Region.UpdateBase, $"projects/lol_air_client/releases/{Client.Latest.AirVersion}/files/mod/lgn/themes/{Client.LoginTheme}/flv/login-loop.flv");
+          var url = new Uri(new Uri(Client.Region.UpdateBase), $"projects/lol_air_client/releases/{Client.Latest.AirVersion}/files/mod/lgn/themes/{Client.LoginTheme}/flv/login-loop.flv");
           web.DownloadFile(url, file);
         }
         var info = new ProcessStartInfo {

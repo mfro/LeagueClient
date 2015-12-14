@@ -8,10 +8,32 @@ using RtmpSharp.Messaging;
 
 namespace LeagueClient.Logic.Queueing {
   public interface IQueuePopup {
-    event EventHandler Close;
+    event EventHandler<QueueEventArgs> Close;
 
     System.Windows.Controls.Control Control { get; }
 
     bool HandleMessage(MessageReceivedEventArgs args);
+  }
+
+  public class QueueEventArgs : EventArgs {
+    public QueuePopOutcome Outcome { get; }
+    public QueueEventArgs(QueuePopOutcome outcome) {
+      Outcome = outcome;
+    }
+  }
+
+  public enum QueuePopOutcome {
+    /// <summary>
+    /// User is returned to queue
+    /// </summary>
+    Cancelled,
+    /// <summary>
+    /// User is sent to champ select
+    /// </summary>
+    Accepted,
+    /// <summary>
+    /// User is removed from queue
+    /// </summary>
+    Declined
   }
 }
