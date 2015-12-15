@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+rtmp-sharp_old
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
