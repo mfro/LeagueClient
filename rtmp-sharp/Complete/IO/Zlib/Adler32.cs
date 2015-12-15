@@ -10,9 +10,14 @@ namespace Complete.IO.Zlib
         const int Modulo = 65521;
         const int NMax = 5552;
 
-        uint checksum = 1;
+        uint checksum;
 
         public int Checksum { get { return (int)checksum; } }
+
+        public Adler32()
+        {
+            checksum = 1;
+        }
 
         public void Update(byte[] buffer, int offset, int count)
         {

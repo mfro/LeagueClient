@@ -1026,6 +1026,14 @@ namespace LeagueClient.Logic.Riot {
       public const string Destination = "lcdsGameInvitationService";
 
       /// <summary>
+      /// Gets pending invitations
+      /// </summary>
+      /// <returns></returns>
+      public static Task<object[]> GetPendingInvitations() {
+        return InvokeAsync<object[]>(Destination, "getPendingInvitations");
+      }
+
+      /// <summary>
       /// Creates a team builder lobby
       /// </summary>
       /// <param name="QueueId">The queue ID for the lobby (61) </param>

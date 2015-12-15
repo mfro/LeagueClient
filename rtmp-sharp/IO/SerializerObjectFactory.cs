@@ -11,8 +11,7 @@ namespace RtmpSharp.IO
         // load serializable types within this library
         static readonly Type[] BaseSerializableTypes = typeof(SerializerObjectFactory).Assembly
             .GetTypes()
-            .Where(x => x.GetCustomAttributes(typeof(SerializableAttribute)).Any())
-            .Where(x => !x.Name.Equals("<>c"))
+            .Where(x => !x.ContainsGenericParameters && x.GetCustomAttributes(typeof(SerializableAttribute)).Any())
             .ToArray();
 
         readonly Dictionary<Type, MethodFactory.ConstructorCall> constructors = new Dictionary<Type, MethodFactory.ConstructorCall>();

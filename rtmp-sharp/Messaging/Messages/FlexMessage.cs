@@ -1,10 +1,8 @@
 ﻿using RtmpSharp.IO;
-using System;
-using System.Collections.Generic;
 
 namespace RtmpSharp.Messaging.Messages
 {
-    class FlexMessage
+    public class FlexMessage
     {
         [SerializedName("clientId")]
         public string ClientId { get; set; }
@@ -26,16 +24,16 @@ namespace RtmpSharp.Messaging.Messages
         public object Body { get; set; }
 
         [SerializedName("headers")]
-        public Dictionary<string, object> Headers
+        public AsObject Headers
         {
-            get { return headers ?? (headers = new Dictionary<string, object>()); }
+            get { return headers; }
             set { headers = value; }
         }
-        Dictionary<string, object> headers;
+        AsObject headers;
 
         public FlexMessage()
         {
-            MessageId = Guid.NewGuid().ToString("D");
+            MessageId = Uuid.NewUuid();
         }
     }
 
@@ -60,5 +58,7 @@ namespace RtmpSharp.Messaging.Messages
         // This header is used to transport the global FlexClient Id value in outbound messages 
         // once it has been assigned by the server.
         public const string FlexClientId = "DSId";
+        public const string FlexSubtopic = "DSSubtopic";
+        public const string FlexMessagingVersion = "DSMessagingVersion";
     }
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,12 +11,13 @@
     <AssemblyName>rtmp-sharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin/debug</OutputPath>
+    <OutputPath>..\LegendaryClient\bin\Debug\Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin/release</OutputPath>
+    <OutputPath>..\Poro\Poro\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\Uuid.cs" />
+    <Compile Include="Messaging\CommandMessageReceivedEventArgs.cs" />
     <Compile Include="Complete\ExceptionalEventArgs.cs" />
     <Compile Include="Complete\IO\StreamHelper.cs" />
     <Compile Include="Complete\IO\Zlib\Adler32.cs" />
@@ -113,13 +116,15 @@
     <Compile Include="Messaging\Events\AudioVideoData.cs" />
     <Compile Include="Messaging\Events\ChunkSize.cs" />
     <Compile Include="Messaging\Events\Command.cs" />
-    <Compile Include="Messaging\Events\PeerBandwidth.cs" />
+    <Compile Include="Messaging\Events\PeerBandwith.cs" />
     <Compile Include="Messaging\Events\UserControlMessage.cs" />
     <Compile Include="Messaging\Events\WindowAcknowledgementSize.cs" />
     <Compile Include="Messaging\InvocationException.cs" />
     <Compile Include="Messaging\MessageReceivedEventArgs.cs" />
     <Compile Include="Messaging\Messages\AcknowledgeMessage.cs" />
+    <Compile Include="Messaging\Messages\AcknowledgeMessageExt.cs" />
     <Compile Include="Messaging\Messages\AsyncMessage.cs" />
+    <Compile Include="Messaging\Messages\AsyncMessageExt.cs" />
     <Compile Include="Messaging\Messages\CommandMessage.cs" />
     <Compile Include="Messaging\Messages\ErrorMessage.cs" />
     <Compile Include="Messaging\Messages\FlexMessage.cs" />
@@ -129,11 +134,14 @@
     <Compile Include="Net\ClientDisconnectedException.cs" />
     <Compile Include="Net\EventReceivedEventArgs.cs" />
     <Compile Include="Net\MessageType.cs" />
+    <Compile Include="Messaging\RemotingMessageReceivedEventArgs.cs" />
     <Compile Include="Net\RtmpClient.cs" />
+    <Compile Include="Net\RtmpHandshake.cs" />
     <Compile Include="Net\RtmpHeader.cs" />
     <Compile Include="Net\RtmpPacket.cs" />
     <Compile Include="Net\RtmpPacketReader.cs" />
     <Compile Include="Net\RtmpPacketWriter.cs" />
+    <Compile Include="Net\RtmpServer.cs" />
     <Compile Include="Net\StatusAsObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RtmpSharp.cs" />

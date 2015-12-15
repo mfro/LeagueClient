@@ -27,6 +27,7 @@ using MyChampDTO = MFroehlich.League.DataDragon.ChampionDto;
 using LeagueClient.Logic.Settings;
 using System.Xml.Serialization;
 using System.Net;
+using System.Text;
 
 namespace LeagueClient.Logic {
   public static class Client {
@@ -52,6 +53,7 @@ namespace LeagueClient.Logic {
 
     internal static LoginDataPacket LoginPacket { get; set; }
     internal static bool Connected { get; set; }
+    internal static string ReconnectToken { get; set; }
 
     internal static RiotVersionManager Latest { get; set; }
     internal static RiotVersionManager Installed { get; set; }
@@ -113,9 +115,13 @@ namespace LeagueClient.Logic {
     }
 
     public static async Task<bool> Initialize(string user, string pass) {
+      var queue = await RiotServices.GetAuthKey(user, pass);
+      if (queue.Token == null) return false;
+
       var context = RiotServices.RegisterObjects();
       RtmpConn = new RtmpClient(new Uri("rtmps://" + Region.MainServer + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
       RtmpConn.MessageReceived += RtmpConn_MessageReceived;
+      RtmpConn.Disconnected += RtmpConn_Disconnected;
       await RtmpConn.ConnectAsync();
 
       var creds = new AuthenticationCredentials();
@@ -124,23 +130,24 @@ namespace LeagueClient.Logic {
       creds.ClientVersion = LeagueData.CurrentVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
-      var queue = await RiotServices.GetAuthKey(creds.Username, creds.Password);
       creds.AuthToken = queue.Token;
-
       UserSession = await RiotServices.LoginService.Login(creds);
-      await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
-        "bc", "bc-" + UserSession.AccountSummary.AccountId.ToString());
-      await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
-        "gn-" + UserSession.AccountSummary.AccountId.ToString(),
-        "gn-" + UserSession.AccountSummary.AccountId.ToString());
-      await RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination",
-        "cn-" + UserSession.AccountSummary.AccountId.ToString(),
-        "cn-" + UserSession.AccountSummary.AccountId.ToString());
+
+      var bc = $"bc-{UserSession.AccountSummary.AccountId}";
+      var gn = $"gn-{UserSession.AccountSummary.AccountId}";
+      var cn = $"cn-{UserSession.AccountSummary.AccountId}";
+      var tasks = new[] {
+        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", "bc", bc),
+        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", gn, gn),
+        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", cn, cn),
+      };
+      await Task.WhenAll(tasks);
 
       bool authed = await RtmpConn.LoginAsync(creds.Username.ToLower(), UserSession.Token);
-      LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
       string state = await RiotServices.AccountService.GetAccountState();
+      LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
       Connected = true;
+      ReconnectToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(UserSession.AccountSummary.Username + ":" + queue.Token));
 
       new Thread(() => {
         RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(GotQueues);
@@ -151,6 +158,12 @@ namespace LeagueClient.Logic {
         Masteries = LoginPacket.AllSummonerData.MasteryBook;
         SelectedRunePage = Runes.BookPages.FirstOrDefault(p => p.Current);
         SelectedMasteryPage = Masteries.BookPages.FirstOrDefault(p => p.Current);
+
+        RiotServices.GameInvitationService.GetPendingInvitations().ContinueWith(t => {
+          foreach (var invite in t.Result) {
+
+          }
+        });
       }).Start();
 
       EnabledMaps = new List<int>();
@@ -248,15 +261,18 @@ namespace LeagueClient.Logic {
       }
     }
 
-    public static async void Logout() {
+    public static void Logout() {
       if (Connected) {
         try {
           SaveSettings(Settings.Username, Settings);
-          await RiotServices.GameService.QuitGame();
-          await RiotServices.LoginService.Logout();
-          await RtmpConn.LogoutAsync();
-          RtmpConn.Close();
-          Connected = false;
+          RtmpConn.MessageReceived -= RtmpConn_MessageReceived;
+          RiotServices.GameService.QuitGame()
+            .ContinueWith(t1 => RiotServices.LoginService.Logout()
+            .ContinueWith(t2 => RtmpConn.LogoutAsync()
+            .ContinueWith(t3 => {
+              RtmpConn.Close();
+              Connected = false;
+            })));
         } catch { }
       }
       ChatManager?.Logout();
@@ -378,6 +394,20 @@ namespace LeagueClient.Logic {
       } catch (Exception x) {
         Log("Exception while handling message: " + x.Message);
       }
+    }
+
+    private static async void RtmpConn_Disconnected(object sender, EventArgs e) {
+      await RtmpConn.RecreateConnection(ReconnectToken);
+
+      var bc = $"bc-{UserSession.AccountSummary.AccountId}";
+      var gn = $"gn-{UserSession.AccountSummary.AccountId}";
+      var cn = $"cn-{UserSession.AccountSummary.AccountId}";
+      var tasks = new[] {
+        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", "bc", bc),
+        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", gn, gn),
+        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", cn, cn),
+      };
+      await Task.WhenAll(tasks);
     }
   }
 }

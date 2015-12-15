@@ -32,7 +32,7 @@
       <Setter Property="Opacity" Value=".25"/>
     </Style>
   </Page.Resources>
-  <Grid Background="{StaticResource Back2Brush}" MouseDown="Grid_MouseDown">
+  <Grid Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="20"/>
       <RowDefinition Height="200"/>
@@ -45,6 +45,7 @@
       <ColumnDefinition Width="*"/>
       <ColumnDefinition Width="20"/>
     </Grid.ColumnDefinitions>
+    <Border Grid.RowSpan="10" Grid.ColumnSpan="10" Background="Transparent" MouseDown="Grid_MouseDown"/>
     <Path Grid.Row="1" Grid.Column="1" Stroke="{StaticResource FontBrush}" Name="Arrows" Data="M 0 0 L 10 8 L 0 16 M 120 0 L 110 8 L 120 16" Margin="15 95 15 0" VerticalAlignment="Top"/>
     <StackPanel Grid.Row="1" Grid.Column="1">
       <Border Style="{StaticResource Separator}" Margin="30 0"/>
@@ -77,8 +78,8 @@
           <Frame Background="{StaticResource Back2Brush}" Name="SubPageArea" Visibility="Collapsed"/>
         </Grid>
 
-        <StackPanel Grid.Row="1" Grid.Column="2" Name="GroupList" Grid.RowSpan="2">
-          <StackPanel.Resources>
+        <ItemsControl Grid.Row="1" Grid.Column="2" Name="GroupList" Grid.RowSpan="2" HorizontalAlignment="Center">
+          <!--<StackPanel.Resources>
             <Style TargetType="ItemsControl">
               <Setter Property="ItemTemplate">
                 <Setter.Value>
@@ -95,12 +96,24 @@
                 </Setter.Value>
               </Setter>
             </Style>
-          </StackPanel.Resources>
-        </StackPanel>
+          </StackPanel.Resources>-->
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <my:FriendListItem2 DataContext="{Binding}" MouseUp="Friend_MouseUp" Margin="0 0 10 10"/>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal"/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+        </ItemsControl>
 
         <main:PlayerProfile x:Name="Profile"/>
 
-        <Grid/>
+        <Grid Background="Red">
+          <WebBrowser Name="ShopBrowser" />
+        </Grid>
       </UniformGrid>
     </Border>
 
@@ -157,7 +170,7 @@
       </Border>
       <Image Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Grid.Row="9" MouseUp="ProfileIcon_Click" Name="ProfileIcon"/>
     </Grid>
-    
+
     <my:PopupSelector Grid.RowSpan="10" Grid.ColumnSpan="10" x:Name="Popup" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Opacity="0" Close="Popup_Close"/>
     <Border Grid.ColumnSpan="100" Grid.RowSpan="100" Name="PopupPanel" Background="#4F101010" Visibility="Collapsed"/>
   </Grid>

@@ -57,14 +57,12 @@ namespace LeagueClient.ClientUI.Controls {
         foreach (var participant in game.TeamOne.Concat(game.TeamTwo)) {
           var player = participant as PlayerParticipant;
           if (player != null) {
-#if DEBUG
             //Client.SummonerCache.GetData(player.AccountId, item => {
             //  Client.Log($"  {player.SummonerName}, {player.SummonerId}");
             //  foreach (var league in item.Leagues.SummonerLeagues) {
             //    Client.Log($"    {QueueType.Values[league.Queue].Value}: {RankedTier.Values[league.Tier].Value} {league.Rank} ({league.DivisionName})");
             //  }
             //});
-#endif
           }
         }
         foreach (char player in game.StatusOfParticipants) {
@@ -105,12 +103,12 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.AcceptPoppedGame(true);
-      AcceptButt.IsEnabled = false;
+      AcceptButt.IsEnabled = DeclineButt.IsEnabled = false;
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
       RiotServices.GameService.AcceptPoppedGame(false);
-      AcceptButt.IsEnabled = false;
+      AcceptButt.IsEnabled = DeclineButt.IsEnabled = false;
     }
 
     public Control Control => this;

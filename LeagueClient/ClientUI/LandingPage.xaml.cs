@@ -69,31 +69,32 @@ namespace LeagueClient.ClientUI {
     }
 
     private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
-      var groups = new Dictionary<object, List<ChatFriend>> {
-        [ShowType.chat] = new List<ChatFriend>(),
-        [ShowType.away] = new List<ChatFriend>(),
-        [ShowType.dnd] = new List<ChatFriend>()
-      };
-      foreach (var item in Client.ChatManager.FriendList) {
-        if (item.CurrentGameInfo != null) {
-          if (!groups.ContainsKey(item.CurrentGameInfo.gameId))
-            groups[item.CurrentGameInfo.gameId] = new List<ChatFriend>();
-          groups[item.CurrentGameInfo.gameId].Add(item);
-        }
-      }
-      foreach (var item in new List<object>(groups.Keys)) {
-        if (groups[item].Count == 1) groups.Remove(item);
-      }
+      //var groups = new Dictionary<object, List<ChatFriend>> {
+      //  [ShowType.chat] = new List<ChatFriend>(),
+      //  [ShowType.away] = new List<ChatFriend>(),
+      //  [ShowType.dnd] = new List<ChatFriend>()
+      //};
+      //foreach (var item in Client.ChatManager.FriendList) {
+      //  if (item.CurrentGameInfo != null) {
+      //    if (!groups.ContainsKey(item.CurrentGameInfo.gameId))
+      //      groups[item.CurrentGameInfo.gameId] = new List<ChatFriend>();
+      //    groups[item.CurrentGameInfo.gameId].Add(item);
+      //  }
+      //}
+      //foreach (var item in new List<object>(groups.Keys)) {
+      //  if (groups[item].Count == 1) groups.Remove(item);
+      //}
 
-      foreach (var item in Client.ChatManager.FriendList) {
-        if (groups.Any(pair => pair.Value.Contains(item))) continue;
-        groups[item.Status.Show].Add(item);
-      }
+      //foreach (var item in Client.ChatManager.FriendList) {
+      //  if (groups.Any(pair => pair.Value.Contains(item))) continue;
+      //  groups[item.Status.Show].Add(item);
+      //}
       Dispatcher.Invoke(() => {
-        GroupList.Children.Clear();
-        foreach (var group in groups.Where(pair => pair.Value.Count > 0).OrderBy(pair => pair.Value.First().GetValue())) {
-          GroupList.Children.Add(new ItemsControl { ItemsSource = group.Value.OrderBy(u => u.GetValue()) });
-        }
+        GroupList.ItemsSource = Client.ChatManager.FriendList;
+        //GroupList.Children.Clear();
+        //foreach (var group in groups.Where(pair => pair.Value.Count > 0).OrderBy(pair => pair.Value.First().GetValue())) {
+        //  GroupList.Children.Add(new ItemsControl { ItemsSource = group.Value.OrderBy(u => u.GetValue()) });
+        //}
       });
     }
 
@@ -157,6 +158,12 @@ namespace LeagueClient.ClientUI {
       SlidingGrid.BeginAnimation(MarginProperty, slideAnim);
 
       if (tab == Tab.Play) PlayPage.Reset();
+      if (tab == Tab.Shop) {
+        RiotServices.LoginService.GetStoreUrl().ContinueWith(t => {
+          Client.Log(t.Result);
+          ShopBrowser.Source = new Uri(t.Result);
+        });
+      }
     }
     #endregion
 
@@ -167,13 +174,15 @@ namespace LeagueClient.ClientUI {
 
     private void CurrentPopup_Close(object sender, QueueEventArgs e) {
       Dispatcher.Invoke(() => PopupPanel.BeginStoryboard(App.FadeOut));
+      CurrentPopup.Close -= CurrentPopup_Close;
+      CurrentPopup = null;
     }
 
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
-      if (e.GetPosition((Grid) sender).Y < 20) {
-        if (e.ClickCount == 2) Client.MainWindow.Center();
-        else Client.MainWindow.DragMove();
-      }
+      //if (e.GetPosition((Grid) sender).Y < 20) {
+      if (e.ClickCount == 2) Client.MainWindow.Center();
+      else Client.MainWindow.DragMove();
+      //}
     }
 
     private void Friend_MouseUp(object sender, MouseButtonEventArgs e) {

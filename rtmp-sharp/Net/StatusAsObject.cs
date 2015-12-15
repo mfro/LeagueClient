@@ -1,5 +1,6 @@
 ﻿using RtmpSharp.IO;
 using System;
+using System.Diagnostics;
 
 namespace RtmpSharp.Net
 {

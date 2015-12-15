@@ -5,7 +5,7 @@ namespace RtmpSharp.Messaging.Messages
 {
     [Serializable]
     [SerializedName("flex.messaging.messages.RemotingMessage")]
-    class RemotingMessage : FlexMessage
+    public class RemotingMessage : FlexMessage
     {
         [SerializedName("source")]
         public string Source { get; set; }

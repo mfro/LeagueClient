@@ -1,10 +1,12 @@
-﻿using RtmpSharp.Net;
+﻿using System.Diagnostics;
+using RtmpSharp.Messaging.Messages;
+using RtmpSharp.Net;
 
 namespace RtmpSharp.Messaging.Events
 {
     enum CallStatus
     {
-        Request,
+        Request = 1,
         Result,
     }
 
@@ -15,11 +17,12 @@ namespace RtmpSharp.Messaging.Events
         public bool IsSuccess { get; internal set; }
         public object[] Parameters { get; internal set; }
 
-        internal Method(string methodName, object[] parameters)
+        internal Method(string methodName, object[] parameters, bool isSuccess = true, CallStatus status = CallStatus.Request)
         {
             Name = methodName;
             Parameters = parameters;
-            CallStatus = CallStatus.Request;
+            IsSuccess = isSuccess;
+            CallStatus = status;
         }
     }
 

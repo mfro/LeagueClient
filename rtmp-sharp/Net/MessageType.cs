@@ -8,7 +8,7 @@ namespace RtmpSharp.Net
         Acknowledgement = 3,
         UserControlMessage = 4,
         WindowAcknowledgementSize = 5,
-        SetPeerBandwith = 6,
+        SetPeerBandwidth = 6,
 
         Audio = 8,
         Video = 9,
