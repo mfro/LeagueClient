@@ -38,26 +38,10 @@ namespace LeagueClient {
 
     public MainWindow() {
       Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
-
       InitializeComponent();
 
-      Init();
-    }
-    
-    private async void Init() {
       Client.Log("Pre-Init");
-      await Client.PreInitialize(this);
-      Client.Log(LeagueData.CurrentVersion);
-      Client.Log($"Air: {Client.Installed.AirVersion} / {Client.Latest.AirVersion}");
-      Client.Log($"Game: {Client.Installed.GameVersion} / {Client.Latest.GameVersion}");
-      Client.Log($"Solution: {Client.Installed.SolutionVersion} / {Client.Latest.SolutionVersion}");
-
-      ((App) Application.Current).LoadResources();
-      if (!PatcherPage.NeedsPatch()) {
-        PatchComplete();
-      } else {
-        ContentFrame.Content = new PatcherPage();
-      }
+      Start(Client.PreInitialize(this));
     }
 
     private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
@@ -70,20 +54,20 @@ namespace LeagueClient {
       Client.Log("***UNHANDLED EXCEPTION***");
     }
 
+    public void Start(Task t = null) {
+      ContentFrame.Content = new LoginPage(t);
+    }
+
     public void LoginComplete() {
       var page = landing = new LandingPage();
       Client.QueueManager = landing;
       ContentFrame.Content = page;
       currentPage = page;
 
-      if(Client.QueuedCredentials != null) {
-        Client.JoinGame(Client.QueuedCredentials);
-        Client.QueuedCredentials = null;
+      if (Client.LoginQueue.InGameCredentials?.InGame ?? false) {
+        Client.JoinGame(Client.LoginQueue.InGameCredentials);
+        Client.LoginQueue.InGameCredentials.InGame = false;
       }
-    }
-
-    public void PatchComplete() {
-      ContentFrame.Content = new LoginPage();
     }
 
     public bool HandleMessage(MessageReceivedEventArgs e) {

@@ -13,13 +13,13 @@ namespace LeagueClient.Logic.Riot.Platform {
     public String InternalName { get; set; }
 
     [SerializedName("acctId")]
-    public Double AcctId { get; set; }
+    public Int64 AccountId { get; set; }
 
     [SerializedName("helpFlag")]
     public Boolean HelpFlag { get; set; }
 
     [SerializedName("sumId")]
-    public Int64 SumId { get; set; }
+    public Int64 SummonerId { get; set; }
 
     [SerializedName("profileIconId")]
     public Int32 ProfileIconId { get; set; }

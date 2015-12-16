@@ -1,4 +1,5 @@
-﻿using LeagueClient.Logic;
+﻿using LeagueClient.ClientUI.Controls;
+using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
@@ -24,6 +25,7 @@ namespace LeagueClient.ClientUI.Main {
   /// </summary>
   public partial class PlayerProfile : UserControl {
     private BindingList<SummonerCache.Item> history = new BindingList<SummonerCache.Item>();
+    private SummonerCache.Item Selected;
 
     public PlayerProfile() {
       InitializeComponent();
@@ -38,14 +40,17 @@ namespace LeagueClient.ClientUI.Main {
       if (item == null) {
         Dispatcher.Invoke(() => SearchBox.BorderBrush = App.AwayBrush);
       } else if (!history.Contains(item)) {
-        history.Insert(0, item);
+        if (history.Count == 0)
+          history.Add(item);
+        else
+          history.Insert(1, item);
         Dispatcher.MyInvoke(LoadSummoner, item);
       }
     }
 
     private void LoadSummoner(SummonerCache.Item item) {
       SearchBox.BorderBrush = App.ForeBrush;
-      HistoryList.SelectedItem = item;
+      HistoryList.SelectedItem = Selected = item;
       SummonerName.Content = item.Data.Summoner.Name;
       SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
 
@@ -65,6 +70,21 @@ namespace LeagueClient.ClientUI.Main {
 
     private void HistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
       LoadSummoner((SummonerCache.Item) HistoryList.SelectedItem);
+    }
+
+    private void TabList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      if (DetailsPane == null) return;
+      Console.WriteLine(TabList.SelectedItem == ProfileTab);
+      if (TabList.SelectedItem == MatchHistoryTab) {
+        var history = new MatchHistory(Selected);
+        DetailsPane.Child = history;
+      } else if (TabList.SelectedItem == RankingTab) {
+        //TODO Ranking
+        DetailsPane.Child = null;
+      } else if (TabList.SelectedItem == ProfileTab) {
+        //TODO Profile
+        DetailsPane.Child = null;
+      }
     }
   }
 }

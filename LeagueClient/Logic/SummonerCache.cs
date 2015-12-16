@@ -14,7 +14,9 @@ namespace LeagueClient.Logic {
   public class SummonerCache {
     public class Item {
       public AllPublicSummonerDataDTO Data { get; private set; }
+
       public SummonerLeaguesDTO Leagues { get; private set; }
+      public RiotACS.PlayerHistory MatchHistory { get; private set; }
       public List<ChampionMasteryDTO> ChampionMastery { get; private set; }
 
       public static async Task<Item> Generate(string summonerName) {
@@ -30,15 +32,15 @@ namespace LeagueClient.Logic {
       public static async Task<Item> Generate(long accountId) {
         try {
           var item = new Item();
-          var all = await RiotServices.SummonerService.GetAllPublicSummonerDataByAccount(accountId);
-          var leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(all.Summoner.SummonerId);
-          var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(all.Summoner.SummonerId);
-          RiotServices.AddHandler(guid, res => {
-            var masteryList = JSONParser.ParseArray(res.payload, 0).Fill<List<ChampionMasteryDTO>>();
-            item.ChampionMastery = masteryList;
-          });
+          item.Data = await RiotServices.SummonerService.GetAllPublicSummonerDataByAccount(accountId);
 
-          return new Item { Data = all, Leagues = leagues };
+          var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(item.Data.Summoner.SummonerId);
+          RiotServices.AddHandler(guid, res => item.ChampionMastery = JSONParser.ParseArray(res.payload, 0).Fill<List<ChampionMasteryDTO>>());
+
+          item.Leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(item.Data.Summoner.SummonerId);
+          item.MatchHistory = await RiotACS.GetMatchHistory(Client.Region.Platform, item.Data.Summoner.AccountId);
+
+          return item;
         } catch (Exception x) {
           Client.Log("Exception fetching summoner: " + x);
           return null;

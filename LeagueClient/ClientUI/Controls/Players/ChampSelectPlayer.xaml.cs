@@ -27,7 +27,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public ChampSelectPlayer(PlayerParticipant player, PlayerChampionSelectionDTO selection) : this() {
-      if (player.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+      if (player.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId)
         Glow.Opacity = 1;
       if (selection?.Spell1Id > 0 && selection?.Spell2Id > 0 && selection?.ChampionId > 0) {
         ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId));

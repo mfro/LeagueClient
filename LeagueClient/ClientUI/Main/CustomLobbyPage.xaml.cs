@@ -28,7 +28,7 @@ namespace LeagueClient.ClientUI.Main {
   /// </summary>
   public partial class CustomLobbyPage : Page, IClientSubPage {
     public GameDTO GameDto { get; private set; }
-    public bool IsCaptain => lobby?.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+    public bool IsCaptain => lobby?.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
 
     private LobbyStatus lobby;
     private ChatRoomController chatRoom;
@@ -87,7 +87,7 @@ namespace LeagueClient.ClientUI.Main {
       if (!chatRoom.IsJoined) {
         chatRoom.JoinChat(RiotChat.GetCustomRoom(game.Name, game.Id, game.RoomPassword), game.RoomPassword);
 
-        StartButt.Visibility = (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId) ? Visibility.Visible : Visibility.Collapsed;
+        StartButt.Visibility = (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId) ? Visibility.Visible : Visibility.Collapsed;
 
         Dispatcher.Invoke(() => {
           var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
@@ -125,13 +125,13 @@ namespace LeagueClient.ClientUI.Main {
             }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             if (blue) {
               BlueTeam.Children.Add(control);
-              if (player?.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId) {
+              if (player?.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId) {
                 RedJoin.Visibility = Visibility.Visible;
                 BlueJoin.Visibility = Visibility.Collapsed;
               }
             } else {
               RedTeam.Children.Add(control);
-              if (player?.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId) {
+              if (player?.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId) {
                 RedJoin.Visibility = Visibility.Collapsed;
                 BlueJoin.Visibility = Visibility.Visible;
               }

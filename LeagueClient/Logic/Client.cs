@@ -31,7 +31,7 @@ using System.Text;
 
 namespace LeagueClient.Logic {
   public static class Client {
-    private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    internal static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     #region Constants
     internal static readonly Region Region = Region.NA;
@@ -43,6 +43,7 @@ namespace LeagueClient.Logic {
       SettingsFile = Path.Combine(DataPath, "settings.xml"),
       FFMpegPath = Path.Combine(DataPath, "ffmpeg.exe"),
       LoginVideoPath = Path.Combine(DataPath, "login.mp4"),
+      LoginStaticPath = Path.Combine(DataPath, "back.png"),
       LogFilePath = Path.Combine(DataPath, "log.txt");
     #endregion
 
@@ -51,9 +52,10 @@ namespace LeagueClient.Logic {
 
     internal static Session UserSession { get; set; }
 
+    internal static LoginQueueDto LoginQueue { get; set; }
     internal static LoginDataPacket LoginPacket { get; set; }
-    internal static bool Connected { get; set; }
     internal static string ReconnectToken { get; set; }
+    internal static bool Connected { get; set; }
 
     internal static RiotVersionManager Latest { get; set; }
     internal static RiotVersionManager Installed { get; set; }
@@ -83,7 +85,6 @@ namespace LeagueClient.Logic {
     internal static UserSettings Settings { get; set; }
 
     internal static Process GameProcess { get; set; }
-    internal static InGameCredentials QueuedCredentials { get; set; }
     internal static AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
 
     internal static bool CanInviteFriends { get; set; }
@@ -101,11 +102,11 @@ namespace LeagueClient.Logic {
 
       RiotAPI.UrlFormat = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
 
-      Installed = RiotVersionManager.FetchInstalled(RiotGamesDir);
+      Installed = RiotVersionManager.FetchInstalled(Region, RiotGamesDir);
       Latest = await RiotVersionManager.FetchLatest(Region);
       using (var web = new WebClient()) {
-        var url = Path.Combine(Region.UpdateBase, $"projects/lol_air_client/releases/{Latest.AirVersion}/files/theme.properties");
-        var content = web.DownloadString(url);
+        var theme = Latest.AirFiles.FirstOrDefault(f => f.Url.AbsolutePath.EndsWith("/files/theme.properties"));
+        var content = web.DownloadString(theme.Url);
         LoginTheme = content.Substring("themeConfig=", ",");
       }
 
@@ -115,8 +116,8 @@ namespace LeagueClient.Logic {
     }
 
     public static async Task<bool> Initialize(string user, string pass) {
-      var queue = await RiotServices.GetAuthKey(user, pass);
-      if (queue.Token == null) return false;
+      LoginQueue = await RiotServices.GetAuthKey(user, pass);
+      if (LoginQueue.Token == null) return false;
 
       var context = RiotServices.RegisterObjects();
       RtmpConn = new RtmpClient(new Uri("rtmps://" + Region.MainServer + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
@@ -130,7 +131,7 @@ namespace LeagueClient.Logic {
       creds.ClientVersion = LeagueData.CurrentVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
-      creds.AuthToken = queue.Token;
+      creds.AuthToken = LoginQueue.Token;
       UserSession = await RiotServices.LoginService.Login(creds);
 
       var bc = $"bc-{UserSession.AccountSummary.AccountId}";
@@ -147,8 +148,9 @@ namespace LeagueClient.Logic {
       string state = await RiotServices.AccountService.GetAccountState();
       LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
       Connected = true;
-      ReconnectToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(UserSession.AccountSummary.Username + ":" + queue.Token));
+      ReconnectToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(UserSession.AccountSummary.Username + ":" + LoginQueue.Token));
 
+      StartHeartbeat();
       new Thread(() => {
         RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(GotQueues);
         RiotServices.InventoryService.GetAvailableChampions().ContinueWith(GotChampions);
@@ -161,7 +163,8 @@ namespace LeagueClient.Logic {
 
         RiotServices.GameInvitationService.GetPendingInvitations().ContinueWith(t => {
           foreach (var invite in t.Result) {
-
+            if (invite is InvitationRequest)
+              ShowInvite((InvitationRequest) invite);
           }
         });
       }).Start();
@@ -176,10 +179,29 @@ namespace LeagueClient.Logic {
       Settings.SummonerName = LoginPacket.AllSummonerData.Summoner.Name;
       SummonerCache = new SummonerCache();
 
-      if (queue.InGameCredentials.InGame)
-        QueuedCredentials = queue.InGameCredentials;
-
       return state.Equals("ENABLED");
+    }
+
+    private static System.Timers.Timer HeartbeatTimer;
+    private static int Heartbeats;
+
+    private static void StartHeartbeat() {
+      HeartbeatTimer = new System.Timers.Timer();
+      HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
+      HeartbeatTimer.Interval = 120000;
+      HeartbeatTimer.Start();
+      HeartbeatTimer_Elapsed(HeartbeatTimer, null);
+    }
+
+    private static async void HeartbeatTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e) {
+      if (Connected) {
+        var result = await RiotServices.LoginService.PerformLCDSHeartBeat((int) LoginPacket.AllSummonerData.Summoner.AccountId,
+          UserSession.Token, Heartbeats, DateTime.Now.ToString("ddd MMM d yyyy HH:mm:ss 'GMT-0700'"));
+        if (!result.Equals("5")) {
+
+        }
+        Heartbeats++;
+      }
     }
 
     private static void GotChampions(Task<ChampionDTO[]> Champs) {
@@ -235,8 +257,9 @@ namespace LeagueClient.Logic {
         Thread.Sleep(20000);
         CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => {
           try {
-            return RiotAPI.CurrentGameAPI.BySummoner("NA1", LoginPacket.AllSummonerData.Summoner.SumId);
+            return RiotAPI.CurrentGameAPI.BySummoner("NA1", LoginPacket.AllSummonerData.Summoner.SummonerId);
           } catch (Exception x) {
+            Log("Failed to get game data: " + x);
             return null;
           }
         });
@@ -266,17 +289,19 @@ namespace LeagueClient.Logic {
         try {
           SaveSettings(Settings.Username, Settings);
           RtmpConn.MessageReceived -= RtmpConn_MessageReceived;
-          RiotServices.GameService.QuitGame()
-            .ContinueWith(t1 => RiotServices.LoginService.Logout()
-            .ContinueWith(t2 => RtmpConn.LogoutAsync()
-            .ContinueWith(t3 => {
-              RtmpConn.Close();
-              Connected = false;
-            })));
+          HeartbeatTimer.Dispose();
+          new Thread(async () => {
+            Connected = false;
+            await RiotServices.GameService.QuitGame();
+            await RiotServices.GameInvitationService.Leave();
+            await RiotServices.LoginService.Logout();
+            await RtmpConn.LogoutAsync();
+            RtmpConn.Close();
+          }).Start();
         } catch { }
       }
       ChatManager?.Logout();
-      MainWindow.PatchComplete();
+      MainWindow.Start();
     }
     #endregion
 
@@ -397,6 +422,7 @@ namespace LeagueClient.Logic {
     }
 
     private static async void RtmpConn_Disconnected(object sender, EventArgs e) {
+      Connected = false;
       await RtmpConn.RecreateConnection(ReconnectToken);
 
       var bc = $"bc-{UserSession.AccountSummary.AccountId}";
@@ -408,6 +434,7 @@ namespace LeagueClient.Logic {
         RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", cn, cn),
       };
       await Task.WhenAll(tasks);
+      Connected = true;
     }
   }
 }

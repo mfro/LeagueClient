@@ -76,7 +76,7 @@ namespace LeagueClient.Logic.Chat {
         UseCompression = true,
         AutoPresence = true,
         Status = new LeagueStatus(StatusMessage, Status).ToXML(),
-        Show = ShowType.chat,
+        Show = Show,
         Priority = 0
       };
       xmpp.OnMessage += Xmpp_OnMessage;
@@ -137,18 +137,6 @@ namespace LeagueClient.Logic.Chat {
       try { Application.Current.Dispatcher.MyInvoke(ResetList, false); } catch { timer.Dispose(); }
       Tick?.Invoke(this, new EventArgs());
     }
-
-    private void SendPresence() {
-      var status = new LeagueStatus(StatusMessage, Status);
-      var computed = DndStatuses.Contains(Status) ? ShowType.dnd : Show;
-
-      var args = new StatusUpdatedEventArgs(status, PresenceType.available, computed);
-      StatusUpdated?.Invoke(this, args);
-
-      xmpp.Status = status.ToXML();
-      xmpp.Show = computed;
-      xmpp.SendMyPresence();
-    }
     #endregion
 
     #region Chat Rooms
@@ -199,15 +187,27 @@ namespace LeagueClient.Logic.Chat {
     }
     #endregion
 
+    public void SendPresence() {
+      var status = new LeagueStatus(StatusMessage, Status);
+      var computed = DndStatuses.Contains(Status) ? ShowType.dnd : Show;
+
+      var args = new StatusUpdatedEventArgs(status, PresenceType.available, computed);
+      StatusUpdated?.Invoke(this, args);
+
+      xmpp.Status = status.ToXML();
+      xmpp.Show = computed;
+      xmpp.SendMyPresence();
+    }
+
     #region Other Public Methods
     /// <summary>
     /// Parses the internal summoner ID of a friend from the JID used in the XMPP chat service
     /// </summary>
     /// <param name="user">The summoner's JID</param>
     /// <returns>The summoner ID</returns>
-    public static double GetSummonerId(Jid user) {
-      double d;
-      if (double.TryParse(user.User.Substring(3), out d)) return d;
+    public static long GetSummonerId(Jid user) {
+      long d;
+      if (long.TryParse(user.User.Substring(3), out d)) return d;
       else throw new FormatException(user.User + " is not correctly formatted");
     }
 

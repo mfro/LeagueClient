@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
-  <Border Padding="8" Background="{StaticResource Back1Brush}">
-    <Grid Background="{StaticResource Back1Brush}">
+  <Border Padding="8" Background="{StaticResource ForeBrush}" Name="InnerBorder">
+    <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="120"/>
         <RowDefinition Height="24"/>
@@ -16,11 +16,7 @@
         <ColumnDefinition Width="56"/>
       </Grid.ColumnDefinitions>
       <Grid MouseEnter="Champ_MouseEnter" MouseLeave="Champ_MouseLeave" Background="Transparent">
-        <Image Name="ChampionImage" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Aatrox.png">
-          <Image.Effect>
-            <DropShadowEffect x:Name="ChampGlow" Color="{StaticResource ChatColor}" BlurRadius="25" ShadowDepth="0"/>
-          </Image.Effect>
-        </Image>
+        <Image Name="ChampionImage" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Aatrox.png"/>
 
         <Button Style="{StaticResource HoverButton}" Background="#B50000" ToolTip="Kick from group" 
               Click="KickButton_Click" Name="KickButton" Width="45" Height="45" VerticalAlignment="Top" HorizontalAlignment="Right" Visibility="Collapsed">
@@ -37,16 +33,8 @@
 
       <!--<Border Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0 8 0 0" Background="{StaticResource ChatBrush}"/>-->
 
-      <Image Grid.Row="0" Grid.Column="2" Name="Spell1Image" VerticalAlignment="Top" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png">
-        <Image.Effect>
-          <DropShadowEffect x:Name="Spell1Glow" Color="{StaticResource ChatColor}" BlurRadius="25" ShadowDepth="0"/>
-        </Image.Effect>
-      </Image>
-      <Image Grid.Row="0" Grid.Column="2" Name="Spell2Image" VerticalAlignment="Bottom" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png">
-        <Image.Effect>
-          <DropShadowEffect x:Name="Spell2Glow" Color="{StaticResource ChatColor}" BlurRadius="25" ShadowDepth="0"/>
-        </Image.Effect>
-      </Image>
+      <Image Grid.Row="0" Grid.Column="2" Name="Spell1Image" VerticalAlignment="Top" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
+      <Image Grid.Row="0" Grid.Column="2" Name="Spell2Image" VerticalAlignment="Bottom" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
       <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 0 0 0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Name="SummonerText" FontSize="14">master mor</Label>
 
       <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" Name="PositionText" FontSize="12">Middle lane</Label>

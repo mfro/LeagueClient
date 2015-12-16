@@ -69,5 +69,35 @@ namespace LeagueClient.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MatchHistoryIcon {
+            get {
+                object obj = ResourceManager.GetObject("MatchHistoryIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ProfileIcon {
+            get {
+                object obj = ResourceManager.GetObject("ProfileIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RankingIcon {
+            get {
+                object obj = ResourceManager.GetObject("RankingIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

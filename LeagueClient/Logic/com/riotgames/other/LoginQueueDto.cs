@@ -8,26 +8,40 @@ using MFroehlich.Parsing.JSON;
 namespace LeagueClient.Logic.com.riotgames.other {
   [JSONSerializable]
   public class LoginQueueDto {
+    [JSONField("rate")]
+    public int Rate { get; set; }
+
+    [JSONField("token")]
+    public string Token { get; set; }
+
+    [JSONField("reason")]
+    public string Reason { get; set; }
+
+    [JSONField("delay")]
+    public int Delay { get; set; }
+
+    [JSONField("inGameCredentials")]
+    public InGameCredentials InGameCredentials { get; set; }
+
+    [JSONField("user")]
+    public int User { get; set; }
+
+    [JSONField("idToken")]
+    public string IdToken { get; set; }
+
     [JSONField("vcap")]
     public int VCap { get; set; }
 
     [JSONField("status")]
     public string Status { get; set; }
 
-    [JSONField("reason")]
-    public string Reason { get; set; }
+    [JSONField("gasToken")]
+    public JSONObject GasToken { get; set; }
 
-    [JSONField("inGameCredentials")]
-    public InGameCredentials InGameCredentials { get; set; }
 
-    [JSONField("idToken")]
-    public string IdToken { get; set; }
 
     [JSONField("node")]
     public int Node { get; set; }
-
-    [JSONField("rate")]
-    public int Rate { get; set; }
 
     [JSONField("tickers")]
     public List<JSONObject> Tickers { get; set; }
@@ -37,18 +51,6 @@ namespace LeagueClient.Logic.com.riotgames.other {
 
     [JSONField("champ")]
     public int Champ { get; set; }
-
-    [JSONField("delay")]
-    public int Delay { get; set; }
-
-    [JSONField("user")]
-    public int User { get; set; }
-
-    [JSONField("gasToken")]
-    public JSONObject GasToken { get; set; }
-
-    [JSONField("token")]
-    public string Token { get; set; }
   }
 
   [JSONSerializable]

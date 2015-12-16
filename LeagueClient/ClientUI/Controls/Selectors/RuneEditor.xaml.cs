@@ -39,7 +39,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public async void Reset() {
       PageList.ItemsSource = Client.Runes.BookPages;
-      this.runes = (await RiotServices.SummonerRuneService.GetSummonerRuneInventory(Client.LoginPacket.AllSummonerData.Summoner.SumId)).SummonerRunes;
+      this.runes = (await RiotServices.SummonerRuneService.GetSummonerRuneInventory(Client.LoginPacket.AllSummonerData.Summoner.SummonerId)).SummonerRunes;
       LoadPage(Client.SelectedRunePage);
     }
 

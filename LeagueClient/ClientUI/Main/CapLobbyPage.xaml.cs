@@ -110,7 +110,7 @@ namespace LeagueClient.ClientUI.Main {
       Status = status;
       if (GroupId != null) JoinChat();
 
-      if (status.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+      if (status.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId)
         Client.CanInviteFriends = true;
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();

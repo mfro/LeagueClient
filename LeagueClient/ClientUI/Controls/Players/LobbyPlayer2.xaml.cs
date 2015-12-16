@@ -34,7 +34,6 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public LobbyPlayer2(bool amCaptain, Member member, int profileIconId) : this() {
-      Client.SummonerCache.GetData(member.SummonerName, GotSummoner);
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
       CanControl = amCaptain;
       NameLabel.Content = member.SummonerName;
@@ -42,10 +41,11 @@ namespace LeagueClient.ClientUI.Controls {
       SummonerId = member.SummonerId;
       ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileIconId));
       PlusPath.Visibility = member.HasInvitePower ? Visibility.Collapsed : Visibility.Visible;
+      Client.SummonerCache.GetData(member.SummonerName, GotSummoner);
     }
 
     private void UserControl_MouseEnter(object sender, MouseEventArgs e) {
-      if (CanControl && SummonerId != Client.LoginPacket.AllSummonerData.Summoner.SumId)
+      if (CanControl && SummonerId != Client.LoginPacket.AllSummonerData.Summoner.SummonerId)
         KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Visible;
     }
 

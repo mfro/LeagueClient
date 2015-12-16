@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -25,15 +27,56 @@ namespace LeagueClient.ClientUI {
     private const string SettingsKey = "LoginSettings";
     private static LoginSettings settings = Client.LoadSettings<LoginSettings>(SettingsKey);
 
-    public Uri BackAnimationURI { get; private set; }
-
     private int tries;
     private string user;
     private string pass;
 
-    public LoginPage() {
-      BackAnimationURI = new Uri(Client.LoginVideoPath);
+    public LoginPage(Task preInit = null) {
       InitializeComponent();
+
+      LoadBackground();
+
+      if (preInit == null)
+        PatchComplete();
+      else
+        preInit.ContinueWith(PreInitFinished);
+    }
+
+    private void LoadBackground() {
+      if (File.Exists(Client.LoginStaticPath) && BackStatic.Source == null) {
+        var image = new BitmapImage();
+        image.BeginInit();
+        image.CacheOption = BitmapCacheOption.OnLoad;
+        image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+        image.UriSource = new Uri(Client.LoginStaticPath);
+        image.EndInit();
+        BackStatic.Source = image;
+      }
+      if (File.Exists(Client.LoginVideoPath) && BackAnim.Source == null)
+        BackAnim.Source = new Uri(Client.LoginVideoPath);
+      BackAnim.Play();
+    }
+
+    private void PreInitFinished(Task task) {
+      Client.Log(LeagueData.CurrentVersion);
+      Client.Log($"Air: {Client.Installed.AirVersion} / {Client.Latest.AirVersion}");
+      Client.Log($"Game: {Client.Installed.GameVersion} / {Client.Latest.GameVersion}");
+      Client.Log($"Solution: {Client.Installed.SolutionVersion} / {Client.Latest.SolutionVersion}");
+
+      ((App) Application.Current).LoadResources();
+      if (NeedsPatch()) {
+        Dispatcher.MyInvoke(PatchingGrid.BeginStoryboard, App.FadeIn);
+        LeagueData.InitalizeProgressed += (s, d, p) => Dispatcher.MyInvoke(LeagueData_Progress, s, d, p);
+
+        if (!LeagueData.IsCurrent) LeagueData.Update();
+        else Dispatcher.Invoke(LoginPageUI);
+      } else {
+        Dispatcher.Invoke(PatchComplete);
+      }
+    }
+
+    private void PatchComplete() {
+      PatchingGrid.BeginStoryboard(App.FadeOut);
 
       if (settings.Accounts.Count > 0) {
         foreach (var name in settings.Accounts) {
@@ -43,10 +86,10 @@ namespace LeagueClient.ClientUI {
           login.Remove += Account_Remove;
           AccountList.Children.Insert(0, login);
         }
-      } else LoginGrid.BeginStoryboard(App.FadeIn);
-
-      var url = new Uri(new Uri(Client.Region.UpdateBase), $"projects/lol_air_client/releases/{Client.Latest.AirVersion}/files/mod/lgn/themes/{Client.LoginTheme}/cs_bg_champions.png");
-      BackStatic.Source = new BitmapImage(url);
+        AccountList.BeginStoryboard(App.FadeIn);
+      } else {
+        LoginGrid.BeginStoryboard(App.FadeIn);
+      }
     }
 
     #region UI Handlers
@@ -85,7 +128,8 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-      Client.MainWindow.DragMove();
+      if (e.ClickCount == 2) Client.MainWindow.Center();
+      else Client.MainWindow.DragMove();
     }
 
     private void AddAccountButt_Click(object sender, RoutedEventArgs e) {
@@ -98,6 +142,77 @@ namespace LeagueClient.ClientUI {
       LoginGrid.BeginStoryboard(App.FadeOut);
       AccountList.BeginStoryboard(App.FadeIn);
     }
+
+    private void MediaElement_MediaEnded(object sender, RoutedEventArgs e) {
+      BackAnim.Position = TimeSpan.FromSeconds(0);
+      BackAnim.Play();
+    }
+    #endregion
+
+    #region Patching
+
+    private void LeagueData_Progress(string status, string detail, double progress) {
+      OverallStatusText.Content = "Patching Custom Client";
+      switch (status) {
+        case "Downloading": OverallStatusBar.Value = .0; break;
+        case "Extracting": OverallStatusBar.Value = .25; break;
+        case "Installing": OverallStatusBar.Value = .50; break;
+        case "done": LoginPageUI(); return;
+      }
+      CurrentStatusText.Content = $"{status} {detail}...";
+      CurrentStatusBar.Value = progress;
+      if (progress < 0) {
+        CurrentStatusProgress.Content = "";
+        CurrentStatusBar.IsIndeterminate = true;
+      } else {
+        CurrentStatusProgress.Content = (progress * 100).ToString("f1") + "%";
+        CurrentStatusBar.IsIndeterminate = false;
+      }
+    }
+
+    private void LoginPageUI() {
+      OverallStatusBar.Value = .75;
+      CurrentStatusText.Content = "Creating Login Animation...";
+      CurrentStatusProgress.Content = "";
+      CurrentStatusBar.IsIndeterminate = true;
+      new Thread(CreateLoginPage).Start();
+    }
+
+    private void CreateLoginPage() {
+      if (!Client.LoginTheme.Equals(settings.Theme) || !File.Exists(Client.LoginVideoPath) || !File.Exists(Client.LoginStaticPath)) {
+        var png = Client.Latest.AirFiles.FirstOrDefault(f => f.Url.AbsolutePath.EndsWith($"/files/mod/lgn/themes/{Client.LoginTheme}/cs_bg_champions.png"));
+        using (var web = new WebClient())
+          web.DownloadFile(png.Url, Client.LoginStaticPath);
+
+        var file = Path.GetTempFileName();
+        using (var web = new WebClient()) {
+          var flv = Client.Latest.AirFiles.FirstOrDefault(f => f.Url.AbsolutePath.EndsWith($"/files/mod/lgn/themes/{Client.LoginTheme}/flv/login-loop.flv"));
+          web.DownloadFile(flv.Url, file);
+        }
+        var info = new ProcessStartInfo {
+          FileName = Client.FFMpegPath,
+          Arguments = $"-i \"{file}\" \"{Client.LoginVideoPath}\"",
+          UseShellExecute = false,
+          CreateNoWindow = true,
+          RedirectStandardError = true,
+          RedirectStandardOutput = true,
+        };
+        File.Delete(Client.LoginVideoPath);
+        Process.Start(info).WaitForExit(0);
+        File.Delete(file);
+
+        settings.Theme = Client.LoginTheme;
+        Client.SaveSettings(SettingsKey, settings);
+        Dispatcher.Invoke(LoadBackground);
+      }
+
+      Dispatcher.Invoke(PatchComplete);
+    }
+
+    public static bool NeedsPatch() {
+      return !File.Exists(Client.LoginVideoPath) || !File.Exists(Client.LoginStaticPath) || !LeagueData.IsCurrent || !Client.LoginTheme.Equals(settings.Theme);
+    }
+
     #endregion
 
     private void SaveAccount(string name, string pass) {

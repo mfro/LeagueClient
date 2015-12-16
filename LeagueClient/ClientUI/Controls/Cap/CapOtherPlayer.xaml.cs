@@ -86,7 +86,7 @@ namespace LeagueClient.ClientUI.Controls {
 
       Unknown.Visibility = Visibility.Collapsed;
       TimerText.Visibility = Visibility.Collapsed;
-      ChampGlow.Opacity = Spell1Glow.Opacity = Spell2Glow.Opacity = 0;
+      InnerBorder.Background = App.ForeBrush;
       switch (Player.Status) {
         case CapStatus.ChoosingAdvert:
           SummonerText.Content = "Select Position and Role";
@@ -111,7 +111,7 @@ namespace LeagueClient.ClientUI.Controls {
           SummonerText.Content = Player.Name;
           break;
         case CapStatus.Ready:
-          ChampGlow.Opacity = Spell1Glow.Opacity = Spell2Glow.Opacity = 1;
+          InnerBorder.Background = new SolidColorBrush(Color.FromRgb(0, 120, 54));
           goto case CapStatus.Present;
         case CapStatus.Penalty:
           SummonerText.Content = "Player kicked";

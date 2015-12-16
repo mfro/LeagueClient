@@ -17,7 +17,22 @@ namespace LeagueClient.Logic {
     public Version GameVersion { get; set; }
     public Version SolutionVersion { get; set; }
 
-    public static RiotVersionManager FetchInstalled(string LeagueDir) {
+    public List<RiotFile> AirFiles { get; } = new List<RiotFile>();
+
+    private RiotVersionManager(Version air, Version game, Version solution, Region region) {
+      AirVersion = air;
+      GameVersion = game;
+      SolutionVersion = solution;
+      using (var web = new WebClient()) {
+        var url = new Uri(region.UpdateBase, $"projects/lol_air_client/releases/{air}/packages/files/packagemanifest");
+        var manifest = web.DownloadString(url);
+        manifest = manifest.Replace("PKG1", "");
+        var lines = manifest.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        AirFiles.AddRange(lines.Select(l => new RiotFile(l, region.UpdateBase)));
+      }
+    }
+
+    public static RiotVersionManager FetchInstalled(Region region, string LeagueDir) {
       var airInstalled = Directory.EnumerateDirectories(Path.Combine(LeagueDir, AirPath));
       var airVersions = from dir in airInstalled
                         select Version.Parse(Path.GetFileName(dir)) into v
@@ -33,11 +48,7 @@ namespace LeagueClient.Logic {
                         select Version.Parse(Path.GetFileName(dir)) into v
                         orderby v descending
                         select v;
-      return new RiotVersionManager {
-        AirVersion = airVersions.FirstOrDefault(),
-        GameVersion = gameVersions.FirstOrDefault(),
-        SolutionVersion = slnVersions.FirstOrDefault()
-      };
+      return new RiotVersionManager(airVersions.FirstOrDefault(), gameVersions.FirstOrDefault(), slnVersions.FirstOrDefault(), region);
     }
 
     public static async Task<RiotVersionManager> FetchLatest(Region region) {
@@ -51,8 +62,25 @@ namespace LeagueClient.Logic {
         Version.TryParse(gameList.Split('\n').FirstOrDefault(), out gameVersion);
         Version.TryParse(solutionList.Split('\n').FirstOrDefault(), out solutionVersion);
 
-        return new RiotVersionManager { AirVersion = airVersion, GameVersion = gameVersion, SolutionVersion = solutionVersion };
+        return new RiotVersionManager(airVersion, gameVersion, solutionVersion, region);
       }
+    }
+  }
+
+  public class RiotFile {
+    public Uri Url { get; }
+    public string BIN { get; }
+    public int Thing1 { get; }
+    public int Thing2 { get; }
+    public int Thing3 { get; }
+
+    public RiotFile(string line, Uri root) {
+      var bits = line.Split(',');
+      Url = new Uri(root, bits[0].Substring(1));
+      BIN = bits[1];
+      Thing1 = int.Parse(bits[2]);
+      Thing2 = int.Parse(bits[3]);
+      Thing3 = int.Parse(bits[4]);
     }
   }
 }

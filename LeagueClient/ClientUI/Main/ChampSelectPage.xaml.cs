@@ -173,7 +173,7 @@ namespace LeagueClient.ClientUI {
       var turn = new TurnInfo();
       MyTeam.Children.Clear();
       OtherTeam.Children.Clear();
-      bool meBlue = game.TeamOne.Any(p => (p as PlayerParticipant)?.AccountId == Client.LoginPacket.AllSummonerData.Summoner.AcctId);
+      bool meBlue = game.TeamOne.Any(p => (p as PlayerParticipant)?.AccountId == Client.LoginPacket.AllSummonerData.Summoner.AccountId);
       foreach (var thing in game.TeamOne.Concat(game.TeamTwo)) {
         var player = thing as PlayerParticipant;
         var bot = thing as BotParticipant;
@@ -184,7 +184,7 @@ namespace LeagueClient.ClientUI {
         if (player != null) {
           control = new ChampSelectPlayer(player, game.PlayerChampionSelections.FirstOrDefault(c => c.SummonerInternalName.Equals(player.SummonerInternalName)));
           if (player.PickTurn == game.PickTurn) {
-            if (player.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId) {
+            if (player.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId) {
               turn.IsMyTurn = turn.IsOurTurn = true;
             } else if (meBlue == blue) {
               turn.IsOurTurn = true;

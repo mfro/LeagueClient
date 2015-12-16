@@ -101,6 +101,12 @@
     <Compile Include="ClientUI\Controls\Players\LobbyPlayer2.xaml.cs">
       <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\Controls\Profile\MatchHistory.xaml.cs">
+      <DependentUpon>MatchHistory.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\Profile\MatchHistoryItem.xaml.cs">
+      <DependentUpon>MatchHistoryItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\Selectors\MasteryIcon.xaml.cs">
       <DependentUpon>MasteryIcon.xaml</DependentUpon>
     </Compile>
@@ -224,9 +230,6 @@
     </Compile>
     <Compile Include="ClientUI\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ClientUI\PatcherPage.xaml.cs">
-      <DependentUpon>PatcherPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Main\PlaySelectPage.xaml.cs">
       <DependentUpon>PlaySelectPage.xaml</DependentUpon>
@@ -356,6 +359,7 @@
     <Compile Include="Logic\com\riotgames\team\stats\TeamStatSummary.cs" />
     <Compile Include="Logic\com\riotgames\team\TeamId.cs" />
     <Compile Include="Logic\com\riotgames\team\TeamInfo.cs" />
+    <Compile Include="Logic\RiotACS.cs" />
     <Compile Include="Logic\RiotServices.cs" />
     <Compile Include="Logic\Chat\RiotChat.cs" />
     <Compile Include="Logic\RiotPatcher.cs" />
@@ -379,6 +383,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\Players\LobbyPlayer2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\Profile\MatchHistory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\Profile\MatchHistoryItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -506,10 +518,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\PatcherPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ClientUI\Main\PlaySelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -562,6 +570,9 @@
     <Resource Include="Media\ip.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\ProfileIcon.png" />
+    <Resource Include="Resources\RankingIcon.png" />
+    <Resource Include="Resources\MatchHistoryIcon.png" />
     <Resource Include="Enums\Position.txt" />
     <Resource Include="Enums\Role.txt" />
     <Resource Include="Enums\QueueType.txt" />

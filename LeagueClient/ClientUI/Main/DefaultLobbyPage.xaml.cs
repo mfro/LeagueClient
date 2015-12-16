@@ -105,7 +105,7 @@ namespace LeagueClient.ClientUI.Main {
       if (!chatRoom.IsJoined)
         chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
 
-      bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+      bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
 
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();
@@ -178,7 +178,7 @@ namespace LeagueClient.ClientUI.Main {
         Dispatcher.Invoke(() => {
           QuitButton.Content = "Quit";
           QueueTimeLabel.Visibility = Visibility.Collapsed;
-          bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+          bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
           StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
         });
       }

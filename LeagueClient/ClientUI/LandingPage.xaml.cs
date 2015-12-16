@@ -28,6 +28,10 @@ using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing.JSON;
 using LeagueClient.Logic.Riot.Team;
 using agsXMPP.protocol.client;
+using System.Net;
+using System.Security.Cryptography;
+using System.IO;
+using MFroehlich.League.RiotAPI;
 
 namespace LeagueClient.ClientUI {
   /// <summary>
@@ -69,11 +73,11 @@ namespace LeagueClient.ClientUI {
     }
 
     private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
-      //var groups = new Dictionary<object, List<ChatFriend>> {
-      //  [ShowType.chat] = new List<ChatFriend>(),
-      //  [ShowType.away] = new List<ChatFriend>(),
-      //  [ShowType.dnd] = new List<ChatFriend>()
-      //};
+      var groups = new Dictionary<object, List<ChatFriend>> {
+        [ShowType.chat] = new List<ChatFriend>(),
+        [ShowType.away] = new List<ChatFriend>(),
+        [ShowType.dnd] = new List<ChatFriend>()
+      };
       //foreach (var item in Client.ChatManager.FriendList) {
       //  if (item.CurrentGameInfo != null) {
       //    if (!groups.ContainsKey(item.CurrentGameInfo.gameId))
@@ -85,12 +89,14 @@ namespace LeagueClient.ClientUI {
       //  if (groups[item].Count == 1) groups.Remove(item);
       //}
 
-      //foreach (var item in Client.ChatManager.FriendList) {
-      //  if (groups.Any(pair => pair.Value.Contains(item))) continue;
-      //  groups[item.Status.Show].Add(item);
-      //}
+      foreach (var item in Client.ChatManager.FriendList) {
+        if (groups.Any(pair => pair.Value.Contains(item))) continue;
+        groups[item.Status.Show].Add(item);
+      }
       Dispatcher.Invoke(() => {
-        GroupList.ItemsSource = Client.ChatManager.FriendList;
+        ChatList.ItemsSource = groups[ShowType.chat];
+        DndList.ItemsSource = groups[ShowType.dnd];
+        AwayList.ItemsSource = groups[ShowType.away];
         //GroupList.Children.Clear();
         //foreach (var group in groups.Where(pair => pair.Value.Count > 0).OrderBy(pair => pair.Value.First().GetValue())) {
         //  GroupList.Children.Add(new ItemsControl { ItemsSource = group.Value.OrderBy(u => u.GetValue()) });
@@ -159,9 +165,9 @@ namespace LeagueClient.ClientUI {
 
       if (tab == Tab.Play) PlayPage.Reset();
       if (tab == Tab.Shop) {
+        ShowTab(Tab.Friends);
         RiotServices.LoginService.GetStoreUrl().ContinueWith(t => {
-          Client.Log(t.Result);
-          ShopBrowser.Source = new Uri(t.Result);
+          System.Diagnostics.Process.Start(t.Result);
         });
       }
     }
@@ -277,7 +283,7 @@ namespace LeagueClient.ClientUI {
     bool IQueueManager.AttachToQueue(SearchingForMatchNotification result) {
       if (result.PlayerJoinFailures != null) {
         var leaver = result.PlayerJoinFailures[0];
-        bool me = leaver.Summoner.SumId == Client.LoginPacket.AllSummonerData.Summoner.SumId;
+        bool me = leaver.Summoner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
         switch (leaver.ReasonFailed) {
           case "LEAVER_BUSTER":
             //TODO Leaverbuster
@@ -335,6 +341,7 @@ namespace LeagueClient.ClientUI {
         SubPageArea.Content = null;
         CurrentPage = null;
         SubPageArea.Visibility = Visibility.Collapsed;
+        ShowTab(Tab.Friends);
       }
     }
 

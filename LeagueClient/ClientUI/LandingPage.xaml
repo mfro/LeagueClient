@@ -78,9 +78,10 @@
           <Frame Background="{StaticResource Back2Brush}" Name="SubPageArea" Visibility="Collapsed"/>
         </Grid>
 
-        <ItemsControl Grid.Row="1" Grid.Column="2" Name="GroupList" Grid.RowSpan="2" HorizontalAlignment="Center">
-          <!--<StackPanel.Resources>
+        <Grid>
+          <Grid.Resources>
             <Style TargetType="ItemsControl">
+              <Setter Property="Margin" Value="0 0 0 10"/>
               <Setter Property="ItemTemplate">
                 <Setter.Value>
                   <DataTemplate>
@@ -96,23 +97,21 @@
                 </Setter.Value>
               </Setter>
             </Style>
-          </StackPanel.Resources>-->
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <my:FriendListItem2 DataContext="{Binding}" MouseUp="Friend_MouseUp" Margin="0 0 10 10"/>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-        </ItemsControl>
+          </Grid.Resources>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+          </Grid.RowDefinitions>
+          <ItemsControl Grid.Row="1" Name="ChatList"/>
+          <ItemsControl Grid.Row="2" Name="DndList"/>
+          <ItemsControl Grid.Row="3" Name="AwayList"/>
+        </Grid>
 
         <main:PlayerProfile x:Name="Profile"/>
 
-        <Grid Background="Red">
-          <WebBrowser Name="ShopBrowser" />
+        <Grid>
         </Grid>
       </UniformGrid>
     </Border>

@@ -7,5 +7,6 @@ using System.Threading.Tasks;
 namespace LeagueClient.Logic.Settings {
   public class LoginSettings : ISettings {
     public List<string> Accounts { get; }  = new List<string>();
+    public string Theme { get; set; }
   }
 }

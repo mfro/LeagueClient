@@ -54,7 +54,10 @@ namespace LeagueClient.Logic.Chat {
 
     private void ChatManager_PresenceRecieved(object sender, Presence e) {
       if (!e.From.User.Equals(chatRoom.User)) return;
-      if (e.Status == null && e.Type == PresenceType.available) return;
+      if (e.Status == null && e.Type == PresenceType.available) {
+        Client.ChatManager.SendPresence();
+        return;
+      }
 
       var user = e.MucUser.Item;
       if (e.Type == PresenceType.available) {

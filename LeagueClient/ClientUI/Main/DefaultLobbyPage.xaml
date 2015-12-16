@@ -37,10 +37,10 @@
           <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Image Name="MapImage" Source="pack://application:,,,/RiotAPI;component/Resources/SRiftImage.png"/>
-        <Label Grid.Row="1" Name="MapLabel">Summoner's Rift</Label>
-        <Label Grid.Row="1" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
-        <Label Grid.Row="2" Name="ModeLabel">Classic</Label>
-        <Label Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
+        <Label FontSize="16" Grid.Row="1" Name="MapLabel">Summoner's Rift</Label>
+        <Label FontSize="16" Grid.Row="1" HorizontalAlignment="Right" Name="QueueLabel">Blind Pick</Label>
+        <Label FontSize="16" Grid.Row="2" Name="ModeLabel">Classic</Label>
+        <Label FontSize="16"  Grid.Row="2" HorizontalAlignment="Right" Name="TeamSizeLabel">5v5</Label>
       </Grid>
 
       <Grid Grid.Column="1" VerticalAlignment="Bottom" Height="25" Margin="10 0 0 0">
