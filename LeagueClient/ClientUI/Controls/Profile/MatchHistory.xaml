@@ -4,7 +4,7 @@
              xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
   <Grid>
     <ScrollViewer>
-      <ItemsControl Name="MatchList">
+      <ItemsControl Name="MatchList" Margin="0 0 10 0">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <my:MatchHistoryItem/>

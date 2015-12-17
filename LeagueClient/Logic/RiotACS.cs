@@ -126,13 +126,13 @@ namespace LeagueClient.Logic {
     [JSONSerializable]
     public class Game {
       [JSONField("gameId")]
-      public int GameId { get; set; }
+      public long GameId { get; set; }
 
       [JSONField("platformId")]
-      public int Platform { get; set; }
+      public string Platform { get; set; }
 
       [JSONField("gameCreation")]
-      public int GameCreation { get; set; }
+      public long GameCreation { get; set; }
 
       [JSONField("gameDuration")]
       public int GameDuration { get; set; }
@@ -147,13 +147,13 @@ namespace LeagueClient.Logic {
       public int SeasonId { get; set; }
 
       [JSONField("gameVersion")]
-      public int GameVersion { get; set; }
+      public string GameVersion { get; set; }
 
       [JSONField("gameMode")]
-      public int GameMode { get; set; }
+      public string GameMode { get; set; }
 
       [JSONField("gameType")]
-      public int GameType { get; set; }
+      public string GameType { get; set; }
 
       [JSONField("teams")]
       public List<Team> Teams { get; set; }

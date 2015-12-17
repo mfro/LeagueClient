@@ -64,15 +64,15 @@ namespace LeagueClient.Logic.Chat {
 
     public double GetValue() {
       if (Status == null || IsOffline) return 1000;
-      if (CurrentGameInfo != null) {
-        if (CurrentGameInfo.gameStartTime == 0)
-          return Status.GameStatus.Priority + .99;
-        else
-          return Status.GameStatus.Priority + 1.0 / CurrentGameInfo.gameStartTime;
+      double value = Status.GameStatus.Priority;
+      if (CurrentGameInfo != null && CurrentGameInfo.gameStartTime != 0) {
+        value += (1.0 / CurrentGameInfo.gameStartTime);
+      } else if (Status.GameStatus == ChatStatus.inGame && Status.TimeStamp != 0) {
+        value += (1.0 / Status.TimeStamp);
       } else if (Status.Show == ShowType.away) {
-        return Status.GameStatus.Priority + 100;
-      } else
-        return Status.GameStatus.Priority;
+        value += 100;
+      }
+      return value;
     }
 
     private void AppendMessage(string sender, string message) {

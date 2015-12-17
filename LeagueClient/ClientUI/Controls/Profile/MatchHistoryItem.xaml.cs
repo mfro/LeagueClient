@@ -39,6 +39,13 @@ namespace LeagueClient.ClientUI.Controls {
         Spell2Image.Source = LeagueData.GetSpellImage(spell2);
 
         MapLabel.Content = LeagueData.GameMaps[game.MapId];
+        if (game.GameType.Equals("CUSTOM_GAME")) {
+          ModeLabel.Content = "Custom";
+        } else if (game.GameType.Equals("TUTORIAL_GAME")) {
+          ModeLabel.Content = "Tutorial";
+        } else {
+          ModeLabel.Content = GameMode.Values[game.GameMode].Value;
+        }
 
         var items = new[] { me.stats.item0, me.stats.item1, me.stats.item2, me.stats.item3, me.stats.item4, me.stats.item5, me.stats.item6 };
         var images = new[] { Item0Image, Item1Image, Item2Image, Item3Image, Item4Image, Item5Image, Item6Image };

@@ -17,6 +17,7 @@ using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
 using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
+using System.Diagnostics;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -24,15 +25,23 @@ namespace LeagueClient.ClientUI.Main {
   /// </summary>
   public partial class InGamePage : Page, IClientSubPage {
     public event EventHandler Close;
+    private Process game;
 
     public InGamePage() {
       InitializeComponent();
+
+      var procs = Process.GetProcessesByName("League of Legends");
+      if (procs.Length > 0) game = procs[0];
+      else { }
+
       new Thread(WaitForGameClient) { IsBackground = true }.Start();
     }
 
     private void WaitForGameClient() {
-      Client.GameProcess.WaitForExit();
+      game.WaitForExit();
+
       Console.WriteLine("POOP");
+      Close?.Invoke(this, new EventArgs());
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {

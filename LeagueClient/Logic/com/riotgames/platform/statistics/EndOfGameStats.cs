@@ -3,151 +3,176 @@ using RtmpSharp.IO;
 using System.Collections.Generic;
 using LeagueClient.Logic.Riot.Team;
 
-namespace LeagueClient.Logic.Riot.Platform
-{
-    [Serializable]
-    [SerializedName("com.riotgames.platform.statistics.EndOfGameStats")]
-    public class EndOfGameStats
-    {
-        [SerializedName("talentPointsGained")]
-        public Int32 TalentPointsGained { get; set; }
+namespace LeagueClient.Logic.Riot.Platform {
+  [Serializable]
+  [SerializedName("com.riotgames.platform.statistics.EndOfGameStats")]
+  public class EndOfGameStats {
+    [SerializedName("otherTeamInfo")]
+    public TeamInfo OtherTeamInfo { get; set; }
 
-        [SerializedName("ranked")]
-        public Boolean Ranked { get; set; }
+    [SerializedName("newSpells")]
+    public List<object> NewSpells { get; set; }
 
-        [SerializedName("leveledUp")]
-        public Boolean LeveledUp { get; set; }
+    [SerializedName("roomName")]
+    public string RoomName { get; set; }
 
-        [SerializedName("skinIndex")]
-        public Int32 SkinIndex { get; set; }
+    [SerializedName("otherTeamPlayerParticipantStats")]
+    public List<object> OtherTeamPlayerParticipantStats { get; set; }
 
-        [SerializedName("queueBonusEarned")]
-        public Int32 QueueBonusEarned { get; set; }
+    [SerializedName("rerollBonusEarned")]
+    public double RerollBonusEarned { get; set; }
 
-        [SerializedName("gameType")]
-        public String GameType { get; set; }
+    [SerializedName("talentPointsGained")]
+    public double TalentPointsGained { get; set; }
 
-        [SerializedName("experienceEarned")]
-        public Double ExperienceEarned { get; set; }
+    [SerializedName("boostXpEarned")]
+    public double BoostXpEarned { get; set; }
 
-        [SerializedName("imbalancedTeamsNoPoints")]
-        public Boolean ImbalancedTeamsNoPoints { get; set; }
+    [SerializedName("gameType")]
+    public string GameType { get; set; }
 
-        [SerializedName("teamPlayerParticipantStats")]
-        public List<PlayerParticipantStatsSummary> TeamPlayerParticipantStats { get; set; }
+    [SerializedName("userId")]
+    public double UserId { get; set; }
 
-        [SerializedName("basePoints")]
-        public Int32 BasePoints { get; set; }
+    [SerializedName("rpEarned")]
+    public double RpEarned { get; set; }
 
-        [SerializedName("reportGameId")]
-        public Int32 ReportGameId { get; set; }
+    [SerializedName("ipTotal")]
+    public double IpTotal { get; set; }
 
-        [SerializedName("difficulty")]
-        public String Difficulty { get; set; }
+    [SerializedName("coOpVsAiMinutesLeftToday")]
+    public double CoOpVsAiMinutesLeftToday { get; set; }
 
-        [SerializedName("gameLength")]
-        public Double GameLength { get; set; }
+    [SerializedName("completionBonusPoints")]
+    public double CompletionBonusPoints { get; set; }
 
-        [SerializedName("boostXpEarned")]
-        public Double BoostXpEarned { get; set; }
+    [SerializedName("practiceMinutesPlayedToday")]
+    public double PracticeMinutesPlayedToday { get; set; }
 
-        [SerializedName("invalid")]
-        public Boolean Invalid { get; set; }
+    [SerializedName("customMsecsUntilReset")]
+    public double CustomMsecsUntilReset { get; set; }
 
-        [SerializedName("otherTeamInfo")]
-        public TeamInfo OtherTeamInfo { get; set; }
+    [SerializedName("firstWinBonus")]
+    public double FirstWinBonus { get; set; }
 
-        [SerializedName("roomName")]
-        public String RoomName { get; set; }
+    [SerializedName("myTeamInfo")]
+    public TeamInfo MyTeamInfo { get; set; }
 
-        [SerializedName("customMinutesLeftToday")]
-        public Int32 CustomMinutesLeftToday { get; set; }
+    [SerializedName("eloChange")]
+    public int EloChange { get; set; }
 
-        [SerializedName("userId")]
-        public Int32 UserId { get; set; }
+    [SerializedName("ipEarned")]
+    public double IpEarned { get; set; }
 
-        [SerializedName("pointsPenalties")]
-        public List<object> PointsPenalties { get; set; }
+    [SerializedName("experienceEarned")]
+    public double ExperienceEarned { get; set; }
 
-        [SerializedName("coOpVsAiMinutesLeftToday")]
-        public Int32 CoOpVsAiMinutesLeftToday { get; set; }
+    [SerializedName("odinBonusIp")]
+    public double OdinBonusIp { get; set; }
 
-        [SerializedName("otherTeamPlayerParticipantStats")]
-        public List<PlayerParticipantStatsSummary> OtherTeamPlayerParticipantStats { get; set; }
+    [SerializedName("expPointsToNextLevel")]
+    public double ExpPointsToNextLevel { get; set; }
 
-        [SerializedName("loyaltyBoostIpEarned")]
-        public Double LoyaltyBoostIpEarned { get; set; }
+    [SerializedName("loyaltyBoostIpEarned")]
+    public double LoyaltyBoostIpEarned { get; set; }
 
-        [SerializedName("rpEarned")]
-        public Double RpEarned { get; set; }
+    [SerializedName("locationBoostXpEarned")]
+    public double LocationBoostXpEarned { get; set; }
 
-        [SerializedName("completionBonusPoints")]
-        public Int32 CompletionBonusPoints { get; set; }
+    [SerializedName("gameId")]
+    public double GameId { get; set; }
 
-        [SerializedName("coOpVsAiMsecsUntilReset")]
-        public Double CoOpVsAiMsecsUntilReset { get; set; }
+    [SerializedName("roomPassword")]
+    public string RoomPassword { get; set; }
 
-        [SerializedName("boostIpEarned")]
-        public Double BoostIpEarned { get; set; }
+    [SerializedName("elo")]
+    public int Elo { get; set; }
 
-        [SerializedName("newSpells")]
-        public List<object> NewSpells { get; set; }
+    [SerializedName("gameMode")]
+    public string GameMode { get; set; }
 
-        [SerializedName("experienceTotal")]
-        public Double ExperienceTotal { get; set; }
+    [SerializedName("teamPlayerParticipantStats")]
+    public List<object> TeamPlayerParticipantStats { get; set; }
 
-        [SerializedName("gameId")]
-        public Double GameId { get; set; }
+    [SerializedName("customMinutesLeftToday")]
+    public double CustomMinutesLeftToday { get; set; }
 
-        [SerializedName("timeUntilNextFirstWinBonus")]
-        public Double TimeUntilNextFirstWinBonus { get; set; }
+    [SerializedName("coOpVsAiMsecsUntilReset")]
+    public double CoOpVsAiMsecsUntilReset { get; set; }
 
-        [SerializedName("loyaltyBoostXpEarned")]
-        public Double LoyaltyBoostXpEarned { get; set; }
+    [SerializedName("partyRewardsBonusIpEarned")]
+    public double PartyRewardsBonusIpEarned { get; set; }
 
-        [SerializedName("roomPassword")]
-        public String RoomPassword { get; set; }
+    [SerializedName("reportGameId")]
+    public double ReportGameId { get; set; }
 
-        [SerializedName("elo")]
-        public Int32 Elo { get; set; }
+    [SerializedName("imbalancedTeamsNoPoints")]
+    public bool ImbalancedTeamsNoPoints { get; set; }
 
-        [SerializedName("ipEarned")]
-        public Double IpEarned { get; set; }
+    [SerializedName("basePoints")]
+    public double BasePoints { get; set; }
 
-        [SerializedName("firstWinBonus")]
-        public Double FirstWinBonus { get; set; }
+    [SerializedName("leveledUp")]
+    public bool LeveledUp { get; set; }
 
-        [SerializedName("sendStatsToTournamentProvider")]
-        public Boolean SendStatsToTournamentProvider { get; set; }
+    [SerializedName("boostIpEarned")]
+    public double BoostIpEarned { get; set; }
 
-        [SerializedName("eloChange")]
-        public Int32 EloChange { get; set; }
+    [SerializedName("pointsPenalties")]
+    public List<object> PointsPenalties { get; set; }
 
-        [SerializedName("gameMode")]
-        public String GameMode { get; set; }
+    [SerializedName("skinIndex")]
+    public double SkinIndex { get; set; }
 
-        [SerializedName("myTeamInfo")]
-        public TeamInfo MyTeamInfo { get; set; }
+    [SerializedName("battleBoostIpEarned")]
+    public double BattleBoostIpEarned { get; set; }
 
-        [SerializedName("queueType")]
-        public String QueueType { get; set; }
+    [SerializedName("sendStatsToTournamentProvider")]
+    public bool SendStatsToTournamentProvider { get; set; }
 
-        [SerializedName("odinBonusIp")]
-        public Int32 OdinBonusIp { get; set; }
+    [SerializedName("gameLength")]
+    public double GameLength { get; set; }
 
-        [SerializedName("myTeamStatus")]
-        public String MyTeamStatus { get; set; }
+    [SerializedName("myTeamStatus")]
+    public string MyTeamStatus { get; set; }
 
-        [SerializedName("ipTotal")]
-        public Double IpTotal { get; set; }
+    [SerializedName("locationBoostIpEarned")]
+    public double LocationBoostIpEarned { get; set; }
 
-        [SerializedName("summonerName")]
-        public String SummonerName { get; set; }
+    [SerializedName("gameMutators")]
+    public List<object> GameMutators { get; set; }
 
-        [SerializedName("customMsecsUntilReset")]
-        public Double CustomMsecsUntilReset { get; set; }
+    [SerializedName("queueBonusEarned")]
+    public double QueueBonusEarned { get; set; }
 
-        [SerializedName("rerollEarned")]
-        public Double RerollPointsEarned { get; set; }
-    }
+    [SerializedName("skinName")]
+    public string SkinName { get; set; }
+
+    [SerializedName("loyaltyBoostXpEarned")]
+    public double LoyaltyBoostXpEarned { get; set; }
+
+    [SerializedName("timeUntilNextFirstWinBonus")]
+    public double TimeUntilNextFirstWinBonus { get; set; }
+
+    [SerializedName("difficulty")]
+    public string Difficulty { get; set; }
+
+    [SerializedName("ranked")]
+    public bool Ranked { get; set; }
+
+    [SerializedName("rerollEarned")]
+    public double RerollEarned { get; set; }
+
+    [SerializedName("queueType")]
+    public string QueueType { get; set; }
+
+    [SerializedName("rerollEnabled")]
+    public bool RerollEnabled { get; set; }
+
+    [SerializedName("invalid")]
+    public bool Invalid { get; set; }
+
+    [SerializedName("experienceTotal")]
+    public double ExperienceTotal { get; set; }
+  }
 }

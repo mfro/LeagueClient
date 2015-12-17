@@ -45,11 +45,13 @@ namespace LeagueClient.ClientUI.Controls {
       }
 
       NameLabel.Content = player.SummonerName;
+      NameLabel.Visibility = Visibility.Visible;
     }
 
     public ChampSelectPlayer(BotParticipant bot) : this() {
       var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
       ChampImage.Source = LeagueData.GetChampIconImage(champ);
+      NameLabel.Visibility = Visibility.Visible;
       NameLabel.Content = champ.name;
       Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;
     }

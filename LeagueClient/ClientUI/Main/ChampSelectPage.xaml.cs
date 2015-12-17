@@ -93,6 +93,7 @@ namespace LeagueClient.ClientUI {
         Close?.Invoke(this, new EventArgs());
         timer.Dispose();
         Client.JoinGame(creds);
+        return true;
       }
 
       return false;
@@ -206,16 +207,17 @@ namespace LeagueClient.ClientUI {
         }
       }
 
+      Ban1.Source = Ban2.Source = Ban3.Source = Ban4.Source = Ban5.Source = Ban6.Source = null;
       foreach (var thing in game.BannedChampions) {
         var champ = LeagueData.GetChampData(thing.ChampionId);
         var image = LeagueData.GetChampIconImage(champ);
         switch (thing.PickTurn) {
-          case 1: Ban1.Source = image; break;
-          case 2: Ban3.Source = image; break;
+          case 1: Ban4.Source = image; break;
+          case 2: Ban1.Source = image; break;
           case 3: Ban5.Source = image; break;
           case 4: Ban2.Source = image; break;
-          case 5: Ban4.Source = image; break;
-          case 6: Ban6.Source = image; break;
+          case 5: Ban6.Source = image; break;
+          case 6: Ban3.Source = image; break;
         }
       }
 

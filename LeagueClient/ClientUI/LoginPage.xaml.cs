@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml;
 
@@ -128,8 +129,9 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-      if (e.ClickCount == 2) Client.MainWindow.Center();
-      else Client.MainWindow.DragMove();
+      if (e.ChangedButton == MouseButton.Left)
+        if (e.ClickCount == 2) Client.MainWindow.Center();
+        else Client.MainWindow.DragMove();
     }
 
     private void AddAccountButt_Click(object sender, RoutedEventArgs e) {
@@ -198,7 +200,7 @@ namespace LeagueClient.ClientUI {
           RedirectStandardOutput = true,
         };
         File.Delete(Client.LoginVideoPath);
-        Process.Start(info).WaitForExit(0);
+        Process.Start(info).WaitForExit();
         File.Delete(file);
 
         settings.Theme = Client.LoginTheme;

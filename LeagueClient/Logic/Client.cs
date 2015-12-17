@@ -84,7 +84,6 @@ namespace LeagueClient.Logic {
 
     internal static UserSettings Settings { get; set; }
 
-    internal static Process GameProcess { get; set; }
     internal static AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
 
     internal static bool CanInviteFriends { get; set; }
@@ -198,7 +197,7 @@ namespace LeagueClient.Logic {
         var result = await RiotServices.LoginService.PerformLCDSHeartBeat((int) LoginPacket.AllSummonerData.Summoner.AccountId,
           UserSession.Token, Heartbeats, DateTime.Now.ToString("ddd MMM d yyyy HH:mm:ss 'GMT-0700'"));
         if (!result.Equals("5")) {
-
+          Console.WriteLine("Heartbeat unexpected");
         }
         Heartbeats++;
       }
@@ -242,6 +241,12 @@ namespace LeagueClient.Logic {
 
     private static void JoinGame(string ip, int port, string encKey, double summId) {
       //"8394" "LoLPatcher.exe" "" "ip port key id"
+      if (Process.GetProcessesByName("League of Legends").Length > 0) {
+        System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
+        new Thread(GetCurrentGame).Start();
+        return;
+      }
+
       var game = Path.Combine(RiotGamesDir, RiotVersionManager.SolutionPath, Latest.SolutionVersion.ToString(), "deploy");
       var lolclient = Path.Combine(RiotGamesDir, RiotVersionManager.AirPath, Latest.AirVersion.ToString(), "deploy", "LolClient.exe");
 
@@ -249,21 +254,11 @@ namespace LeagueClient.Logic {
       var str = $"{ip} {port} {encKey} {summId}";
       info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLPatcher.exe", lolclient, str);
       info.WorkingDirectory = game;
-      GameProcess = Process.Start(info);
+      Process.Start(info);
 
-      System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
       ChatManager.Status = ChatStatus.inGame;
-      new Thread(() => {
-        Thread.Sleep(20000);
-        CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => {
-          try {
-            return RiotAPI.CurrentGameAPI.BySummoner("NA1", LoginPacket.AllSummonerData.Summoner.SummonerId);
-          } catch (Exception x) {
-            Log("Failed to get game data: " + x);
-            return null;
-          }
-        });
-      }).Start();
+      new Thread(GetCurrentGame).Start();
+      System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
     }
 
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
@@ -352,6 +347,18 @@ namespace LeagueClient.Logic {
 
     #region My Client Methods
 
+    private static void GetCurrentGame() {
+      Thread.Sleep(20000);
+      CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => {
+        try {
+          return RiotAPI.CurrentGameAPI.BySummoner("NA1", LoginPacket.AllSummonerData.Summoner.SummonerId);
+        } catch (Exception x) {
+          Log("Failed to get game data: " + x);
+          return null;
+        }
+      });
+    }
+
     public static T LoadSettings<T>(string name) where T : ISettings, new() {
       name = name.RemoveAllWhitespace();
       var file = Path.Combine(DataPath, name + ".settings");
@@ -398,6 +405,7 @@ namespace LeagueClient.Logic {
       var response = e.Body as LcdsServiceProxyResponse;
       var config = e.Body as ClientDynamicConfigurationNotification;
       var invite = e.Body as InvitationRequest;
+      var endofgame = e.Body as EndOfGameStats;
 
       try {
         if (response != null) {
@@ -413,6 +421,8 @@ namespace LeagueClient.Logic {
           Log("Received Configuration Notification");
         } else if (invite != null) {
           ShowInvite(invite);
+        } else if (endofgame != null) {
+          Debugger.Break();
         } else {
           Log($"Receive [{e.Subtopic}, {e.ClientId}]: '{e.Body}'");
         }

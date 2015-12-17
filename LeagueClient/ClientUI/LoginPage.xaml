@@ -58,7 +58,7 @@
     <Grid Visibility="Collapsed" Grid.Row="1" Grid.RowSpan="10" Grid.ColumnSpan="10" Name="PatchingGrid">
       <Grid.Resources>
         <Style x:Key="LabelStyle" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-          <Setter Property="FontSize" Value="20"/>
+          <Setter Property="FontSize" Value="18"/>
           <Setter Property="VerticalAlignment" Value="Center"/>
           <Setter Property="Padding" Value="10 0 10 2"/>
         </Style>

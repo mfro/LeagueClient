@@ -186,8 +186,9 @@ namespace LeagueClient.ClientUI {
 
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
       //if (e.GetPosition((Grid) sender).Y < 20) {
-      if (e.ClickCount == 2) Client.MainWindow.Center();
-      else Client.MainWindow.DragMove();
+      if (e.ChangedButton == MouseButton.Left)
+        if (e.ClickCount == 2) Client.MainWindow.Center();
+        else Client.MainWindow.DragMove();
       //}
     }
 

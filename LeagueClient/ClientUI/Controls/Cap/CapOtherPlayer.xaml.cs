@@ -90,6 +90,7 @@ namespace LeagueClient.ClientUI.Controls {
       switch (Player.Status) {
         case CapStatus.ChoosingAdvert:
           SummonerText.Content = "Select Position and Role";
+          InnerBorder.Background = App.Back1Brush;
           break;
         case CapStatus.Searching:
           Unknown.Visibility = Visibility.Visible;
