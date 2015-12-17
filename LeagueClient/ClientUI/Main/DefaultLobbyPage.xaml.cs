@@ -25,7 +25,7 @@ namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for DefaultLobbyPage.xaml
   /// </summary>
-  public partial class DefaultLobbyPage : Page, IClientSubPage {
+  public sealed partial class DefaultLobbyPage : Page, IClientSubPage {
     public event EventHandler Close;
 
     private MatchMakerParams mmp;
@@ -154,7 +154,7 @@ namespace LeagueClient.ClientUI.Main {
         RiotServices.MatchmakerService.PurgeFromQueues();
         SetInQueue(false);
       } else {
-        ForceClose();
+        Dispose();
         Close?.Invoke(this, new EventArgs());
       }
     }
@@ -191,9 +191,10 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
 
-    public void ForceClose() {
+    public void Dispose() {
       RiotServices.GameInvitationService.Leave();
-      chatRoom.LeaveChat();
+      chatRoom.Dispose();
+      queue.Dispose();
       Client.ChatManager.Status = ChatStatus.outOfGame;
     }
   }

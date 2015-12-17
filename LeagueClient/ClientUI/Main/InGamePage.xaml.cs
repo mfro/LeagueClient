@@ -23,25 +23,45 @@ namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for InGamePage.xaml
   /// </summary>
-  public partial class InGamePage : Page, IClientSubPage {
+  public sealed partial class InGamePage : Page, IClientSubPage {
     public event EventHandler Close;
     private Process game;
+    private bool champSelect;
 
-    public InGamePage() {
+    public InGamePage(bool champSelect = false, bool canQuit = false) {
       InitializeComponent();
 
-      var procs = Process.GetProcessesByName("League of Legends");
-      if (procs.Length > 0) game = procs[0];
-      else { }
+      this.champSelect = champSelect;
+      if (champSelect) {
+        ReconnectGrid.Visibility = Visibility.Visible;
+        ReconnectButton.Content = "Show Champion Select";
+      } else {
+        ReconnectGrid.Visibility = Visibility.Collapsed;
 
-      new Thread(WaitForGameClient) { IsBackground = true }.Start();
+        var procs = Process.GetProcessesByName("League of Legends");
+        if (procs.Length > 0) {
+          game = procs[0];
+        } else return;
+
+        new Thread(WaitForGameClient) { IsBackground = true }.Start();
+      }
     }
 
     private void WaitForGameClient() {
       game.WaitForExit();
 
       Console.WriteLine("POOP");
-      Close?.Invoke(this, new EventArgs());
+
+      Dispatcher.Invoke(() => {
+        ReconnectGrid.Visibility = Visibility.Visible;
+        ReconnectButton.Content = "Reconnect";
+      });
+    }
+
+    private void ReconnectButton_Click(object sender, RoutedEventArgs e) {
+      if (champSelect)
+        Client.MainWindow.ShowChampSelect();
+      else Client.JoinGame();
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
@@ -60,6 +80,6 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
 
-    public void ForceClose() { }
+    public void Dispose() { }
   }
 }

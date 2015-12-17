@@ -24,7 +24,7 @@ namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for CustomCreatePage.xaml
   /// </summary>
-  public partial class CustomCreatePage : Page, IClientSubPage {
+  public sealed partial class CustomCreatePage : Page, IClientSubPage {
     public event EventHandler Close;
 
     private static readonly Duration
@@ -132,7 +132,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
 
-    public void ForceClose() { }
+    public void Dispose() { }
     public bool HandleMessage(MessageReceivedEventArgs args) => false;
   }
 }

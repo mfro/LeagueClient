@@ -26,7 +26,7 @@ namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for CustomLobbyPage.xaml
   /// </summary>
-  public partial class CustomLobbyPage : Page, IClientSubPage {
+  public sealed partial class CustomLobbyPage : Page, IClientSubPage {
     public GameDTO GameDto { get; private set; }
     public bool IsCaptain => lobby?.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
 
@@ -148,9 +148,9 @@ namespace LeagueClient.ClientUI.Main {
           }
         });
       } else if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
-        chatRoom.LeaveChat();
+        chatRoom.Dispose();
         Close?.Invoke(this, new EventArgs());
-        Client.QueueManager.BeginChampionSelect(game);
+        Client.MainWindow.BeginChampionSelect(game);
       }
     }
 
@@ -160,7 +160,8 @@ namespace LeagueClient.ClientUI.Main {
 
     public Page Page => this;
 
-    public void ForceClose() {
+    public void Dispose() {
+      chatRoom.Dispose();
       RiotServices.GameService.QuitGame();
       Client.ChatManager.Status = ChatStatus.outOfGame;
     }
@@ -171,7 +172,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void Quit_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());
-      ForceClose();
+      Dispose();
     }
 
     private void RedJoin_Click(object sender, RoutedEventArgs e) {

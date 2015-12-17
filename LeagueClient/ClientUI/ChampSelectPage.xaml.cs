@@ -30,8 +30,8 @@ namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for ChampSelect.xaml
   /// </summary>
-  public sealed partial class ChampSelectPage : Page, IClientSubPage, IDisposable {
-    public event EventHandler Close;
+  public sealed partial class ChampSelectPage : Page, IClientPage, IDisposable {
+    public event EventHandler ChampSelectCompleted;
 
     private const string
       YouPickString = "Your turn to pick!",
@@ -82,17 +82,20 @@ namespace LeagueClient.ClientUI {
 
     #region RTMP Messages
 
-    public bool HandleMessage(MessageReceivedEventArgs args) {
+    bool IClientPage.HandleMessage(MessageReceivedEventArgs args) {
       PlayerCredentialsDto creds;
       GameDTO game;
 
+      Client.QueueManager.ShowPage();
       if ((game = args.Body as GameDTO) != null) {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
       } else if ((creds = args.Body as PlayerCredentialsDto) != null) {
-        Close?.Invoke(this, new EventArgs());
+        ChampSelectCompleted?.Invoke(this, new EventArgs());
         timer.Dispose();
-        Client.JoinGame(creds);
+        Client.Credentials = creds;
+        Client.JoinGame();
+        Client.QueueManager.ShowPage(new InGamePage());
         return true;
       }
 
@@ -200,12 +203,13 @@ namespace LeagueClient.ClientUI {
           control = null;
         }
 
-        if (blue) {
+        if (blue == meBlue) {
           MyTeam.Children.Add(control);
         } else {
           OtherTeam.Children.Add(control);
         }
       }
+      if (OtherTeam.Children.Count == 0) OtherTeam.Visibility = Visibility.Collapsed;
 
       Ban1.Source = Ban2.Source = Ban3.Source = Ban4.Source = Ban5.Source = Ban6.Source = null;
       foreach (var thing in game.BannedChampions) {
@@ -243,6 +247,10 @@ namespace LeagueClient.ClientUI {
     }
 
     #region Event Listeners
+
+    private void BackButton_Click(object sender, RoutedEventArgs e) {
+      Client.MainWindow.ShowLandingPage();
+    }
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       try {
@@ -331,15 +339,12 @@ namespace LeagueClient.ClientUI {
       UpdateBooks();
     }
 
-    public void ForceClose() {
-      throw new NotImplementedException();
+    public void Dispose() {
+      timer.Dispose();
+      chatRoom.Dispose();
     }
 
-    public void Dispose() => timer.Dispose();
-
     #endregion
-
-    public Page Page => this;
 
     private enum State {
       Picking, Banning, Watching

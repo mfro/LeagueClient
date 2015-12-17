@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace LeagueClient.Logic.Settings {
+  [Serializable]
   [XmlRoot("dictionary")]
-  public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXmlSerializable {
+  public sealed class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXmlSerializable {
     #region IXmlSerializable Members
     System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema() => null;
 

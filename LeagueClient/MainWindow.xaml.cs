@@ -26,6 +26,7 @@ using LeagueClient.ClientUI.Main;
 using System.Xml.Serialization;
 using System.IO;
 using LeagueClient.Logic.Settings;
+using System.Threading;
 
 namespace LeagueClient {
   /// <summary>
@@ -34,6 +35,7 @@ namespace LeagueClient {
   public partial class MainWindow : Window {
     private IClientPage currentPage;
 
+    private ChampSelectPage champselect;
     private LandingPage landing;
 
     public MainWindow() {
@@ -65,7 +67,9 @@ namespace LeagueClient {
       currentPage = page;
 
       if (Client.LoginQueue.InGameCredentials?.InGame ?? false) {
-        Client.JoinGame(Client.LoginQueue.InGameCredentials);
+        Client.Credentials = Client.LoginQueue.InGameCredentials;
+        Client.JoinGame();
+        Client.QueueManager.ShowPage(new InGamePage());
         Client.LoginQueue.InGameCredentials.InGame = false;
       }
     }
@@ -81,10 +85,34 @@ namespace LeagueClient {
       Client.MainWindow.Top = (sHeight / 2) - (Client.MainWindow.Height / 2);
     }
 
-    public void ShowInGamePage() {
+    public void BeginChampionSelect(GameDTO game) {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(BeginChampionSelect, game); return; }
+
+      Client.QueueManager.ShowPage(new InGamePage(true));
+      champselect = new ChampSelectPage(game);
+
+      currentPage = champselect;
+      champselect.ChampSelectCompleted += Champselect_ChampSelectCompleted;
+
+      ContentFrame.Content = champselect;
+      Client.ChatManager.Status = ChatStatus.championSelect;
+      RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
+    }
+
+    private void Champselect_ChampSelectCompleted(object sender, EventArgs e) {
+      ShowLandingPage();
+
       currentPage = landing;
+      champselect = null;
+      champselect.ChampSelectCompleted -= Champselect_ChampSelectCompleted;
+    }
+
+    public void ShowLandingPage() {
       ContentFrame.Content = landing;
-      Client.QueueManager.ShowPage(new InGamePage());
+    }
+
+    public void ShowChampSelect() {
+      ContentFrame.Content = champselect;
     }
 
     private void Close_Click(object sender, RoutedEventArgs e) {

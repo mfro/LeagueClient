@@ -31,12 +31,6 @@ namespace LeagueClient.Logic.Queueing {
 
     void ShowInfo(IQueueInfo info);
 
-    /// <summary>
-    /// Begins champion select with the game
-    /// </summary>
-    /// <param name="game"></param>
-    void BeginChampionSelect(GameDTO game);
-
     bool AttachToQueue(SearchingForMatchNotification parms);
 
     void AcceptInvite(InvitationRequest invite);

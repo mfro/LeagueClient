@@ -7,35 +7,42 @@
       <TextBlock Style="{StaticResource Control}" Text="{Binding Name}"/>
     </DataTemplate>
   </Page.Resources>
-  <Grid Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}" Background="{StaticResource Back2Brush}">
+  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="0"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
       <RowDefinition Height="*"/>
-      <RowDefinition Height="0"/>
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
 
-    <Grid Grid.Row="1" HorizontalAlignment="Center">
+    <Button Content="&lt; Back  " HorizontalAlignment="Left" FontSize="14" Padding="15 4" Margin="10" Click="BackButton_Click"/>
+
+    <Grid Grid.Row="1" >
       <Grid.RowDefinitions>
         <RowDefinition Height="auto"/>
-        <RowDefinition Height="*"/>
+        <RowDefinition Height="150"/>
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
 
-      <UniformGrid Rows="1" HorizontalAlignment="Center" Name="MyTeam" Margin="0 8 -8 8">
-        <UniformGrid.Resources>
-          <Style TargetType="my:ChampSelectPlayer">
-            <Setter Property="Margin" Value="0 0 8 0"/>
-          </Style>
-        </UniformGrid.Resources>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-      </UniformGrid>
+      <Label Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="24" Name="GameStatusLabel"
+           Cursor="Hand" MouseUp="GameStatusLabel_MouseUp" Grid.Row="1">Your turn to pick!</Label>
 
-      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="64" Name="MyBansGrid" Margin="50 0">
+      <Border Background="{StaticResource Back1Brush}">
+        <UniformGrid Rows="1" HorizontalAlignment="Center" Name="MyTeam" Margin="0 8 -8 8">
+          <UniformGrid.Resources>
+            <Style TargetType="my:ChampSelectPlayer">
+              <Setter Property="Margin" Value="0 0 8 0"/>
+            </Style>
+          </UniformGrid.Resources>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+        </UniformGrid>
+      </Border>
+
+      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="64" Name="MyBansGrid" Margin="270 10">
         <UniformGrid.Resources>
           <Style TargetType="Border">
             <Setter Property="BorderThickness" Value="2"/>
@@ -54,20 +61,22 @@
         </Border>
       </UniformGrid>
 
-      <UniformGrid Rows="1" HorizontalAlignment="Center" Name="OtherTeam" Grid.Row="2" Margin="0 8 -8 8">
-        <UniformGrid.Resources>
-          <Style TargetType="my:ChampSelectPlayer">
-            <Setter Property="Margin" Value="0 0 8 0"/>
-          </Style>
-        </UniformGrid.Resources>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-        <my:ChampSelectPlayer/>
-      </UniformGrid>
+      <Border Background="{StaticResource Back1Brush}" Grid.Row="2">
+        <UniformGrid Rows="1" HorizontalAlignment="Center" Name="OtherTeam" Margin="0 8 -8 8">
+          <UniformGrid.Resources>
+            <Style TargetType="my:ChampSelectPlayer">
+              <Setter Property="Margin" Value="0 0 8 0"/>
+            </Style>
+          </UniformGrid.Resources>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+          <my:ChampSelectPlayer/>
+        </UniformGrid>
+      </Border>
 
-      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="64" Name="OtherBansGrid" Margin="50 0">
+      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="64" Name="OtherBansGrid" Margin="270 10">
         <UniformGrid.Resources>
           <Style TargetType="Border">
             <Setter Property="BorderThickness" Value="2"/>
@@ -86,9 +95,6 @@
         </Border>
       </UniformGrid>
     </Grid>
-
-    <Label Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="24" Name="GameStatusLabel"
-           Cursor="Hand" MouseUp="GameStatusLabel_MouseUp" Grid.Row="1">Your turn to pick!</Label>
 
     <Grid Grid.Row="5" Grid.ColumnSpan="2">
       <Grid.ColumnDefinitions>

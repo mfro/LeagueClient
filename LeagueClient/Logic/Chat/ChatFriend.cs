@@ -35,8 +35,6 @@ namespace LeagueClient.Logic.Chat {
 
       var groups = item.GetGroups();
       Group = groups.Item(0).InnerXml;
-
-      Client.SummonerCache.GetData(User.Name, GotSummoner);
     }
 
     public void ReceiveMessage(string message) {
@@ -51,6 +49,7 @@ namespace LeagueClient.Logic.Chat {
     public void UpdatePresence(Presence p) {
       IsOffline = p.Status == null;
       if (!IsOffline) {
+
         Status = new LeagueStatus(p.Status, p.Show);
         if (Status.GameStatus == ChatStatus.inGame) {
           RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Name).ContinueWith(GotGameDTO);
@@ -59,16 +58,19 @@ namespace LeagueClient.Logic.Chat {
           CurrentGameDTO = null;
           CurrentGameInfo = null;
         }
+
+        Client.SummonerCache.GetData(User.Name, GotSummoner);
       }
     }
 
     public double GetValue() {
       if (Status == null || IsOffline) return 1000;
       double value = Status.GameStatus.Priority;
+      var millis = Client.GetMilliseconds();
       if (CurrentGameInfo != null && CurrentGameInfo.gameStartTime != 0) {
-        value += (1.0 / CurrentGameInfo.gameStartTime);
+        value += (1.0 / (millis - CurrentGameInfo.gameStartTime));
       } else if (Status.GameStatus == ChatStatus.inGame && Status.TimeStamp != 0) {
-        value += (1.0 / Status.TimeStamp);
+        value += (1.0 / (millis - Status.TimeStamp));
       } else if (Status.Show == ShowType.away) {
         value += 100;
       }

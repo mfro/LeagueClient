@@ -11,11 +11,12 @@
       <RowDefinition Height="auto"/>
       <RowDefinition/>
     </Grid.RowDefinitions>
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="{StaticResource Back1Brush}" Width="200" Height="50" Grid.Row="1">
-      <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Currently In Game</TextBlock>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="{StaticResource Back1Brush}" Width="300" Height="100" Grid.Row="1">
+      <Label FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center">Currently In Game</Label>
     </Grid>
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Background="{StaticResource ForeBrush}" Width="200" Height="50" Grid.Row="2" Visibility="Collapsed" Name="ReconnectGrid">
-      <Button Width="110" Height="25">Reconnect</Button>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Background="{StaticResource ForeBrush}" Width="300" Grid.Row="2" Name="ReconnectGrid">
+      <Button Name="ReconnectButton" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="35 5" Click="ReconnectButton_Click" Margin="00 20">Champion Select</Button>
+      <!--<Button Name="QuitButton" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="30 5" Click="QuitButton_Click" Margin="0 20 20 20" Visibility="Collapsed">Quit</Button>-->
     </Grid>
   </Grid>
 </Page>

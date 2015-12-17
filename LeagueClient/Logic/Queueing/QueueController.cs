@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace LeagueClient.Logic.Queueing {
-  public class QueueController : IDisposable {
+  public sealed class QueueController : IDisposable {
     public bool InQueue => timer.Enabled;
     public ChatStatus Idle { get; set; }
     public ChatStatus Queue { get; set; }

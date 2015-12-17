@@ -127,7 +127,7 @@
     </Compile>
     <Compile Include="Logic\Chat\ChatFriend.cs" />
     <Compile Include="Logic\Client.cs" />
-    <Compile Include="ClientUI\Main\ChampSelectPage.xaml.cs">
+    <Compile Include="ClientUI\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\Queue\BingeQueuer.xaml.cs">
@@ -406,7 +406,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\ChampSelectPage.xaml">
+    <Page Include="ClientUI\ChampSelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -32,7 +32,7 @@ namespace LeagueClient.ClientUI.Main {
   /// <summary>
   /// Interaction logic for TeambuilderLobbyPage.xaml
   /// </summary>
-  public partial class CapLobbyPage : Page, IClientSubPage {
+  public sealed partial class CapLobbyPage : Page, IClientSubPage {
 
     #region Properties / Fields
     public LobbyStatus Status { get; private set; }
@@ -228,6 +228,11 @@ namespace LeagueClient.ClientUI.Main {
 
     private void groupUpdatedV3(JSONObject json) => GotGroupData(json.Fill(new CapGroupData()));
 
+    private void gameStartFailedV1(JSONObject json) {
+      Close?.Invoke(this, new EventArgs());
+      Dispose();
+    }
+
     private void candidateAcceptedV1(JSONObject json) {
       var slot = json.Fill(new CapSlotData());
       if (found.ContainsKey(slot.SlotId))
@@ -367,7 +372,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void removedFromServiceV1(JSONObject json) {
-      ForceClose();
+      Dispose();
       Close?.Invoke(this, new EventArgs());
       if (json["reason"].Equals("GROUP_DISBANDED"))
         Client.QueueManager.ShowNotification(AlertFactory.GroupDisbanded());
@@ -436,7 +441,9 @@ namespace LeagueClient.ClientUI.Main {
         return true;
       } else if ((creds = e.Body as PlayerCredentialsDto) != null) {
         Close?.Invoke(this, new EventArgs());
-        Client.JoinGame(creds);
+        Client.Credentials = creds;
+        Client.JoinGame();
+        Client.QueueManager.ShowPage(new InGamePage());
         return true;
       } else if ((game = e.Body as GameDTO) != null) {
         return true;
@@ -627,7 +634,7 @@ namespace LeagueClient.ClientUI.Main {
     private void QuitButt_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());
 
-      ForceClose();
+      Dispose();
     }
 
     private void FindAnotherButt_Click(object sender, RoutedEventArgs e) => RiotServices.CapService.SearchForAnotherGroup();
@@ -635,10 +642,10 @@ namespace LeagueClient.ClientUI.Main {
     #endregion
 
     #region IClientSubPage
-    public void ForceClose() {
+    public void Dispose() {
       RiotServices.GameInvitationService.Leave();
       RiotServices.CapService.Quit();
-      chatRoom?.LeaveChat();
+      chatRoom.Dispose();
       Client.ChatManager.Status = ChatStatus.outOfGame;
     }
 

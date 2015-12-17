@@ -8,19 +8,13 @@ using LeagueClient.Logic.Queueing;
 using RtmpSharp.Messaging;
 
 namespace LeagueClient.ClientUI.Main {
-  public interface IClientSubPage {
+  public interface IClientSubPage : IDisposable {
     event EventHandler Close;
 
     /// <summary>
     /// The page object to render
     /// </summary>
     System.Windows.Controls.Page Page { get; }
-
-    /// <summary>
-    /// Indicates to the page that it is closed permanently and should disconnect
-    /// from any chats or lobbies
-    /// </summary>
-    void ForceClose();
 
     /// <summary>
     /// Handles a message recieved from the RTMP connection

@@ -84,6 +84,7 @@ namespace LeagueClient.Logic {
 
     internal static UserSettings Settings { get; set; }
 
+    internal static dynamic Credentials { get; set; }
     internal static AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
 
     internal static bool CanInviteFriends { get; set; }
@@ -228,21 +229,9 @@ namespace LeagueClient.Logic {
     #endregion
 
     #region Riot Client Methods
-    /// <summary>
-    /// Launches the league of legends client and joins an active game
-    /// </summary>
-    /// <param name="creds">The credentials for joining the game</param>
-    public static void JoinGame(PlayerCredentialsDto creds) => JoinGame(creds.ServerIp, creds.ServerPort, creds.EncryptionKey, creds.SummonerId);
-    /// <summary>
-    /// Launches the league of legends client and joins an active game
-    /// </summary>
-    /// <param name="creds">The credentials for joining the game</param>
-    public static void JoinGame(InGameCredentials creds) => JoinGame(creds.ServerIp, creds.ServerPort, creds.EncryptionKey, creds.SummonerId);
-
-    private static void JoinGame(string ip, int port, string encKey, double summId) {
+    public static void JoinGame() {
       //"8394" "LoLPatcher.exe" "" "ip port key id"
       if (Process.GetProcessesByName("League of Legends").Length > 0) {
-        System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
         new Thread(GetCurrentGame).Start();
         return;
       }
@@ -251,14 +240,13 @@ namespace LeagueClient.Logic {
       var lolclient = Path.Combine(RiotGamesDir, RiotVersionManager.AirPath, Latest.AirVersion.ToString(), "deploy", "LolClient.exe");
 
       var info = new ProcessStartInfo(Path.Combine(game, "League of Legends.exe"));
-      var str = $"{ip} {port} {encKey} {summId}";
+      var str = $"{Credentials.ServerIp} {Credentials.ServerPort} {Credentials.EncryptionKey} {Credentials.SummonerId}";
       info.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", "8394", "LoLPatcher.exe", lolclient, str);
       info.WorkingDirectory = game;
       Process.Start(info);
 
       ChatManager.Status = ChatStatus.inGame;
       new Thread(GetCurrentGame).Start();
-      System.Windows.Application.Current.Dispatcher.Invoke(MainWindow.ShowInGamePage);
     }
 
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();

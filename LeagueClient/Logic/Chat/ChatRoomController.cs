@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace LeagueClient.Logic.Chat {
-  public class ChatRoomController {
+  public sealed class ChatRoomController : IDisposable {
     private TextBox input;
     private RichTextBox output;
     private Button send;
@@ -71,7 +71,7 @@ namespace LeagueClient.Logic.Chat {
       }
     }
 
-    public void LeaveChat() {
+    public void Dispose() {
       Client.ChatManager.LeaveRoom(chatRoom);
       Client.ChatManager.PresenceRecieved -= ChatManager_PresenceRecieved;
       Client.ChatManager.MessageReceived -= ChatManager_MessageReceived;

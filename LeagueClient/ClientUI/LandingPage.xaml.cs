@@ -37,7 +37,7 @@ namespace LeagueClient.ClientUI {
   /// <summary>
   /// Interaction logic for LandingPage.xaml
   /// </summary>
-  public partial class LandingPage : Page, IClientPage, IQueueManager {
+  public sealed partial class LandingPage : Page, IClientPage, IQueueManager {
     public IQueueInfo CurrentInfo { get; private set; }
     public IQueuePopup CurrentPopup { get; private set; }
     public IClientSubPage CurrentPage { get; private set; }
@@ -254,7 +254,7 @@ namespace LeagueClient.ClientUI {
     void IQueueManager.ShowPage(IClientSubPage page) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(Client.QueueManager.ShowPage, page); return; }
 
-      CloseSubPage(true);
+      CloseSubPage();
       page.Close += HandlePageClose;
       CurrentPage = page;
       SubPageArea.Content = page?.Page;
@@ -272,13 +272,6 @@ namespace LeagueClient.ClientUI {
         info.Popped += Info_Popped;
         Dispatcher.Invoke(() => QueuerArea.Child = info.Control);
       }
-    }
-
-    void IQueueManager.BeginChampionSelect(GameDTO game) {
-      var page = new ChampSelectPage(game);
-      Client.QueueManager.ShowPage(page);
-      Client.ChatManager.Status = ChatStatus.championSelect;
-      RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
 
     bool IQueueManager.AttachToQueue(SearchingForMatchNotification result) {
@@ -334,13 +327,13 @@ namespace LeagueClient.ClientUI {
     }
     #endregion
 
-    private void CloseSubPage(bool notifyPage) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(CloseSubPage, notifyPage); return; }
+    private void CloseSubPage() {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.Invoke(CloseSubPage); return; }
 
       if (CurrentPage != null) {
         CurrentPage.Close -= HandlePageClose;
-        SubPageArea.Content = null;
         CurrentPage = null;
+        SubPageArea.Content = null;
         SubPageArea.Visibility = Visibility.Collapsed;
         ShowTab(Tab.Friends);
       }
@@ -348,9 +341,9 @@ namespace LeagueClient.ClientUI {
 
     private void HandlePageClose(object source, EventArgs e) {
       if (Thread.CurrentThread != Dispatcher.Thread)
-        Dispatcher.MyInvoke(CloseSubPage, false);
+        Dispatcher.Invoke(CloseSubPage);
       else
-        CloseSubPage(false);
+        CloseSubPage();
     }
 
     private enum Tab {

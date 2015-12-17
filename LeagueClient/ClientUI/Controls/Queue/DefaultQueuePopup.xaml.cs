@@ -86,7 +86,7 @@ namespace LeagueClient.ClientUI.Controls {
         }
       } else if (game.GameState.Contains("CHAMP_SELECT")) {
         Close?.Invoke(this, new QueueEventArgs(QueuePopOutcome.Accepted));
-        Client.QueueManager.BeginChampionSelect(game);
+        Client.MainWindow.BeginChampionSelect(game);
       } else if (game.GameState.Equals("TERMINATED")) {
         Close?.Invoke(this, new QueueEventArgs(QueuePopOutcome.Cancelled));
       } else { }
