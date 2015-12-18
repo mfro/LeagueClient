@@ -21,7 +21,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for CapOtherPlayer2.xaml
   /// </summary>
-  public partial class CapOtherPlayer : UserControl {
+  public partial class CapOtherPlayer : UserControl, IDisposable {
     public CapPlayer Player { get; private set; }
 
     public event EventHandler<bool> CandidateReacted;
@@ -133,10 +133,10 @@ namespace LeagueClient.ClientUI.Controls {
         try {
           Dispatcher.Invoke(() => TimerText.Content = Unknown.Text = t + "");
         } catch {
-          timer.Dispose();
+          Dispose();
         }
       } else {
-        timer.Dispose();
+        Dispose();
         Player.Status = CapStatus.Searching;
       }
     }
@@ -162,6 +162,10 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
       Player.Role = (Role) RoleBox.SelectedItem;
+    }
+
+    public void Dispose() {
+      timer.Dispose();
     }
   }
 }

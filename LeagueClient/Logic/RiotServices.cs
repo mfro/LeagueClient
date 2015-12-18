@@ -1180,8 +1180,7 @@ namespace LeagueClient.Logic.Riot {
       try {
         return Client.RtmpConn.InvokeAsync<T>("my-rtmps", destination, method, argument);
       } catch (InvocationException e) {
-        if (OnInvocationError != null)
-          OnInvocationError(null, e);
+        OnInvocationError?.Invoke(null, e);
         return null;
       }
     }

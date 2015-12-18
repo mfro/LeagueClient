@@ -362,7 +362,6 @@
     <Compile Include="Logic\RiotACS.cs" />
     <Compile Include="Logic\RiotServices.cs" />
     <Compile Include="Logic\Chat\RiotChat.cs" />
-    <Compile Include="Logic\RiotPatcher.cs" />
     <Compile Include="Logic\RiotVersionManager.cs" />
     <Compile Include="Logic\Settings\PatcherSettings.cs" />
     <Compile Include="Logic\Settings\LoginSettings.cs" />

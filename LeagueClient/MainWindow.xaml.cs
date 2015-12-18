@@ -69,7 +69,6 @@ namespace LeagueClient {
       if (Client.LoginQueue.InGameCredentials?.InGame ?? false) {
         Client.Credentials = Client.LoginQueue.InGameCredentials;
         Client.JoinGame();
-        Client.QueueManager.ShowPage(new InGamePage());
         Client.LoginQueue.InGameCredentials.InGame = false;
       }
     }
@@ -100,11 +99,13 @@ namespace LeagueClient {
     }
 
     private void Champselect_ChampSelectCompleted(object sender, EventArgs e) {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(Champselect_ChampSelectCompleted, sender, e); return; }
+
       ShowLandingPage();
 
       currentPage = landing;
-      champselect = null;
       champselect.ChampSelectCompleted -= Champselect_ChampSelectCompleted;
+      champselect = null;
     }
 
     public void ShowLandingPage() {

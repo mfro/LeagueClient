@@ -22,7 +22,7 @@ namespace LeagueClient.ClientUI.Controls {
     public MatchHistory(SummonerCache.Item item) {
       InitializeComponent();
 
-      MatchList.ItemsSource = item.MatchHistory.Games.Games;
+      MatchList.ItemsSource = item.MatchHistory.Games.Games.OrderByDescending(game => game.GameCreation);
     }
   }
 }

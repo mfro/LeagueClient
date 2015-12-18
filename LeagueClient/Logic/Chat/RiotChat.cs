@@ -134,7 +134,7 @@ namespace LeagueClient.Logic.Chat {
     }
 
     private void UpdateProc(object src, ElapsedEventArgs args) {
-      try { Application.Current.Dispatcher.MyInvoke(ResetList, false); } catch { timer.Dispose(); }
+      try { Application.Current.Dispatcher.MyInvoke(ResetList, false); } catch { Dispose(); }
       Tick?.Invoke(this, new EventArgs());
     }
     #endregion

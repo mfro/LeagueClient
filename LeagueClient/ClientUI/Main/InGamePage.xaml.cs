@@ -36,6 +36,7 @@ namespace LeagueClient.ClientUI.Main {
         ReconnectGrid.Visibility = Visibility.Visible;
         ReconnectButton.Content = "Show Champion Select";
       } else {
+        ReconnectButton.Content = "Reconnect";
         ReconnectGrid.Visibility = Visibility.Collapsed;
 
         var procs = Process.GetProcessesByName("League of Legends");

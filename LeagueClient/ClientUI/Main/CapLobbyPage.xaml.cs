@@ -425,7 +425,7 @@ namespace LeagueClient.ClientUI.Main {
             var method = GetMethod(response);
             method(json);
           } catch (Exception x) {
-            Client.Log(x);
+            Client.ThrowException(x);
           }
           return true;
         } else if (!response.status.Equals("ACK")) Client.Log(response.status + ": " + response.payload);
@@ -443,7 +443,6 @@ namespace LeagueClient.ClientUI.Main {
         Close?.Invoke(this, new EventArgs());
         Client.Credentials = creds;
         Client.JoinGame();
-        Client.QueueManager.ShowPage(new InGamePage());
         return true;
       } else if ((game = e.Body as GameDTO) != null) {
         return true;

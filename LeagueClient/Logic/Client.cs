@@ -28,6 +28,7 @@ using LeagueClient.Logic.Settings;
 using System.Xml.Serialization;
 using System.Net;
 using System.Text;
+using System.Windows;
 
 namespace LeagueClient.Logic {
   public static class Client {
@@ -232,6 +233,8 @@ namespace LeagueClient.Logic {
     public static void JoinGame() {
       //"8394" "LoLPatcher.exe" "" "ip port key id"
       if (Process.GetProcessesByName("League of Legends").Length > 0) {
+        ChatManager.Status = ChatStatus.inGame;
+        Application.Current.Dispatcher.Invoke(() => QueueManager.ShowPage(new InGamePage()));
         new Thread(GetCurrentGame).Start();
         return;
       }
@@ -246,18 +249,13 @@ namespace LeagueClient.Logic {
       Process.Start(info);
 
       ChatManager.Status = ChatStatus.inGame;
+      Application.Current.Dispatcher.Invoke(() => QueueManager.ShowPage(new InGamePage()));
       new Thread(GetCurrentGame).Start();
     }
 
     private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
     public static void ShowInvite(InvitationRequest invite) {
       if (invite.InvitationState.Equals("ACTIVE")) {
-        //var payload = JSON.ParseObject(invite.GameMetaData);
-        //string type = payload["gameType"];
-        //GameInviteAlert alert = AlertFactory.InviteAlert(invite);
-
-        //invites[invite.InvitationId] = alert;
-        //QueueManager.ShowNotification(alert);
         var user = RiotChat.GetUser(invite.Inviter.summonerId);
         if (ChatManager.Friends.ContainsKey(user)) {
           ChatManager.Friends[user].Invite = invite;
@@ -383,11 +381,16 @@ namespace LeagueClient.Logic {
 
     #endregion
 
+    public static void ThrowException(Exception x, string details = null) {
+      if (details != null) Log(details);
+      Log(x);
+    }
+
     public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
       try {
         if (MainWindow.HandleMessage(e)) return;
       } catch (Exception x) {
-        Log("Exception while dispatching message: " + x.Message);
+        ThrowException(x, "Exception while dispatching message");
       }
 
       var response = e.Body as LcdsServiceProxyResponse;
@@ -415,7 +418,7 @@ namespace LeagueClient.Logic {
           Log($"Receive [{e.Subtopic}, {e.ClientId}]: '{e.Body}'");
         }
       } catch (Exception x) {
-        Log("Exception while handling message: " + x.Message);
+        ThrowException(x, "Exception while handling message");
       }
     }
 

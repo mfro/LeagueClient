@@ -86,16 +86,14 @@ namespace LeagueClient.ClientUI {
       PlayerCredentialsDto creds;
       GameDTO game;
 
-      Client.QueueManager.ShowPage();
       if ((game = args.Body as GameDTO) != null) {
         Dispatcher.MyInvoke(GotGameData, game);
         return true;
       } else if ((creds = args.Body as PlayerCredentialsDto) != null) {
         ChampSelectCompleted?.Invoke(this, new EventArgs());
-        timer.Dispose();
         Client.Credentials = creds;
         Client.JoinGame();
-        Client.QueueManager.ShowPage(new InGamePage());
+        Dispose();
         return true;
       }
 
@@ -255,7 +253,7 @@ namespace LeagueClient.ClientUI {
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       try {
         Dispatcher.Invoke(UpdateHeader);
-      } catch { timer.Dispose(); }
+      } catch { Dispose(); }
     }
 
     private void ChampsGrid_ChampSelected(object sender, ChampionDto e) {
@@ -339,12 +337,12 @@ namespace LeagueClient.ClientUI {
       UpdateBooks();
     }
 
+    #endregion
+
     public void Dispose() {
       timer.Dispose();
       chatRoom.Dispose();
     }
-
-    #endregion
 
     private enum State {
       Picking, Banning, Watching
