@@ -49,7 +49,6 @@ namespace LeagueClient.Logic.Chat {
     public void UpdatePresence(Presence p) {
       IsOffline = p.Status == null;
       if (!IsOffline) {
-
         Status = new LeagueStatus(p.Status, p.Show);
         if (Status.GameStatus == ChatStatus.inGame) {
           RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Name).ContinueWith(GotGameDTO);
@@ -60,6 +59,7 @@ namespace LeagueClient.Logic.Chat {
         }
 
         Client.SummonerCache.GetData(User.Name, GotSummoner);
+        Client.ChatManager.ForceUpdate();
       }
     }
 

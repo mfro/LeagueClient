@@ -253,7 +253,6 @@ namespace LeagueClient.Logic {
       new Thread(GetCurrentGame).Start();
     }
 
-    private static Dictionary<string, Alert> invites = new Dictionary<string, Alert>();
     public static void ShowInvite(InvitationRequest invite) {
       if (invite.InvitationState.Equals("ACTIVE")) {
         var user = RiotChat.GetUser(invite.Inviter.summonerId);

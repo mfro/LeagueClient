@@ -38,7 +38,7 @@
     </Style>
   </UserControl.Resources>
   <Border>
-    <Grid Margin="10">
+    <Grid Margin="0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="160"/>

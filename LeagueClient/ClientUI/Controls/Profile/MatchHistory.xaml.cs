@@ -24,5 +24,15 @@ namespace LeagueClient.ClientUI.Controls {
 
       MatchList.ItemsSource = item.MatchHistory.Games.Games.OrderByDescending(game => game.GameCreation);
     }
+
+    private async void MatchHistoryItem_MouseUp(object sender, MouseButtonEventArgs e) {
+      var game = ((MatchHistoryItem) sender).DataContext as RiotACS.Game;
+      if (game != null) {
+        var details = RiotACS.GetMatchDetails(Client.Region.Platform, game.GameId);
+        var delta = (await RiotACS.GetDeltas()).Deltas.FirstOrDefault(d => d.GameId == game.GameId).Delta;
+
+        Details.Child = new MatchDetails(await details, delta, () => Details.Child = null);
+      }
+    }
   }
 }

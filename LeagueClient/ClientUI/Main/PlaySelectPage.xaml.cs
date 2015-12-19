@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -50,28 +49,29 @@ namespace LeagueClient.ClientUI.Main {
     //private Thread update;
     private Queue selected;
     private QueueController queue;
-    private Dictionary<ListBox, List<Queue>> queues = new Dictionary<ListBox, List<Queue>>();
+    private List<Queue> queues;
+    //private Dictionary<ListBox, List<Queue>> queues = new Dictionary<ListBox, List<Queue>>();
 
     public PlaySelectPage() {
       InitializeComponent();
 
       #region Queues
-
-      queues[ClassicQueues] = new List<Queue> {
+      queues = new List<Queue> {
+      //queues[ClassicQueues] = new List<Queue> {
         new Queue("Teambuilder", 61, "Enter Soloqueue", "Create Lobby", PlayTeambuilder),
         new Queue("Blind Pick 5v5", 2, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("Draft Pick 5v5", 14, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("Blind Pick 3v3", 8, "Enter Soloqueue", "Create Lobby", PlayStandard),
-      };
+      //};
 
-      queues[SpecialQueues] = new List<Queue> {
+      //queues[SpecialQueues] = new List<Queue> {
         new Queue("Blind Pick Dominion", 16, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("Draft Pick Dominion", 17, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("ARAM", 65, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("King Poro", 300, "Enter Soloqueue", "Create Lobby", PlayStandard),
-      };
+      //};
 
-      queues[RankedQueues] = new List<Queue> {
+      //queues[RankedQueues] = new List<Queue> {
         new Queue("Ranked Solo / Duo Queue", 4, "Enter Soloqueue", "Invite Duo Partner", PlayRanked),
         new Queue("Ranked Teams 5v5", 42, null, "Create Lobby", PlayRankedTeams),
         new Queue("Ranked Teams 3v3", 41, null, "Create Lobby", PlayRankedTeams),
@@ -114,7 +114,8 @@ namespace LeagueClient.ClientUI.Main {
           QueueLabel.Visibility = CancelButton.Visibility = Visibility.Collapsed;
         });
       }
-      ClassicQueues.IsEnabled = SpecialQueues.IsEnabled = RankedQueues.IsEnabled = !inQueue;
+      Queues.IsEnabled = !inQueue;
+      //ClassicQueues.IsEnabled = SpecialQueues.IsEnabled = RankedQueues.IsEnabled = !inQueue;
     }
 
     //private void UpdateLoop() {
@@ -133,8 +134,8 @@ namespace LeagueClient.ClientUI.Main {
       if (src.SelectedIndex < 0) return;
       var queue = (Queue) ((ListBox) sender).SelectedItem;
 
-      foreach (var item in queues.Keys)
-        if (item != src) item.SelectedIndex = -1;
+      //foreach (var item in queues.Keys)
+      //  if (item != src) item.SelectedIndex = -1;
 
       if (queue.Action1 != null) {
         QueueButton1.Visibility = Visibility.Visible;
@@ -149,13 +150,11 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void Reset() {
-      foreach (var category in queues) {
-        var list = from item in category.Value
-                   where Client.AvailableQueues.ContainsKey(item.ID)
-                   select item;
-        ((Grid) category.Key.Parent).Visibility = list.Count() > 0 ? Visibility.Visible : Visibility.Collapsed;
-        category.Key.ItemsSource = list;
-      }
+      var list = from item in queues
+                 where Client.AvailableQueues.ContainsKey(item.ID)
+                 select item;
+      //((Grid) category.Key.Parent).Visibility = list.Count() > 0 ? Visibility.Visible : Visibility.Collapsed;
+      Queues.ItemsSource = list;
     }
 
     public void Dispose() {
@@ -274,21 +273,21 @@ namespace LeagueClient.ClientUI.Main {
     }
     #endregion
 
-    private class QueueCategory : IEnumerable<Queue> {
-      public string Name { get; }
-      public string Description { get; }
-      public List<Queue> Queues { get; } = new List<Queue>();
+    //private class QueueCategory : IEnumerable<Queue> {
+    //  public string Name { get; }
+    //  public string Description { get; }
+    //  public List<Queue> Queues { get; } = new List<Queue>();
 
-      public QueueCategory(string name, string description) {
-        Name = name;
-        Description = description;
-      }
+    //  public QueueCategory(string name, string description) {
+    //    Name = name;
+    //    Description = description;
+    //  }
 
-      public void Add(Queue q) => Queues.Add(q);
+    //  public void Add(Queue q) => Queues.Add(q);
 
-      public IEnumerator<Queue> GetEnumerator() => Queues.GetEnumerator();
-      IEnumerator IEnumerable.GetEnumerator() => Queues.GetEnumerator();
-    }
+    //  public IEnumerator<Queue> GetEnumerator() => Queues.GetEnumerator();
+    //  IEnumerator IEnumerable.GetEnumerator() => Queues.GetEnumerator();
+    //}
 
     private class Queue {
       public string Name { get; }

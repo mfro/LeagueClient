@@ -6,22 +6,22 @@
       SnapsToDevicePixels="True" Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}">
   <Grid Background="{StaticResource Back2Brush}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="75"/>
+      <RowDefinition Height="50"/>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="*"/>
-      <RowDefinition Height="75"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="75"/>
+      <ColumnDefinition Width="0"/>
       <ColumnDefinition Width="auto"/>
       <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="75"/>
+      <ColumnDefinition Width="0"/>
     </Grid.ColumnDefinitions>
-    <Border Name="MeArea" Grid.Column="1" Grid.Row="1"/>
+    <Border Name="MeArea" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1">
+      <my:CapMePlayer/>
+    </Border>
 
-    <Border Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Top"
-            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Height="310">
+    <Border Grid.Row="1" Grid.Column="2" VerticalAlignment="Top" Grid.RowSpan="2" HorizontalAlignment="Right"
+            BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" Width="340" Height="340">
       <my:CapMap x:Name="GameMap"/>
     </Border>
 

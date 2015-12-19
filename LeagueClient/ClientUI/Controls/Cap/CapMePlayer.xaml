@@ -17,8 +17,8 @@
       <ColumnDefinition Width="*"/>
       <ColumnDefinition Width="8"/>
     </Grid.ColumnDefinitions>
-    <Border Grid.Row="1" Grid.Column="1" BorderBrush="{StaticResource ForeBrush}" Name="ChampionBorder"
-              BorderThickness="2" MouseUp="Champion_Click" Cursor="Hand" Background="Transparent">
+    <Border Grid.Row="1" Grid.Column="1" BorderBrush="{StaticResource ForeBrush}" Background="{StaticResource ForeBrush}" Name="ChampionBorder"
+              BorderThickness="2" MouseUp="Champion_Click" Cursor="Hand">
       <Image Name="ChampionImage"/>
     </Border>
     <Grid Grid.Row="1" Grid.Column="3">
@@ -65,13 +65,13 @@
       </Grid.RowDefinitions>
       <Label Padding="2 2" FontSize="13"
                Background="Transparent" VerticalAlignment="Bottom" >Spells</Label>
-      <Border Width="36" Height="36" BorderBrush="{StaticResource ForeBrush}" BorderThickness="2"
-                HorizontalAlignment="Left" Grid.Row="1" Cursor="Hand" Background="Transparent"
+      <Border Width="36" Height="36" BorderBrush="{StaticResource ForeBrush}" Background="{StaticResource ForeBrush}" BorderThickness="2"
+                HorizontalAlignment="Left" Grid.Row="1" Cursor="Hand"
                 MouseUp="Spell1_Click" Name="Spell1Border">
         <Image Name="Spell1Image"/>
       </Border>
-      <Border Width="36" Height="36" BorderBrush="{StaticResource ForeBrush}" BorderThickness="2"
-                HorizontalAlignment="Right" Grid.Row="1" Cursor="Hand" Background="Transparent"
+      <Border Width="36" Height="36" BorderBrush="{StaticResource ForeBrush}" Background="{StaticResource ForeBrush}" BorderThickness="2"
+                HorizontalAlignment="Right" Grid.Row="1" Cursor="Hand"
                 MouseUp="Spell2_Click" Name="Spell2Border">
         <Image Name="Spell2Image"/>
       </Border>

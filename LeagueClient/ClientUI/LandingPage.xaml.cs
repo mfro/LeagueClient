@@ -43,27 +43,21 @@ namespace LeagueClient.ClientUI {
     public IClientSubPage CurrentPage { get; private set; }
     public BindingList<ChatFriend> OpenChatsList { get; } = new BindingList<ChatFriend>();
 
-    private Border currentButton;
-
-    private List<Border> Buttons;
-    private int[] ArrowLocations = new[] { 11, 53, 95, 134, 172 };
-
     public LandingPage() {
       InitializeComponent();
-      Buttons = new List<Border> { LogoutTab, PlayTab, FriendsTab, ProfileTab, ShopTab };
-
-      ShowTab(Tab.Friends);
+      ShowTab(Tab.Play);
       IPAmount.Content = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Content = Client.LoginPacket.RpBalance.ToString();
       NameLabel.Content = Client.LoginPacket.AllSummonerData.Summoner.Name;
       ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId));
 
-      Client.ChatManager.FriendList.ListChanged += FriendList_ListChanged;
+      //Client.ChatManager.FriendList.ListChanged += FriendList_ListChanged;
       Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
       Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
 
       OpenChats.ItemsSource = OpenChatsList;
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;
+      FriendsList.ItemsSource = Client.ChatManager.FriendList;
     }
 
     private void ChatManager_MessageReceived(object sender, Message e) {
@@ -73,35 +67,36 @@ namespace LeagueClient.ClientUI {
     }
 
     private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
-      var groups = new Dictionary<object, List<ChatFriend>> {
-        [ShowType.chat] = new List<ChatFriend>(),
-        [ShowType.away] = new List<ChatFriend>(),
-        [ShowType.dnd] = new List<ChatFriend>()
-      };
-      //foreach (var item in Client.ChatManager.FriendList) {
-      //  if (item.CurrentGameInfo != null) {
-      //    if (!groups.ContainsKey(item.CurrentGameInfo.gameId))
-      //      groups[item.CurrentGameInfo.gameId] = new List<ChatFriend>();
-      //    groups[item.CurrentGameInfo.gameId].Add(item);
-      //  }
-      //}
-      //foreach (var item in new List<object>(groups.Keys)) {
-      //  if (groups[item].Count == 1) groups.Remove(item);
-      //}
+      //var groups = new Dictionary<object, List<ChatFriend>> {
+      //  [ShowType.chat] = new List<ChatFriend>(),
+      //  [ShowType.away] = new List<ChatFriend>(),
+      //  [ShowType.dnd] = new List<ChatFriend>()
+      //};
+      ////foreach (var item in Client.ChatManager.FriendList) {
+      ////  if (item.CurrentGameInfo != null) {
+      ////    if (!groups.ContainsKey(item.CurrentGameInfo.gameId))
+      ////      groups[item.CurrentGameInfo.gameId] = new List<ChatFriend>();
+      ////    groups[item.CurrentGameInfo.gameId].Add(item);
+      ////  }
+      ////}
+      ////foreach (var item in new List<object>(groups.Keys)) {
+      ////  if (groups[item].Count == 1) groups.Remove(item);
+      ////}
 
-      foreach (var item in Client.ChatManager.FriendList) {
-        if (groups.Any(pair => pair.Value.Contains(item))) continue;
-        groups[item.Status.Show].Add(item);
-      }
-      Dispatcher.Invoke(() => {
-        ChatList.ItemsSource = groups[ShowType.chat];
-        DndList.ItemsSource = groups[ShowType.dnd];
-        AwayList.ItemsSource = groups[ShowType.away];
-        //GroupList.Children.Clear();
-        //foreach (var group in groups.Where(pair => pair.Value.Count > 0).OrderBy(pair => pair.Value.First().GetValue())) {
-        //  GroupList.Children.Add(new ItemsControl { ItemsSource = group.Value.OrderBy(u => u.GetValue()) });
-        //}
-      });
+      //foreach (var item in Client.ChatManager.FriendList) {
+      //  if (groups.Any(pair => pair.Value.Contains(item))) continue;
+      //  groups[item.Status.Show].Add(item);
+      //}
+      //Dispatcher.Invoke(() => {
+      //  ChatList.ItemsSource = groups[ShowType.chat];
+      //  DndList.ItemsSource = groups[ShowType.dnd];
+      //  AwayList.ItemsSource = groups[ShowType.away];
+      //  //GroupList.Children.Clear();
+      //  //foreach (var group in groups.Where(pair => pair.Value.Count > 0).OrderBy(pair => pair.Value.First().GetValue())) {
+      //  //  GroupList.Children.Add(new ItemsControl { ItemsSource = group.Value.OrderBy(u => u.GetValue()) });
+      //  //}
+      //});
+
     }
 
     private void ChatManager_StatusUpdated(object sender, StatusUpdatedEventArgs e) {
@@ -132,48 +127,63 @@ namespace LeagueClient.ClientUI {
     }
 
     #region Tab Events
-    private void Tab_MouseEnter(object sender, RoutedEventArgs e) {
-      var text = ((Border) sender).Child as TextBlock;
-      text.Foreground = Brushes.White;
-    }
+    //private bool forceExpand;
+    private static readonly Duration slide = new Duration(TimeSpan.FromMilliseconds(200));
 
-    private void Tab_MouseLeave(object sender, RoutedEventArgs e) {
-      if (sender != currentButton) {
-        var text = ((Border) sender).Child as TextBlock;
-        text.Foreground = App.FontBrush;
-      }
-    }
-
-    private void Tab_MousePress(object sender, RoutedEventArgs e) {
-      ShowTab((Tab) Buttons.IndexOf((Border) sender));
-    }
-
-    private void ShowTab(Tab tab) {
-      if (currentButton != null) ((TextBlock) currentButton.Child).Foreground = App.FontBrush;
-      currentButton = Buttons[(int) tab];
-
-      int pageHeight = (int) (double) FindResource("PageHeight");
-      SlidingGrid.Height = pageHeight * (Buttons.Count - 1);
-
-      if (tab == Tab.Logout) Client.Logout();
-
-      var arrowAnim = new ThicknessAnimation(new Thickness(15, ArrowLocations[(int) tab], 15, 0), new Duration(TimeSpan.FromMilliseconds(100)));
-      Arrows.BeginAnimation(MarginProperty, arrowAnim);
-
-      var slideAnim = new ThicknessAnimation(new Thickness(0, -pageHeight * ((int) tab - 1), 0, 0), new Duration(TimeSpan.FromMilliseconds(100)));
-      SlidingGrid.BeginAnimation(MarginProperty, slideAnim);
-
-      if (tab == Tab.Play) PlayPage.Reset();
-      if (tab == Tab.Shop) {
-        ShowTab(Tab.Friends);
+    private void Tab_Click(object sender, RoutedEventArgs e) {
+      //if (sender == PlayTab && Keyboard.IsKeyDown(Key.LeftShift)) {
+      //  forceExpand = !forceExpand;
+      //} else 
+      if (sender == LogoutTab) Client.Logout();
+      else if (sender == PlayTab) ShowTab(Tab.Play);
+      //else if (sender == FriendsTab) ShowTab(Tab.Friends);
+      else if (sender == ProfileTab) ShowTab(Tab.Profile);
+      else if (sender == ShopTab) {
         RiotServices.LoginService.GetStoreUrl().ContinueWith(t => {
           System.Diagnostics.Process.Start(t.Result);
         });
       }
+
+      //if (!forceExpand) {
+      //  var shrink = new ThicknessAnimation(new Thickness(0), slide);
+      //  PlayExpandUp.BeginAnimation(MarginProperty, shrink);
+      //  PlayExpandDown.BeginAnimation(MarginProperty, shrink);
+      //}
+    }
+
+    private void ShowTab(Tab tab) {
+      int pageHeight = (int) (double) FindResource("PageHeight");
+      SlidingGrid.Height = pageHeight * Enum.GetValues(typeof(Tab)).Length;
+
+      var slideAnim = new ThicknessAnimation(new Thickness(0, -pageHeight * ((int) tab), 0, 0), new Duration(TimeSpan.FromMilliseconds(100)));
+      SlidingGrid.BeginAnimation(MarginProperty, slideAnim);
+
+      if (tab == Tab.Play) PlayPage.Reset();
+    }
+
+    private void PlayTab_MouseEnter(object sender, MouseEventArgs e) {
+      PlayTabGlow.Color = App.FocusColor;
+      //var top = new ThicknessAnimation(new Thickness(0, -65, 0, 0), slide);
+      //PlayExpandUp.BeginAnimation(MarginProperty, top);
+      //var bot = new ThicknessAnimation(new Thickness(0, 0, 0, -120), slide);
+      //PlayExpandDown.BeginAnimation(MarginProperty, bot);
+    }
+
+    private void PlayTab_MouseLeave(object sender, MouseEventArgs e) {
+      PlayTabGlow.Color = Colors.Black;
+    }
+
+    private void Border_MouseLeave(object sender, MouseEventArgs e) {
+      //if (!forceExpand) {
+      //  var shrink = new ThicknessAnimation(new Thickness(0), slide);
+      //  PlayExpandUp.BeginAnimation(MarginProperty, shrink);
+      //  PlayExpandDown.BeginAnimation(MarginProperty, shrink);
+      //}
     }
     #endregion
 
     #region Other Events
+
     private void Info_Popped(object sender, EventArgs e) {
       Client.QueueManager.ShowInfo(null);
     }
@@ -185,16 +195,14 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
-      //if (e.GetPosition((Grid) sender).Y < 20) {
       if (e.ChangedButton == MouseButton.Left)
         if (e.ClickCount == 2) Client.MainWindow.Center();
         else Client.MainWindow.DragMove();
-      //}
     }
 
     private void Friend_MouseUp(object sender, MouseButtonEventArgs e) {
-      if (e.ChangedButton == MouseButton.Left && !OpenChatsList.Contains(((FriendListItem2) sender).friend))
-        OpenChatsList.Add(((FriendListItem2) sender).friend);
+      if (e.ChangedButton == MouseButton.Left && !OpenChatsList.Contains(((FriendListItem) sender).friend))
+        OpenChatsList.Add(((FriendListItem) sender).friend);
     }
 
     private void CurrentStatus_MouseUp(object sender, MouseButtonEventArgs e) {
@@ -335,7 +343,7 @@ namespace LeagueClient.ClientUI {
         CurrentPage = null;
         SubPageArea.Content = null;
         SubPageArea.Visibility = Visibility.Collapsed;
-        ShowTab(Tab.Friends);
+        //ShowTab(Tab.Friends);
       }
     }
 
@@ -347,11 +355,9 @@ namespace LeagueClient.ClientUI {
     }
 
     private enum Tab {
-      Logout = 0,
-      Play = 1,
-      Friends = 2,
-      Profile = 3,
-      Shop = 4
+      Play = 0,
+      //Friends = 1,
+      Profile = 1
     }
   }
 }

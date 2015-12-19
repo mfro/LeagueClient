@@ -2,6 +2,7 @@
 using MFroehlich.Parsing.JSON;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,6 +72,12 @@ namespace LeagueClient.Logic {
 
     [JSONSerializable]
     public class Delta {
+      [JSONField("gamePlatformId")]
+      public string Platform { get; set; }
+
+      [JSONField("gameId")]
+      public long GameId { get; set; }
+
       [JSONField("xpDelta")]
       public int XP { get; set; }
 
@@ -159,10 +166,226 @@ namespace LeagueClient.Logic {
       public List<Team> Teams { get; set; }
 
       [JSONField("participants")]
-      public List<RiotAPI.MatchAPI.Participant> Participants { get; set; }
+      public List<Participant> Participants { get; set; }
 
       [JSONField("participantIdentities")]
       public List<ParticipantIdentity> ParticipantIdentities { get; set; }
+    }
+
+    [JSONSerializable]
+    public class Participant {
+      [JSONField("participantId")]
+      public int ParticipantId { get; set; }
+
+      [JSONField("teamId")]
+      public int TeamId { get; set; }
+
+      [JSONField("championId")]
+      public int ChampionId { get; set; }
+
+      [JSONField("spell1Id")]
+      public int Spell1Id { get; set; }
+
+      [JSONField("spell2Id")]
+      public int Spell2Id { get; set; }
+
+      [JSONField("masteries")]
+      public List<RiotAPI.MatchAPI.Mastery> Masteries { get; set; }
+
+      [JSONField("runes")]
+      public List<RiotAPI.MatchAPI.Rune> Runes { get; set; }
+
+      [JSONField("stats")]
+      public ParticipantStats Stats { get; set; }
+
+      [JSONField("timeline")]
+      public RiotAPI.MatchAPI.ParticipantTimeline Timeline { get; set; }
+
+      [JSONField("highestAchievedSeasonTier")]
+      public string HighestAchievedSeasonTier { get; set; }
+    }
+
+    [JSONSerializable]
+    public class ParticipantStats {
+      [JSONField("participantId")]
+      public Int32 ParticipantId { get; set; }
+
+      [JSONField("win")]
+      public Boolean Win { get; set; }
+
+      [JSONField("item0")]
+      public Int32 Item0 { get; set; }
+
+      [JSONField("item1")]
+      public Int32 Item1 { get; set; }
+
+      [JSONField("item2")]
+      public Int32 Item2 { get; set; }
+
+      [JSONField("item3")]
+      public Int32 Item3 { get; set; }
+
+      [JSONField("item4")]
+      public Int32 Item4 { get; set; }
+
+      [JSONField("item5")]
+      public Int32 Item5 { get; set; }
+
+      [JSONField("item6")]
+      public Int32 Item6 { get; set; }
+
+      [JSONField("kills")]
+      public Int32 Kills { get; set; }
+
+      [JSONField("deaths")]
+      public Int32 Deaths { get; set; }
+
+      [JSONField("assists")]
+      public Int32 Assists { get; set; }
+
+      [JSONField("largestKillingSpree")]
+      public Int32 LargestKillingSpree { get; set; }
+
+      [JSONField("largestMultiKill")]
+      public Int32 LargestMultiKill { get; set; }
+
+      [JSONField("killingSprees")]
+      public Int32 KillingSprees { get; set; }
+
+      [JSONField("longestTimeSpentLiving")]
+      public Int32 LongestTimeSpentLiving { get; set; }
+
+      [JSONField("doubleKills")]
+      public Int32 DoubleKills { get; set; }
+
+      [JSONField("tripleKills")]
+      public Int32 TripleKills { get; set; }
+
+      [JSONField("quadraKills")]
+      public Int32 QuadraKills { get; set; }
+
+      [JSONField("pentaKills")]
+      public Int32 PentaKills { get; set; }
+
+      [JSONField("unrealKills")]
+      public Int32 UnrealKills { get; set; }
+
+      [JSONField("totalDamageDealt")]
+      public Int32 TotalDamageDealt { get; set; }
+
+      [JSONField("magicDamageDealt")]
+      public Int32 MagicDamageDealt { get; set; }
+
+      [JSONField("physicalDamageDealt")]
+      public Int32 PhysicalDamageDealt { get; set; }
+
+      [JSONField("trueDamageDealt")]
+      public Int32 TrueDamageDealt { get; set; }
+
+      [JSONField("largestCriticalStrike")]
+      public Int32 LargestCriticalStrike { get; set; }
+
+      [JSONField("totalDamageDealtToChampions")]
+      public Int32 TotalDamageDealtToChampions { get; set; }
+
+      [JSONField("magicDamageDealtToChampions")]
+      public Int32 MagicDamageDealtToChampions { get; set; }
+
+      [JSONField("physicalDamageDealtToChampions")]
+      public Int32 PhysicalDamageDealtToChampions { get; set; }
+
+      [JSONField("trueDamageDealtToChampions")]
+      public Int32 TrueDamageDealtToChampions { get; set; }
+
+      [JSONField("totalHeal")]
+      public Int32 TotalHeal { get; set; }
+
+      [JSONField("totalUnitsHealed")]
+      public Int32 TotalUnitsHealed { get; set; }
+
+      [JSONField("totalDamageTaken")]
+      public Int32 TotalDamageTaken { get; set; }
+
+      [JSONField("magicalDamageTaken")]
+      public Int32 MagicalDamageTaken { get; set; }
+
+      [JSONField("physicalDamageTaken")]
+      public Int32 PhysicalDamageTaken { get; set; }
+
+      [JSONField("trueDamageTaken")]
+      public Int32 TrueDamageTaken { get; set; }
+
+      [JSONField("goldEarned")]
+      public Int32 GoldEarned { get; set; }
+
+      [JSONField("goldSpent")]
+      public Int32 GoldSpent { get; set; }
+
+      [JSONField("turretKills")]
+      public Int32 TurretKills { get; set; }
+
+      [JSONField("inhibitorKills")]
+      public Int32 InhibitorKills { get; set; }
+
+      [JSONField("totalMinionsKilled")]
+      public Int32 TotalMinionsKilled { get; set; }
+
+      [JSONField("neutralMinionsKilled")]
+      public Int32 NeutralMinionsKilled { get; set; }
+
+      [JSONField("neutralMinionsKilledTeamJungle")]
+      public Int32 NeutralMinionsKilledTeamJungle { get; set; }
+
+      [JSONField("neutralMinionsKilledEnemyJungle")]
+      public Int32 NeutralMinionsKilledEnemyJungle { get; set; }
+
+      [JSONField("totalTimeCrowdControlDealt")]
+      public Int32 TotalTimeCrowdControlDealt { get; set; }
+
+      [JSONField("champLevel")]
+      public Int32 ChampLevel { get; set; }
+
+      [JSONField("visionWardsBoughtInGame")]
+      public Int32 VisionWardsBoughtInGame { get; set; }
+
+      [JSONField("sightWardsBoughtInGame")]
+      public Int32 SightWardsBoughtInGame { get; set; }
+
+      [JSONField("wardsPlaced")]
+      public Int32 WardsPlaced { get; set; }
+
+      [JSONField("wardsKilled")]
+      public Int32 WardsKilled { get; set; }
+
+      [JSONField("firstBloodKill")]
+      public Boolean FirstBloodKill { get; set; }
+
+      [JSONField("firstBloodAssist")]
+      public Boolean FirstBloodAssist { get; set; }
+
+      [JSONField("firstTowerKill")]
+      public Boolean FirstTowerKill { get; set; }
+
+      [JSONField("firstTowerAssist")]
+      public Boolean FirstTowerAssist { get; set; }
+
+      [JSONField("firstInhibitorKill")]
+      public Boolean FirstInhibitorKill { get; set; }
+
+      [JSONField("firstInhibitorAssist")]
+      public Boolean FirstInhibitorAssist { get; set; }
+
+      [JSONField("combatPlayerScore")]
+      public Int32 CombatPlayerScore { get; set; }
+
+      [JSONField("objectivePlayerScore")]
+      public Int32 ObjectivePlayerScore { get; set; }
+
+      [JSONField("totalPlayerScore")]
+      public Int32 TotalPlayerScore { get; set; }
+
+      [JSONField("totalScoreRank")]
+      public Int32 TotalScoreRank { get; set; }
     }
 
     [JSONSerializable]

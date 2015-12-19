@@ -26,22 +26,23 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for Friend.xaml
   /// </summary>
   public partial class FriendListItem : UserControl {
-    private ChatFriend friend;
+    public ChatFriend friend { get; private set; }
 
     public FriendListItem() {
       InitializeComponent();
-    }
 
-    public FriendListItem(ChatFriend friend) : this() {
-      this.friend = friend;
-
-      Update();
+      if (Client.Connected)
+        Loaded += (src, e) => {
+          Client.ChatManager.Tick += (src2, e2) => Dispatcher.Invoke(Update);
+          friend = (ChatFriend) DataContext;
+          Update();
+        };
     }
 
     public void Update() {
       if (friend.Status == null) return;
-      NameText.Text = friend.User.Name;
-      MsgText.Text = friend.Status.Message;
+      NameText.Content = friend.User.Name;
+      MsgText.Content = friend.Status.Message;
       if (string.IsNullOrWhiteSpace(friend.Status.Message)) {
         MsgText.Visibility = Visibility.Collapsed;
       } else {
@@ -49,34 +50,62 @@ namespace LeagueClient.ClientUI.Controls {
       }
       SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(friend.Status.ProfileIcon));
       switch (friend.Status.Show) {
-        case ShowType.chat: InGameText.Foreground = App.ChatBrush; break;
-        case ShowType.away: InGameText.Foreground = App.AwayBrush; break;
-        case ShowType.dnd: InGameText.Foreground = App.BusyBrush; break;
+        case ShowType.chat: StatusText.Foreground = NameText.Foreground = App.ChatBrush; break;
+        case ShowType.away: StatusText.Foreground = NameText.Foreground = App.AwayBrush; break;
+        case ShowType.dnd: StatusText.Foreground = NameText.Foreground = App.BusyBrush; break;
       }
 
-      string status;
+      TimeText.Visibility = ChampText.Visibility = Visibility.Collapsed;
       if (friend.CurrentGameDTO != null) {
+        TimeText.Visibility = Visibility.Visible;
         if (friend.CurrentGameInfo == null) {
           long time = friend.Status.TimeStamp - Client.GetMilliseconds();
-          status = $"In {QueueType.Values[friend.CurrentGameDTO.QueueTypeName]} for ~{TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
+          TimeText.Content = "~" + TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
         } else if (friend.CurrentGameInfo.gameStartTime == 0) {
-          status = "Loading into " + QueueType.Values[friend.CurrentGameDTO.QueueTypeName];
+          TimeText.Content = "Loading";
         } else {
           long time = friend.CurrentGameInfo.gameStartTime - Client.GetMilliseconds();
-          status = $"In {QueueType.Values[friend.CurrentGameDTO.QueueTypeName]} for {TimeSpan.FromMilliseconds(time).ToString("m\\:ss")}";
+          TimeText.Content = TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
         }
-      } else status = friend.Status.GameStatus.Value;
-      InGameText.Text = status;
-    }
-
-    private void MenuItem_Click(object sender, RoutedEventArgs e) {
-      RiotServices.GameInvitationService.Invite(RiotChat.GetSummonerId(friend.User.Jid));
-    }
-
-    private void UserControl_MouseUp(object sender, MouseButtonEventArgs e) {
-      if(e.ChangedButton == MouseButton.Right) {
-        InviteButton.IsEnabled = Client.CanInviteFriends;
+        StatusText.Content = QueueType.Values[friend.CurrentGameDTO.QueueTypeName].Value;
+        if (!string.IsNullOrEmpty(friend.Status.Champion)) {
+          ChampText.Visibility = Visibility.Visible;
+          ChampText.Content = LeagueData.ChampData.Value.data[friend.Status.Champion].name;
+        }
+      } else StatusText.Content = friend.Status.GameStatus.Value;
+      if (friend.Invite != null) {
+        ChampText.Visibility = Visibility.Visible;
+        ChampText.Content = "Invited you";
       }
+    }
+
+    private void Invite_Click(object sender, RoutedEventArgs e) {
+      RiotServices.GameInvitationService.Invite(friend.Cache.Data.Summoner.SummonerId);
+    }
+
+    private void ViewProfile_Click(object sender, RoutedEventArgs e) {
+      Client.QueueManager.ViewProfile(friend.Cache.Data.Summoner.Name);
+    }
+
+    private void DeclineButt_Click(object sender, RoutedEventArgs e) {
+      RiotServices.GameInvitationService.Decline(friend.Invite.InvitationId);
+    }
+
+    private void AcceptButt_Click(object sender, RoutedEventArgs e) {
+      Client.QueueManager.AcceptInvite(friend.Invite);
+      friend.Invite = null;
+    }
+
+    private void Champ_MouseEnter(object sender, MouseEventArgs e) {
+      if (friend.Invite != null) {
+        AcceptButt.BeginStoryboard(App.FadeIn);
+        DeclineButt.BeginStoryboard(App.FadeIn);
+      }
+    }
+
+    private void Champ_MouseLeave(object sender, MouseEventArgs e) {
+      AcceptButt.BeginStoryboard(App.FadeOut);
+      DeclineButt.BeginStoryboard(App.FadeOut);
     }
   }
 }

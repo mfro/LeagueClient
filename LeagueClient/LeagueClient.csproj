@@ -95,11 +95,17 @@
       <DependentUpon>ChampMastery.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\EditButton.cs" />
-    <Compile Include="ClientUI\Controls\FriendListItem2.xaml.cs">
-      <DependentUpon>FriendListItem2.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ClientUI\Controls\Players\LobbyPlayer2.xaml.cs">
       <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\Profile\RedMatchDetailsPlayer.xaml.cs">
+      <DependentUpon>RedMatchDetailsPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\Profile\BlueMatchDetailPlayer.xaml.cs">
+      <DependentUpon>BlueMatchDetailPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientUI\Controls\Profile\MatchDetails.xaml.cs">
+      <DependentUpon>MatchDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\Profile\MatchHistory.xaml.cs">
       <DependentUpon>MatchHistory.xaml</DependentUpon>
@@ -377,11 +383,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\FriendListItem2.xaml">
+    <Page Include="ClientUI\Controls\Players\LobbyPlayer2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Players\LobbyPlayer2.xaml">
+    <Page Include="ClientUI\Controls\Profile\RedMatchDetailsPlayer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ClientUI\Controls\Profile\BlueMatchDetailPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\Profile\MatchDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

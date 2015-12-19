@@ -611,7 +611,15 @@ namespace LeagueClient.ClientUI.Main {
     }
     #endregion
 
-    #region Button Event Handlers
+    #region UI Event Handlers
+
+    private void Border_MouseEnter(object sender, MouseEventArgs e) {
+      InviteBorder.BeginStoryboard(App.FadeIn);
+    }
+
+    private void Border_MouseLeave(object sender, MouseEventArgs e) {
+      InviteBorder.BeginStoryboard(App.FadeOut);
+    }
 
     private void ReadyButt_Click(object sender, RoutedEventArgs e) {
       if (IsCaptain) {

@@ -12,27 +12,23 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="00"/>
     </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="840"/>
-      <ColumnDefinition/>
-    </Grid.ColumnDefinitions>
 
-    <StackPanel Grid.Row="1" Name="PlayerList" Orientation="Horizontal" Margin="0 0 10 0" Height="180" VerticalAlignment="Bottom">
-      <my:CapOtherPlayer Margin="0 0 10 0"/>
-      <my:CapOtherPlayer Margin="0 0 10 0"/>
-      <my:CapOtherPlayer Margin="0 0 10 0"/>
+    <StackPanel Orientation="Horizontal" Grid.Row="1" Name="PlayerList" Margin="0 0" Height="180" VerticalAlignment="Bottom">
+      <my:CapOtherPlayer Margin="0 0 20 0"/>
+      <my:CapOtherPlayer Margin="0 0 20 0"/>
+      <my:CapOtherPlayer Margin="0 0 20 0"/>
       <my:CapOtherPlayer/>
     </StackPanel>
 
-    <Grid Grid.Row="2" Name="MyGrid">
+    <Grid Grid.Row="2" Name="MyGrid" Margin="0 20 0 0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
 
-      <!--<my:CapMePlayer x:Name="MyControl" Margin="0 10 0 0"/>-->
+      <my:CapMePlayer x:Name="MyControl" Margin="0 0 0 0"/>
 
-      <StackPanel Grid.Column="1" Margin="10 10 10 0" HorizontalAlignment="Left" VerticalAlignment="Top">
+      <StackPanel Grid.Column="1" Margin="10 00 10 0" HorizontalAlignment="Left" VerticalAlignment="Top">
         <StackPanel.Resources>
           <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="OverridesDefaultStyle" Value="False"/>
@@ -42,25 +38,21 @@
           </Style>
         </StackPanel.Resources>
 
-        <Button Content="Search for Solo Players" Name="SoloSearchButt" Click="SoloSearchButt_Click" Grid.Row="1"/>
-        <Button Content="Find Another Group" Name="FindAnotherButt" Click="FindAnotherButt_Click" Grid.Row="2"/>
+        <Button BorderThickness="0" Content="Search for Solo Players" Name="SoloSearchButt" Click="SoloSearchButt_Click" Grid.Row="1"/>
+        <Button BorderThickness="0" Content="Find Another Group" Name="FindAnotherButt" Click="FindAnotherButt_Click" Grid.Row="2"/>
 
-        <Button Content="Ready" Name="ReadyButt" Click="ReadyButt_Click" Width="100" Grid.Row="3"/>
-        <Button Content="Quit" Name="QuitButt" Click="QuitButt_Click" Width="100" Grid.Row="3"/>
+        <Button BorderThickness="0" Content="Ready" Name="ReadyButt" Click="ReadyButt_Click" Width="100" Grid.Row="3"/>
+        <Button BorderThickness="0" Content="Quit" Name="QuitButt" Click="QuitButt_Click" Width="100" Grid.Row="3"/>
 
         <CheckBox HorizontalAlignment="Left" Name="AutoReadyBox" Unchecked="CheckBox_Checked" Checked="CheckBox_Checked">Auto Ready</CheckBox>
       </StackPanel>
     </Grid>
 
-    <Border BorderBrush="{StaticResource Back1Brush}" BorderThickness="4" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="1">
-      <my:CapMap x:Name="GameMap"/>
-    </Border>
-
-    <ScrollViewer Grid.Row="2" Grid.Column="1" Margin="0 10 0 0" Grid.RowSpan="2">
-      <StackPanel Background="{StaticResource Back1Brush}" Name="InviteList"/>
-    </ScrollViewer>
-
     <Grid Grid.Row="3" Margin="0 0 10 0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="auto"/>
+      </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
         <RowDefinition Height="auto"/>
@@ -75,7 +67,17 @@
         </RichTextBox>
       </ScrollViewer>
       <TextBox Name="SendBox" Margin="0 0 70 0" Grid.Row="1"/>
-      <Button Name="SendButt" HorizontalAlignment="Right" Width="60" Grid.Row="1">Send</Button>
+      <Button Name="SendButt" HorizontalAlignment="Right" BorderThickness="0" Width="60" Grid.Row="1">Send</Button>
+
+      <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="4" Margin="10 10 0 0" Grid.RowSpan="2" Grid.Column="1">
+        <my:CapMap x:Name="GameMap"/>
+      </Border>
+
+      <ScrollViewer Grid.RowSpan="2" Grid.Column="1" Margin="10 10 0 0" Visibility="Collapsed" Opacity="0" Name="InviteBorder">
+        <StackPanel Background="{StaticResource ForeBrush}" Name="InviteList"/>
+      </ScrollViewer>
+      
+      <Border Grid.Column="2" Grid.RowSpan="2" Margin="10 10 0 0" Background="Transparent" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave"/>
     </Grid>
 
     <!--<Button Content="Invite" HorizontalAlignment="Left" Padding="20 2" Name="InviteButt" Click="InviteButt_Click"/>-->

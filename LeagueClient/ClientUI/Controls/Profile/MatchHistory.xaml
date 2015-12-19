@@ -7,10 +7,11 @@
       <ItemsControl Name="MatchList" Margin="0 0 10 0">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <my:MatchHistoryItem/>
+            <my:MatchHistoryItem MouseUp="MatchHistoryItem_MouseUp"/>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </ScrollViewer>
+    <Border Name="Details"/>
   </Grid>
 </UserControl>

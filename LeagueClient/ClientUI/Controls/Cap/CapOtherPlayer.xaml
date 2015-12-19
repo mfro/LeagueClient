@@ -6,14 +6,14 @@
   <Border Padding="8" Background="{StaticResource Back1Brush}" Name="InnerBorder">
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="120"/>
+        <RowDefinition Height="110"/>
         <RowDefinition Height="24"/>
         <RowDefinition Height="20"/>
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="120"/>
+        <ColumnDefinition Width="110"/>
         <ColumnDefinition Width="8"/>
-        <ColumnDefinition Width="56"/>
+        <ColumnDefinition Width="51"/>
       </Grid.ColumnDefinitions>
       <Grid MouseEnter="Champ_MouseEnter" MouseLeave="Champ_MouseLeave" Background="Transparent">
         <Image Name="ChampionImage" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Aatrox.png"/>
@@ -59,12 +59,12 @@
 
       <Button Style="{StaticResource HoverButton}" Grid.Row="0" Grid.Column="2" Background="#018A26" ToolTip="Accept" 
             Click="AcceptButton_Click" Name="AcceptButton" VerticalAlignment="Top" Padding="0">
-        <Path Data="M 7 29 L 20 41 L 49 12" Width="56" Height="56" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+        <Path Data="M 7 29 L 20 41 L 49 12" Width="51" Height="51" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
 
       <Button Style="{StaticResource HoverButton}" Grid.Row="0" Grid.Column="2" Background="#B50000" ToolTip="Accept" 
             Click="DeclineButton_Click" Name="DeclineButton" VerticalAlignment="Bottom" Padding="0">
-        <Path Data="M 10 10 L 46 46 M 10 46 L 46 10" Width="56" Height="56" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+        <Path Data="M 10 10 L 46 46 M 10 46 L 46 10" Width="51" Height="51" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
 
       <!--<Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Margin="8" Background="{StaticResource Back1Brush}" ToolTip="View Profile">
