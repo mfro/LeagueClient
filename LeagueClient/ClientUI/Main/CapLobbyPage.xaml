@@ -26,8 +26,6 @@
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
 
-      <my:CapMePlayer x:Name="MyControl" Margin="0 0 0 0"/>
-
       <StackPanel Grid.Column="1" Margin="10 00 10 0" HorizontalAlignment="Left" VerticalAlignment="Top">
         <StackPanel.Resources>
           <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">

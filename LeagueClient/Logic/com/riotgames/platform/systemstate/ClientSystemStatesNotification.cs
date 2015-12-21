@@ -81,7 +81,7 @@ namespace LeagueClient.Logic.Riot.Platform {
 
     public Boolean modularGameModeEnabled { get; set; }
 
-    public Decimal riotDataServiceDataSendProbability { get; set; }
+    public Double riotDataServiceDataSendProbability { get; set; }
 
     public Boolean displayPromoGamesPlayedEnabled { get; set; }
 
@@ -113,7 +113,7 @@ namespace LeagueClient.Logic.Riot.Platform {
       Json = input.ReadUtf((int) input.ReadUInt32());
 
       var json = JSONParser.ParseObject(Json, 0);
-      var states = json.Fill(new ClientSystemStatesNotification());
+      var states = json.Deserialize<ClientSystemStatesNotification>();
       foreach (PropertyInfo prop in typeof(ClientSystemStatesNotification).GetProperties()) {
         prop.SetValue(this, prop.GetValue(states));
       }

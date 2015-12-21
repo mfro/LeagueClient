@@ -24,7 +24,7 @@ namespace LeagueClient.Logic.com.riotgames.other {
     public InGameCredentials InGameCredentials { get; set; }
 
     [JSONField("user")]
-    public int User { get; set; }
+    public string User { get; set; }
 
     [JSONField("idToken")]
     public string IdToken { get; set; }

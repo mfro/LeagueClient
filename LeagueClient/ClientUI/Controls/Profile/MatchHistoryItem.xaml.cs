@@ -50,9 +50,7 @@ namespace LeagueClient.ClientUI.Controls {
         var items = new[] { me.Stats.Item0, me.Stats.Item1, me.Stats.Item2, me.Stats.Item3, me.Stats.Item4, me.Stats.Item5, me.Stats.Item6 };
         var images = new[] { Item0Image, Item1Image, Item2Image, Item3Image, Item4Image, Item5Image, Item6Image };
         for (int i = 0; i < items.Length; i++) {
-          if (items[i] == 0) continue;
-          var data = LeagueData.ItemData.Value.data[items[i].ToString()];
-          images[i].Source = LeagueData.GetItemImage(data);
+          images[i].Source = LeagueData.GetItemImage(items[i]);
         }
 
         ScoreLabel.Content = $"{me.Stats.Kills} / {me.Stats.Deaths} / {me.Stats.Assists}";

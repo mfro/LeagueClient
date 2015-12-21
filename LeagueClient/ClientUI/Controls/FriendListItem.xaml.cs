@@ -88,16 +88,23 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void DeclineButt_Click(object sender, RoutedEventArgs e) {
+      if (friend.Invite == null) return;
       RiotServices.GameInvitationService.Decline(friend.Invite.InvitationId);
+      friend.Invite = null;
+      AcceptButt.BeginStoryboard(App.FadeOut);
+      DeclineButt.BeginStoryboard(App.FadeOut);
     }
 
     private void AcceptButt_Click(object sender, RoutedEventArgs e) {
+      if (friend.Invite == null) return;
       Client.QueueManager.AcceptInvite(friend.Invite);
       friend.Invite = null;
+      AcceptButt.BeginStoryboard(App.FadeOut);
+      DeclineButt.BeginStoryboard(App.FadeOut);
     }
 
     private void Champ_MouseEnter(object sender, MouseEventArgs e) {
-      if (friend.Invite != null) {
+      if (friend?.Invite != null) {
         AcceptButt.BeginStoryboard(App.FadeIn);
         DeclineButt.BeginStoryboard(App.FadeIn);
       }

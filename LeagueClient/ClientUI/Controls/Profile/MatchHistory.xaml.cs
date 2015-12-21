@@ -29,7 +29,8 @@ namespace LeagueClient.ClientUI.Controls {
       var game = ((MatchHistoryItem) sender).DataContext as RiotACS.Game;
       if (game != null) {
         var details = RiotACS.GetMatchDetails(Client.Region.Platform, game.GameId);
-        var delta = (await RiotACS.GetDeltas()).Deltas.FirstOrDefault(d => d.GameId == game.GameId).Delta;
+        var deltas = await RiotACS.GetDeltas();
+        var delta = deltas.Deltas.FirstOrDefault(d => d.GameId == game.GameId).Delta;
 
         Details.Child = new MatchDetails(await details, delta, () => Details.Child = null);
       }

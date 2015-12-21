@@ -52,9 +52,9 @@
           <StackPanel Width="100" Name="PlayExpandUp" Grid.Row="1" Margin="0 -70 0 0" Background="{StaticResource ForeBrush}">
             <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="LogoutTab">Logout</Button>
           </StackPanel>
-          <StackPanel Name="PlayExpandDown" Margin="0 0 0 -100" VerticalAlignment="Bottom">
+          <StackPanel Name="PlayExpandDown" Margin="0 0 0 -130" VerticalAlignment="Bottom">
             <Border Height="100" Background="{StaticResource ForeBrush}"/>
-            <!--<Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="FriendsTab">Friends</Button>-->
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="HomeTab">Home</Button>
             <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ProfileTab">Profile</Button>
             <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ShopTab">Shop</Button>
           </StackPanel>
@@ -69,7 +69,7 @@
 
       <!--Pages-->
       <Border  Grid.Column="1" Grid.RowSpan="2" ClipToBounds="True" Margin="0 30 00 60" Height="{StaticResource PageHeight}" Width="{StaticResource PageWidth}">
-        <UniformGrid Rows="2" Margin="0 0 0 0" Name="SlidingGrid">
+        <UniformGrid Columns="1" Margin="0 -630 0 0" Name="SlidingGrid">
           <Grid>
             <main:PlaySelectPage x:Name="PlayPage"/>
             <Frame Background="{StaticResource Back2Brush}" Name="SubPageArea" Visibility="Collapsed"/>
@@ -106,6 +106,10 @@
             <ItemsControl Grid.Row="3" Name="AwayList"/>
           </Grid>-->
 
+          <Grid>
+            <main:HomePage/>
+          </Grid>
+
           <main:PlayerProfile x:Name="Profile"/>
         </UniformGrid>
       </Border>
@@ -119,7 +123,7 @@
         <ItemsControl Name="OpenChats" Grid.ColumnSpan="2">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <my:ChatConversation DataContext="{Binding}" ChatClosed="ChatConversation_ChatClosed" Margin="-160 0 0 0"/>
+              <my:ChatConversation DataContext="{Binding}" ChatClosed="ChatConversation_ChatClosed" ChatOpened="ChatConversation_ChatOpened" Margin="-160 0 0 0"/>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
           <ItemsControl.ItemsPanel>

@@ -35,7 +35,7 @@ namespace LeagueClient.Logic {
           item.Data = await RiotServices.SummonerService.GetAllPublicSummonerDataByAccount(accountId);
 
           var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(item.Data.Summoner.SummonerId);
-          RiotServices.AddHandler(guid, res => item.ChampionMastery = JSONParser.ParseArray(res.payload, 0).Fill<List<ChampionMasteryDTO>>());
+          RiotServices.AddHandler(guid, res => item.ChampionMastery = JSONParser.ParseArray(res.payload, 0).Deserialize<List<ChampionMasteryDTO>>());
 
           item.Leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(item.Data.Summoner.SummonerId);
           item.MatchHistory = await RiotACS.GetMatchHistory(Client.Region.Platform, item.Data.Summoner.AccountId);

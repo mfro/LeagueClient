@@ -40,8 +40,8 @@ namespace LeagueClient.Logic {
         data = mem.ToArray();
       }
       if (typeof(System.Collections.IList).IsAssignableFrom(typeof(T)))
-        return JSONParser.ParseArray(data, 0).Fill<T>();
-      return JSONParser.ParseObject(data, 0).Fill(new T());
+        return JSONParser.ParseArray(data, 0).Deserialize<T>();
+      return JSONParser.ParseObject(data, 0).Deserialize<T>();
     }
 
     #region Deltas

@@ -1205,7 +1205,7 @@ namespace LeagueClient.Logic.Riot {
 
       var json = JSONParser.ParseObject(str, 0);
 
-      return json.Fill(new LoginQueueDto());
+      return json.Deserialize<LoginQueueDto>();
     }
 
     public static async Task<string> GetIpAddress() {

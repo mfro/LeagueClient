@@ -37,12 +37,6 @@ namespace LeagueClient.ClientUI.Controls {
         var spell2 = LeagueData.GetSpellData(player.Spell2Id);
 
         var items = new[] { player.Stats.Item0, player.Stats.Item1, player.Stats.Item2, player.Stats.Item3, player.Stats.Item4, player.Stats.Item5, player.Stats.Item6 };
-        var datas = new ItemDto[7];
-        for (int i = 0; i < items.Length; i++) {
-          if (items[i] == 0) continue;
-          var data = LeagueData.ItemData.Value.data[items[i].ToString()];
-          datas[i] = data;
-        }
 
         var item = new {
           ChampImage = LeagueData.GetChampIconImage(champ),
@@ -50,13 +44,13 @@ namespace LeagueClient.ClientUI.Controls {
           Spell2Image = LeagueData.GetSpellImage(spell2),
           Name = champ.name,
           Score = $"{player.Stats.Kills} / {player.Stats.Deaths} / {player.Stats.Assists}",
-          Item0Image = datas[0] == null ? null : LeagueData.GetItemImage(datas[0]),
-          Item1Image = datas[1] == null ? null : LeagueData.GetItemImage(datas[1]),
-          Item2Image = datas[2] == null ? null : LeagueData.GetItemImage(datas[2]),
-          Item3Image = datas[3] == null ? null : LeagueData.GetItemImage(datas[3]),
-          Item4Image = datas[4] == null ? null : LeagueData.GetItemImage(datas[4]),
-          Item5Image = datas[5] == null ? null : LeagueData.GetItemImage(datas[5]),
-          Item6Image = datas[6] == null ? null : LeagueData.GetItemImage(datas[6]),
+          Item0Image = LeagueData.GetItemImage(items[0]),
+          Item1Image = LeagueData.GetItemImage(items[1]),
+          Item2Image = LeagueData.GetItemImage(items[2]),
+          Item3Image = LeagueData.GetItemImage(items[3]),
+          Item4Image = LeagueData.GetItemImage(items[4]),
+          Item5Image = LeagueData.GetItemImage(items[5]),
+          Item6Image = LeagueData.GetItemImage(items[6]),
           CS = player.Stats.TotalMinionsKilled,
           Gold = (player.Stats.GoldEarned / 1000.0).ToString("#.#k")
         };

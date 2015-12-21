@@ -54,12 +54,14 @@ namespace LeagueClient.ClientUI.Main {
       SummonerName.Content = item.Data.Summoner.Name;
       SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
 
+      MatchesPane.Child = new MatchHistory(item);
       if (item.Data.SummonerLevel.Level < 30) {
         SummonerRank.Content = "Level " + item.Data.SummonerLevel;
       } else {
         var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
         if (league != null) SummonerRank.Content = RankedTier.Values[league.Tier] + " " + league.Rank;
       }
+      Profile_Click(ProfileTab, null);
     }
 
     private void SearchBox_KeyUp(object sender, KeyEventArgs e) {
@@ -73,18 +75,44 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void TabList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      if (DetailsPane == null) return;
-      Console.WriteLine(TabList.SelectedItem == ProfileTab);
-      if (TabList.SelectedItem == MatchHistoryTab) {
-        var history = new MatchHistory(Selected);
-        DetailsPane.Child = history;
-      } else if (TabList.SelectedItem == RankingTab) {
-        //TODO Ranking
-        DetailsPane.Child = null;
-      } else if (TabList.SelectedItem == ProfileTab) {
-        //TODO Profile
-        DetailsPane.Child = null;
-      }
+      //Console.WriteLine(TabList.SelectedItem == ProfileTab);
+      //if (TabList.SelectedItem == MatchHistoryTab) {
+      //  var history = new MatchHistory(Selected);
+      //  DetailsPane.Child = history;
+      //} else if (TabList.SelectedItem == RankingTab) {
+      //  //TODO Ranking
+      //  DetailsPane.Child = null;
+      //} else if (TabList.SelectedItem == ProfileTab) {
+      //  //TODO Profile
+      //  DetailsPane.Child = null;
+      //}
+    }
+
+    private void Matches_Click(object sender, MouseButtonEventArgs e) {
+      MatchesTab.Foreground = Brushes.White;
+      ProfileTab.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+      RankingTab.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+
+      MatchesPane.Visibility = Visibility.Visible;
+      RankingPane.Visibility = ProfilePane.Visibility = Visibility.Collapsed;
+    }
+
+    private void Ranking_Click(object sender, MouseButtonEventArgs e) {
+      RankingTab.Foreground = Brushes.White;
+      ProfileTab.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+      MatchesTab.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+
+      RankingPane.Visibility = Visibility.Visible;
+      MatchesPane.Visibility = ProfilePane.Visibility = Visibility.Collapsed;
+    }
+
+    private void Profile_Click(object sender, MouseButtonEventArgs e) {
+      ProfileTab.Foreground = Brushes.White;
+      RankingTab.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+      MatchesTab.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+
+      ProfilePane.Visibility = Visibility.Visible;
+      RankingPane.Visibility = MatchesPane.Visibility = Visibility.Collapsed;
     }
   }
 }

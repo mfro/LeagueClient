@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
-      DataContext="{Binding RelativeSource={RelativeSource Self}}"
       Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}">
   <UserControl.Resources>
     <Style TargetType="ListBoxItem" x:Key="ItemStyle">
@@ -26,7 +25,7 @@
     </Style>
     <Style TargetType="ListBox">
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Background" Value="{StaticResource Back1Brush}"/>
+      <Setter Property="Background" Value="{StaticResource ForeBrush}"/>
       <Setter Property="ItemContainerStyle" Value="{StaticResource ItemStyle}"/>
       <Setter Property="ItemTemplate">
         <Setter.Value>
@@ -76,7 +75,7 @@
           <RowDefinition Height="auto"/>
           <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label FontSize="24" Padding="8 2 8 4" Background="{StaticResource Back1Brush}" Margin="0 0 0 10">Select a Queue</Label>
+        <Label FontSize="24" Padding="8 2 8 4" Background="{StaticResource ForeBrush}" Margin="0 0 0 10">Select a Queue</Label>
         <ListBox Grid.Row="2" SelectionChanged="QueueList_SelectionChanged" Name="Queues">
         </ListBox>
       </Grid>

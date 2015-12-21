@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing;
+using System.Windows.Input;
 
 namespace LeagueClient {
   /// <summary>
@@ -80,7 +81,9 @@ namespace LeagueClient {
     }
 
     public static void MyFocus(this UIElement el) {
-      Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (Func<bool>) el.Focus);
+      Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, (Action) (() => {
+        if (!el.Focus()) el.MyFocus();
+      }));
     }
 
     public static void MyInvoke<T1>(this Dispatcher dispatch, Action<T1> func, T1 t) => dispatch.Invoke(func, t);

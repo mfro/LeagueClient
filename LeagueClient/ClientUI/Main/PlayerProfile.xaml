@@ -41,7 +41,7 @@
     <Grid Margin="0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="160"/>
+        <ColumnDefinition Width="0"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="120"/>
@@ -61,6 +61,27 @@
           </Grid.RowDefinitions>
           <Label FontSize="30" Padding="2 4 2 0" Name="SummonerName">master mor</Label>
           <Label FontSize="24" Padding="2 0" Grid.Row="1" Margin="0" Name="SummonerRank">Bronze VI</Label>
+
+          <StackPanel Grid.Row="1" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel.Resources>
+              <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="Padding" Value="0 6"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Width" Value="100"/>
+                <Style.Triggers>
+                  <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Foreground" Value="White"/>
+                  </Trigger>
+                </Style.Triggers>
+              </Style>
+            </StackPanel.Resources>
+            <Label Foreground="White" Name="ProfileTab" MouseUp="Profile_Click">Profile</Label>
+            <Label Name="RankingTab" MouseUp="Ranking_Click">Ranking</Label>
+            <Label Name="MatchesTab" MouseUp="Matches_Click">Matches</Label>
+          </StackPanel>
         </Grid>
       </Grid>
       <Grid Grid.Row="1" Margin="0 10 0 0" Grid.RowSpan="2">
@@ -69,9 +90,11 @@
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Name="DetailsPane" Grid.Column="1"/>
+        <Border Name="ProfilePane" Grid.Column="1"/>
+        <Border Name="RankingPane" Grid.Column="1"/>
+        <Border Name="MatchesPane" Grid.Column="1"/>
 
-        <ListBox Name="TabList" Margin="0 0 10 0" SelectionChanged="TabList_SelectionChanged" SelectedIndex="0" Background="{StaticResource ForeBrush}">
+        <!--<ListBox Name="TabList" Margin="0 0 10 0" SelectionChanged="TabList_SelectionChanged" SelectedIndex="0" Background="{StaticResource ForeBrush}">
           <Grid Width="60" Height="60" Name="ProfileTab">
             <Image Width="50" RenderOptions.BitmapScalingMode="HighQuality" Source="pack://application:,,,/Resources/ProfileIcon.png"/>
           </Grid>
@@ -81,7 +104,7 @@
           <Grid Width="60" Height="60" Name="MatchHistoryTab">
             <Image Width="40" RenderOptions.BitmapScalingMode="Fant" Source="pack://application:,,,/Resources/MatchHistoryIcon.png"/>
           </Grid>
-        </ListBox>
+        </ListBox>-->
       </Grid>
 
       <Grid Grid.Column="1" Grid.RowSpan="3" Margin="10 0 0 0">

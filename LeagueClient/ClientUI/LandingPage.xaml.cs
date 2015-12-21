@@ -45,13 +45,12 @@ namespace LeagueClient.ClientUI {
 
     public LandingPage() {
       InitializeComponent();
-      ShowTab(Tab.Play);
+      ShowTab(Tab.Home);
       IPAmount.Content = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Content = Client.LoginPacket.RpBalance.ToString();
       NameLabel.Content = Client.LoginPacket.AllSummonerData.Summoner.Name;
       ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId));
 
-      //Client.ChatManager.FriendList.ListChanged += FriendList_ListChanged;
       Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
       Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
 
@@ -64,39 +63,6 @@ namespace LeagueClient.ClientUI {
       if (!Client.ChatManager.Friends.ContainsKey(e.From.User)) return;
       var friend = Client.ChatManager.Friends[e.From.User];
       if (!OpenChatsList.Contains(friend)) Dispatcher.Invoke(() => OpenChatsList.Add(friend));
-    }
-
-    private void FriendList_ListChanged(object sender, ListChangedEventArgs e) {
-      //var groups = new Dictionary<object, List<ChatFriend>> {
-      //  [ShowType.chat] = new List<ChatFriend>(),
-      //  [ShowType.away] = new List<ChatFriend>(),
-      //  [ShowType.dnd] = new List<ChatFriend>()
-      //};
-      ////foreach (var item in Client.ChatManager.FriendList) {
-      ////  if (item.CurrentGameInfo != null) {
-      ////    if (!groups.ContainsKey(item.CurrentGameInfo.gameId))
-      ////      groups[item.CurrentGameInfo.gameId] = new List<ChatFriend>();
-      ////    groups[item.CurrentGameInfo.gameId].Add(item);
-      ////  }
-      ////}
-      ////foreach (var item in new List<object>(groups.Keys)) {
-      ////  if (groups[item].Count == 1) groups.Remove(item);
-      ////}
-
-      //foreach (var item in Client.ChatManager.FriendList) {
-      //  if (groups.Any(pair => pair.Value.Contains(item))) continue;
-      //  groups[item.Status.Show].Add(item);
-      //}
-      //Dispatcher.Invoke(() => {
-      //  ChatList.ItemsSource = groups[ShowType.chat];
-      //  DndList.ItemsSource = groups[ShowType.dnd];
-      //  AwayList.ItemsSource = groups[ShowType.away];
-      //  //GroupList.Children.Clear();
-      //  //foreach (var group in groups.Where(pair => pair.Value.Count > 0).OrderBy(pair => pair.Value.First().GetValue())) {
-      //  //  GroupList.Children.Add(new ItemsControl { ItemsSource = group.Value.OrderBy(u => u.GetValue()) });
-      //  //}
-      //});
-
     }
 
     private void ChatManager_StatusUpdated(object sender, StatusUpdatedEventArgs e) {
@@ -136,7 +102,7 @@ namespace LeagueClient.ClientUI {
       //} else 
       if (sender == LogoutTab) Client.Logout();
       else if (sender == PlayTab) ShowTab(Tab.Play);
-      //else if (sender == FriendsTab) ShowTab(Tab.Friends);
+      else if (sender == HomeTab) ShowTab(Tab.Home);
       else if (sender == ProfileTab) ShowTab(Tab.Profile);
       else if (sender == ShopTab) {
         RiotServices.LoginService.GetStoreUrl().ContinueWith(t => {
@@ -201,8 +167,14 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Friend_MouseUp(object sender, MouseButtonEventArgs e) {
+      var item = (FriendListItem) sender;
       if (e.ChangedButton == MouseButton.Left && !OpenChatsList.Contains(((FriendListItem) sender).friend))
-        OpenChatsList.Add(((FriendListItem) sender).friend);
+        OpenChatsList.Add(item.friend);
+      else {
+        var container = VisualTreeHelper.GetChild(OpenChats.ItemContainerGenerator.ContainerFromItem(item.friend), 0);
+        ((ChatConversation) container).Open = true;
+      }
+
     }
 
     private void CurrentStatus_MouseUp(object sender, MouseButtonEventArgs e) {
@@ -232,6 +204,13 @@ namespace LeagueClient.ClientUI {
 
     private void ChatConversation_ChatClosed(object sender, EventArgs e) {
       OpenChatsList.Remove(((ChatConversation) sender).friend);
+    }
+
+    private void ChatConversation_ChatOpened(object sender, EventArgs e) {
+      foreach (var item in OpenChats.ItemContainerGenerator.Items) {
+        var container = VisualTreeHelper.GetChild(OpenChats.ItemContainerGenerator.ContainerFromItem(item), 0);
+        if (container != sender) ((ChatConversation) container).Open = false;
+      }
     }
 
     private void Animate(Button butt, string key) => butt.BeginStoryboard((Storyboard) butt.FindResource(key));
@@ -356,8 +335,8 @@ namespace LeagueClient.ClientUI {
 
     private enum Tab {
       Play = 0,
-      //Friends = 1,
-      Profile = 1
+      Home = 1,
+      Profile = 2
     }
   }
 }

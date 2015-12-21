@@ -22,6 +22,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// </summary>
   public sealed partial class ChatConversation : UserControl, IDisposable {
     public event EventHandler ChatClosed;
+    public event EventHandler ChatOpened;
 
     public ChatFriend friend { get; private set; }
 
@@ -34,7 +35,8 @@ namespace LeagueClient.ClientUI.Controls {
           UnreadIndicator.Visibility = Visibility.Collapsed;
           friend.Unread = false;
           ChatDisplayPanel.BeginStoryboard(App.FadeIn);
-          ChatSendBox.Focus();
+          ChatOpened?.Invoke(this, new EventArgs());
+          ChatSendBox.MyFocus();
         }
         open = value;
       }
@@ -53,13 +55,13 @@ namespace LeagueClient.ClientUI.Controls {
           friend.HistoryUpdated += Friend_HistoryUpdated;
           NameLabel.Content = friend.User.Name;
           GotFocus += OnFocus;
+          ChatSendBox.MyFocus();
         };
       }
     }
 
     private void ChatOpenButt_Click(object sender, RoutedEventArgs e) {
       Open = !Open;
-      if (Open) ChatSendBox.MyFocus();
     }
 
     private void ChatSendBox_KeyUp(object sender, KeyEventArgs e) {
