@@ -165,8 +165,8 @@ namespace LeagueClient.Logic.Chat {
       else return obfuscatedName + "@conference.pvp.net";
     }
 
-    public static Jid GetTeambuilderRoom(string groupId, string pass) {
-      return new Jid(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, pass));
+    public static Jid GetTeambuilderRoom(string groupId) {
+      return new Jid(GetChatroomJID(GetObfuscatedChatroomName(groupId, "cp"), true, ""));
     }
 
     public static Jid GetCustomRoom(string roomname, double roomId, string pass) {
@@ -177,9 +177,12 @@ namespace LeagueClient.Logic.Chat {
       return new Jid(GetChatroomJID(GetObfuscatedChatroomName(inviteId.ToLower(), "ag"), false, pass));
     }
 
-    public void JoinRoom(Jid jid, string pass) {
+    public void JoinRoom(Jid jid, string pass = null) {
       lobby.AcceptDefaultConfiguration(jid);
-      lobby.JoinRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name, pass, false);
+      if (pass == null)
+        lobby.JoinRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name, false);
+      else
+        lobby.JoinRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name, pass, false);
     }
 
     public void LeaveRoom(Jid jid) {

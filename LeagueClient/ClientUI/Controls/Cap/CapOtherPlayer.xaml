@@ -35,10 +35,10 @@
 
       <Image Grid.Row="0" Grid.Column="2" Name="Spell1Image" VerticalAlignment="Top" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
       <Image Grid.Row="0" Grid.Column="2" Name="Spell2Image" VerticalAlignment="Bottom" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
-      <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 0 0 0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Name="SummonerText" FontSize="14">master mor</Label>
+      <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 0 0 0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Name="SummonerText" FontSize="14">Searching...</Label>
 
-      <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" Name="PositionText" FontSize="12">Middle lane</Label>
-      <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Name="RoleText" FontSize="12">Assassin</Label>
+      <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 0 0 -3" VerticalAlignment="Bottom" HorizontalAlignment="Left" Name="PositionText" FontSize="12">Middle lane</Label>
+      <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 0 0 -3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Name="RoleText" FontSize="12">Assassin</Label>
       <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Padding="0" Margin="0 -5" HorizontalAlignment="Center" Name="TimerText" FontSize="18">99</Label>
       <ComboBox Name="PositionBox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top"
               SelectionChanged="PositionBox_SelectionChanged" Visibility="Collapsed">
@@ -59,12 +59,12 @@
 
       <Button Style="{StaticResource HoverButton}" Grid.Row="0" Grid.Column="2" Background="#018A26" ToolTip="Accept" 
             Click="AcceptButton_Click" Name="AcceptButton" VerticalAlignment="Top" Padding="0">
-        <Path Data="M 7 29 L 20 41 L 49 12" Width="51" Height="51" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+        <Path Data="M 7 27 L 20 39 L 45 12" Width="51" Height="51" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
 
       <Button Style="{StaticResource HoverButton}" Grid.Row="0" Grid.Column="2" Background="#B50000" ToolTip="Accept" 
             Click="DeclineButton_Click" Name="DeclineButton" VerticalAlignment="Bottom" Padding="0">
-        <Path Data="M 10 10 L 46 46 M 10 46 L 46 10" Width="51" Height="51" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+        <Path Data="M 8 8 L 43 43 M 8 43 L 43 8" Width="51" Height="51" StrokeThickness="8" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
       </Button>
 
       <!--<Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Margin="8" Background="{StaticResource Back1Brush}" ToolTip="View Profile">

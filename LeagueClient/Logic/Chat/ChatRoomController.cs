@@ -37,7 +37,7 @@ namespace LeagueClient.Logic.Chat {
       send.Click += Button_Click;
     }
 
-    public void JoinChat(Jid jid, string pass) {
+    public void JoinChat(Jid jid, string pass = null) {
       if (IsJoined) return;
       chatRoom = jid;
       Client.ChatManager.JoinRoom(jid, pass);
@@ -72,9 +72,11 @@ namespace LeagueClient.Logic.Chat {
     }
 
     public void Dispose() {
-      Client.ChatManager.LeaveRoom(chatRoom);
-      Client.ChatManager.PresenceRecieved -= ChatManager_PresenceRecieved;
-      Client.ChatManager.MessageReceived -= ChatManager_MessageReceived;
+      if (IsJoined) {
+        Client.ChatManager.LeaveRoom(chatRoom);
+        Client.ChatManager.PresenceRecieved -= ChatManager_PresenceRecieved;
+        Client.ChatManager.MessageReceived -= ChatManager_MessageReceived;
+      }
     }
 
     public void ShowLobbyMessage(string message) {

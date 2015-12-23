@@ -60,14 +60,8 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public void UpdateList(IEnumerable<CapPlayer> players) {
-      foreach (var player in this.players) player.PropertyChanged -= Cap_PlayerUpdate;
       this.players = new List<CapPlayer>(players.Where(p => p != null));
-      foreach (var player in this.players) player.PropertyChanged += Cap_PlayerUpdate;
       Reset();
-    }
-
-    private void Cap_PlayerUpdate(object sender, EventArgs e) {
-      Dispatcher.Invoke(Reset);
     }
 
     private static Dictionary<Position, List<PointRef>> onMap = new Dictionary<Position, List<PointRef>> {

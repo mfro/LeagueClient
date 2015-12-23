@@ -31,7 +31,6 @@ namespace LeagueClient.ClientUI.Main {
   /// Interaction logic for TeambuilderSoloPage.xaml
   /// </summary>
   public sealed partial class CapSoloPage : Page, IClientSubPage, IDisposable {
-    private bool spell1;
     private CapMePlayer me;
     private QueueController queue;
 
@@ -39,23 +38,16 @@ namespace LeagueClient.ClientUI.Main {
 
     public CapSoloPage(CapPlayer me = null) {
       InitializeComponent();
-      Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
-                                    where spell.modes.Contains("CLASSIC")
-                                    select spell);
+      Client.PopupSelector.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
+                                                   where spell.modes.Contains("CLASSIC")
+                                                   select spell);
 
       this.me = new CapMePlayer(me);
       this.me.Editable = true;
-      this.me.PlayerUpdate += PlayerUpdate;
-      this.me.ChampClicked += Champion_Click;
-      this.me.Spell1Clicked += Spell1_Click;
-      this.me.Spell2Clicked += Spell2_Click;
-      this.me.MasteryClicked += Player_MasteryClicked;
-      this.me.RuneClicked += Player_RuneClicked;
+      this.me.CapPlayer.CapEvent += PlayerUpdate;
+      if (me != null) this.me.CapPlayer = me;
 
       MeArea.Child = this.me;
-
-      Popup.SpellSelector.SpellSelected += Spell_Select;
-      Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
 
       Client.ChatManager.Status = ChatStatus.inTeamBuilder;
 
@@ -115,59 +107,16 @@ namespace LeagueClient.ClientUI.Main {
         switch (response.methodName) {
           case "acceptedByGroupV2":
             queue.Dispose();
-            Dispatcher.Invoke(() => Client.QueueManager.ShowQueuePopup(new CapSoloQueuePopup(JSONParser.ParseObject(response.payload, 0), me.CapPlayer)));
+            Dispatcher.Invoke(() => {
+              var popup = new CapSoloQueuePopup(JSONParser.ParseObject(response.payload, 0), me.CapPlayer);
+              popup.Close += (src, e2) => SetInQueue(false);
+              Client.QueueManager.ShowQueuePopup(popup);
+            });
             return true;
         }
       }
       return false;
     }
-
-    #region Player Editing
-    private void Player_MasteryClicked(object src, EventArgs args) {
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Masteries;
-    }
-
-    private void Player_RuneClicked(object sender, EventArgs e) {
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Runes;
-    }
-
-    private void Spell1_Click(object src, EventArgs args) {
-      spell1 = true;
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Spells;
-    }
-
-    private void Spell2_Click(object src, EventArgs args) {
-      spell1 = false;
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Spells;
-    }
-
-    private void Champion_Click(object src, EventArgs args) {
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Champions;
-    }
-
-    private void Popup_Close(object sender, EventArgs e) {
-      Popup.BeginStoryboard(App.FadeOut);
-      Popup.MasteryEditor.Save().Wait();
-      me.UpdateBooks();
-    }
-
-    private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-      me.CapPlayer.Champion = Popup.ChampSelector.SelectedChampion;
-      me.Skin = e;
-      Popup_Close(sender, null);
-    }
-
-    private void Spell_Select(object sender, SpellDto spell) {
-      if (spell1) me.CapPlayer.Spell1 = spell;
-      else me.CapPlayer.Spell2 = spell;
-      Popup.BeginStoryboard(App.FadeOut);
-    }
-    #endregion
 
     public Page Page => this;
     public void ForceClose() => Client.ChatManager.Status = ChatStatus.outOfGame;

@@ -58,8 +58,15 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public CapLobbyPage(bool isCreating) : this() {
-      myControl = new CapMePlayer() { Margin = new Thickness(0, 10, 0, 0), VerticalAlignment = VerticalAlignment.Top };
-      me = myControl.CapPlayer;
+      if (isCreating)
+        me = new CapPlayer(0);
+      else
+        me = new CapPlayer(-1) { Status = CapStatus.Choosing };
+
+      var spells = Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
+      me.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
+      me.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
+
       FindAnotherButt.Visibility = Visibility.Collapsed;
       state = CapLobbyState.Inviting;
 
@@ -69,30 +76,21 @@ namespace LeagueClient.ClientUI.Main {
 
 
     public CapLobbyPage(CapPlayer solo) : this() {
-      me = solo;
-      myControl = new CapMePlayer(me) { Editable = false, VerticalAlignment = VerticalAlignment.Top };
       state = CapLobbyState.Searching;
+      me = solo;
 
       SharedInit();
     }
 
     private void SharedInit() {
-      MyGrid.Children.Add(myControl);
-      me.PropertyChanged += Me_PropertyChanged;
       me.Status = CapStatus.Present;
       SoloSearchButt.Visibility = Visibility.Collapsed;
       ReadyButt.Visibility = Visibility.Collapsed;
-      myControl.ChampClicked += Champion_Click;
-      myControl.Spell1Clicked += Spell1_Click;
-      myControl.Spell2Clicked += Spell2_Click;
-      myControl.MasteryClicked += Player_MasteryClicked;
-      myControl.RuneClicked += Player_RuneClicked;
+      me.CapEvent += PlayerHandler;
 
-      Popup.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
-      Popup.SpellSelector.SpellSelected += Spell_Select;
-      Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
-                                    where spell.modes.Contains("CLASSIC")
-                                    select spell);
+      Client.PopupSelector.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
+                                                   where spell.modes.Contains("CLASSIC")
+                                                   select spell);
 
       PlayerList.Children.Clear();
       chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
@@ -103,12 +101,11 @@ namespace LeagueClient.ClientUI.Main {
     #region Message and Lobby handling
     private void JoinChat() {
       if (!chatRoom.IsJoined)
-        chatRoom.JoinChat(RiotChat.GetTeambuilderRoom(GroupId, Status.ChatKey), Status.ChatKey);
+        chatRoom.JoinChat(RiotChat.GetTeambuilderRoom(GroupId));
     }
 
     public void GotLobbyStatus(LobbyStatus status) {
       Status = status;
-      if (GroupId != null) JoinChat();
 
       if (status.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId)
         Client.CanInviteFriends = true;
@@ -123,7 +120,7 @@ namespace LeagueClient.ClientUI.Main {
     public void GotGroupData(CapGroupData data) {
       GroupId = data.GroupId;
       me.SlotId = data.SlotId;
-      if (Status != null) JoinChat();
+      JoinChat();
 
       if (data.Slots != null) {
         for (int i = 0; i < data.Slots.Count; i++) {
@@ -133,6 +130,7 @@ namespace LeagueClient.ClientUI.Main {
           }
           var player = data.Slots.FirstOrDefault(d => d.SlotId == i);
           var capp = new CapPlayer(i);
+          capp.CapEvent += PlayerHandler;
           SetPlayerInfo(player, capp);
           players[i] = capp;
         }
@@ -150,9 +148,9 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void UpdateList() {
-      myControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
+      myControl?.Dispose();
       bool canReady = state == CapLobbyState.Searching || state == CapLobbyState.Inviting;
-      bool canSearch = state == CapLobbyState.Inviting;
+      bool canSearch = state == CapLobbyState.Selecting || state == CapLobbyState.Inviting;
       bool canMatch = true;
 
       PlayerList.Children.Clear();
@@ -165,13 +163,13 @@ namespace LeagueClient.ClientUI.Main {
 
         if (player.SlotId != me.SlotId) {
           var control = new CapOtherPlayer(player, IsCaptain);
-          if (PlayerList.Children.Count < 3) control.Margin = new Thickness(0, 0, 10, 0);
+          if (PlayerList.Children.Count < 3) control.Margin = new Thickness(0, 0, 20, 0);
           else control.Margin = new Thickness(0);
-          control.CandidateReacted += Candidate_Reacted;
-          control.Kicked += Candidate_Kicked;
-          control.GiveInvite += Candidate_GiveInvite;
 
           PlayerList.Children.Add(control);
+        } else {
+          myControl = new CapMePlayer(me, true);
+          MyBorder.Child = myControl;
         }
 
         //Player other than captain is not ready - cannot start matchmaking
@@ -179,8 +177,22 @@ namespace LeagueClient.ClientUI.Main {
         if (players[i].Status != CapStatus.Present && players[i].Status != CapStatus.Ready) canReady = false;
         //Advertised role and position have not been selected
         if (players[i].Champion == null || players[i].Position == null || players[i].Position == Position.UNSELECTED || players[i].Role == null || players[i].Role == Role.UNSELECTED)
-          canSearch = false;
+          canReady = false;
+
+        bool isPlayer = players[i].Name != null;
+
+        if (players[i].Position == null || players[i].Position == Position.UNSELECTED || players[i].Role == null || players[i].Role == Role.UNSELECTED)
+          canSearch = canReady = false;
+        if (isPlayer && players[i].Champion == null)
+          canSearch = canReady = false;
       }
+      myControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
+
+      if (!canReady) {
+        foreach (var player in players.Where(p => p?.Status == CapStatus.Ready))
+          player.Status = CapStatus.Present;
+      }
+
       if (IsCaptain) {
         AutoReadyBox.Content = "Auto Start Matchmaking";
         ReadyButt.Content = "Start Matchmaking";
@@ -190,11 +202,6 @@ namespace LeagueClient.ClientUI.Main {
 
       ReadyButt.Visibility = canReady ? Visibility.Visible : Visibility.Collapsed;
       GameMap.UpdateList(players);
-
-      if (!canReady) {
-        foreach (var player in players.Where(p => p?.Status == CapStatus.Ready))
-          player.Status = CapStatus.Present;
-      }
       ReadyButt.IsEnabled = !autoReady;
       if (IsCaptain && canMatch && autoReady)
         RiotServices.CapService.StartMatchmaking();
@@ -249,6 +256,7 @@ namespace LeagueClient.ClientUI.Main {
     private void candidateFoundV2(JSONObject json) {
       var slot = json.Deserialize<CapSlotData>();
       var player = new CapPlayer(slot.SlotId);
+      player.CapEvent += PlayerHandler;
       player.Champion = LeagueData.GetChampData(slot.ChampionId);
       player.Role = Role.Values[slot.Role];
       player.Position = players[slot.SlotId].Position;
@@ -285,7 +293,10 @@ namespace LeagueClient.ClientUI.Main {
       var slot = json.Deserialize<CapSlotData>();
       slot.Status = "POPULATED";
       if (found.ContainsKey(slot.SlotId)) found.Remove(slot.SlotId);
-      if (players[slot.SlotId] == null) players[slot.SlotId] = new CapPlayer(slot.SlotId);
+      if (players[slot.SlotId] == null) {
+        var player = players[slot.SlotId] = new CapPlayer(slot.SlotId);
+        player.CapEvent += PlayerHandler;
+      }
       SetPlayerInfo(slot, players[slot.SlotId]);
       if (state == CapLobbyState.Inviting)
         players[slot.SlotId].Status = CapStatus.Choosing;
@@ -310,28 +321,31 @@ namespace LeagueClient.ClientUI.Main {
       if (slot.Spell2Id > 0) players[slot.SlotId].Spell2 = LeagueData.GetSpellData(slot.Spell2Id);
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+      Dispatcher.Invoke(UpdateList);
     }
 
     private void roleSpecifiedV1(JSONObject json) {
       var slot = json.Deserialize<CapSlotData>();
       players[slot.SlotId].Role = Role.Values[slot.Role];
-      Dispatcher.Invoke(UpdateList);
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+      Dispatcher.Invoke(UpdateList);
     }
 
     private void positionSpecifiedV1(JSONObject json) {
       var slot = json.Deserialize<CapSlotData>();
       players[slot.SlotId].Position = Position.Values[slot.Position];
-      Dispatcher.Invoke(UpdateList);
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+      Dispatcher.Invoke(UpdateList);
     }
 
     private void advertisedRoleSpecifiedV1(JSONObject json) {
       var slot = json.Deserialize<CapSlotData>();
-      if (players[slot.SlotId] == null)
-        players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
+      if (players[slot.SlotId] == null) {
+        var player = players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
+        player.CapEvent += PlayerHandler;
+      }
       players[slot.SlotId].Status = CapStatus.ChoosingAdvert;
       players[slot.SlotId].Role = Role.Values[slot.AdvertisedRole];
       Dispatcher.Invoke(UpdateList);
@@ -339,8 +353,10 @@ namespace LeagueClient.ClientUI.Main {
 
     private void advertisedPositionSpecifiedV1(JSONObject json) {
       var slot = json.Deserialize<CapSlotData>();
-      if (players[slot.SlotId] == null)
-        players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
+      if (players[slot.SlotId] == null) {
+        var player = players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
+        player.CapEvent += PlayerHandler;
+      }
       players[slot.SlotId].Status = CapStatus.ChoosingAdvert;
       players[slot.SlotId].Position = Position.Values[slot.AdvertisedPosition];
       Dispatcher.Invoke(UpdateList);
@@ -355,6 +371,7 @@ namespace LeagueClient.ClientUI.Main {
         DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+      Dispatcher.Invoke(UpdateList);
     }
 
     private void soloSearchedForAnotherGroupV2(JSONObject json) {
@@ -368,7 +385,8 @@ namespace LeagueClient.ClientUI.Main {
         DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
       }
       foreach (var cap in players)
-        if (cap.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+        if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
+      Dispatcher.Invoke(UpdateList);
     }
 
     private void removedFromServiceV1(JSONObject json) {
@@ -396,8 +414,8 @@ namespace LeagueClient.ClientUI.Main {
           cap.Role = Role.Values[(string) json["initialSoloSpecRole"]];
           cap.Position = Position.UNSELECTED;
           cap.Status = CapStatus.ChoosingAdvert;
+          cap.CapEvent += PlayerHandler;
           players[i] = cap;
-          if (IsCaptain) cap.PropertyChanged += Cap_PropertyChanged;
         } else players[i].Status = CapStatus.Present;
       }
       Dispatcher.Invoke(UpdateList);
@@ -420,7 +438,7 @@ namespace LeagueClient.ClientUI.Main {
       } else if ((response = e.Body as LcdsServiceProxyResponse) != null) {
         if (response.status.Equals("OK")) {
           JSONObject json = null;
-          if (response.payload != null) json = JSONParser.ParseObject(response.payload, 0);
+          if (!string.IsNullOrEmpty(response.payload)) json = JSONParser.ParseObject(response.payload, 0);
           try {
             var method = GetMethod(response);
             method(json);
@@ -479,49 +497,59 @@ namespace LeagueClient.ClientUI.Main {
     }
     #endregion
 
-    private void Cap_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-      var cap = sender as CapPlayer;
-      if (state == CapLobbyState.Selecting) {
-        switch (e.PropertyName) {
-          case nameof(cap.Position):
-            RiotServices.CapService.SelectAdvertisedPosition(cap.Position, cap.SlotId);
+    private void PlayerHandler(object sender, CapPlayerEventArgs e) {
+      var player = sender as CapPlayer;
+
+      var accepted = e as CandidateAcceptedEventArgs;
+      var invite = e as GiveInviteEventArgs;
+      var kick = e as KickedEventArgs;
+      var change = e as PropertyChangedEventArgs;
+
+      if (accepted != null) {
+        if (accepted.Accepted) {
+          RiotServices.CapService.AcceptCandidate(player.SlotId);
+        } else {
+          RiotServices.CapService.DeclineCandidate(player.SlotId);
+        }
+      } else if (invite != null) {
+        var member = Status.Members.FirstOrDefault(m => m.SummonerName.Equals(player.Name));
+        if (member.HasInvitePower)
+          RiotServices.GameInvitationService.RevokeInvitePrivileges(member.SummonerId);
+        else
+          RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
+      } else if (kick != null) {
+        if (state == CapLobbyState.Searching) {
+          RiotServices.CapService.KickPlayer(player.SlotId);
+        }
+      } else if (change != null) {
+        switch (change.PropertyName) {
+          case nameof(player.Position):
+            if (player == me)
+              RiotServices.CapService.PickPosition(change.Value as Position, player.SlotId);
+            else
+              RiotServices.CapService.SelectAdvertisedPosition(change.Value as Position, player.SlotId);
             break;
-          case nameof(cap.Role):
-            RiotServices.CapService.SelectAdvertisedRole(cap.Role, cap.SlotId);
+          case nameof(player.Role):
+            if (player == me)
+              RiotServices.CapService.PickRole(change.Value as Role, player.SlotId);
+            else
+              RiotServices.CapService.SelectAdvertisedRole(change.Value as Role, player.SlotId);
+            break;
+          case nameof(player.Champion):
+            RiotServices.CapService.PickChampion((change.Value as ChampionDto).key);
+            break;
+          case nameof(player.Spell1):
+            RiotServices.CapService.PickSpells((change.Value as SpellDto).key, player.Spell2.key);
+            break;
+          case nameof(player.Spell2):
+            RiotServices.CapService.PickSpells(player.Spell1.key, (change.Value as SpellDto).key);
             break;
         }
-      } else {
-        cap.PropertyChanged -= Cap_PropertyChanged;
-        return;
+        foreach (var p in players) {
+          if (p?.Position == Position.UNSELECTED) return;
+        }
+        //SoloSearchButt.Visibility = Visibility.Visible;
       }
-      foreach (var player in players) {
-        if (player?.Position == Position.UNSELECTED) return;
-      }
-      SoloSearchButt.Visibility = Visibility.Visible;
-    }
-
-    private void Candidate_Reacted(object sender, bool e) {
-      if (e) {
-        RiotServices.CapService.AcceptCandidate((sender as CapOtherPlayer).Player.SlotId);
-      } else {
-        RiotServices.CapService.DeclineCandidate((sender as CapOtherPlayer).Player.SlotId);
-      }
-    }
-
-    private void Candidate_Kicked(object sender, EventArgs e) {
-      var player = (CapOtherPlayer) sender;
-      if (state == CapLobbyState.Searching) {
-        RiotServices.CapService.KickPlayer(player.Player.SlotId);
-      }
-    }
-
-    private void Candidate_GiveInvite(object sender, EventArgs e) {
-      var player = (CapOtherPlayer) sender;
-      var member = Status.Members.FirstOrDefault(m => m.SummonerName.Equals(player.Player.Name));
-      if (member.HasInvitePower)
-        RiotServices.GameInvitationService.RevokeInvitePrivileges(member.SummonerId);
-      else
-        RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
     }
 
     private static void DoTimeout(CapPlayer player, int timeoutSecs) {
@@ -534,82 +562,82 @@ namespace LeagueClient.ClientUI.Main {
       }
     }
 
-    #region Me Editing
-    private void Me_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-      switch (e.PropertyName) {
-        case nameof(CapPlayer.Role):
-          RiotServices.CapService.PickRole(me.Role, me.SlotId);
-          break;
-        case nameof(CapPlayer.Position):
-          RiotServices.CapService.PickPosition(me.Position, me.SlotId);
-          break;
-      }
-    }
+    //#region Me Editing
+    //private void Me_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+    //  switch (e.PropertyName) {
+    //    case nameof(CapPlayer.Role):
+    //      RiotServices.CapService.PickRole(me.Role, me.SlotId);
+    //      break;
+    //    case nameof(CapPlayer.Position):
+    //      RiotServices.CapService.PickPosition(me.Position, me.SlotId);
+    //      break;
+    //  }
+    //}
 
-    private bool spell1;
+    //private bool spell1;
 
-    private void Player_MasteryClicked(object src, EventArgs args) {
-      Popup.MasteryEditor.Reset();
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Masteries;
-    }
+    //private void Player_MasteryClicked(object src, EventArgs args) {
+    //  Popup.MasteryEditor.Reset();
+    //  Popup.BeginStoryboard(App.FadeIn);
+    //  Popup.CurrentSelector = PopupSelector.Selector.Masteries;
+    //}
 
-    private void Player_RuneClicked(object sender, EventArgs e) {
-      Popup.RuneEditor.Reset();
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Runes;
-    }
+    //private void Player_RuneClicked(object sender, EventArgs e) {
+    //  Popup.RuneEditor.Reset();
+    //  Popup.BeginStoryboard(App.FadeIn);
+    //  Popup.CurrentSelector = PopupSelector.Selector.Runes;
+    //}
 
-    private void Spell1_Click(object src, EventArgs args) {
-      spell1 = true;
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Spells;
-    }
+    //private void Spell1_Click(object src, EventArgs args) {
+    //  spell1 = true;
+    //  Popup.BeginStoryboard(App.FadeIn);
+    //  Popup.CurrentSelector = PopupSelector.Selector.Spells;
+    //}
 
-    private void Spell2_Click(object src, EventArgs args) {
-      spell1 = false;
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Spells;
-    }
+    //private void Spell2_Click(object src, EventArgs args) {
+    //  spell1 = false;
+    //  Popup.BeginStoryboard(App.FadeIn);
+    //  Popup.CurrentSelector = PopupSelector.Selector.Spells;
+    //}
 
-    private void Champion_Click(object src, EventArgs args) {
-      if (state != CapLobbyState.Inviting && state != CapLobbyState.Selecting) return;
-      Popup.ChampSelector.UpdateChampList();
-      Popup.BeginStoryboard(App.FadeIn);
-      Popup.CurrentSelector = PopupSelector.Selector.Champions;
-    }
+    //private void Champion_Click(object src, EventArgs args) {
+    //  if (state != CapLobbyState.Inviting && state != CapLobbyState.Selecting) return;
+    //  Popup.ChampSelector.UpdateChampList();
+    //  Popup.BeginStoryboard(App.FadeIn);
+    //  Popup.CurrentSelector = PopupSelector.Selector.Champions;
+    //}
 
-    private void Popup_Close(object sender, EventArgs e) {
-      Popup.BeginStoryboard(App.FadeOut);
-      Popup.MasteryEditor.Save().Wait();
-      myControl.UpdateBooks();
-    }
+    //private void Popup_Close(object sender, EventArgs e) {
+    //  Popup.BeginStoryboard(App.FadeOut);
+    //  Popup.MasteryEditor.Save().Wait();
+    //  myControl.UpdateBooks();
+    //}
 
-    private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-      if (me.Champion?.key != Popup.ChampSelector.SelectedChampion.key) {
-        me.Champion = Popup.ChampSelector.SelectedChampion;
-        var guid = RiotServices.CapService.PickChampion(Popup.ChampSelector.SelectedChampion.key);
-        if (e.num > 0)
-          RiotServices.AddHandler(guid, lcds => RiotServices.CapService.PickSkin(e.id, false));
-      } else {
-        if (e.num > 0)
-          RiotServices.CapService.PickSkin(e.id, false);
-      }
-      Popup_Close(sender, null);
-    }
+    //private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
+    //  if (me.Champion?.key != Popup.ChampSelector.SelectedChampion.key) {
+    //    me.Champion = Popup.ChampSelector.SelectedChampion;
+    //    var guid = RiotServices.CapService.PickChampion(Popup.ChampSelector.SelectedChampion.key);
+    //    if (e.num > 0)
+    //      RiotServices.AddHandler(guid, lcds => RiotServices.CapService.PickSkin(e.id, false));
+    //  } else {
+    //    if (e.num > 0)
+    //      RiotServices.CapService.PickSkin(e.id, false);
+    //  }
+    //  Popup_Close(sender, null);
+    //}
 
-    private void Spell_Select(object sender, SpellDto spell) {
-      if (spell1) {
-        me.Spell1 = spell;
-        Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell1Id = spell.key;
-      } else {
-        me.Spell2 = spell;
-        Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell2Id = spell.key;
-      }
-      RiotServices.CapService.PickSpells(me.Spell1.key, me.Spell2.key);
-      Popup.BeginStoryboard(App.FadeOut);
-    }
-    #endregion
+    //private void Spell_Select(object sender, SpellDto spell) {
+    //  if (spell1) {
+    //    me.Spell1 = spell;
+    //    Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell1Id = spell.key;
+    //  } else {
+    //    me.Spell2 = spell;
+    //    Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell2Id = spell.key;
+    //  }
+    //  RiotServices.CapService.PickSpells(me.Spell1.key, me.Spell2.key);
+    //  Popup.BeginStoryboard(App.FadeOut);
+    //}
+    //#endregion
 
     #region UI Event Handlers
 
@@ -654,6 +682,7 @@ namespace LeagueClient.ClientUI.Main {
       RiotServices.CapService.Quit();
       chatRoom.Dispose();
       Client.ChatManager.Status = ChatStatus.outOfGame;
+      myControl?.Dispose();
     }
 
     public Page Page => this;

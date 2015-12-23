@@ -46,9 +46,12 @@ namespace LeagueClient.Logic {
       LoginVideoPath = Path.Combine(DataPath, "login.mp4"),
       LoginStaticPath = Path.Combine(DataPath, "back.png"),
       LogFilePath = Path.Combine(DataPath, "log.txt");
+
+    internal static Strings Strings { get; } = Strings.en_US;
     #endregion
 
     #region Properties
+
     internal static RtmpClient RtmpConn { get; set; }
 
     internal static Session UserSession { get; set; }
@@ -64,6 +67,7 @@ namespace LeagueClient.Logic {
     internal static string LoginTheme { get; set; }
 
     internal static MainWindow MainWindow { get; set; }
+    internal static PopupSelector PopupSelector { get; set; }
 
     internal static RiotChat ChatManager { get; set; }
     internal static IQueueManager QueueManager { get; set; }
@@ -331,6 +335,15 @@ namespace LeagueClient.Logic {
     #endregion
 
     #region My Client Methods
+
+    public static void ShowPopup(PopupSelector.Selector thing) {
+      PopupSelector.CurrentSelector = thing;
+      PopupSelector.BeginStoryboard(App.FadeIn);
+    }
+
+    public static void HidePopup() {
+      PopupSelector.BeginStoryboard(App.FadeOut);
+    }
 
     private static void GetCurrentGame() {
       Thread.Sleep(20000);

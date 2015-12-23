@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,19 +18,13 @@ using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
+using System.Threading;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for TeambuilderMe.xaml
   /// </summary>
-  public partial class CapMePlayer : UserControl {
-    public event EventHandler ChampClicked;
-    public event EventHandler Spell1Clicked;
-    public event EventHandler Spell2Clicked;
-    public event EventHandler MasteryClicked;
-    public event EventHandler RuneClicked;
-    public event EventHandler PlayerUpdate;
-
+  public partial class CapMePlayer : UserControl, IDisposable {
     public bool Editable {
       get {
         return editable;
@@ -55,7 +48,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public CapMePlayer() : this(null) { }
 
-    public CapMePlayer(CapPlayer player) {
+    public CapMePlayer(CapPlayer player, bool inLobby = false) {
       InitializeComponent();
       if (!Client.Connected) return;
 
@@ -67,18 +60,22 @@ namespace LeagueClient.ClientUI.Controls {
       } else {
         CapPlayer = player;
       }
+      if (!inLobby)
+        CapPlayer.CapEvent += PlayerHandler;
 
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
       PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
       RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED);
 
-      CapPlayer.PropertyChanged += (s, e) => Dispatcher.MyInvoke(UpdateChild, e.PropertyName);
+      Client.PopupSelector.SpellSelector.SpellSelected += Spell_Select;
+      Client.PopupSelector.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
+
       UpdateBooks();
-      UpdateChild(null);
+
+      Render();
     }
 
-    private void UpdateChild(string property) {
-      PlayerUpdate?.Invoke(this, new EventArgs());
+    private void Render() {
       ChampionName.Text = CapPlayer.Champion?.name;
 
       PositionBox.SelectedItem = CapPlayer.Position;
@@ -96,6 +93,35 @@ namespace LeagueClient.ClientUI.Controls {
       Check.Visibility = (CapPlayer.Status == CapStatus.Ready) ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    private void PlayerHandler(object sender, CapPlayerEventArgs e) {
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(PlayerHandler, sender, e); return; }
+      var player = sender as CapPlayer;
+
+      var change = e as PropertyChangedEventArgs;
+
+      if (change != null) {
+        switch (change.PropertyName) {
+          case nameof(player.Position):
+            player.Position = change.Value as Position;
+            break;
+          case nameof(player.Role):
+            player.Role = change.Value as Role;
+            break;
+          case nameof(player.Champion):
+            player.Champion = change.Value as ChampionDto;
+            break;
+          case nameof(player.Spell1):
+            player.Spell1 = change.Value as SpellDto;
+            break;
+          case nameof(player.Spell2):
+            player.Spell2 = change.Value as SpellDto;
+            break;
+        }
+      }
+
+      Render();
+    }
+
     public void UpdateBooks() {
       RunesBox.ItemsSource = Client.Runes.BookPages;
       RunesBox.SelectedItem = Client.SelectedRunePage;
@@ -107,31 +133,68 @@ namespace LeagueClient.ClientUI.Controls {
       return CapPlayer.CanBeReady() && RunesBox.SelectedIndex >= 0 && MasteriesBox.SelectedIndex >= 0;
     }
 
+    #region Editing
+
     private void Champion_Click(object src, EventArgs args) {
-      if (ChampClicked != null) ChampClicked(this, new EventArgs());
+      Client.ShowPopup(PopupSelector.Selector.Champions);
+    }
+    private bool spell1;
+
+    private void Spell1_Click(object src, EventArgs args) {
+      spell1 = true;
+      Client.ShowPopup(PopupSelector.Selector.Spells);
     }
 
-    private void Spell1_Click(object src, EventArgs args) => Spell1Clicked?.Invoke(this, new EventArgs());
-    private void Spell2_Click(object src, EventArgs args) => Spell2Clicked?.Invoke(this, new EventArgs());
-    private void RuneEdit_Click(object sender, RoutedEventArgs e) => RuneClicked?.Invoke(this, new EventArgs());
-    private void MasteryEdit_Click(object src, RoutedEventArgs args) => MasteryClicked?.Invoke(this, new EventArgs());
+    private void Spell2_Click(object src, EventArgs args) {
+      spell1 = false;
+      Client.ShowPopup(PopupSelector.Selector.Spells);
+    }
+
+    private void RuneEdit_Click(object sender, RoutedEventArgs e) {
+      spell1 = false;
+      Client.ShowPopup(PopupSelector.Selector.Runes);
+    }
+
+    private void MasteryEdit_Click(object src, RoutedEventArgs args) {
+      spell1 = false;
+      Client.ShowPopup(PopupSelector.Selector.Masteries);
+    }
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {
       Client.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);
-      if (PlayerUpdate != null) PlayerUpdate(this, e);
     }
 
     private void Mastery_Selected(object sender, SelectionChangedEventArgs e) {
       Client.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
-      if (PlayerUpdate != null) PlayerUpdate(this, e);
     }
 
     private void PositionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      CapPlayer.Position = (Position) PositionBox.SelectedItem;
+      if (CapPlayer.Position != PositionBox.SelectedItem)
+        CapPlayer.ChangeProperty(nameof(CapPlayer.Position), (Position) PositionBox.SelectedItem);
     }
 
     private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      CapPlayer.Role = (Role) RoleBox.SelectedItem;
+      if (CapPlayer.Role != RoleBox.SelectedItem)
+        CapPlayer.ChangeProperty(nameof(CapPlayer.Role), (Role) RoleBox.SelectedItem);
+    }
+
+    private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
+      CapPlayer.ChangeProperty(nameof(CapPlayer.Champion), Client.PopupSelector.ChampSelector.SelectedChampion);
+      Skin = e;
+      Client.HidePopup();
+    }
+
+    private void Spell_Select(object sender, SpellDto spell) {
+      if (spell1) CapPlayer.ChangeProperty(nameof(CapPlayer.Spell1), spell);
+      else CapPlayer.ChangeProperty(nameof(CapPlayer.Spell2), spell);
+      Client.HidePopup();
+    }
+
+    #endregion
+
+    public void Dispose() {
+      Client.PopupSelector.SpellSelector.SpellSelected -= Spell_Select;
+      Client.PopupSelector.ChampSelector.SkinSelected -= ChampSelector_SkinSelected;
     }
   }
 }

@@ -14,8 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
-using LeagueClient.Logic.Cap;
 using MFroehlich.League.Assets;
+using LeagueClient.Logic.Cap;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -23,10 +23,6 @@ namespace LeagueClient.ClientUI.Controls {
   /// </summary>
   public partial class CapOtherPlayer : UserControl, IDisposable {
     public CapPlayer Player { get; private set; }
-
-    public event EventHandler<bool> CandidateReacted;
-    public event EventHandler GiveInvite;
-    public event EventHandler Kicked;
 
     private Timer timer;
     public bool editable;
@@ -42,12 +38,6 @@ namespace LeagueClient.ClientUI.Controls {
       PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
       RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.UNSELECTED);
 
-      Player.PropertyChanged += (s, e) => Dispatcher.Invoke(PlayerUpdate);
-      Unknown.Visibility = Visibility.Collapsed;
-      PlayerUpdate();
-    }
-
-    private void PlayerUpdate() {
       PositionText.Content = Player.Position?.Value;
       RoleText.Content = Player.Role?.Value;
       PositionBox.SelectedItem = Player.Position;
@@ -84,28 +74,31 @@ namespace LeagueClient.ClientUI.Controls {
         DeclineButton.Visibility = Visibility.Collapsed;
       }
 
+      SummonerText.Visibility = Visibility.Visible;
       Unknown.Visibility = Visibility.Collapsed;
       TimerText.Visibility = Visibility.Collapsed;
       InnerBorder.Background = App.ForeBrush;
       switch (Player.Status) {
         case CapStatus.ChoosingAdvert:
-          SummonerText.Content = "Select Position and Role";
+          SummonerText.Content = Client.Strings.Cap.Player_Select_Advertising;
           InnerBorder.Background = App.Back1Brush;
+          Unknown.Visibility = Visibility.Visible;
+          SummonerText.Visibility = Visibility.Collapsed;
           break;
         case CapStatus.Searching:
           Unknown.Visibility = Visibility.Visible;
           Unknown.Text = "?";
-          SummonerText.Content = "Searching for candidate...";
+          SummonerText.Content = Client.Strings.Cap.Player_Searching;
           break;
         case CapStatus.Found:
-          SummonerText.Content = "A candidate has been found";
+          SummonerText.Content = Client.Strings.Cap.Player_Found;
           TimerText.Visibility = Visibility.Visible;
           TimerText.Content = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
           timer = new Timer { Interval = 1000, Enabled = true };
           timer.Elapsed += Timer_Elapsed;
           break;
         case CapStatus.Joining:
-          SummonerText.Content = "Waiting for candidate...";
+          SummonerText.Content = Client.Strings.Cap.Player_Joining;
           break;
         case CapStatus.Choosing:
         case CapStatus.Present:
@@ -115,14 +108,14 @@ namespace LeagueClient.ClientUI.Controls {
           InnerBorder.Background = new SolidColorBrush(Color.FromRgb(0, 120, 54));
           goto case CapStatus.Present;
         case CapStatus.Penalty:
-          SummonerText.Content = "Player kicked";
+          SummonerText.Content = Client.Strings.Cap.Player_Kicked;
           Unknown.Visibility = Visibility.Visible;
           Unknown.Text = Math.Round(Player.TimeoutEnd.Subtract(DateTime.Now).TotalSeconds) + "";
           timer = new Timer { Interval = 1000, Enabled = true };
           timer.Elapsed += Timer_Elapsed;
           break;
         case CapStatus.SearchingDeclined:
-          SummonerText.Content = "Searching for candidate...";
+          SummonerText.Content = Client.Strings.Cap.Player_Searching;
           break;
       }
     }
@@ -141,10 +134,10 @@ namespace LeagueClient.ClientUI.Controls {
       }
     }
 
-    private void AcceptButton_Click(object sender, RoutedEventArgs e) => CandidateReacted?.Invoke(this, true);
-    private void DeclineButton_Click(object sender, RoutedEventArgs e) => CandidateReacted?.Invoke(this, false);
-    private void KickButton_Click(object sender, RoutedEventArgs e) => Kicked?.Invoke(this, new EventArgs());
-    private void GiveInvite_Click(object sender, RoutedEventArgs e) => GiveInvite?.Invoke(this, new EventArgs());
+    private void AcceptButton_Click(object sender, RoutedEventArgs e) => Player.Accept(true);
+    private void DeclineButton_Click(object sender, RoutedEventArgs e) => Player.Accept(false);
+    private void KickButton_Click(object sender, RoutedEventArgs e) => Player.Kick();
+    private void GiveInvite_Click(object sender, RoutedEventArgs e) => Player.GiveInvite();
 
     private void Champ_MouseEnter(object sender, MouseEventArgs e) {
       if (editable && Player.Status == CapStatus.Present) KickButton.BeginStoryboard(App.FadeIn);
@@ -157,11 +150,13 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void PositionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      Player.Position = (Position) PositionBox.SelectedItem;
+      if (Player.Position != PositionBox.SelectedItem)
+        Player.ChangeProperty(nameof(Player.Position), (Position) PositionBox.SelectedItem);
     }
 
     private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      Player.Role = (Role) RoleBox.SelectedItem;
+      if (Player.Role != RoleBox.SelectedItem)
+        Player.ChangeProperty(nameof(Player.Role), (Role) RoleBox.SelectedItem);
     }
 
     public void Dispose() {

@@ -376,6 +376,7 @@
     <Compile Include="Logic\Settings\LoginSettings.cs" />
     <Compile Include="Logic\Settings\SerializableDictionary.cs" />
     <Compile Include="Logic\Settings\Settings.cs" />
+    <Compile Include="Logic\Strings.cs" />
     <Compile Include="Logic\SummonerCache.cs" />
     <Compile Include="Logic\Settings\UserSettings.cs" />
     <Page Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml">

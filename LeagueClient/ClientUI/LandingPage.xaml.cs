@@ -53,6 +53,7 @@ namespace LeagueClient.ClientUI {
 
       Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
       Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
+      Client.PopupSelector = Popup;
 
       OpenChats.ItemsSource = OpenChatsList;
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;

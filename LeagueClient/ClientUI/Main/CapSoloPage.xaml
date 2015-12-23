@@ -32,8 +32,5 @@
       
       <Label HorizontalAlignment="Right" Name="QueueInfoLabel" Visibility="Collapsed"/>
     </Grid>
-
-    <my:PopupSelector Grid.RowSpan="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center"
-                      x:Name="Popup" Visibility="Collapsed" Opacity="0" Close="Popup_Close"/>
   </Grid>
 </Page>

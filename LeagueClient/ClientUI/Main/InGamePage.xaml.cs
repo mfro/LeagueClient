@@ -73,7 +73,9 @@ namespace LeagueClient.ClientUI.Main {
           Close?.Invoke(this, new EventArgs());
           return true;
         } else if (game.GameState.Equals("TERMINATED")) {
-
+          Client.ChatManager.Status = ChatStatus.outOfGame;
+          Close?.Invoke(this, new EventArgs());
+          return true;
         }
       }
       return false;
