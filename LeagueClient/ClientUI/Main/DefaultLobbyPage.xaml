@@ -83,5 +83,16 @@
       <TextBox Name="SendBox" Margin="0 0 70 0" Grid.Row="1"/>
       <Button Name="ChatSend" HorizontalAlignment="Right" BorderThickness="0" Width="60" Grid.Row="1">Send</Button>
     </Grid>
+
+    <Grid Grid.RowSpan="10" Grid.ColumnSpan="10" Background="{StaticResource Back2Brush}" Name="LoadingGrid">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <my:Loader HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Height="100" Grid.Row="1"/>
+      <Label Grid.Row="2" HorizontalAlignment="Center" FontSize="20">Loading Lobby...</Label>
+    </Grid>
   </Grid>
 </Page>

@@ -37,11 +37,11 @@ namespace LeagueClient.ClientUI.Controls {
       anim.AccelerationRatio = .85;
 
       Section1.Height = Section2.Height = Section3.Height = anim.From.Value;
-      Section1.BeginAnimation(Border.HeightProperty, anim);
+      Section1.BeginAnimation(HeightProperty, anim);
       await Task.Delay(AnimationTime / 3);
-      Section2.BeginAnimation(Border.HeightProperty, anim);
+      Section2.BeginAnimation(HeightProperty, anim);
       await Task.Delay(AnimationTime / 3);
-      Section3.BeginAnimation(Border.HeightProperty, anim);
+      Section3.BeginAnimation(HeightProperty, anim);
     }
 
     private void Loader_SizeChanged(object sender, SizeChangedEventArgs e) {

@@ -56,8 +56,10 @@ namespace LeagueClient.Logic {
 
     internal static Session UserSession { get; set; }
 
-    internal static LoginQueueDto LoginQueue { get; set; }
+    internal static SummonerLeaguesDTO Leagues { get; set; }
     internal static LoginDataPacket LoginPacket { get; set; }
+
+    internal static LoginQueueDto LoginQueue { get; set; }
     internal static string ReconnectToken { get; set; }
     internal static bool Connected { get; set; }
 
@@ -160,6 +162,7 @@ namespace LeagueClient.Logic {
         RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(GotQueues);
         RiotServices.InventoryService.GetAvailableChampions().ContinueWith(GotChampions);
         RiotServices.SummonerTeamService.CreatePlayer().ContinueWith(GotRankedTeamInfo);
+        RiotServices.LeaguesService.GetAllLeaguesForPlayer(LoginPacket.AllSummonerData.Summoner.SummonerId).ContinueWith(t => Leagues = t.Result);
 
         Runes = LoginPacket.AllSummonerData.SpellBook;
         Masteries = LoginPacket.AllSummonerData.MasteryBook;

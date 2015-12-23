@@ -28,7 +28,7 @@ namespace LeagueClient.Logic.Queueing {
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       var elapsed = DateTime.Now.Subtract(start);
-      Application.Current.Dispatcher.Invoke(() => label.Content = "In queue for " + elapsed.ToString("m\\:ss"));
+      Application.Current.Dispatcher.Invoke(() => label.Content = elapsed.ToString("m\\:ss"));
     }
 
     public void Start() {

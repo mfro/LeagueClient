@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
       xmlns:main="clr-namespace:LeagueClient.ClientUI.Main"
+      KeyUp="Page_KeyUp"
       SnapsToDevicePixels="True" Width="{StaticResource Width}" Height="{StaticResource Height}">
   <Page.Resources>
     <Style TargetType="Button" x:Key="TabButton" BasedOn="{StaticResource {x:Type Button}}">

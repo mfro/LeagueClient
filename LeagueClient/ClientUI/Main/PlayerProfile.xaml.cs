@@ -74,20 +74,6 @@ namespace LeagueClient.ClientUI.Main {
       LoadSummoner((SummonerCache.Item) HistoryList.SelectedItem);
     }
 
-    private void TabList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      //Console.WriteLine(TabList.SelectedItem == ProfileTab);
-      //if (TabList.SelectedItem == MatchHistoryTab) {
-      //  var history = new MatchHistory(Selected);
-      //  DetailsPane.Child = history;
-      //} else if (TabList.SelectedItem == RankingTab) {
-      //  //TODO Ranking
-      //  DetailsPane.Child = null;
-      //} else if (TabList.SelectedItem == ProfileTab) {
-      //  //TODO Profile
-      //  DetailsPane.Child = null;
-      //}
-    }
-
     private void Matches_Click(object sender, MouseButtonEventArgs e) {
       MatchesTab.Foreground = Brushes.White;
       ProfileTab.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);

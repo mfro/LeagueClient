@@ -148,10 +148,12 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void UpdateList() {
+      LoadingGrid.Visibility = Visibility.Collapsed; 
       myControl?.Dispose();
       bool canReady = state == CapLobbyState.Searching || state == CapLobbyState.Inviting;
       bool canSearch = state == CapLobbyState.Selecting || state == CapLobbyState.Inviting;
       bool canMatch = true;
+      var editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting ? CapMePlayer.CapControlState.Complete : CapMePlayer.CapControlState.None;
 
       PlayerList.Children.Clear();
       for (int i = 0; i < players.Length; i++) {
@@ -168,7 +170,7 @@ namespace LeagueClient.ClientUI.Main {
 
           PlayerList.Children.Add(control);
         } else {
-          myControl = new CapMePlayer(me, true);
+          myControl = new CapMePlayer(me, editable);
           MyBorder.Child = myControl;
         }
 
@@ -186,7 +188,6 @@ namespace LeagueClient.ClientUI.Main {
         if (isPlayer && players[i].Champion == null)
           canSearch = canReady = false;
       }
-      myControl.Editable = state == CapLobbyState.Inviting || state == CapLobbyState.Selecting;
 
       if (!canReady) {
         foreach (var player in players.Where(p => p?.Status == CapStatus.Ready))
@@ -545,10 +546,6 @@ namespace LeagueClient.ClientUI.Main {
             RiotServices.CapService.PickSpells(player.Spell1.key, (change.Value as SpellDto).key);
             break;
         }
-        foreach (var p in players) {
-          if (p?.Position == Position.UNSELECTED) return;
-        }
-        //SoloSearchButt.Visibility = Visibility.Visible;
       }
     }
 

@@ -108,6 +108,7 @@ namespace LeagueClient.ClientUI.Main {
       bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
 
       Dispatcher.Invoke(() => {
+        LoadingGrid.Visibility = Visibility.Collapsed;
         InviteList.Children.Clear();
         foreach (var player in lobby.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
           InviteList.Children.Add(new InvitedPlayer(player));

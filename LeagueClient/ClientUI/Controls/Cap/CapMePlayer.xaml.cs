@@ -25,17 +25,22 @@ namespace LeagueClient.ClientUI.Controls {
   /// Interaction logic for TeambuilderMe.xaml
   /// </summary>
   public partial class CapMePlayer : UserControl, IDisposable {
-    public bool Editable {
+    public CapControlState Editable {
       get {
         return editable;
       }
       set {
-        if (value) {
-          ChampionBorder.Cursor = Cursors.Hand;
-          PositionBox.Visibility = RoleBox.Visibility = PositionLabel.Visibility = RoleLabel.Visibility = Visibility.Visible;
-        } else {
+        if (value == CapControlState.None) {
           ChampionBorder.Cursor = Cursors.Arrow;
           PositionBox.Visibility = RoleBox.Visibility = PositionLabel.Visibility = RoleLabel.Visibility = Visibility.Collapsed;
+        } else {
+          ChampionBorder.Cursor = Cursors.Hand;
+          PositionBox.Visibility = RoleBox.Visibility = PositionLabel.Visibility = RoleLabel.Visibility = Visibility.Visible;
+        }
+        if (value == CapControlState.Complete && editable != CapControlState.Complete) {
+          CapPlayer.CapEvent += PlayerHandler;
+        } else if (value != CapControlState.Complete && editable == CapControlState.Complete) {
+          CapPlayer.CapEvent -= PlayerHandler;
         }
         editable = value;
       }
@@ -44,13 +49,17 @@ namespace LeagueClient.ClientUI.Controls {
     public CapPlayer CapPlayer { get; set; }
     public ChampionDto.SkinDto Skin { get; set; }
 
-    private bool editable;
+    private CapControlState editable;
 
-    public CapMePlayer() : this(null) { }
+    public CapMePlayer() {
+      InitializeComponent();
+    }
 
-    public CapMePlayer(CapPlayer player, bool inLobby = false) {
+    public CapMePlayer(CapPlayer player, CapControlState state) {
       InitializeComponent();
       if (!Client.Connected) return;
+
+      editable = state;
 
       if (player == null) {
         CapPlayer = new CapPlayer(-1) { Status = CapStatus.Present };
@@ -60,15 +69,13 @@ namespace LeagueClient.ClientUI.Controls {
       } else {
         CapPlayer = player;
       }
-      if (!inLobby)
-        CapPlayer.CapEvent += PlayerHandler;
+
+      Client.PopupSelector.SpellSelector.SpellSelected += Spell_Select;
+      Client.PopupSelector.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
 
       SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
       PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
       RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED);
-
-      Client.PopupSelector.SpellSelector.SpellSelected += Spell_Select;
-      Client.PopupSelector.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
 
       UpdateBooks();
 
@@ -129,10 +136,6 @@ namespace LeagueClient.ClientUI.Controls {
       MasteriesBox.SelectedItem = Client.SelectedMasteryPage;
     }
 
-    public bool CanBeReady() {
-      return CapPlayer.CanBeReady() && RunesBox.SelectedIndex >= 0 && MasteriesBox.SelectedIndex >= 0;
-    }
-
     #region Editing
 
     private void Champion_Click(object src, EventArgs args) {
@@ -169,32 +172,44 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void PositionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      if (CapPlayer.Position != PositionBox.SelectedItem)
+      if (CapPlayer.Position != PositionBox.SelectedItem) {
         CapPlayer.ChangeProperty(nameof(CapPlayer.Position), (Position) PositionBox.SelectedItem);
+      }
     }
 
     private void RoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      if (CapPlayer.Role != RoleBox.SelectedItem)
+      if (CapPlayer.Role != RoleBox.SelectedItem) {
         CapPlayer.ChangeProperty(nameof(CapPlayer.Role), (Role) RoleBox.SelectedItem);
+      }
     }
 
     private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-      CapPlayer.ChangeProperty(nameof(CapPlayer.Champion), Client.PopupSelector.ChampSelector.SelectedChampion);
+      if (CapPlayer.Champion != Client.PopupSelector.ChampSelector.SelectedChampion) {
+        CapPlayer.ChangeProperty(nameof(CapPlayer.Champion), Client.PopupSelector.ChampSelector.SelectedChampion);
+      }
       Skin = e;
       Client.HidePopup();
     }
 
     private void Spell_Select(object sender, SpellDto spell) {
-      if (spell1) CapPlayer.ChangeProperty(nameof(CapPlayer.Spell1), spell);
-      else CapPlayer.ChangeProperty(nameof(CapPlayer.Spell2), spell);
+      if ((spell1 && CapPlayer.Spell1 != spell) || (!spell1 && CapPlayer.Spell2 != spell)) {
+        if (spell1) CapPlayer.ChangeProperty(nameof(CapPlayer.Spell1), spell);
+        else CapPlayer.ChangeProperty(nameof(CapPlayer.Spell2), spell);
+      }
       Client.HidePopup();
     }
 
     #endregion
 
     public void Dispose() {
+      if (Editable == CapControlState.Complete)
+        CapPlayer.CapEvent += PlayerHandler;
       Client.PopupSelector.SpellSelector.SpellSelected -= Spell_Select;
       Client.PopupSelector.ChampSelector.SkinSelected -= ChampSelector_SkinSelected;
+    }
+
+    public enum CapControlState {
+      Complete, Server, None
     }
   }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace LeagueClient.Logic.Chat {
   public class LeagueStatus {
@@ -57,7 +58,28 @@ namespace LeagueClient.Logic.Chat {
     }
 
     public string ToXML() {
-      return string.Format(StatusTemplate, Message, GameStatus.Key);
+      var unranked = Client.LoginPacket.PlayerStatSummaries.PlayerStatSummarySet.FirstOrDefault(x => x.PlayerStatSummaryTypeString.Equals("Unranked"));
+      var ranked = Client.LoginPacket.PlayerStatSummaries.PlayerStatSummarySet.FirstOrDefault(x => x.PlayerStatSummaryTypeString.Equals("RankedSolo5x5"));
+      var league = Client.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
+
+      var dict = new Dictionary<string, object>();
+      dict["profileIcon"] = Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
+      dict["level"] = Client.LoginPacket.AllSummonerData.SummonerLevel.Level;
+      dict["wins"] = unranked?.Wins ?? 0;
+      dict["gameStatus"] = GameStatus.Key;
+
+      if (!string.IsNullOrEmpty(Message)) dict["statusMsg"] = Message;
+
+      if (ranked != null && league != null) {
+        dict["rankedLeagueName"] = league.DivisionName;
+        dict["rankedLeagueDivision"] = league.Rank;
+        dict["rankedLeagueTier"] = league.Tier;
+        dict["rankedLeagueQueue"] = league.Queue;
+        dict["rankedWins"] = ranked.Wins;
+      }
+
+      var xml = new XElement("body", dict.Select(pair => new XElement(pair.Key, pair.Value)));
+      return xml.ToString();
     }
   }
 }

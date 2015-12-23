@@ -1,0 +1,25 @@
+﻿<Window x:Class="LeagueClient.ClientUI.DebugWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+        Title="League of Legends - Debug">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="3*"/>
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="auto"/>
+    </Grid.RowDefinitions>
+    <ScrollViewer Name="ChatScroller" Margin="0 0">
+      <RichTextBox Name="ChatHistory" Background="{StaticResource ForeBrush}" BorderThickness="0" IsReadOnly="True">
+        <RichTextBox.Resources>
+          <Style TargetType="Paragraph">
+            <Setter Property="Margin" Value="0" />
+          </Style>
+        </RichTextBox.Resources>
+      </RichTextBox>
+    </ScrollViewer>
+    
+    <TextBox Grid.Row="1" BorderThickness="0" AcceptsReturn="true" AcceptsTab="True"/>
+    <Button Grid.Row="2" BorderThickness="0" FontSize="14" Click="Go_Click">Go!</Button>
+  </Grid>
+</Window>

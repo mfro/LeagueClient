@@ -42,8 +42,7 @@ namespace LeagueClient.ClientUI.Main {
                                                    where spell.modes.Contains("CLASSIC")
                                                    select spell);
 
-      this.me = new CapMePlayer(me);
-      this.me.Editable = true;
+      this.me = new CapMePlayer(me, CapMePlayer.CapControlState.Complete);
       this.me.CapPlayer.CapEvent += PlayerUpdate;
       if (me != null) this.me.CapPlayer = me;
 
@@ -68,7 +67,7 @@ namespace LeagueClient.ClientUI.Main {
     private void PlayerUpdate(object sender, EventArgs e) {
       GameMap.UpdateList(new[] { me.CapPlayer });
 
-      me.Editable = !queue.InQueue;
+      me.Editable = queue.InQueue ? CapMePlayer.CapControlState.None : CapMePlayer.CapControlState.Complete;
       if (queue.InQueue) {
         EnterQueueButt.BeginStoryboard(App.FadeOut);
         QueueInfoLabel.Visibility = Visibility.Visible;
@@ -76,7 +75,7 @@ namespace LeagueClient.ClientUI.Main {
       } else {
         QuitButt.Content = "Quit";
         QueueInfoLabel.Visibility = Visibility.Collapsed;
-        if (me.CanBeReady()) {
+        if (me.CapPlayer.CanBeReady()) {
           EnterQueueButt.BeginStoryboard(App.FadeIn);
         }
       }

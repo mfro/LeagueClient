@@ -171,7 +171,7 @@ namespace LeagueClient.ClientUI {
       var item = (FriendListItem) sender;
       if (e.ChangedButton == MouseButton.Left && !OpenChatsList.Contains(((FriendListItem) sender).friend))
         OpenChatsList.Add(item.friend);
-      else {
+      else if (e.ChangedButton == MouseButton.Left) {
         var container = VisualTreeHelper.GetChild(OpenChats.ItemContainerGenerator.ContainerFromItem(item.friend), 0);
         ((ChatConversation) container).Open = true;
       }
@@ -196,6 +196,7 @@ namespace LeagueClient.ClientUI {
 
     private void IconSelector_IconSelected(object sender, Icon e) {
       Popup.BeginStoryboard(App.FadeOut);
+      Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId = e.IconId;
       ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(e.IconId));
     }
 
@@ -338,6 +339,12 @@ namespace LeagueClient.ClientUI {
       Play = 0,
       Home = 1,
       Profile = 2
+    }
+
+    private void Page_KeyUp(object sender, KeyEventArgs e) {
+      if (e.Key == Key.D && Keyboard.IsKeyDown(Key.LeftCtrl)) {
+        new DebugWindow().Show();
+      }
     }
   }
 }
