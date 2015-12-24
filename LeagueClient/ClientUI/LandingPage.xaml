@@ -51,13 +51,13 @@
         </Grid.RowDefinitions>
         <Grid Width="100" Height="0" Grid.Row="1" Background="{StaticResource ForeBrush}">
           <StackPanel Width="100" Name="PlayExpandUp" Grid.Row="1" Margin="0 -70 0 0" Background="{StaticResource ForeBrush}">
-            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="LogoutTab">Logout</Button>
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="LogoutTab" Content="{my:String Landing.Logout_Button}"/>
           </StackPanel>
           <StackPanel Name="PlayExpandDown" Margin="0 0 0 -130" VerticalAlignment="Bottom">
             <Border Height="100" Background="{StaticResource ForeBrush}"/>
-            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="HomeTab">Home</Button>
-            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ProfileTab">Profile</Button>
-            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ShopTab">Shop</Button>
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="HomeTab" Content="{my:String Landing.Home_Button}"/>
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ProfileTab" Content="{my:String Landing.Profile_Button}"/>
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ShopTab" Content="{my:String Landing.Shop_Button}"/>
           </StackPanel>
         </Grid>
         <Image Margin="0 0 0 0" Name="PlayTab" Grid.Row="1" Source="C:\Users\Max\Documents\PBE Source Files\ImagePack_misc\Image\lol-big.png"

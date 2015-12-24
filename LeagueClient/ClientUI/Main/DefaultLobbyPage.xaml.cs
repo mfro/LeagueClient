@@ -37,14 +37,11 @@ namespace LeagueClient.ClientUI.Main {
 
     public DefaultLobbyPage() {
       InitializeComponent();
-
-      queue = new QueueController(QueueTimeLabel, ChatStatus.inQueue, ChatStatus.outOfGame);
     }
 
     public DefaultLobbyPage(MatchMakerParams mmp) : this() {
       this.mmp = mmp;
       chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
-      Client.ChatManager.Status = ChatStatus.hostingNormalGame;
 
       //InviteButton.Visibility = Visibility.Hidden;
 
@@ -99,13 +96,16 @@ namespace LeagueClient.ClientUI.Main {
     public void GotLobbyStatus(LobbyStatus lobby) {
       this.lobby = lobby;
 
+      bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
+      Client.ChatManager.Status = owner ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame;
+
       mmp.InvitationId = lobby.InvitationID;
       mmp.Team = lobby.Members.Select(m => (int) m.SummonerId).ToList();
 
-      if (!chatRoom.IsJoined)
+      if (!chatRoom.IsJoined) {
         chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
-
-      bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
+        queue = new QueueController(QueueTimeLabel, ChatStatus.inQueue, owner ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame);
+      }
 
       Dispatcher.Invoke(() => {
         LoadingGrid.Visibility = Visibility.Collapsed;

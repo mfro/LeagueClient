@@ -58,6 +58,8 @@ namespace LeagueClient.ClientUI {
       OpenChats.ItemsSource = OpenChatsList;
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;
       FriendsList.ItemsSource = Client.ChatManager.FriendList;
+
+      Client.ShowPopup(PopupSelector.Selector.Champions);
     }
 
     private void ChatManager_MessageReceived(object sender, Message e) {

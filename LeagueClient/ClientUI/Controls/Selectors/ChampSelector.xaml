@@ -16,20 +16,40 @@
     <my:HintedTextBox Grid.Column="1" Margin="0 0 0 4" Padding="1 1" Width="200" x:Name="SearchBox" HorizontalAlignment="Right" Hint="Search" KeyUp="SearchBox_KeyUp"/>
     <Grid Name="ChampSelect" Visibility="Visible" Grid.Column="1" Grid.Row="1">
       <ScrollViewer VerticalScrollBarVisibility="Visible">
-        <ItemsControl Name="ChampsGrid">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border BorderBrush="Transparent" BorderThickness="2" Width="80" Margin="0 0 8 8" ToolTip="{Binding Name}" MouseUp="Champion_Select" MouseEnter="Champ_Hover">
-                <Image Source="{Binding Image}"/>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        <StackPanel Name="GroupsList">
+          <StackPanel.Resources>
+            <Style TargetType="ItemsControl">
+              <Setter Property="Margin" Value="0 0 0 8"/>
+              <Setter Property="ItemTemplate">
+                <Setter.Value>
+                  <DataTemplate>
+                    <Border BorderBrush="Transparent" BorderThickness="2" Width="80" Margin="0 0 8 8" ToolTip="{Binding Name}" MouseUp="Champion_Select" MouseEnter="Champ_Hover">
+                      <Image Source="{Binding Image}"/>
+                    </Border>
+                  </DataTemplate>
+                </Setter.Value>
+              </Setter>
+              <Setter Property="ItemsPanel">
+                <Setter.Value>
+                  <ItemsPanelTemplate>
+                    <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8"/>
+                  </ItemsPanelTemplate>
+                </Setter.Value>
+              </Setter>
+              <!--<Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                  <Style TargetType="ContentPresenter">
+                    <Setter Property="AllowDrop" Value="True"/>
+                    <EventSetter Event="Drop" Handler="ItemsControl_Drop"/>
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Item_PreviewMouseLeftButtonDown"/>
+                  </Style>
+                </Setter.Value>
+              </Setter>-->
+            </Style>
+          </StackPanel.Resources>
+          
+          
+        </StackPanel>
       </ScrollViewer>
     </Grid>
     <Grid Name="SkinSelect" Visibility="Collapsed" Grid.Column="1" Grid.Row="1">

@@ -38,7 +38,7 @@ namespace LeagueClient.Logic {
     internal static readonly Region Region = Region.NA;
 
     internal static readonly string
-      RiotGamesDir = @"D:\Riot Games\" + (Region == Region.PBE ? "PBE" : "League of Legends"),
+      RiotGamesDir = @"C:\Riot Games\" + (Region == Region.PBE ? "PBE" : "League of Legends"),
       Locale = "en_US",
       DataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MFro\LeagueClient\",
       SettingsFile = Path.Combine(DataPath, "settings.xml"),
@@ -102,8 +102,6 @@ namespace LeagueClient.Logic {
     public static async Task PreInitialize(MainWindow window) {
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
-      Console.SetOut(TextWriter.Null);
-      Console.SetError(TextWriter.Null);
 
       MainWindow = window;
 
@@ -119,7 +117,7 @@ namespace LeagueClient.Logic {
 
       if (!File.Exists(FFMpegPath))
         using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
-          ffmpeg.Write(LeagueClient.Properties.Resources.ffmpeg, 0, LeagueClient.Properties.Resources.ffmpeg.Length);
+          ffmpeg.Write(Properties.Resources.ffmpeg, 0, LeagueClient.Properties.Resources.ffmpeg.Length);
     }
 
     public static async Task<bool> Initialize(string user, string pass) {
@@ -154,6 +152,7 @@ namespace LeagueClient.Logic {
       bool authed = await RtmpConn.LoginAsync(creds.Username.ToLower(), UserSession.Token);
       string state = await RiotServices.AccountService.GetAccountState();
       LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
+      Leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(LoginPacket.AllSummonerData.Summoner.SummonerId);
       Connected = true;
       ReconnectToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(UserSession.AccountSummary.Username + ":" + LoginQueue.Token));
 
@@ -162,7 +161,6 @@ namespace LeagueClient.Logic {
         RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(GotQueues);
         RiotServices.InventoryService.GetAvailableChampions().ContinueWith(GotChampions);
         RiotServices.SummonerTeamService.CreatePlayer().ContinueWith(GotRankedTeamInfo);
-        RiotServices.LeaguesService.GetAllLeaguesForPlayer(LoginPacket.AllSummonerData.Summoner.SummonerId).ContinueWith(t => Leagues = t.Result);
 
         Runes = LoginPacket.AllSummonerData.SpellBook;
         Masteries = LoginPacket.AllSummonerData.MasteryBook;

@@ -21,7 +21,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for CapOtherPlayer2.xaml
   /// </summary>
-  public partial class CapOtherPlayer : UserControl, IDisposable {
+  public sealed partial class CapOtherPlayer : UserControl, IDisposable {
     public CapPlayer Player { get; private set; }
 
     private Timer timer;

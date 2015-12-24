@@ -52,6 +52,8 @@ namespace LeagueClient.ClientUI.Controls {
       SkinScroll.ScrollToHorizontalOffset(290);
       if (Client.Connected)
         UpdateChampList();
+      else
+        SetChampList(LeagueData.ChampData.Value.data.Values);
     }
 
 
@@ -65,28 +67,58 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public void SetChampList(IEnumerable<MyChampDto> champions) {
+      var groups = new Dictionary<string, List<object>>();
+
       champs = champions.ToList();
-      var images = new List<object>();
       var save = new List<int>();
       var filter = SearchBox.Text;
       if (filter.Equals("Search")) filter = "";
       foreach (var item in champions.OrderBy(c => c.name).Where(c => Regex.IsMatch(c.name, filter, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace))) {
-        images.Add(new { Image = LeagueData.GetChampIconImage(item), Name = item.name, Data = item });
         save.Add(item.key);
+        if (!groups.ContainsKey(item.tags[0]))
+          groups[item.tags[0]] = new List<object>();
+        groups[item.tags[0]].Add(new { Image = LeagueData.GetChampIconImage(item), Name = item.name, Data = item });
       }
       if (last != null && save.SequenceEqual(last)) return;
       last = save;
-      ChampsGrid.ItemsSource = images;
+
+      foreach (var group in groups) {
+        var grid = new Grid();
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        grid.RowDefinitions.Add(new RowDefinition());
+
+        var label = new Label { Content = group.Key, FontSize = 18 };
+        grid.Children.Add(label);
+
+        var items = new ItemsControl { ItemsSource = group.Value };
+        grid.Children.Add(items);
+
+        Grid.SetRow(items, 1);
+        GroupsList.Children.Add(grid);
+      }
+
       ChampSelect.Visibility = Visibility.Visible;
       SkinSelect.Visibility = Visibility.Collapsed;
     }
+
+    //private void Item_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+    //  var box = sender as ContentPresenter;
+    //  DragDrop.DoDragDrop(box, box.DataContext, DragDropEffects.Move);
+    //}
+
+    //private void ItemsControl_Drop(object sender, DragEventArgs e) {
+    //  var data = e.Data.GetData(typeof(object));
+    //  var target = (sender as ContentPresenter).DataContext;
+    //}
 
     private void UpdateSkinList() {
       var images = new List<object>();
       foreach (var item in skins) {
         images.Add(new {
           Image = LeagueData.GetChampLoadingImage(SelectedChampion, item.num),
-          Name = item.name, Data = item });
+          Name = item.name,
+          Data = item
+        });
       }
       SkinsGrid.ItemsSource = images;
       SkinScroll.ScrollToHorizontalOffset(294);
@@ -103,12 +135,12 @@ namespace LeagueClient.ClientUI.Controls {
       var data = (((dynamic) src).DataContext).Data
         as MyChampDto;
       if (data != SelectedChampion) {
-        foreach (var item in ChampsGrid.Items)
-          VisualTreeHelper
-            .GetChild(ChampsGrid.ItemContainerGenerator.ContainerFromItem(item), 0)
-            .SetValue(Border.BorderBrushProperty, Brushes.Transparent);
+        //foreach (var item in ChampsGrid.Items)
+        //  VisualTreeHelper
+        //    .GetChild(ChampsGrid.ItemContainerGenerator.ContainerFromItem(item), 0)
+        //    .SetValue(Border.BorderBrushProperty, Brushes.Transparent);
 
-        src.BorderBrush = App.FocusBrush;
+        //src.BorderBrush = App.FocusBrush;
         if (data == null) return;
         if (ChampSelected != null) ChampSelected(this, data);
         SelectedChampion = data;

@@ -122,6 +122,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public void Dispose() {
       queue.Dispose();
+      me.Dispose();
     }
   }
 }

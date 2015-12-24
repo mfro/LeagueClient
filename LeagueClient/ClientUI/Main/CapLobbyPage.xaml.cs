@@ -72,6 +72,9 @@ namespace LeagueClient.ClientUI.Main {
 
       SharedInit();
       CanInvite = isCreating;
+
+      if (isCreating)
+        RiotServices.GameInvitationService.CreateGroupFinderLobby(61, GroupId).ContinueWith(t => GotLobbyStatus(t.Result));
     }
 
 
@@ -148,7 +151,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public void UpdateList() {
-      LoadingGrid.Visibility = Visibility.Collapsed; 
+      LoadingGrid.Visibility = Visibility.Collapsed;
       myControl?.Dispose();
       bool canReady = state == CapLobbyState.Searching || state == CapLobbyState.Inviting;
       bool canSearch = state == CapLobbyState.Selecting || state == CapLobbyState.Inviting;
@@ -267,10 +270,8 @@ namespace LeagueClient.ClientUI.Main {
       Dispatcher.Invoke(UpdateList);
     }
 
-    private async void groupCreatedV3(JSONObject json) {
+    private void groupCreatedV3(JSONObject json) {
       GotGroupData(json.Deserialize<CapGroupData>());
-      var status = await RiotServices.GameInvitationService.CreateGroupFinderLobby(61, GroupId);
-      GotLobbyStatus(status);
     }
 
     private void matchMadeV1(JSONObject json) {
@@ -409,16 +410,35 @@ namespace LeagueClient.ClientUI.Main {
 
     private void soloSpecPhaseStartedV2(JSONObject json) {
       state = CapLobbyState.Selecting;
+
+      var team = new List<Tuple<Position, Role>> {
+        Tuple.Create(Position.TOP, Role.ANY),
+        Tuple.Create(Position.JUNGLE, Role.ANY),
+        Tuple.Create(Position.MIDDLE, Role.ANY),
+        Tuple.Create(Position.BOTTOM, Role.MARKSMAN),
+        Tuple.Create(Position.BOTTOM, Role.SUPPORT),
+      };
+
+      foreach (var player in players)
+        if (player != null)
+          team.Remove(team.FirstOrDefault(pair => pair.Item1 == player.Position));
+
       for (int i = 0; i < players.Length; i++) {
         if (players[i] == null) {
+          var pos = team[0];
+
           var cap = new CapPlayer(i);
-          cap.Role = Role.Values[(string) json["initialSoloSpecRole"]];
-          cap.Position = Position.UNSELECTED;
           cap.Status = CapStatus.ChoosingAdvert;
           cap.CapEvent += PlayerHandler;
+
+          RiotServices.CapService.SelectAdvertisedPosition(pos.Item1, i);
+          RiotServices.CapService.SelectAdvertisedRole(pos.Item2, i);
+
+          team.Remove(pos);
           players[i] = cap;
         } else players[i].Status = CapStatus.Present;
       }
+
       Dispatcher.Invoke(UpdateList);
     }
 
@@ -559,83 +579,6 @@ namespace LeagueClient.ClientUI.Main {
       }
     }
 
-    //#region Me Editing
-    //private void Me_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-    //  switch (e.PropertyName) {
-    //    case nameof(CapPlayer.Role):
-    //      RiotServices.CapService.PickRole(me.Role, me.SlotId);
-    //      break;
-    //    case nameof(CapPlayer.Position):
-    //      RiotServices.CapService.PickPosition(me.Position, me.SlotId);
-    //      break;
-    //  }
-    //}
-
-    //private bool spell1;
-
-    //private void Player_MasteryClicked(object src, EventArgs args) {
-    //  Popup.MasteryEditor.Reset();
-    //  Popup.BeginStoryboard(App.FadeIn);
-    //  Popup.CurrentSelector = PopupSelector.Selector.Masteries;
-    //}
-
-    //private void Player_RuneClicked(object sender, EventArgs e) {
-    //  Popup.RuneEditor.Reset();
-    //  Popup.BeginStoryboard(App.FadeIn);
-    //  Popup.CurrentSelector = PopupSelector.Selector.Runes;
-    //}
-
-    //private void Spell1_Click(object src, EventArgs args) {
-    //  spell1 = true;
-    //  Popup.BeginStoryboard(App.FadeIn);
-    //  Popup.CurrentSelector = PopupSelector.Selector.Spells;
-    //}
-
-    //private void Spell2_Click(object src, EventArgs args) {
-    //  spell1 = false;
-    //  Popup.BeginStoryboard(App.FadeIn);
-    //  Popup.CurrentSelector = PopupSelector.Selector.Spells;
-    //}
-
-    //private void Champion_Click(object src, EventArgs args) {
-    //  if (state != CapLobbyState.Inviting && state != CapLobbyState.Selecting) return;
-    //  Popup.ChampSelector.UpdateChampList();
-    //  Popup.BeginStoryboard(App.FadeIn);
-    //  Popup.CurrentSelector = PopupSelector.Selector.Champions;
-    //}
-
-    //private void Popup_Close(object sender, EventArgs e) {
-    //  Popup.BeginStoryboard(App.FadeOut);
-    //  Popup.MasteryEditor.Save().Wait();
-    //  myControl.UpdateBooks();
-    //}
-
-    //private void ChampSelector_SkinSelected(object sender, ChampionDto.SkinDto e) {
-    //  if (me.Champion?.key != Popup.ChampSelector.SelectedChampion.key) {
-    //    me.Champion = Popup.ChampSelector.SelectedChampion;
-    //    var guid = RiotServices.CapService.PickChampion(Popup.ChampSelector.SelectedChampion.key);
-    //    if (e.num > 0)
-    //      RiotServices.AddHandler(guid, lcds => RiotServices.CapService.PickSkin(e.id, false));
-    //  } else {
-    //    if (e.num > 0)
-    //      RiotServices.CapService.PickSkin(e.id, false);
-    //  }
-    //  Popup_Close(sender, null);
-    //}
-
-    //private void Spell_Select(object sender, SpellDto spell) {
-    //  if (spell1) {
-    //    me.Spell1 = spell;
-    //    Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell1Id = spell.key;
-    //  } else {
-    //    me.Spell2 = spell;
-    //    Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"].Spell2Id = spell.key;
-    //  }
-    //  RiotServices.CapService.PickSpells(me.Spell1.key, me.Spell2.key);
-    //  Popup.BeginStoryboard(App.FadeOut);
-    //}
-    //#endregion
-
     #region UI Event Handlers
 
     private void Border_MouseEnter(object sender, MouseEventArgs e) {
@@ -679,7 +622,7 @@ namespace LeagueClient.ClientUI.Main {
       RiotServices.CapService.Quit();
       chatRoom.Dispose();
       Client.ChatManager.Status = ChatStatus.outOfGame;
-      myControl?.Dispose();
+      if (myControl != null) myControl.Dispose();
     }
 
     public Page Page => this;

@@ -24,7 +24,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for TeambuilderMe.xaml
   /// </summary>
-  public partial class CapMePlayer : UserControl, IDisposable {
+  public sealed partial class CapMePlayer : UserControl, IDisposable {
     public CapControlState Editable {
       get {
         return editable;

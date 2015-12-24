@@ -137,6 +137,7 @@
     <Compile Include="ClientUI\Main\PlayerProfile.xaml.cs">
       <DependentUpon>PlayerProfile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientUI\StringExtension.cs" />
     <Compile Include="Logic\Chat\ChatFriend.cs" />
     <Compile Include="Logic\Client.cs" />
     <Compile Include="ClientUI\ChampSelectPage.xaml.cs">
