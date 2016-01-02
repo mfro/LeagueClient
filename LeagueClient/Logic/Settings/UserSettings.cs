@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LeagueClient.Logic.Chat;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;

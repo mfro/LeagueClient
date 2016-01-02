@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace LeagueClient.Logic.Chat {
-  public sealed class ChatRoomController : IDisposable {
+  public sealed class ChatRoom : IDisposable {
     private TextBox input;
     private RichTextBox output;
     private Button send;
@@ -27,7 +27,7 @@ namespace LeagueClient.Logic.Chat {
     public Dictionary<string, LeagueStatus> Statuses { get; } = new Dictionary<string, LeagueStatus>();
     public Dictionary<string, Item> Users { get; } = new Dictionary<string, Item>();
 
-    public ChatRoomController(TextBox input, RichTextBox output, Button send, ScrollViewer scroller) {
+    public ChatRoom(TextBox input, RichTextBox output, Button send, ScrollViewer scroller) {
       this.input = input;
       this.output = output;
       this.send = send;

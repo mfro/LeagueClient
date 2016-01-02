@@ -18,6 +18,7 @@ using agsXMPP;
 using agsXMPP.protocol.client;
 using agsXMPP.protocol.iq.roster;
 using agsXMPP.protocol.x.muc;
+using System.IO;
 
 namespace LeagueClient.Logic.Chat {
   public sealed class RiotChat : IDisposable {
@@ -41,17 +42,17 @@ namespace LeagueClient.Logic.Chat {
         SendPresence();
       }
     }
-    public ShowType Show {
-      get { return show; }
-      set {
-        show = value;
-        SendPresence();
-      }
-    }
     public string StatusMessage {
       get { return Client.Settings.StatusMessage; }
       set {
         Client.Settings.StatusMessage = value;
+        SendPresence();
+      }
+    }
+    public ChatMode ChatMode {
+      get { return chatMode; }
+      set {
+        chatMode = value;
         SendPresence();
       }
     }
@@ -61,14 +62,17 @@ namespace LeagueClient.Logic.Chat {
     private RosterManager roster;
     private MucManager lobby;
     private Timer timer;
+    private bool connected;
 
     private ChatStatus status = ChatStatus.outOfGame;
-    private ShowType show = ShowType.chat;
+    private ChatMode chatMode = ChatMode.Chat;
 
-    public RiotChat(string user, string pass) {
-      xmpp = new XmppClientConnection("pvp.net", 5223) {
-        AutoResolveConnectServer = false,
+    public RiotChat() {
+      xmpp = new XmppClientConnection {
+        Server = "pvp.net",
+        Port = 5223,
         ConnectServer = Client.Region.ChatServer,
+        AutoResolveConnectServer = false,
         Resource = "xiff",
         UseSSL = true,
         KeepAliveInterval = 10,
@@ -76,18 +80,20 @@ namespace LeagueClient.Logic.Chat {
         UseCompression = true,
         AutoPresence = true,
         Status = new LeagueStatus(StatusMessage, Status).ToXML(),
-        Show = Show,
+        Show = ShowType.chat,
         Priority = 0
       };
       xmpp.OnMessage += Xmpp_OnMessage;
+      xmpp.OnAuthError += (o, e) => Client.Log(e);
       xmpp.OnError += (o, e) => Client.Log(e);
       xmpp.OnLogin += o => Client.Log("Connected to chat server");
-      xmpp.Open(user, "AIR_" + pass);
+      xmpp.Open(Client.UserSession.AccountSummary.Username, "AIR_" + Client.UserSession.Password);
 
       presence = new PresenceManager(xmpp);
       roster = new RosterManager(xmpp);
       lobby = new MucManager(xmpp);
 
+      xmpp.OnRosterEnd += o => connected = true;
       xmpp.OnRosterItem += Xmpp_OnRosterItem;
       xmpp.OnPresence += Xmpp_OnPresence;
 
@@ -101,7 +107,7 @@ namespace LeagueClient.Logic.Chat {
       if (Friends.ContainsKey(pres.From.User)) {
         Friends[pres.From.User].UpdatePresence(pres);
         Application.Current.Dispatcher.MyInvoke(ResetList, false);
-      } else { }
+      } else if (!pres.From.User.Equals(xmpp.MyJID.User)) { }
       PresenceRecieved?.Invoke(this, pres);
     }
 
@@ -192,14 +198,20 @@ namespace LeagueClient.Logic.Chat {
 
     public void SendPresence() {
       var status = new LeagueStatus(StatusMessage, Status);
-      var computed = DndStatuses.Contains(Status) ? ShowType.dnd : Show;
 
-      var args = new StatusUpdatedEventArgs(status, PresenceType.available, computed);
+      ShowType computed;
+      if (DndStatuses.Contains(Status))
+        computed = ShowType.dnd;
+      else if (ChatMode == ChatMode.Away)
+        computed = ShowType.away;
+      else
+        computed = ShowType.chat;
+
+      var args = new StatusUpdatedEventArgs(status, ChatMode == ChatMode.Invisible ? PresenceType.invisible : PresenceType.available, computed);
       StatusUpdated?.Invoke(this, args);
 
-      xmpp.Status = status.ToXML();
-      xmpp.Show = computed;
-      xmpp.SendMyPresence();
+      if (!connected) return;
+      xmpp.Send(new Presence(computed, status.ToXML(), 100) { Type = args.PresenceType });
     }
 
     #region Other Public Methods
@@ -238,15 +250,16 @@ namespace LeagueClient.Logic.Chat {
       Application.Current.Dispatcher.MyInvoke(ResetList, true);
     }
 
-    public void Logout() {
-      xmpp.Close();
-    }
-
     public void Dispose() {
       timer.Dispose();
       xmpp.Close();
+      xmpp.SocketDisconnect();
     }
     #endregion
+  }
+
+  public enum ChatMode {
+    Chat, Away, /*Offline, */Invisible
   }
 
   public class StatusUpdatedEventArgs : EventArgs {

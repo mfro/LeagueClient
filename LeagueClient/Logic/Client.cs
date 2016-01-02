@@ -63,8 +63,8 @@ namespace LeagueClient.Logic {
     internal static string ReconnectToken { get; set; }
     internal static bool Connected { get; set; }
 
-    internal static RiotVersionManager Latest { get; set; }
-    internal static RiotVersionManager Installed { get; set; }
+    internal static RiotVersion Latest { get; set; }
+    internal static RiotVersion Installed { get; set; }
 
     internal static string LoginTheme { get; set; }
 
@@ -107,8 +107,8 @@ namespace LeagueClient.Logic {
 
       RiotAPI.UrlFormat = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
 
-      Installed = RiotVersionManager.FetchInstalled(Region, RiotGamesDir);
-      Latest = await RiotVersionManager.FetchLatest(Region);
+      Installed = RiotVersion.GetInstalledVersion(Region, RiotGamesDir);
+      Latest = await RiotVersion.GetLatestVersion(Region);
       using (var web = new WebClient()) {
         var theme = Latest.AirFiles.FirstOrDefault(f => f.Url.AbsolutePath.EndsWith("/files/theme.properties"));
         var content = web.DownloadString(theme.Url);
@@ -244,8 +244,8 @@ namespace LeagueClient.Logic {
         return;
       }
 
-      var game = Path.Combine(RiotGamesDir, RiotVersionManager.SolutionPath, Latest.SolutionVersion.ToString(), "deploy");
-      var lolclient = Path.Combine(RiotGamesDir, RiotVersionManager.AirPath, Latest.AirVersion.ToString(), "deploy", "LolClient.exe");
+      var game = Path.Combine(RiotGamesDir, RiotVersion.SolutionPath, Latest.SolutionVersion.ToString(), "deploy");
+      var lolclient = Path.Combine(RiotGamesDir, RiotVersion.AirPath, Latest.AirVersion.ToString(), "deploy", "LolClient.exe");
 
       var info = new ProcessStartInfo(Path.Combine(game, "League of Legends.exe"));
       var str = $"{Credentials.ServerIp} {Credentials.ServerPort} {Credentials.EncryptionKey} {Credentials.SummonerId}";
@@ -285,7 +285,7 @@ namespace LeagueClient.Logic {
           }).Start();
         } catch { }
       }
-      ChatManager?.Logout();
+      ChatManager?.Dispose();
       MainWindow.Start();
     }
     #endregion

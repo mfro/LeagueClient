@@ -41,7 +41,7 @@ namespace LeagueClient.ClientUI {
       YouBanString = "Your turn to ban a champion!",
       PostString = "The game will begin soon";
 
-    private ChatRoomController chatRoom;
+    private ChatRoom chatRoom;
 
     private State state;
     private string header;
@@ -52,7 +52,7 @@ namespace LeagueClient.ClientUI {
     }
 
     public ChampSelectPage(GameDTO game) : this() {
-      chatRoom = new ChatRoomController(ChatBox, ChatHistory, ChatButt, ChatScroller);
+      chatRoom = new ChatRoom(ChatBox, ChatHistory, ChatButt, ChatScroller);
       chatRoom.JoinChat(new Jid(game.RoomName.ToLower() + ".pvp.net"), game.RoomPassword);
 
       Popup.ChampSelector.ChampSelected += ChampsGrid_ChampSelected;

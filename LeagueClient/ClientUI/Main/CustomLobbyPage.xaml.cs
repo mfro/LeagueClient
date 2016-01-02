@@ -31,7 +31,7 @@ namespace LeagueClient.ClientUI.Main {
     public bool IsCaptain => lobby?.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
 
     private LobbyStatus lobby;
-    private ChatRoomController chatRoom;
+    private ChatRoom chatRoom;
 
     #region Constructors
 
@@ -42,7 +42,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public CustomLobbyPage() {
       InitializeComponent();
-      chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
+      chatRoom = new ChatRoom(SendBox, ChatHistory, ChatSend, ChatScroller);
       Client.ChatManager.Status = ChatStatus.hostingPracticeGame;
     }
 

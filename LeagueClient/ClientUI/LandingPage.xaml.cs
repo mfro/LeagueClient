@@ -45,21 +45,23 @@ namespace LeagueClient.ClientUI {
 
     public LandingPage() {
       InitializeComponent();
+
+      Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
+      Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
+
+      ChatCombo.ItemsSource = Enum.GetValues(typeof(ChatMode));
+      ChatCombo.SelectedItem = ChatMode.Chat;
+
       ShowTab(Tab.Home);
       IPAmount.Content = Client.LoginPacket.IpBalance.ToString();
       RPAmount.Content = Client.LoginPacket.RpBalance.ToString();
       NameLabel.Content = Client.LoginPacket.AllSummonerData.Summoner.Name;
       ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId));
-
-      Client.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
-      Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
       Client.PopupSelector = Popup;
 
       OpenChats.ItemsSource = OpenChatsList;
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;
       FriendsList.ItemsSource = Client.ChatManager.FriendList;
-
-      Client.ShowPopup(PopupSelector.Selector.Champions);
     }
 
     private void ChatManager_MessageReceived(object sender, Message e) {
@@ -177,18 +179,10 @@ namespace LeagueClient.ClientUI {
         var container = VisualTreeHelper.GetChild(OpenChats.ItemContainerGenerator.ContainerFromItem(item.friend), 0);
         ((ChatConversation) container).Open = true;
       }
-
     }
 
-    private void CurrentStatus_MouseUp(object sender, MouseButtonEventArgs e) {
-      switch (Client.ChatManager.Show) {
-        case ShowType.away:
-          Client.ChatManager.Show = ShowType.chat;
-          break;
-        case ShowType.chat:
-          Client.ChatManager.Show = ShowType.away;
-          break;
-      }
+    private void ChatCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      Client.ChatManager.ChatMode = (ChatMode) ChatCombo.SelectedItem;
     }
 
     private void ProfileIcon_Click(object sender, MouseButtonEventArgs e) {

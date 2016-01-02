@@ -52,7 +52,7 @@ namespace LeagueClient.Logic.Chat {
         Status = new LeagueStatus(p.Status, p.Show);
         if (Status.GameStatus == ChatStatus.inGame) {
           RiotServices.GameService.RetrieveInProgressSpectatorGameInfo(User.Name).ContinueWith(GotGameDTO);
-          if (Cache != null) RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Data.Summoner.SummonerId).ContinueWith(GotGameInfo);
+          if (Cache != null) CurrentGameFetcher.FetchGame(Cache.Data.Summoner.SummonerId, GotGameInfo);
         } else {
           CurrentGameDTO = null;
           CurrentGameInfo = null;
@@ -86,9 +86,7 @@ namespace LeagueClient.Logic.Chat {
     #region Async Handlers
     private void GotSummoner(SummonerCache.Item item) {
       Cache = item;
-      if (Status?.GameStatus == ChatStatus.inGame) {
-        RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Data.Summoner.SummonerId).ContinueWith(GotGameInfo);
-      }
+      if (Status?.GameStatus == ChatStatus.inGame) CurrentGameFetcher.FetchGame(Cache.Data.Summoner.SummonerId, GotGameInfo); ;
     }
 
     private void GotGameDTO(Task<PlatformGameLifecycleDTO> task) {
@@ -100,19 +98,9 @@ namespace LeagueClient.Logic.Chat {
       CurrentGameDTO = task.Result.Game;
     }
 
-    private void GotGameInfo(Task<RiotAPI.CurrentGameAPI.CurrentGameInfo> task) {
-      if (task.IsFaulted) {
-        Client.Log("Failed to parse game [" + task.Exception.Message + "]");
-        return;
-      }
-      if (task.Result == null) return;
-      CurrentGameInfo = task.Result;
-      if (CurrentGameInfo.gameStartTime == 0) {
-        new Thread(() => {
-          Thread.Sleep(30000);
-          RiotAPI.CurrentGameAPI.BySummonerAsync("NA1", Cache.Data.Summoner.SummonerId).ContinueWith(GotGameInfo);
-        }) { IsBackground = true, Name = "GameFetch-" + Cache.Data.Summoner.InternalName }.Start();
-      } else Client.ChatManager.ForceUpdate();
+    private void GotGameInfo(RiotAPI.CurrentGameAPI.CurrentGameInfo game) {
+      CurrentGameInfo = game;
+      Client.ChatManager.ForceUpdate();
     }
     #endregion
   }

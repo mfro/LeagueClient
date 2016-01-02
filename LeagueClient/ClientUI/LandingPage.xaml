@@ -158,12 +158,13 @@
         <Label FontSize="14" Name="RPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 0 17 0" Grid.Row="5"/>
         <Image Source="{StaticResource IPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="6"/>
         <Label FontSize="14" Name="IPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 2 0 2" Grid.Row="6"/>
-        <Border Grid.Row="7" MouseUp="CurrentStatus_MouseUp" Background="Transparent">
+        <Border Grid.Row="7" Background="Transparent">
           <Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
-            <Label FontSize="16" Name="CurrentStatus" Foreground="{StaticResource ChatBrush}" Content="Online" Padding="0"/>
+            <Label FontSize="16" Name="CurrentStatus" Foreground="{StaticResource ForeBrush}" Content="Offline" Padding="0"/>
           </Viewbox>
         </Border>
-        <Border Grid.Row="8" MouseUp="CurrentStatus_MouseUp" Background="Transparent">
+        <ComboBox Grid.Row="7" BorderThickness="0" Background="{StaticResource Back2Brush}" Name="ChatCombo" Opacity="0" SelectionChanged="ChatCombo_SelectionChanged"/>
+        <Border Grid.Row="8" Background="Transparent">
           <Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
             <Label FontSize="18" Padding="0 0 0 5" Name="NameLabel">master mor</Label>
           </Viewbox>

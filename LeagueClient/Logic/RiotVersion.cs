@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LeagueClient.Logic {
-  public class RiotVersionManager {
+  public class RiotVersion {
     public const string
       AirPath = @"RADS\projects\lol_air_client\releases",
       GamePath = @"RADS\projects\lol_game_client\releases",
@@ -19,7 +19,7 @@ namespace LeagueClient.Logic {
 
     public List<RiotFile> AirFiles { get; } = new List<RiotFile>();
 
-    private RiotVersionManager(Version air, Version game, Version solution, Region region) {
+    private RiotVersion(Version air, Version game, Version solution, Region region) {
       AirVersion = air;
       GameVersion = game;
       SolutionVersion = solution;
@@ -32,7 +32,7 @@ namespace LeagueClient.Logic {
       }
     }
 
-    public static RiotVersionManager FetchInstalled(Region region, string LeagueDir) {
+    public static RiotVersion GetInstalledVersion(Region region, string LeagueDir) {
       var airInstalled = Directory.EnumerateDirectories(Path.Combine(LeagueDir, AirPath));
       var airVersions = from dir in airInstalled
                         select Version.Parse(Path.GetFileName(dir)) into v
@@ -48,10 +48,10 @@ namespace LeagueClient.Logic {
                         select Version.Parse(Path.GetFileName(dir)) into v
                         orderby v descending
                         select v;
-      return new RiotVersionManager(airVersions.FirstOrDefault(), gameVersions.FirstOrDefault(), slnVersions.FirstOrDefault(), region);
+      return new RiotVersion(airVersions.FirstOrDefault(), gameVersions.FirstOrDefault(), slnVersions.FirstOrDefault(), region);
     }
 
-    public static async Task<RiotVersionManager> FetchLatest(Region region) {
+    public static async Task<RiotVersion> GetLatestVersion(Region region) {
       using (var web = new WebClient()) {
         var airList = await web.DownloadStringTaskAsync(region.AirListing);
         var gameList = await web.DownloadStringTaskAsync(region.GameListing);
@@ -62,7 +62,7 @@ namespace LeagueClient.Logic {
         Version.TryParse(gameList.Split('\n').FirstOrDefault(), out gameVersion);
         Version.TryParse(solutionList.Split('\n').FirstOrDefault(), out solutionVersion);
 
-        return new RiotVersionManager(airVersion, gameVersion, solutionVersion, region);
+        return new RiotVersion(airVersion, gameVersion, solutionVersion, region);
       }
     }
   }

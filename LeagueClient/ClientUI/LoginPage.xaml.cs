@@ -237,7 +237,7 @@ namespace LeagueClient.ClientUI {
 
     private void HandleLogin(Task<bool> task) {
       if (!task.IsFaulted && task.Result) {
-        Client.ChatManager = new Logic.Chat.RiotChat(user, pass);
+        Client.ChatManager = new Logic.Chat.RiotChat();
         Client.SaveSettings(SettingsKey, settings);
         Dispatcher.Invoke(Client.MainWindow.LoginComplete);
         return;

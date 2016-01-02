@@ -203,7 +203,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RiotEnums.tt</DependentUpon>
     </Compile>
-    <Compile Include="Logic\Chat\ChatRoomController.cs" />
+    <Compile Include="Logic\Chat\ChatRoom.cs" />
     <Compile Include="Logic\com\riotgames\JSON\ChampionMasteryDTO.cs" />
     <Compile Include="Logic\com\riotgames\other\CapPlayerInfoData.cs" />
     <Compile Include="Logic\com\riotgames\other\CapGroupData.cs" />
@@ -219,6 +219,7 @@
     <Compile Include="Logic\com\riotgames\platform\messaging\ClientLoginKickNotification.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\persistence\SimpleDialogMessage.cs" />
     <Compile Include="Logic\com\riotgames\platform\summoner\BaseSummoner.cs" />
+    <Compile Include="Logic\CurrentGameFetcher.cs" />
     <Compile Include="Logic\Queueing\QueueController.cs" />
     <Compile Include="Logic\Region.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
@@ -375,7 +376,7 @@
     <Compile Include="Logic\RiotACS.cs" />
     <Compile Include="Logic\RiotServices.cs" />
     <Compile Include="Logic\Chat\RiotChat.cs" />
-    <Compile Include="Logic\RiotVersionManager.cs" />
+    <Compile Include="Logic\RiotVersion.cs" />
     <Compile Include="Logic\Settings\PatcherSettings.cs" />
     <Compile Include="Logic\Settings\LoginSettings.cs" />
     <Compile Include="Logic\Settings\SerializableDictionary.cs" />

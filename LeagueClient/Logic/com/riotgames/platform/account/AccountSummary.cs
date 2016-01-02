@@ -17,7 +17,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public Double AccountId { get; set; }
 
         [SerializedName("summonerInternalName")]
-        public object SummonerInternalName { get; set; }
+        public string SummonerInternalName { get; set; }
 
         [SerializedName("admin")]
         public Boolean Admin { get; set; }
@@ -26,7 +26,7 @@ namespace LeagueClient.Logic.Riot.Platform
         public Boolean HasBetaAccess { get; set; }
 
         [SerializedName("summonerName")]
-        public object SummonerName { get; set; }
+        public string SummonerName { get; set; }
 
         [SerializedName("partnerMode")]
         public Boolean PartnerMode { get; set; }

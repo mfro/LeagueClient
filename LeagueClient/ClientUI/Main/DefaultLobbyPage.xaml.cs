@@ -30,7 +30,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private MatchMakerParams mmp;
     private GameQueueConfig config;
-    private ChatRoomController chatRoom;
+    private ChatRoom chatRoom;
     private LobbyStatus lobby;
 
     private QueueController queue;
@@ -41,7 +41,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public DefaultLobbyPage(MatchMakerParams mmp) : this() {
       this.mmp = mmp;
-      chatRoom = new ChatRoomController(SendBox, ChatHistory, ChatSend, ChatScroller);
+      chatRoom = new ChatRoom(SendBox, ChatHistory, ChatSend, ChatScroller);
 
       //InviteButton.Visibility = Visibility.Hidden;
 

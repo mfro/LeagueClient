@@ -42,7 +42,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private CapMePlayer myControl;
     private CapPlayer me;
-    private ChatRoomController chatRoom;
+    private ChatRoom chatRoom;
     private CapLobbyState state;
     private bool autoReady;
 
@@ -96,7 +96,7 @@ namespace LeagueClient.ClientUI.Main {
                                                    select spell);
 
       PlayerList.Children.Clear();
-      chatRoom = new ChatRoomController(SendBox, ChatHistory, SendButt, ChatScroller);
+      chatRoom = new ChatRoom(SendBox, ChatHistory, SendButt, ChatScroller);
       Client.ChatManager.Status = ChatStatus.inTeamBuilder;
     }
     #endregion
