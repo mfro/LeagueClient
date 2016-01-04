@@ -48,7 +48,7 @@ namespace LeagueClient.ClientUI.Main {
 
       MeArea.Child = this.me;
 
-      Client.ChatManager.Status = ChatStatus.inTeamBuilder;
+      Client.Session.ChatManager.Status = ChatStatus.inTeamBuilder;
 
       queue = new QueueController(QueueInfoLabel, ChatStatus.inTeamBuilder, ChatStatus.inTeamBuilder);
       if (me != null) SetInQueue(true);
@@ -109,7 +109,7 @@ namespace LeagueClient.ClientUI.Main {
             Dispatcher.Invoke(() => {
               var popup = new CapSoloQueuePopup(JSONParser.ParseObject(response.payload, 0), me.CapPlayer);
               popup.Close += (src, e2) => SetInQueue(false);
-              Client.QueueManager.ShowQueuePopup(popup);
+              Client.Session.QueueManager.ShowQueuePopup(popup);
             });
             return true;
         }
@@ -118,7 +118,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     public Page Page => this;
-    public void ForceClose() => Client.ChatManager.Status = ChatStatus.outOfGame;
+    public void ForceClose() => Client.Session.ChatManager.Status = ChatStatus.outOfGame;
 
     public void Dispose() {
       queue.Dispose();

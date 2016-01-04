@@ -27,7 +27,7 @@ namespace LeagueClient.ClientUI.Controls {
 
       Loaded += (src, e) => {
         var game = DataContext as RiotACS.Game;
-        var identity = game.ParticipantIdentities.FirstOrDefault(i => i.Player.AccountId == Client.LoginPacket.AllSummonerData.Summoner.AccountId);
+        var identity = game.ParticipantIdentities.FirstOrDefault(i => i.Player.AccountId == Client.Session.LoginPacket.AllSummonerData.Summoner.AccountId);
         var me = game.Participants.FirstOrDefault(p => p.ParticipantId == identity.ParticipantId);
 
         var champ = LeagueData.GetChampData(me.ChampionId);

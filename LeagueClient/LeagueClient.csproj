@@ -209,6 +209,7 @@
     <Compile Include="Logic\com\riotgames\other\CapGroupData.cs" />
     <Compile Include="Logic\com\riotgames\other\CapSlotData.cs" />
     <Compile Include="Logic\com\riotgames\other\LoginQueueDto.cs" />
+    <Compile Include="Logic\com\riotgames\platform\broadcast\BroadcastMessage.cs" />
     <Compile Include="Logic\com\riotgames\platform\catalog\icon\IconType.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitePrivileges.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />

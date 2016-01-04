@@ -43,9 +43,9 @@ namespace LeagueClient.Logic.Chat {
       }
     }
     public string StatusMessage {
-      get { return Client.Settings.StatusMessage; }
+      get { return Client.Session.Settings.StatusMessage; }
       set {
-        Client.Settings.StatusMessage = value;
+        Client.Session.Settings.StatusMessage = value;
         SendPresence();
       }
     }
@@ -87,7 +87,7 @@ namespace LeagueClient.Logic.Chat {
       xmpp.OnAuthError += (o, e) => Client.Log(e);
       xmpp.OnError += (o, e) => Client.Log(e);
       xmpp.OnLogin += o => Client.Log("Connected to chat server");
-      xmpp.Open(Client.UserSession.AccountSummary.Username, "AIR_" + Client.UserSession.Password);
+      xmpp.Open(Client.Session.UserSession.AccountSummary.Username, "AIR_" + Client.Session.UserSession.Password);
 
       presence = new PresenceManager(xmpp);
       roster = new RosterManager(xmpp);
@@ -186,13 +186,13 @@ namespace LeagueClient.Logic.Chat {
     public void JoinRoom(Jid jid, string pass = null) {
       lobby.AcceptDefaultConfiguration(jid);
       if (pass == null)
-        lobby.JoinRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name, false);
+        lobby.JoinRoom(jid, Client.Session.LoginPacket.AllSummonerData.Summoner.Name, false);
       else
-        lobby.JoinRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name, pass, false);
+        lobby.JoinRoom(jid, Client.Session.LoginPacket.AllSummonerData.Summoner.Name, pass, false);
     }
 
     public void LeaveRoom(Jid jid) {
-      lobby.LeaveRoom(jid, Client.LoginPacket.AllSummonerData.Summoner.Name);
+      lobby.LeaveRoom(jid, Client.Session.LoginPacket.AllSummonerData.Summoner.Name);
     }
     #endregion
 

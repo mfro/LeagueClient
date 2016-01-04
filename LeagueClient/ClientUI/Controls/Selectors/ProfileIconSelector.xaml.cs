@@ -26,12 +26,12 @@ namespace LeagueClient.ClientUI.Controls {
     public ProfileIconSelector() {
       InitializeComponent();
 
-      if (Client.Connected)
+      if (Client.Session.Connected)
         LoadIcons();
     }
 
     public async void LoadIcons() {
-      var icons = await RiotServices.SummonerIconService.GetSummonerIconInventory(Client.LoginPacket.AllSummonerData.Summoner.SummonerId);
+      var icons = await RiotServices.SummonerIconService.GetSummonerIconInventory(Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId);
       var data = new List<object>();
       foreach (var icon in icons.SummonerIcons.OrderByDescending(i => i.PurchaseDate))
         data.Add(new IconInfo { Image = LeagueData.GetProfileIconImage(LeagueData.GetIconData(icon.IconId)), Icon = icon });
@@ -40,7 +40,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Icon_Click(object sender, MouseButtonEventArgs e) {
       var data = ((sender as Border).DataContext as IconInfo).Icon;
-      Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId = Client.Settings.ProfileIcon = data.IconId;
+      Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId = Client.Session.Settings.ProfileIcon = data.IconId;
       IconSelected?.Invoke(this, data);
       RiotServices.SummonerService.UpdateProfileIconId(data.IconId);
     }

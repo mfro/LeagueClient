@@ -65,7 +65,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
       
     public LobbyPlayer(PlayerParticipant player, bool expanded) : this() {
-      Client.SummonerCache.GetData(player.SummonerName, GotSummonerData);
+      Client.Session.SummonerCache.GetData(player.SummonerName, GotSummonerData);
       SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(player.ProfileIconId));
       UserName = player.SummonerName;
 
@@ -77,7 +77,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public LobbyPlayer(Member member, bool expanded) : this() {
-      Client.SummonerCache.GetData(member.SummonerName, GotSummonerData);
+      Client.Session.SummonerCache.GetData(member.SummonerName, GotSummonerData);
 
       forceExpand = expanded;
       if (!expanded) {

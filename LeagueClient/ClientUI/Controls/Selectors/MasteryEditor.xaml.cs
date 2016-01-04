@@ -29,7 +29,7 @@ namespace LeagueClient.ClientUI.Controls {
       cunning = new MasteryTree(DefenseTree);
       resolve = new MasteryTree(UtilityTree);
 
-      if (Client.Connected) {
+      if (Client.Session.Connected) {
         CreateTree(ferocity, LeagueData.MasteryData.Value.tree.Ferocity, 1);
         CreateTree(cunning, LeagueData.MasteryData.Value.tree.Cunning, 2);
         CreateTree(resolve, LeagueData.MasteryData.Value.tree.Resolve, 3);
@@ -39,9 +39,9 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public void Reset() {
-      PageList.ItemsSource = Client.Masteries.BookPages;
-      var page = Client.Masteries.BookPages.FirstOrDefault(p => p.Current);
-      if (page == null) LoadPage(Client.Masteries.BookPages[0]);
+      PageList.ItemsSource = Client.Session.Masteries.BookPages;
+      var page = Client.Session.Masteries.BookPages.FirstOrDefault(p => p.Current);
+      if (page == null) LoadPage(Client.Session.Masteries.BookPages[0]);
       else LoadPage(page);
     }
 
@@ -55,7 +55,7 @@ namespace LeagueClient.ClientUI.Controls {
           TalentId = icon.Data.id
         });
       }
-      await RiotServices.MasteryBookService.SaveMasteryBook(Client.Masteries);
+      await RiotServices.MasteryBookService.SaveMasteryBook(Client.Session.Masteries);
       if (System.Threading.Thread.CurrentThread == Dispatcher.Thread) Changed.Text = "";
       else Dispatcher.Invoke(() => Changed.Text = "");
       unsaved = false;
@@ -78,7 +78,7 @@ namespace LeagueClient.ClientUI.Controls {
       CheckPoints();
       unsaved = false;
       Changed.Text = "";
-      Client.SelectMasteryPage(page);
+      Client.Session.SelectMasteryPage(page);
     }
 
     private MasteryTree ferocity;
@@ -187,7 +187,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void DeleteButt_Click(object sender, RoutedEventArgs e) {
-      Client.Masteries.BookPages.Remove(Client.SelectedMasteryPage);
+      Client.Session.DeleteMasteryPage(Client.Session.SelectedMasteryPage);
     }
 
     private void RevertButt_Click(object sender, RoutedEventArgs e) {

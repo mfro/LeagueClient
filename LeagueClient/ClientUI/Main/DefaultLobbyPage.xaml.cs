@@ -45,7 +45,7 @@ namespace LeagueClient.ClientUI.Main {
 
       //InviteButton.Visibility = Visibility.Hidden;
 
-      config = Client.AvailableQueues[mmp.QueueIds[0]];
+      config = Client.Session.AvailableQueues[mmp.QueueIds[0]];
       var map = GameMap.Maps.FirstOrDefault(m => config.SupportedMapIds.Contains(m.MapId));
 
       MapImage.Source = GameMap.Images[map];
@@ -68,7 +68,7 @@ namespace LeagueClient.ClientUI.Main {
         GotLobbyStatus(lobby);
         return true;
       } else if (invite != null) {
-        Client.CanInviteFriends = invite.canInvite;
+        Client.Session.CanInviteFriends = invite.canInvite;
         return true;
       } else if (queue != null) {
         EnterQueue(queue);
@@ -85,7 +85,7 @@ namespace LeagueClient.ClientUI.Main {
         Dispatcher.Invoke(() => {
           var popup = new DefaultQueuePopup(game);
           popup.Close += (src, e) => SetInQueue(false);
-          Client.QueueManager.ShowQueuePopup(popup);
+          Client.Session.QueueManager.ShowQueuePopup(popup);
         });
         return true;
       }
@@ -96,8 +96,8 @@ namespace LeagueClient.ClientUI.Main {
     public void GotLobbyStatus(LobbyStatus lobby) {
       this.lobby = lobby;
 
-      bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
-      Client.ChatManager.Status = owner ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame;
+      bool owner = lobby.Owner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
+      Client.Session.ChatManager.Status = owner ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame;
 
       mmp.InvitationId = lobby.InvitationID;
       mmp.Team = lobby.Members.Select(m => (int) m.SummonerId).ToList();
@@ -116,7 +116,7 @@ namespace LeagueClient.ClientUI.Main {
         PlayerList.Children.Clear();
         foreach (var player in lobby.Members) {
           var user = RiotChat.GetUser(player.SummonerId);
-          int icon = Client.Settings.ProfileIcon;
+          int icon = Client.Session.Settings.ProfileIcon;
           if (!owner && chatRoom.Statuses.ContainsKey(user)) icon = chatRoom.Statuses[RiotChat.GetUser(player.SummonerId)].ProfileIcon;
 
           var control = new LobbyPlayer2(owner, player, icon);
@@ -126,7 +126,7 @@ namespace LeagueClient.ClientUI.Main {
         }
 
         StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
-        Client.CanInviteFriends = owner;
+        Client.Session.CanInviteFriends = owner;
       });
     }
     #endregion
@@ -179,14 +179,14 @@ namespace LeagueClient.ClientUI.Main {
         Dispatcher.Invoke(() => {
           QuitButton.Content = "Quit";
           QueueTimeLabel.Visibility = Visibility.Collapsed;
-          bool owner = lobby.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
+          bool owner = lobby.Owner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
           StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
         });
       }
     }
 
     private void EnterQueue(SearchingForMatchNotification search) {
-      if (Client.QueueManager.AttachToQueue(search))
+      if (Client.Session.QueueManager.AttachToQueue(search))
         SetInQueue(true);
     }
 
@@ -196,7 +196,7 @@ namespace LeagueClient.ClientUI.Main {
       RiotServices.GameInvitationService.Leave();
       chatRoom.Dispose();
       queue.Dispose();
-      Client.ChatManager.Status = ChatStatus.outOfGame;
+      Client.Session.ChatManager.Status = ChatStatus.outOfGame;
     }
   }
 }

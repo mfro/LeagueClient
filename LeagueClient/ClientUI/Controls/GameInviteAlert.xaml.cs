@@ -94,29 +94,29 @@ namespace LeagueClient.ClientUI.Controls {
     private void Accept_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, true);
 
-      Client.QueueManager.AcceptInvite(invite);
+      Client.Session.QueueManager.AcceptInvite(invite);
       //var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
       //if ((int) metaData["gameTypeConfigId"] == 12) {
       //  var lobby = new CapLobbyPage(false);
       //  task.ContinueWith(t => lobby.GotLobbyStatus(t.Result));
       //  RiotServices.CapService.JoinGroupAsInvitee((string) metaData["groupFinderId"]);
-      //  Client.QueueManager.ShowPage(lobby);
+      //  Client.Session.QueueManager.ShowPage(lobby);
       //} else {
       //  switch ((string) metaData["gameType"]) {
       //    case "PRACTICE_GAME":
       //      var custom = new CustomLobbyPage();
       //      task.ContinueWith(t => custom.GotLobbyStatus(t.Result));
-      //      Client.QueueManager.ShowPage(custom);
+      //      Client.Session.QueueManager.ShowPage(custom);
       //      break;
       //    case "NORMAL_GAME":
       //      var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] } });
       //      task.ContinueWith(t => normal.GotLobbyStatus(t.Result));
-      //      Client.QueueManager.ShowPage(normal);
+      //      Client.Session.QueueManager.ShowPage(normal);
       //      break;
       //    case "RANKED_TEAM_GAME":
       //      var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] }, TeamId = new TeamId { FullId = (string) metaData["rankedTeamId"] } });
       //      task.ContinueWith(t => ranked.GotLobbyStatus(t.Result));
-      //      Client.QueueManager.ShowPage(ranked);
+      //      Client.Session.QueueManager.ShowPage(ranked);
       //      break;
       //  }
       //}

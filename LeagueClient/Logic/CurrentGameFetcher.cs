@@ -12,33 +12,15 @@ using CurrentGame = MFroehlich.League.RiotAPI.RiotAPI.CurrentGameAPI.CurrentGame
 namespace LeagueClient.Logic {
 
   public static class CurrentGameFetcher {
-    private static Dictionary<long, Action<CurrentGame>> callbacks = new Dictionary<long, Action<CurrentGame>>();
-
-    public static void FetchGame(long summonerId, Action<CurrentGame> callback) {
-      callbacks[summonerId] = callback;
-      FetchGame(summonerId);
-    }
-
-    private static async void FetchGame(long summonerId) {
+    public static async void FetchGame(long summonerId, Action<CurrentGame> callback) {
       CurrentGame game;
 
       while (true) {
         game = await RiotAPI.CurrentGameAPI.BySummonerAsync(Client.Region.Platform, summonerId);
-        DistributeGame(game);
 
-        if (game.gameStartTime == 0) await Task.Delay(10000);
+        callback(game);
+        if (game.gameStartTime == 0) await Task.Delay(20000);
         else break;
-      }
-    }
-
-    private static void DistributeGame(CurrentGame game) {
-      foreach (var player in game.participants) {
-        Action<CurrentGame> callback;
-        if (callbacks.TryGetValue(player.summonerId, out callback)) {
-          callback(game);
-
-          if (game.gameStartTime == 0) callbacks.Remove(player.summonerId);
-        }
       }
     }
   }

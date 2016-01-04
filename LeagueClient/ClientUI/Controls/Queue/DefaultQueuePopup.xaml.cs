@@ -53,18 +53,6 @@ namespace LeagueClient.ClientUI.Controls {
       GameData = game;
       if (game.GameState.Equals("JOINING_CHAMP_SELECT")) {
         ParticipantPanel.Children.Clear();
-        Client.Log("Players:");
-        foreach (var participant in game.TeamOne.Concat(game.TeamTwo)) {
-          var player = participant as PlayerParticipant;
-          if (player != null) {
-            //Client.SummonerCache.GetData(player.AccountId, item => {
-            //  Client.Log($"  {player.SummonerName}, {player.SummonerId}");
-            //  foreach (var league in item.Leagues.SummonerLeagues) {
-            //    Client.Log($"    {QueueType.Values[league.Queue].Value}: {RankedTier.Values[league.Tier].Value} {league.Rank} ({league.DivisionName})");
-            //  }
-            //});
-          }
-        }
         foreach (char player in game.StatusOfParticipants) {
           var border = new Border { Width = 16, Height = 20 };
           border.BorderBrush = App.ForeBrush;

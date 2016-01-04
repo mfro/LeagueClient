@@ -1178,7 +1178,7 @@ namespace LeagueClient.Logic.Riot {
 
     public static Task<T> InvokeAsync<T>(string destination, string method, params object[] argument) {
       try {
-        return Client.RtmpConn.InvokeAsync<T>("my-rtmps", destination, method, argument);
+        return Client.Session.RtmpConn.InvokeAsync<T>("my-rtmps", destination, method, argument);
       } catch (InvocationException e) {
         OnInvocationError?.Invoke(null, e);
         return null;

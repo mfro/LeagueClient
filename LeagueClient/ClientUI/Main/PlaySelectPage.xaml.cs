@@ -92,7 +92,7 @@ namespace LeagueClient.ClientUI.Main {
         Dispatcher.Invoke(() => {
           var popup = new DefaultQueuePopup(game);
           popup.Close += (src, e) => SetInQueue(false);
-          Client.QueueManager.ShowQueuePopup(popup);
+          Client.Session.QueueManager.ShowQueuePopup(popup);
         });
         return true;
       }
@@ -151,7 +151,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public void Reset() {
       var list = from item in queues
-                 where Client.AvailableQueues.ContainsKey(item.ID)
+                 where Client.Session.AvailableQueues.ContainsKey(item.ID)
                  select item;
       //((Grid) category.Key.Parent).Visibility = list.Count() > 0 ? Visibility.Visible : Visibility.Collapsed;
       Queues.ItemsSource = list;
@@ -166,9 +166,9 @@ namespace LeagueClient.ClientUI.Main {
     private void PlayTeambuilder(int button) {
       Close?.Invoke(this, new EventArgs());
       switch (button) {
-        case 0: Client.QueueManager.ShowPage(new CapSoloPage()); break;
+        case 0: Client.Session.QueueManager.ShowPage(new CapSoloPage()); break;
         case 1:
-          Client.QueueManager.ShowPage(new CapLobbyPage(true));
+          Client.Session.QueueManager.ShowPage(new CapLobbyPage(true));
           RiotServices.CapService.CreateGroup();
           break;
       }
@@ -180,14 +180,14 @@ namespace LeagueClient.ClientUI.Main {
       switch (button) {
         case 0:
           var search = await RiotServices.MatchmakerService.AttachToQueue(mmp);
-          if (Client.QueueManager.AttachToQueue(search))
+          if (Client.Session.QueueManager.AttachToQueue(search))
             SetInQueue(true);
           break;
         case 1:
           var lobby = new DefaultLobbyPage(mmp);
           var status = await RiotServices.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]);
           lobby.GotLobbyStatus(status);
-          Client.QueueManager.ShowPage(lobby);
+          Client.Session.QueueManager.ShowPage(lobby);
           break;
       }
     }
@@ -198,7 +198,7 @@ namespace LeagueClient.ClientUI.Main {
       switch (button) {
         case 0:
           var search = await RiotServices.MatchmakerService.AttachToQueue(mmp);
-          if (Client.QueueManager.AttachToQueue(search))
+          if (Client.Session.QueueManager.AttachToQueue(search))
             SetInQueue(true);
           break;
         case 1:
@@ -206,7 +206,7 @@ namespace LeagueClient.ClientUI.Main {
           var lobby = new DefaultLobbyPage(mmp);
           var status = await RiotServices.GameInvitationService.CreateArrangedTeamLobby(mmp.QueueIds[0]);
           lobby.GotLobbyStatus(status);
-          Client.QueueManager.ShowPage(lobby);
+          Client.Session.QueueManager.ShowPage(lobby);
           break;
       }
     }
@@ -215,7 +215,7 @@ namespace LeagueClient.ClientUI.Main {
       //TODO Ranked team lobby
       switch (button) {
         case 0:
-          TeamCombo.ItemsSource = Client.RankedTeamInfo.PlayerTeams;
+          TeamCombo.ItemsSource = Client.Session.RankedTeamInfo.PlayerTeams;
           TeamCombo.SelectedIndex = 0;
           PopupPanel.BeginStoryboard(App.FadeIn);
           break;
@@ -251,12 +251,12 @@ namespace LeagueClient.ClientUI.Main {
       var lobby = new DefaultLobbyPage(mmp);
       var status = await RiotServices.GameInvitationService.CreateArrangedRankedTeamLobby(mmp.QueueIds[0], team.Name);
       lobby.GotLobbyStatus(status);
-      Client.QueueManager.ShowPage(lobby);
+      Client.Session.QueueManager.ShowPage(lobby);
     }
 
     private void CreateCustomButton_Click(object sender, RoutedEventArgs e) {
       Close?.Invoke(this, new EventArgs());
-      Client.QueueManager.ShowPage(new CustomCreatePage());
+      Client.Session.QueueManager.ShowPage(new CustomCreatePage());
     }
 
     private void CancelButton_Click(object sender, RoutedEventArgs e) {

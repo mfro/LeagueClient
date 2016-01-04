@@ -30,9 +30,9 @@ namespace LeagueClient.ClientUI.Main {
     public PlayerProfile() {
       InitializeComponent();
 
-      if (Client.Connected) {
+      if (Client.Session.Connected) {
         HistoryList.ItemsSource = history;
-        Client.SummonerCache.GetData(Client.LoginPacket.AllSummonerData.Summoner.Name, GotSummoner);
+        Client.Session.SummonerCache.GetData(Client.Session.LoginPacket.AllSummonerData.Summoner.Name, GotSummoner);
       }
     }
 
@@ -66,7 +66,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void SearchBox_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key == Key.Enter && SearchBox.Text.Trim().Length > 0) {
-        Client.SummonerCache.GetData(SearchBox.Text, GotSummoner);
+        Client.Session.SummonerCache.GetData(SearchBox.Text, GotSummoner);
       }
     }
 

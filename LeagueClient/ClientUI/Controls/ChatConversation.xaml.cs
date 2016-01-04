@@ -46,7 +46,7 @@ namespace LeagueClient.ClientUI.Controls {
     public ChatConversation() {
       InitializeComponent();
 
-      if (Client.Connected) {
+      if (Client.Session.Connected) {
         Loaded += (src, e) => {
           friend = (ChatFriend) DataContext;
           ChatHistory.Text = friend.History;

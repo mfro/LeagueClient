@@ -28,7 +28,7 @@ namespace LeagueClient.ClientUI.Main {
   /// </summary>
   public sealed partial class CustomLobbyPage : Page, IClientSubPage {
     public GameDTO GameDto { get; private set; }
-    public bool IsCaptain => lobby?.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId;
+    public bool IsCaptain => lobby?.Owner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
 
     private LobbyStatus lobby;
     private ChatRoom chatRoom;
@@ -37,13 +37,13 @@ namespace LeagueClient.ClientUI.Main {
 
     public CustomLobbyPage(GameDTO game) : this() {
       GotGameData(game);
-      Client.ChatManager.Status = ChatStatus.teamSelect;
+      Client.Session.ChatManager.Status = ChatStatus.teamSelect;
     }
 
     public CustomLobbyPage() {
       InitializeComponent();
       chatRoom = new ChatRoom(SendBox, ChatHistory, ChatSend, ChatScroller);
-      Client.ChatManager.Status = ChatStatus.hostingPracticeGame;
+      Client.Session.ChatManager.Status = ChatStatus.hostingPracticeGame;
     }
 
     #endregion
@@ -59,7 +59,7 @@ namespace LeagueClient.ClientUI.Main {
         GotLobbyStatus(status);
         return true;
       } else if ((invite = e.Body as InvitePrivileges) != null) {
-        Client.CanInviteFriends = invite.canInvite;
+        Client.Session.CanInviteFriends = invite.canInvite;
         //Dispatcher.Invoke(() => InviteButt.Visibility = invite.canInvite ? Visibility.Visible : Visibility.Collapsed);
       }
       return false;
@@ -69,7 +69,7 @@ namespace LeagueClient.ClientUI.Main {
       lobby = status;
       Dispatcher.Invoke(() => {
         if (IsCaptain) {
-          Client.CanInviteFriends = true;
+          Client.Session.CanInviteFriends = true;
           StartButt.Visibility = Visibility.Visible;
         } else {
           StartButt.Visibility = Visibility.Collapsed;
@@ -87,7 +87,7 @@ namespace LeagueClient.ClientUI.Main {
       if (!chatRoom.IsJoined) {
         chatRoom.JoinChat(RiotChat.GetCustomRoom(game.Name, game.Id, game.RoomPassword), game.RoomPassword);
 
-        StartButt.Visibility = (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId) ? Visibility.Visible : Visibility.Collapsed;
+        StartButt.Visibility = (game.OwnerSummary.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId) ? Visibility.Visible : Visibility.Collapsed;
 
         Dispatcher.Invoke(() => {
           var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
@@ -107,7 +107,7 @@ namespace LeagueClient.ClientUI.Main {
           ObserverList.Children.Clear();
           GameNameLabel.Content = game.Name;
 
-          //if (game.OwnerSummary.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SumId)
+          //if (game.OwnerSummary.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SumId)
           //  InviteButt.Visibility = Visibility.Visible;
 
           foreach (var thing in game.TeamOne.Concat(game.TeamTwo)) {
@@ -125,13 +125,13 @@ namespace LeagueClient.ClientUI.Main {
             }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             if (blue) {
               BlueTeam.Children.Add(control);
-              if (player?.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId) {
+              if (player?.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId) {
                 RedJoin.Visibility = Visibility.Visible;
                 BlueJoin.Visibility = Visibility.Collapsed;
               }
             } else {
               RedTeam.Children.Add(control);
-              if (player?.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId) {
+              if (player?.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId) {
                 RedJoin.Visibility = Visibility.Collapsed;
                 BlueJoin.Visibility = Visibility.Visible;
               }
@@ -163,7 +163,7 @@ namespace LeagueClient.ClientUI.Main {
     public void Dispose() {
       chatRoom.Dispose();
       RiotServices.GameService.QuitGame();
-      Client.ChatManager.Status = ChatStatus.outOfGame;
+      Client.Session.ChatManager.Status = ChatStatus.outOfGame;
     }
 
     #endregion

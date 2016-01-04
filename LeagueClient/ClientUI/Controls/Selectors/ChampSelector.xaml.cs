@@ -50,7 +50,7 @@ namespace LeagueClient.ClientUI.Controls {
     public ChampSelector() {
       InitializeComponent();
       SkinScroll.ScrollToHorizontalOffset(290);
-      if (Client.Connected)
+      if (Client.Session.Connected)
         UpdateChampList();
       else
         SetChampList(LeagueData.ChampData.Value.data.Values);
@@ -146,7 +146,7 @@ namespace LeagueClient.ClientUI.Controls {
         SelectedChampion = data;
       }
 
-      var riotDto = Client.RiotChampions.FirstOrDefault(c => c.ChampionId == data.key);
+      var riotDto = Client.Session.RiotChampions.FirstOrDefault(c => c.ChampionId == data.key);
       skins.Clear();
       foreach (var item in SelectedChampion.skins) {
         var riot = riotDto.ChampionSkins.FirstOrDefault(s => s.SkinId == item.id);

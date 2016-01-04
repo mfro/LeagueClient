@@ -63,7 +63,7 @@ namespace LeagueClient.ClientUI.Main {
       else
         me = new CapPlayer(-1) { Status = CapStatus.Choosing };
 
-      var spells = Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
+      var spells = Client.Session.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
       me.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
       me.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
 
@@ -97,7 +97,7 @@ namespace LeagueClient.ClientUI.Main {
 
       PlayerList.Children.Clear();
       chatRoom = new ChatRoom(SendBox, ChatHistory, SendButt, ChatScroller);
-      Client.ChatManager.Status = ChatStatus.inTeamBuilder;
+      Client.Session.ChatManager.Status = ChatStatus.inTeamBuilder;
     }
     #endregion
 
@@ -110,8 +110,8 @@ namespace LeagueClient.ClientUI.Main {
     public void GotLobbyStatus(LobbyStatus status) {
       Status = status;
 
-      if (status.Owner.SummonerId == Client.LoginPacket.AllSummonerData.Summoner.SummonerId)
-        Client.CanInviteFriends = true;
+      if (status.Owner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)
+        Client.Session.CanInviteFriends = true;
       Dispatcher.Invoke(() => {
         InviteList.Children.Clear();
         foreach (var player in status.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
@@ -379,10 +379,10 @@ namespace LeagueClient.ClientUI.Main {
     private void soloSearchedForAnotherGroupV2(JSONObject json) {
       var slot = json.Deserialize<CapSlotData>();
       if (slot.SlotId == me.SlotId) {
-        Dispatcher.Invoke(() => Client.QueueManager.ShowPage(new CapSoloPage(me)));
+        Dispatcher.Invoke(() => Client.Session.QueueManager.ShowPage(new CapSoloPage(me)));
         if (Close != null) Close(this, new EventArgs());
         if (json["reason"].Equals("KICKED"))
-          Client.QueueManager.ShowNotification(AlertFactory.KickedFromCap());
+          Client.Session.QueueManager.ShowNotification(AlertFactory.KickedFromCap());
       } else {
         DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
       }
@@ -395,7 +395,7 @@ namespace LeagueClient.ClientUI.Main {
       Dispose();
       Close?.Invoke(this, new EventArgs());
       if (json["reason"].Equals("GROUP_DISBANDED"))
-        Client.QueueManager.ShowNotification(AlertFactory.GroupDisbanded());
+        Client.Session.QueueManager.ShowNotification(AlertFactory.GroupDisbanded());
     }
 
     private void groupBuildingPhaseStartedV1(JSONObject json) {
@@ -464,12 +464,12 @@ namespace LeagueClient.ClientUI.Main {
             var method = GetMethod(response);
             method(json);
           } catch (Exception x) {
-            Client.ThrowException(x);
+            Client.Session.ThrowException(x);
           }
           return true;
         } else if (!response.status.Equals("ACK")) Client.Log(response.status + ": " + response.payload);
       } else if ((privelage = e.Body as InvitePrivileges) != null) {
-        Client.CanInviteFriends = privelage.canInvite;
+        Client.Session.CanInviteFriends = privelage.canInvite;
         Dispatcher.Invoke(UpdateList);
         return true;
       } else if ((removed = e.Body as RemovedFromLobbyNotification) != null) {
@@ -480,8 +480,8 @@ namespace LeagueClient.ClientUI.Main {
         return true;
       } else if ((creds = e.Body as PlayerCredentialsDto) != null) {
         Close?.Invoke(this, new EventArgs());
-        Client.Credentials = creds;
-        Client.JoinGame();
+        Client.Session.Credentials = creds;
+        Client.Session.JoinGame();
         return true;
       } else if ((game = e.Body as GameDTO) != null) {
         return true;
@@ -621,7 +621,7 @@ namespace LeagueClient.ClientUI.Main {
       RiotServices.GameInvitationService.Leave();
       RiotServices.CapService.Quit();
       chatRoom.Dispose();
-      Client.ChatManager.Status = ChatStatus.outOfGame;
+      Client.Session.ChatManager.Status = ChatStatus.outOfGame;
       if (myControl != null) myControl.Dispose();
     }
 

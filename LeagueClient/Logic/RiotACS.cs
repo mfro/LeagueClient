@@ -28,7 +28,7 @@ namespace LeagueClient.Logic {
     private static async Task<T> FetchAsync<T>(string url) where T : new() {
       byte[] data = null;
       var req = System.Net.WebRequest.Create(url);
-      var b64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(Client.LoginQueue.GasToken.ToJSON()));
+      var b64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(Client.Session.LoginQueue.GasToken.ToJSON()));
       req.Headers.Add("REGION", "NA1");
       req.Headers.Add("AUTHORIZATION", "GasTokenRaw " + b64);
 

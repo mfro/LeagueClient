@@ -58,7 +58,7 @@ namespace LeagueClient.ClientUI.Main {
       Spectators.SelectedItem = SpectatorState.ALL;
       GameType.ItemsSource = new[] { GameConfig.Blind, GameConfig.Draft, GameConfig.AllRandom };
       GameType.SelectedItem = GameConfig.Blind;
-      GameName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name + "'s Game";
+      GameName.Text = Client.Session.LoginPacket.AllSummonerData.Summoner.Name + "'s Game";
       GameName.CaretIndex = GameName.Text.Length;
       Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, (Func<bool>) GameName.Focus);
 
@@ -102,7 +102,7 @@ namespace LeagueClient.ClientUI.Main {
         return;
       } else {
         Close?.Invoke(this, new EventArgs());
-        Client.QueueManager.ShowPage(new CustomLobbyPage(game));
+        Client.Session.QueueManager.ShowPage(new CustomLobbyPage(game));
       }
     }
 

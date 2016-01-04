@@ -41,11 +41,11 @@ namespace LeagueClient.ClientUI.Controls {
       SummonerId = member.SummonerId;
       ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileIconId));
       PlusPath.Visibility = member.HasInvitePower ? Visibility.Collapsed : Visibility.Visible;
-      Client.SummonerCache.GetData(member.SummonerName, GotSummoner);
+      Client.Session.SummonerCache.GetData(member.SummonerName, GotSummoner);
     }
 
     private void UserControl_MouseEnter(object sender, MouseEventArgs e) {
-      if (CanControl && SummonerId != Client.LoginPacket.AllSummonerData.Summoner.SummonerId)
+      if (CanControl && SummonerId != Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)
         KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Visible;
     }
 

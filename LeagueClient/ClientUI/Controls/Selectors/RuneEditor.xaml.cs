@@ -33,19 +33,19 @@ namespace LeagueClient.ClientUI.Controls {
       InitializeComponent();
       CreateList();
 
-      if (Client.Connected)
+      if (Client.Session.Connected)
         Reset();
     }
 
     public async void Reset() {
-      PageList.ItemsSource = Client.Runes.BookPages;
-      this.runes = (await RiotServices.SummonerRuneService.GetSummonerRuneInventory(Client.LoginPacket.AllSummonerData.Summoner.SummonerId)).SummonerRunes;
-      LoadPage(Client.SelectedRunePage);
+      PageList.ItemsSource = Client.Session.Runes.BookPages;
+      this.runes = (await RiotServices.SummonerRuneService.GetSummonerRuneInventory(Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)).SummonerRunes;
+      LoadPage(Client.Session.SelectedRunePage);
     }
 
     public async Task Save() {
       if (!unsaved) return;
-      await RiotServices.SpellBookService.SaveSpellBook(Client.Runes);
+      await RiotServices.SpellBookService.SaveSpellBook(Client.Session.Runes);
       Dispatcher.Invoke(() => Changed.Text = "");
       unsaved = false;
     }
@@ -57,7 +57,7 @@ namespace LeagueClient.ClientUI.Controls {
       unsaved = false;
       PageNameBox.Text = page.Name;
       UpdateRunes();
-      Client.SelectRunePage(page);
+      Client.Session.SelectRunePage(page);
     }
 
     private void UpdateRunes() {

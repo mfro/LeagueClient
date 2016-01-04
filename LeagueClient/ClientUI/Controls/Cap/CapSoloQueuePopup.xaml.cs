@@ -51,7 +51,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
       RiotServices.CapService.IndicateGroupAcceptanceAsCandidate((int) payload["slotId"], true, (string) payload["groupId"]);
-      Client.QueueManager.ShowPage(new CapLobbyPage(player));
+      Client.Session.QueueManager.ShowPage(new CapLobbyPage(player));
       Close?.Invoke(this, new QueueEventArgs(QueuePopOutcome.Accepted));
     }
 

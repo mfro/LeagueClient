@@ -107,14 +107,14 @@ namespace LeagueClient.ClientUI {
         if (obj is LoginAccount) ((LoginAccount) obj).State = LoginAccountState.Readonly;
       (sender as LoginAccount).State = LoginAccountState.Loading;
 
-      Client.Settings = Client.LoadSettings<UserSettings>(login);
-      var raw = Client.Settings.Password;
+      Client.Session.Settings = Client.LoadSettings<UserSettings>(login);
+      var raw = Client.Session.Settings.Password;
       var decrypted = ProtectedData.Unprotect(Convert.FromBase64String(raw), null, DataProtectionScope.CurrentUser);
       var junk = "";
       for (int i = 0; i < decrypted.Length; i++) junk += " ";
       PassBox.Password = junk;
       tries = 3;
-      Login(user = Client.Settings.Username, pass = Encoding.UTF8.GetString(decrypted));
+      Login(user = Client.Session.Settings.Username, pass = Encoding.UTF8.GetString(decrypted));
     }
 
     private void Login_Click(object sender, RoutedEventArgs e) {
@@ -218,10 +218,10 @@ namespace LeagueClient.ClientUI {
     #endregion
 
     private void SaveAccount(string name, string pass) {
-      Client.Settings = Client.LoadSettings<UserSettings>(name);
+      Client.Session.Settings = Client.LoadSettings<UserSettings>(name);
       var rawPass = ProtectedData.Protect(Encoding.UTF8.GetBytes(pass), null, DataProtectionScope.CurrentUser);
-      Client.Settings.Password = Convert.ToBase64String(rawPass);
-      Client.Settings.Username = name;
+      Client.Session.Settings.Password = Convert.ToBase64String(rawPass);
+      Client.Session.Settings.Username = name;
 
       settings.Accounts.Add(name);
       Client.SaveSettings(SettingsKey, settings);
@@ -235,9 +235,9 @@ namespace LeagueClient.ClientUI {
       Client.Initialize(user, pass).ContinueWith(HandleLogin);
     }
 
-    private void HandleLogin(Task<bool> task) {
-      if (!task.IsFaulted && task.Result) {
-        Client.ChatManager = new Logic.Chat.RiotChat();
+    private void HandleLogin(Task<Client> task) {
+      if (!task.IsFaulted && task.Result != null) {
+        Client.Session.ChatManager = new Logic.Chat.RiotChat();
         Client.SaveSettings(SettingsKey, settings);
         Dispatcher.Invoke(Client.MainWindow.LoginComplete);
         return;

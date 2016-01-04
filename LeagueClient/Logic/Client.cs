@@ -31,8 +31,10 @@ using System.Text;
 using System.Windows;
 
 namespace LeagueClient.Logic {
-  public static class Client {
+  public class Client {
     internal static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    internal static Client Session;
 
     #region Constants
     internal static readonly Region Region = Region.NA;
@@ -48,20 +50,6 @@ namespace LeagueClient.Logic {
       LogFilePath = Path.Combine(DataPath, "log.txt");
 
     internal static Strings Strings { get; } = Strings.en_US;
-    #endregion
-
-    #region Properties
-
-    internal static RtmpClient RtmpConn { get; set; }
-
-    internal static Session UserSession { get; set; }
-
-    internal static SummonerLeaguesDTO Leagues { get; set; }
-    internal static LoginDataPacket LoginPacket { get; set; }
-
-    internal static LoginQueueDto LoginQueue { get; set; }
-    internal static string ReconnectToken { get; set; }
-    internal static bool Connected { get; set; }
 
     internal static RiotVersion Latest { get; set; }
     internal static RiotVersion Installed { get; set; }
@@ -70,34 +58,50 @@ namespace LeagueClient.Logic {
 
     internal static MainWindow MainWindow { get; set; }
     internal static PopupSelector PopupSelector { get; set; }
+    #endregion
 
-    internal static RiotChat ChatManager { get; set; }
-    internal static IQueueManager QueueManager { get; set; }
-    internal static SummonerCache SummonerCache { get; set; }
+    #region Properties
 
-    internal static Dictionary<int, GameQueueConfig> AvailableQueues { get; set; }
+    internal RtmpClient RtmpConn { get; set; }
 
-    internal static List<ChampionDTO> RiotChampions { get; set; }
-    internal static List<MyChampDTO> AvailableChampions { get; set; }
+    internal Session UserSession { get; set; }
 
-    internal static SpellBookDTO Runes { get; private set; }
-    internal static MasteryBookDTO Masteries { get; private set; }
-    internal static SpellBookPageDTO SelectedRunePage { get; private set; }
-    internal static MasteryBookPageDTO SelectedMasteryPage { get; private set; }
+    internal SummonerLeaguesDTO Leagues { get; set; }
+    internal LoginDataPacket LoginPacket { get; set; }
 
-    internal static PlayerDTO RankedTeamInfo { get; private set; }
+    internal LoginQueueDto LoginQueue { get; set; }
+    internal string ReconnectToken { get; set; }
+    internal bool Connected { get; set; }
 
-    internal static List<int> EnabledMaps { get; set; }
+    internal RiotChat ChatManager { get; set; }
+    internal IQueueManager QueueManager { get; set; }
+    internal SummonerCache SummonerCache { get; set; }
 
-    internal static UserSettings Settings { get; set; }
+    internal Dictionary<int, GameQueueConfig> AvailableQueues { get; set; }
 
-    internal static dynamic Credentials { get; set; }
-    internal static AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
+    internal List<ChampionDTO> RiotChampions { get; set; }
+    internal List<MyChampDTO> AvailableChampions { get; set; }
 
-    internal static bool CanInviteFriends { get; set; }
+    internal SpellBookDTO Runes { get; private set; }
+    internal MasteryBookDTO Masteries { get; private set; }
+    internal SpellBookPageDTO SelectedRunePage { get; private set; }
+    internal MasteryBookPageDTO SelectedMasteryPage { get; private set; }
+
+    internal PlayerDTO RankedTeamInfo { get; private set; }
+
+    internal List<int> EnabledMaps { get; set; }
+
+    internal UserSettings Settings { get; set; }
+
+    internal dynamic Credentials { get; set; }
+    internal AsyncProperty<RiotAPI.CurrentGameAPI.CurrentGameInfo> CurrentGame { get; set; }
+
+    internal bool CanInviteFriends { get; set; }
     #endregion 
 
     #region Initailization
+
+    private Client() { }
 
     public static async Task PreInitialize(MainWindow window) {
       if (!Directory.Exists(DataPath))
@@ -120,15 +124,16 @@ namespace LeagueClient.Logic {
           ffmpeg.Write(Properties.Resources.ffmpeg, 0, LeagueClient.Properties.Resources.ffmpeg.Length);
     }
 
-    public static async Task<bool> Initialize(string user, string pass) {
-      LoginQueue = await RiotServices.GetAuthKey(user, pass);
-      if (LoginQueue.Token == null) return false;
+    public static async Task<Client> Initialize(string user, string pass) {
+      var client = new Client();
+      client.LoginQueue = await RiotServices.GetAuthKey(user, pass);
+      if (client.LoginQueue.Token == null) return null;
 
       var context = RiotServices.RegisterObjects();
-      RtmpConn = new RtmpClient(new Uri("rtmps://" + Region.MainServer + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
-      RtmpConn.MessageReceived += RtmpConn_MessageReceived;
-      RtmpConn.Disconnected += RtmpConn_Disconnected;
-      await RtmpConn.ConnectAsync();
+      client.RtmpConn = new RtmpClient(new Uri("rtmps://" + Region.MainServer + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
+      client.RtmpConn.MessageReceived += client.RtmpConn_MessageReceived;
+      client.RtmpConn.Disconnected += client.RtmpConn_Disconnected;
+      await client.RtmpConn.ConnectAsync();
 
       var creds = new AuthenticationCredentials();
       creds.Username = user;
@@ -136,62 +141,65 @@ namespace LeagueClient.Logic {
       creds.ClientVersion = LeagueData.CurrentVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
-      creds.AuthToken = LoginQueue.Token;
-      UserSession = await RiotServices.LoginService.Login(creds);
+      creds.AuthToken = client.LoginQueue.Token;
+      client.UserSession = await RiotServices.LoginService.Login(creds);
 
-      var bc = $"bc-{UserSession.AccountSummary.AccountId}";
-      var gn = $"gn-{UserSession.AccountSummary.AccountId}";
-      var cn = $"cn-{UserSession.AccountSummary.AccountId}";
+      var bc = $"bc-{client.UserSession.AccountSummary.AccountId}";
+      var gn = $"gn-{client.UserSession.AccountSummary.AccountId}";
+      var cn = $"cn-{client.UserSession.AccountSummary.AccountId}";
       var tasks = new[] {
-        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", "bc", bc),
-        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", gn, gn),
-        RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", cn, cn),
+        client.RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", "bc", bc),
+        client.RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", gn, gn),
+        client.RtmpConn.SubscribeAsync("my-rtmps", "messagingDestination", cn, cn),
       };
       await Task.WhenAll(tasks);
 
-      bool authed = await RtmpConn.LoginAsync(creds.Username.ToLower(), UserSession.Token);
+      bool authed = await client.RtmpConn.LoginAsync(creds.Username.ToLower(), client.UserSession.Token);
       string state = await RiotServices.AccountService.GetAccountState();
-      LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
-      Leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(LoginPacket.AllSummonerData.Summoner.SummonerId);
-      Connected = true;
-      ReconnectToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(UserSession.AccountSummary.Username + ":" + LoginQueue.Token));
+      client.LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
+      client.Leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(client.LoginPacket.AllSummonerData.Summoner.SummonerId);
+      Session.Connected = true;
+      client.ReconnectToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(client.UserSession.AccountSummary.Username + ":" + client.LoginQueue.Token));
 
-      StartHeartbeat();
+      client.StartHeartbeat();
       new Thread(() => {
-        RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(GotQueues);
-        RiotServices.InventoryService.GetAvailableChampions().ContinueWith(GotChampions);
-        RiotServices.SummonerTeamService.CreatePlayer().ContinueWith(GotRankedTeamInfo);
+        RiotServices.MatchmakerService.GetAvailableQueues().ContinueWith(client.GotQueues);
+        RiotServices.InventoryService.GetAvailableChampions().ContinueWith(client.GotChampions);
+        RiotServices.SummonerTeamService.CreatePlayer().ContinueWith(client.GotRankedTeamInfo);
 
-        Runes = LoginPacket.AllSummonerData.SpellBook;
-        Masteries = LoginPacket.AllSummonerData.MasteryBook;
-        SelectedRunePage = Runes.BookPages.FirstOrDefault(p => p.Current);
-        SelectedMasteryPage = Masteries.BookPages.FirstOrDefault(p => p.Current);
+        client.Runes = client.LoginPacket.AllSummonerData.SpellBook;
+        client.Masteries = client.LoginPacket.AllSummonerData.MasteryBook;
+        client.SelectedRunePage = client.Runes.BookPages.FirstOrDefault(p => p.Current);
+        client.SelectedMasteryPage = client.Masteries.BookPages.FirstOrDefault(p => p.Current);
 
         RiotServices.GameInvitationService.GetPendingInvitations().ContinueWith(t => {
           foreach (var invite in t.Result) {
             if (invite is InvitationRequest)
-              ShowInvite((InvitationRequest) invite);
+              client.ShowInvite((InvitationRequest) invite);
           }
         });
       }).Start();
 
-      EnabledMaps = new List<int>();
-      foreach (var item in LoginPacket.ClientSystemStates.gameMapEnabledDTOList)
-        EnabledMaps.Add((int) item["gameMapId"]);
+      client.EnabledMaps = new List<int>();
+      foreach (var item in client.LoginPacket.ClientSystemStates.gameMapEnabledDTOList)
+        client.EnabledMaps.Add((int) item["gameMapId"]);
 
-      if (state?.Equals("ENABLED") != true) Console.WriteLine(state);
+      if (state?.Equals("ENABLED") != true) {
+        Console.WriteLine(state);
+        return null;
+      }
 
-      Settings.ProfileIcon = LoginPacket.AllSummonerData.Summoner.ProfileIconId;
-      Settings.SummonerName = LoginPacket.AllSummonerData.Summoner.Name;
-      SummonerCache = new SummonerCache();
+      client.Settings.ProfileIcon = client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
+      client.Settings.SummonerName = client.LoginPacket.AllSummonerData.Summoner.Name;
+      client.SummonerCache = new SummonerCache();
 
-      return state.Equals("ENABLED");
+      return Session = client;
     }
 
     private static System.Timers.Timer HeartbeatTimer;
     private static int Heartbeats;
 
-    private static void StartHeartbeat() {
+    private void StartHeartbeat() {
       HeartbeatTimer = new System.Timers.Timer();
       HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
       HeartbeatTimer.Interval = 120000;
@@ -199,7 +207,7 @@ namespace LeagueClient.Logic {
       HeartbeatTimer_Elapsed(HeartbeatTimer, null);
     }
 
-    private static async void HeartbeatTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e) {
+    private async void HeartbeatTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e) {
       if (Connected) {
         var result = await RiotServices.LoginService.PerformLCDSHeartBeat((int) LoginPacket.AllSummonerData.Summoner.AccountId,
           UserSession.Token, Heartbeats, DateTime.Now.ToString("ddd MMM d yyyy HH:mm:ss 'GMT-0700'"));
@@ -210,9 +218,9 @@ namespace LeagueClient.Logic {
       }
     }
 
-    private static void GotChampions(Task<ChampionDTO[]> Champs) {
+    private void GotChampions(Task<ChampionDTO[]> Champs) {
       if (Champs.IsFaulted) {
-        if (Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+        if (Debugger.IsAttached) Debugger.Break();
         return;
       }
       RiotChampions = new List<ChampionDTO>(Champs.Result);
@@ -221,21 +229,21 @@ namespace LeagueClient.Logic {
         AvailableChampions.Add(LeagueData.GetChampData(item.ChampionId));
     }
 
-    private static void GotQueues(Task<GameQueueConfig[]> Task) {
+    private void GotQueues(Task<GameQueueConfig[]> Task) {
       AvailableQueues = new Dictionary<int, GameQueueConfig>();
       foreach (var item in Task.Result)
         if (LoginPacket.AllSummonerData.SummonerLevel.Level >= item.MinLevel && LoginPacket.AllSummonerData.SummonerLevel.Level <= item.MaxLevel)
           AvailableQueues.Add(item.Id, item);
     }
 
-    private static void GotRankedTeamInfo(Task<PlayerDTO> obj) {
+    private void GotRankedTeamInfo(Task<PlayerDTO> obj) {
       RankedTeamInfo = obj.Result;
     }
 
     #endregion
 
     #region Riot Client Methods
-    public static void JoinGame() {
+    public void JoinGame() {
       //"8394" "LoLPatcher.exe" "" "ip port key id"
       if (Process.GetProcessesByName("League of Legends").Length > 0) {
         ChatManager.Status = ChatStatus.inGame;
@@ -258,7 +266,7 @@ namespace LeagueClient.Logic {
       new Thread(GetCurrentGame).Start();
     }
 
-    public static void ShowInvite(InvitationRequest invite) {
+    public void ShowInvite(InvitationRequest invite) {
       if (invite.InvitationState.Equals("ACTIVE")) {
         var user = RiotChat.GetUser(invite.Inviter.summonerId);
         if (ChatManager.Friends.ContainsKey(user)) {
@@ -269,7 +277,7 @@ namespace LeagueClient.Logic {
       }
     }
 
-    public static void Logout() {
+    public void Logout() {
       if (Connected) {
         try {
           SaveSettings(Settings.Username, Settings);
@@ -297,7 +305,7 @@ namespace LeagueClient.Logic {
     /// updates the contents of the local and server-side mastery books
     /// </summary>
     /// <param name="page">The page to select</param>
-    public static async void SelectMasteryPage(MasteryBookPageDTO page) {
+    public async void SelectMasteryPage(MasteryBookPageDTO page) {
       if (page == SelectedMasteryPage) return;
       foreach (var item in Masteries.BookPages) item.Current = false;
       page.Current = true;
@@ -311,7 +319,7 @@ namespace LeagueClient.Logic {
     /// updates the contents of the local and server-side spell books
     /// </summary>
     /// <param name="page">The page to select</param>
-    public static async void SelectRunePage(SpellBookPageDTO page) {
+    public async void SelectRunePage(SpellBookPageDTO page) {
       if (page == SelectedRunePage) return;
       foreach (var item in Runes.BookPages) item.Current = false;
       page.Current = true;
@@ -325,7 +333,7 @@ namespace LeagueClient.Logic {
     /// contents of the local and server-side mastery books
     /// </summary>
     /// <param name="page">The page to delete</param>
-    public static void DeleteMasteryPage(MasteryBookPageDTO page) {
+    public void DeleteMasteryPage(MasteryBookPageDTO page) {
       if (!Masteries.BookPages.Contains(page)) throw new ArgumentException("Book page not found: " + page);
       Masteries.BookPages.Remove(page);
       SelectedMasteryPage = Masteries.BookPages.First();
@@ -346,7 +354,7 @@ namespace LeagueClient.Logic {
       PopupSelector.BeginStoryboard(App.FadeOut);
     }
 
-    private static void GetCurrentGame() {
+    private void GetCurrentGame() {
       Thread.Sleep(20000);
       CurrentGame = new Task<RiotAPI.CurrentGameAPI.CurrentGameInfo>(() => {
         try {
@@ -394,12 +402,12 @@ namespace LeagueClient.Logic {
 
     #endregion
 
-    public static void ThrowException(Exception x, string details = null) {
+    public void ThrowException(Exception x, string details = null) {
       if (details != null) Log(details);
       Log(x);
     }
 
-    public static void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
+    public void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
       try {
         if (MainWindow.HandleMessage(e)) return;
       } catch (Exception x) {
@@ -435,7 +443,7 @@ namespace LeagueClient.Logic {
       }
     }
 
-    private static async void RtmpConn_Disconnected(object sender, EventArgs e) {
+    private async void RtmpConn_Disconnected(object sender, EventArgs e) {
       Connected = false;
       await RtmpConn.RecreateConnection(ReconnectToken);
 

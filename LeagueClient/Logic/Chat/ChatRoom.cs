@@ -40,9 +40,9 @@ namespace LeagueClient.Logic.Chat {
     public void JoinChat(Jid jid, string pass = null) {
       if (IsJoined) return;
       chatRoom = jid;
-      Client.ChatManager.JoinRoom(jid, pass);
-      Client.ChatManager.PresenceRecieved += ChatManager_PresenceRecieved;
-      Client.ChatManager.MessageReceived += ChatManager_MessageReceived;
+      Client.Session.ChatManager.JoinRoom(jid, pass);
+      Client.Session.ChatManager.PresenceRecieved += ChatManager_PresenceRecieved;
+      Client.Session.ChatManager.MessageReceived += ChatManager_MessageReceived;
       IsJoined = true;
     }
 
@@ -55,7 +55,7 @@ namespace LeagueClient.Logic.Chat {
     private void ChatManager_PresenceRecieved(object sender, Presence e) {
       if (!e.From.User.Equals(chatRoom.User)) return;
       if (e.Status == null && e.Type == PresenceType.available) {
-        Client.ChatManager.SendPresence();
+        Client.Session.ChatManager.SendPresence();
         return;
       }
 
@@ -73,9 +73,9 @@ namespace LeagueClient.Logic.Chat {
 
     public void Dispose() {
       if (IsJoined) {
-        Client.ChatManager.LeaveRoom(chatRoom);
-        Client.ChatManager.PresenceRecieved -= ChatManager_PresenceRecieved;
-        Client.ChatManager.MessageReceived -= ChatManager_MessageReceived;
+        Client.Session.ChatManager.LeaveRoom(chatRoom);
+        Client.Session.ChatManager.PresenceRecieved -= ChatManager_PresenceRecieved;
+        Client.Session.ChatManager.MessageReceived -= ChatManager_MessageReceived;
       }
     }
 
@@ -89,7 +89,7 @@ namespace LeagueClient.Logic.Chat {
 
     private void SendMessage() {
       if (string.IsNullOrWhiteSpace(input.Text)) return;
-      Client.ChatManager.SendMessage(chatRoom, input.Text, MessageType.groupchat);
+      Client.Session.ChatManager.SendMessage(chatRoom, input.Text, MessageType.groupchat);
       input.Text = "";
     }
 

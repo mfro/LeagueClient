@@ -41,6 +41,7 @@ namespace LeagueClient {
     public MainWindow() {
       Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
       InitializeComponent();
+      Loaded += (src, e) => Center();
 
       Client.Log("Pre-Init");
       Start(Client.PreInitialize(this));
@@ -62,14 +63,14 @@ namespace LeagueClient {
 
     public void LoginComplete() {
       var page = landing = new LandingPage();
-      Client.QueueManager = landing;
+      Client.Session.QueueManager = landing;
       ContentFrame.Content = page;
       currentPage = page;
 
-      if (Client.LoginQueue.InGameCredentials?.InGame ?? false) {
-        Client.Credentials = Client.LoginQueue.InGameCredentials;
-        Client.JoinGame();
-        Client.LoginQueue.InGameCredentials.InGame = false;
+      if (Client.Session.LoginQueue.InGameCredentials?.InGame ?? false) {
+        Client.Session.Credentials = Client.Session.LoginQueue.InGameCredentials;
+        Client.Session.JoinGame();
+        Client.Session.LoginQueue.InGameCredentials.InGame = false;
       }
     }
 
@@ -80,21 +81,21 @@ namespace LeagueClient {
     public void Center() {
       double sWidth = SystemParameters.PrimaryScreenWidth;
       double sHeight = SystemParameters.PrimaryScreenHeight;
-      Client.MainWindow.Left = (sWidth / 2) - (Client.MainWindow.Width / 2);
-      Client.MainWindow.Top = (sHeight / 2) - (Client.MainWindow.Height / 2);
+      Left = (sWidth / 2) - (Width / 2);
+      Top = (sHeight / 2) - (Height / 2);
     }
 
     public void BeginChampionSelect(GameDTO game) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(BeginChampionSelect, game); return; }
 
-      Client.QueueManager.ShowPage(new InGamePage(true));
+      Client.Session.QueueManager.ShowPage(new InGamePage(true));
       champselect = new ChampSelectPage(game);
 
       currentPage = champselect;
       champselect.ChampSelectCompleted += Champselect_ChampSelectCompleted;
 
       ContentFrame.Content = champselect;
-      Client.ChatManager.Status = ChatStatus.championSelect;
+      Client.Session.ChatManager.Status = ChatStatus.championSelect;
       RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
     }
 

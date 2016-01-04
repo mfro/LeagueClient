@@ -32,14 +32,14 @@ namespace LeagueClient.Logic.Queueing {
     }
 
     public void Start() {
-      Client.ChatManager.Status = Queue;
+      Client.Session.ChatManager.Status = Queue;
       start = DateTime.Now;
       timer.Start();
       Timer_Elapsed(timer, null);
     }
 
     public void Cancel() {
-      Client.ChatManager.Status = Idle;
+      Client.Session.ChatManager.Status = Idle;
       timer.Stop();
     }
 

@@ -57,13 +57,13 @@ namespace LeagueClient.ClientUI.Controls {
 
     public CapMePlayer(CapPlayer player, CapControlState state) {
       InitializeComponent();
-      if (!Client.Connected) return;
+      if (!Client.Session.Connected) return;
 
       editable = state;
 
       if (player == null) {
         CapPlayer = new CapPlayer(-1) { Status = CapStatus.Present };
-        var spells = Client.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
+        var spells = Client.Session.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
         CapPlayer.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
         CapPlayer.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
       } else {
@@ -73,7 +73,7 @@ namespace LeagueClient.ClientUI.Controls {
       Client.PopupSelector.SpellSelector.SpellSelected += Spell_Select;
       Client.PopupSelector.ChampSelector.SkinSelected += ChampSelector_SkinSelected;
 
-      SummonerName.Text = Client.LoginPacket.AllSummonerData.Summoner.Name;
+      SummonerName.Text = Client.Session.LoginPacket.AllSummonerData.Summoner.Name;
       PositionBox.ItemsSource = Position.Values.Values.Where(p => p != Position.UNSELECTED);
       RoleBox.ItemsSource = Role.Values.Values.Where(p => p != Role.ANY && p != Role.UNSELECTED);
 
@@ -130,10 +130,10 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public void UpdateBooks() {
-      RunesBox.ItemsSource = Client.Runes.BookPages;
-      RunesBox.SelectedItem = Client.SelectedRunePage;
-      MasteriesBox.ItemsSource = Client.Masteries.BookPages;
-      MasteriesBox.SelectedItem = Client.SelectedMasteryPage;
+      RunesBox.ItemsSource = Client.Session.Runes.BookPages;
+      RunesBox.SelectedItem = Client.Session.SelectedRunePage;
+      MasteriesBox.ItemsSource = Client.Session.Masteries.BookPages;
+      MasteriesBox.SelectedItem = Client.Session.SelectedMasteryPage;
     }
 
     #region Editing
@@ -164,11 +164,11 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {
-      Client.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);
+      Client.Session.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);
     }
 
     private void Mastery_Selected(object sender, SelectionChangedEventArgs e) {
-      Client.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
+      Client.Session.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
     }
 
     private void PositionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {

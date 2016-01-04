@@ -42,8 +42,8 @@ namespace LeagueClient.Logic.Chat {
     }
 
     public void SendMessage(string message) {
-      AppendMessage(Client.LoginPacket.AllSummonerData.Summoner.Name, message);
-      Client.ChatManager.SendMessage(User.Jid, message);
+      AppendMessage(Client.Session.LoginPacket.AllSummonerData.Summoner.Name, message);
+      Client.Session.ChatManager.SendMessage(User.Jid, message);
     }
 
     public void UpdatePresence(Presence p) {
@@ -58,8 +58,8 @@ namespace LeagueClient.Logic.Chat {
           CurrentGameInfo = null;
         }
 
-        Client.SummonerCache.GetData(User.Name, GotSummoner);
-        Client.ChatManager.ForceUpdate();
+        Client.Session.SummonerCache.GetData(User.Name, GotSummoner);
+        Client.Session.ChatManager.ForceUpdate();
       }
     }
 
@@ -100,7 +100,7 @@ namespace LeagueClient.Logic.Chat {
 
     private void GotGameInfo(RiotAPI.CurrentGameAPI.CurrentGameInfo game) {
       CurrentGameInfo = game;
-      Client.ChatManager.ForceUpdate();
+      Client.Session.ChatManager.ForceUpdate();
     }
     #endregion
   }

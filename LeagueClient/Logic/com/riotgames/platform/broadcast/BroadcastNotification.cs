@@ -10,7 +10,7 @@ namespace LeagueClient.Logic.Riot.Platform {
   [Serializable]
   [SerializedName("com.riotgames.platform.broadcast.BroadcastNotification")]
   public class BroadcastNotification : IExternalizable {
-    public ArrayList broadcastMessages { get; set; }
+    public List<BroadcastMessage> BroadcastMessages { get; set; }
 
     public string Json { get; set; }
 
@@ -19,10 +19,8 @@ namespace LeagueClient.Logic.Riot.Platform {
 
       var json = JSONParser.ParseObject(Json, 0);
 
-      Type classType = typeof(BroadcastNotification);
-      foreach (KeyValuePair<string, object> keyPair in json) {
-        var f = classType.GetProperty(keyPair.Key);
-        f.SetValue(this, keyPair.Value);
+      if (json.ContainsKey("broadcastMessages")) {
+        BroadcastMessages = ((JSONArray) json["broadcastMessages"]).Deserialize<List<BroadcastMessage>>();
       }
     }
 

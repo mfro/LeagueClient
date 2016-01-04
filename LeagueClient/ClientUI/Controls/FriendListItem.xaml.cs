@@ -31,9 +31,9 @@ namespace LeagueClient.ClientUI.Controls {
     public FriendListItem() {
       InitializeComponent();
 
-      if (Client.Connected)
+      if (Client.Session.Connected)
         Loaded += (src, e) => {
-          Client.ChatManager.Tick += (src2, e2) => Dispatcher.Invoke(Update);
+          Client.Session.ChatManager.Tick += (src2, e2) => Dispatcher.Invoke(Update);
           friend = (ChatFriend) DataContext;
           Update();
         };
@@ -84,7 +84,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void ViewProfile_Click(object sender, RoutedEventArgs e) {
-      Client.QueueManager.ViewProfile(friend.Cache.Data.Summoner.Name);
+      Client.Session.QueueManager.ViewProfile(friend.Cache.Data.Summoner.Name);
     }
 
     private void DeclineButt_Click(object sender, RoutedEventArgs e) {
@@ -97,7 +97,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void AcceptButt_Click(object sender, RoutedEventArgs e) {
       if (friend.Invite == null) return;
-      Client.QueueManager.AcceptInvite(friend.Invite);
+      Client.Session.QueueManager.AcceptInvite(friend.Invite);
       friend.Invite = null;
       AcceptButt.BeginStoryboard(App.FadeOut);
       DeclineButt.BeginStoryboard(App.FadeOut);

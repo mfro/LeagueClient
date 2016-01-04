@@ -47,6 +47,7 @@ namespace LeagueClient.Logic.Chat {
             GameStatus = ChatStatus.Values[node.InnerText];
             break;
           case "timeStamp":
+            Client.Log(node.InnerText);
             TimeStamp = long.Parse(node.InnerText);
             break;
           case "skinname":
@@ -58,13 +59,13 @@ namespace LeagueClient.Logic.Chat {
     }
 
     public string ToXML() {
-      var unranked = Client.LoginPacket.PlayerStatSummaries.PlayerStatSummarySet.FirstOrDefault(x => x.PlayerStatSummaryTypeString.Equals("Unranked"));
-      var ranked = Client.LoginPacket.PlayerStatSummaries.PlayerStatSummarySet.FirstOrDefault(x => x.PlayerStatSummaryTypeString.Equals("RankedSolo5x5"));
-      var league = Client.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
+      var unranked = Client.Session.LoginPacket.PlayerStatSummaries.PlayerStatSummarySet.FirstOrDefault(x => x.PlayerStatSummaryTypeString.Equals("Unranked"));
+      var ranked = Client.Session.LoginPacket.PlayerStatSummaries.PlayerStatSummarySet.FirstOrDefault(x => x.PlayerStatSummaryTypeString.Equals("RankedSolo5x5"));
+      var league = Client.Session.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
 
       var dict = new Dictionary<string, object>();
-      dict["profileIcon"] = Client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
-      dict["level"] = Client.LoginPacket.AllSummonerData.SummonerLevel.Level;
+      dict["profileIcon"] = Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
+      dict["level"] = Client.Session.LoginPacket.AllSummonerData.SummonerLevel.Level;
       dict["wins"] = unranked?.Wins ?? 0;
       dict["gameStatus"] = GameStatus.Key;
 

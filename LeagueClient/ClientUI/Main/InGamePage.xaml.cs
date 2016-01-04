@@ -62,18 +62,18 @@ namespace LeagueClient.ClientUI.Main {
     private void ReconnectButton_Click(object sender, RoutedEventArgs e) {
       if (champSelect)
         Client.MainWindow.ShowChampSelect();
-      else Client.JoinGame();
+      else Client.Session.JoinGame();
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
       var game = args.Body as GameDTO;
       if (game != null) {
         if (game.GameState.Equals("TERMINATED_IN_ERROR")) {
-          Client.ChatManager.Status = ChatStatus.outOfGame;
+          Client.Session.ChatManager.Status = ChatStatus.outOfGame;
           Close?.Invoke(this, new EventArgs());
           return true;
         } else if (game.GameState.Equals("TERMINATED")) {
-          Client.ChatManager.Status = ChatStatus.outOfGame;
+          Client.Session.ChatManager.Status = ChatStatus.outOfGame;
           Close?.Invoke(this, new EventArgs());
           return true;
         }
