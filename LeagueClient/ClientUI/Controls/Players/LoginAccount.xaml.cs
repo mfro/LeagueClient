@@ -84,7 +84,8 @@ namespace LeagueClient.ClientUI.Controls {
 
       Click?.Invoke(this, e);
 
-      MainBorder.BeginAnimation(MarginProperty, ContractFast);
+      //MainBorder.BeginAnimation(MarginProperty, ContractFast);
+      MainBorder.BeginAnimation(BorderThicknessProperty, ContractFast);
     }
     #endregion
   }

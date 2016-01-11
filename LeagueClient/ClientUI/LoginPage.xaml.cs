@@ -107,14 +107,15 @@ namespace LeagueClient.ClientUI {
         if (obj is LoginAccount) ((LoginAccount) obj).State = LoginAccountState.Readonly;
       (sender as LoginAccount).State = LoginAccountState.Loading;
 
-      Client.Session.Settings = Client.LoadSettings<UserSettings>(login);
-      var raw = Client.Session.Settings.Password;
+      var account = Client.LoadSettings<UserSettings>(login);
+      var raw = account.Password;
       var decrypted = ProtectedData.Unprotect(Convert.FromBase64String(raw), null, DataProtectionScope.CurrentUser);
       var junk = "";
       for (int i = 0; i < decrypted.Length; i++) junk += " ";
       PassBox.Password = junk;
       tries = 3;
-      Login(user = Client.Session.Settings.Username, pass = Encoding.UTF8.GetString(decrypted));
+
+      Login(user = account.Username, pass = Encoding.UTF8.GetString(decrypted));
     }
 
     private void Login_Click(object sender, RoutedEventArgs e) {
@@ -218,12 +219,13 @@ namespace LeagueClient.ClientUI {
     #endregion
 
     private void SaveAccount(string name, string pass) {
-      Client.Session.Settings = Client.LoadSettings<UserSettings>(name);
+      var account = Client.LoadSettings<UserSettings>(name);
       var rawPass = ProtectedData.Protect(Encoding.UTF8.GetBytes(pass), null, DataProtectionScope.CurrentUser);
-      Client.Session.Settings.Password = Convert.ToBase64String(rawPass);
-      Client.Session.Settings.Username = name;
+      account.Password = Convert.ToBase64String(rawPass);
+      account.Username = name;
 
       settings.Accounts.Add(name);
+      Client.SaveSettings(name, account);
       Client.SaveSettings(SettingsKey, settings);
     }
 

@@ -126,11 +126,11 @@ namespace LeagueClient.Logic {
 
     public static async Task<Client> Initialize(string user, string pass) {
       var client = new Client();
-      client.LoginQueue = await RiotServices.GetAuthKey(user, pass);
+      client.LoginQueue = await RiotServices.GetAuthKey(Region, user, pass);
       if (client.LoginQueue.Token == null) return null;
 
       var context = RiotServices.RegisterObjects();
-      client.RtmpConn = new RtmpClient(new Uri("rtmps://" + Region.MainServer + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
+      client.RtmpConn = RiotServices.Client = new RtmpClient(new Uri("rtmps://" + Region.MainServer + ":2099"), context, RtmpSharp.IO.ObjectEncoding.Amf3);
       client.RtmpConn.MessageReceived += client.RtmpConn_MessageReceived;
       client.RtmpConn.Disconnected += client.RtmpConn_Disconnected;
       await client.RtmpConn.ConnectAsync();
@@ -158,7 +158,7 @@ namespace LeagueClient.Logic {
       string state = await RiotServices.AccountService.GetAccountState();
       client.LoginPacket = await RiotServices.ClientFacadeService.GetLoginDataPacketForUser();
       client.Leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(client.LoginPacket.AllSummonerData.Summoner.SummonerId);
-      Session.Connected = true;
+      client.Connected = true;
       client.ReconnectToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(client.UserSession.AccountSummary.Username + ":" + client.LoginQueue.Token));
 
       client.StartHeartbeat();
@@ -186,9 +186,11 @@ namespace LeagueClient.Logic {
 
       if (state?.Equals("ENABLED") != true) {
         Console.WriteLine(state);
+        RiotServices.Client = null;
         return null;
       }
 
+      client.Settings = LoadSettings<UserSettings>(user);
       client.Settings.ProfileIcon = client.LoginPacket.AllSummonerData.Summoner.ProfileIconId;
       client.Settings.SummonerName = client.LoginPacket.AllSummonerData.Summoner.Name;
       client.SummonerCache = new SummonerCache();

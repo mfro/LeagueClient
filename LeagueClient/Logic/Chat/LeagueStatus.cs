@@ -47,7 +47,6 @@ namespace LeagueClient.Logic.Chat {
             GameStatus = ChatStatus.Values[node.InnerText];
             break;
           case "timeStamp":
-            Client.Log(node.InnerText);
             TimeStamp = long.Parse(node.InnerText);
             break;
           case "skinname":

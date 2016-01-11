@@ -82,6 +82,7 @@ namespace LeagueClient.ClientUI.Controls {
       if (last != null && save.SequenceEqual(last)) return;
       last = save;
 
+      GroupsList.Children.Clear();
       foreach (var group in groups) {
         var grid = new Grid();
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });

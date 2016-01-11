@@ -183,8 +183,9 @@ namespace LeagueClient.ClientUI {
         bool blue = game.TeamOne.Contains(thing);
 
         UserControl control;
+        var selection = game.PlayerChampionSelections.FirstOrDefault(c => c.SummonerInternalName == player.SummonerInternalName);
         if (player != null) {
-          control = new ChampSelectPlayer(player, game.PlayerChampionSelections.FirstOrDefault(c => c.SummonerInternalName.Equals(player.SummonerInternalName)));
+          control = new ChampSelectPlayer(player, selection);
           if (player.PickTurn == game.PickTurn) {
             if (player.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId) {
               turn.IsMyTurn = turn.IsOurTurn = true;
@@ -195,7 +196,7 @@ namespace LeagueClient.ClientUI {
         } else if (bot != null) {
           control = new ChampSelectPlayer(bot);
         } else if (obfusc != null) {
-          control = new ChampSelectPlayer(obfusc);
+          control = new ChampSelectPlayer(obfusc, selection);
         } else {
           Client.Log(thing.GetType().Name);
           control = null;
@@ -210,16 +211,23 @@ namespace LeagueClient.ClientUI {
       if (OtherTeam.Children.Count == 0) OtherTeam.Visibility = Visibility.Collapsed;
 
       Ban1.Source = Ban2.Source = Ban3.Source = Ban4.Source = Ban5.Source = Ban6.Source = null;
+      Image[] myBans, otherBans;
+      if (meBlue) {
+        myBans = new[] { Ban1, Ban2, Ban3 };
+        otherBans = new[] { Ban4, Ban5, Ban6 };
+      } else {
+        myBans = new[] { Ban4, Ban5, Ban6 };
+        otherBans = new[] { Ban1, Ban2, Ban3 };
+      }
       foreach (var thing in game.BannedChampions) {
         var champ = LeagueData.GetChampData(thing.ChampionId);
         var image = LeagueData.GetChampIconImage(champ);
-        switch (thing.PickTurn) {
-          case 1: Ban4.Source = image; break;
-          case 2: Ban1.Source = image; break;
-          case 3: Ban5.Source = image; break;
-          case 4: Ban2.Source = image; break;
-          case 5: Ban6.Source = image; break;
-          case 6: Ban3.Source = image; break;
+        if (thing.PickTurn % 2 == 0) {
+          //1, 3, 5
+          otherBans[thing.PickTurn / 2].Source = image;
+        } else {
+          //2, 4, 6
+          myBans[thing.PickTurn / 2].Source = image;
         }
       }
 
@@ -246,9 +254,9 @@ namespace LeagueClient.ClientUI {
 
     #region Event Listeners
 
-    private void BackButton_Click(object sender, RoutedEventArgs e) {
-      Client.MainWindow.ShowLandingPage();
-    }
+    private void Border_MouseDown(object sender, MouseButtonEventArgs e) => Client.MainWindow.DragMove();
+
+    private void BackButton_Click(object sender, RoutedEventArgs e) => Client.MainWindow.ShowLandingPage();
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       try {

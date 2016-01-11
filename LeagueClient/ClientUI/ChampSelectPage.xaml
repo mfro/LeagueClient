@@ -7,17 +7,27 @@
       <TextBlock Style="{StaticResource Control}" Text="{Binding Name}"/>
     </DataTemplate>
   </Page.Resources>
-  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="{StaticResource Back2Brush}">
+  <Grid Width="{StaticResource Width}" Height="{StaticResource Height}" Background="Red">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
+    <Border Grid.RowSpan="4" Background="{StaticResource Back2Brush}" MouseDown="Border_MouseDown"/>
 
     <Button Content="&lt; Back  " HorizontalAlignment="Left" FontSize="14" Padding="15 4" Margin="10" Click="BackButton_Click"/>
 
     <Grid Grid.Row="1" >
+      <Grid.Resources>
+        <Style TargetType="Border" x:Key="BanDisplay">
+          <Setter Property="Width" Value="64"/>
+          <Setter Property="Height" Value="64"/>
+          <Setter Property="BorderThickness" Value="2"/>
+          <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
+          <Setter Property="Margin" Value="0 0 8 0"/>
+        </Style>
+      </Grid.Resources>
       <Grid.RowDefinitions>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="150"/>
@@ -42,22 +52,15 @@
         </UniformGrid>
       </Border>
 
-      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="64" Name="MyBansGrid" Margin="270 10">
-        <UniformGrid.Resources>
-          <Style TargetType="Border">
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
-            <Setter Property="Margin" Value="0 0 8 0"/>
-          </Style>
-        </UniformGrid.Resources>
-        <Border>
-          <Image Name="Ban6" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="64" Name="MyBansGrid" Margin="199 10">
+        <Border Style="{StaticResource BanDisplay}">
+          <Image Name="Ban1"/>
         </Border>
-        <Border>
-          <Image Name="Ban5" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+        <Border Style="{StaticResource BanDisplay}">
+          <Image Name="Ban2"/>
         </Border>
-        <Border>
-          <Image Name="Ban4" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+        <Border Style="{StaticResource BanDisplay}">
+          <Image Name="Ban3"/>
         </Border>
       </UniformGrid>
 
@@ -76,22 +79,15 @@
         </UniformGrid>
       </Border>
 
-      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="64" Name="OtherBansGrid" Margin="270 10">
-        <UniformGrid.Resources>
-          <Style TargetType="Border">
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
-            <Setter Property="Margin" Value="8 0 0 0"/>
-          </Style>
-        </UniformGrid.Resources>
-        <Border>
-          <Image Name="Ban1" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+      <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Name="OtherBansGrid" Margin="199 10">
+        <Border Style="{StaticResource BanDisplay}">
+          <Image Name="Ban6"/>
         </Border>
-        <Border>
-          <Image Name="Ban2" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+        <Border Style="{StaticResource BanDisplay}">
+          <Image Name="Ban5"/>
         </Border>
-        <Border>
-          <Image Name="Ban3" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Diana.png"/>
+        <Border Style="{StaticResource BanDisplay}">
+          <Image Name="Ban4"/>
         </Border>
       </UniformGrid>
     </Grid>

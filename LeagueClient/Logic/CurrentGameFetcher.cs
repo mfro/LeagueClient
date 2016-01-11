@@ -16,7 +16,13 @@ namespace LeagueClient.Logic {
       CurrentGame game;
 
       while (true) {
-        game = await RiotAPI.CurrentGameAPI.BySummonerAsync(Client.Region.Platform, summonerId);
+        try {
+          game = await RiotAPI.CurrentGameAPI.BySummonerAsync(Client.Region.Platform, summonerId);
+        } catch {
+          await Task.Delay(20000);
+          continue;
+        }
+
 
         callback(game);
         if (game.gameStartTime == 0) await Task.Delay(20000);

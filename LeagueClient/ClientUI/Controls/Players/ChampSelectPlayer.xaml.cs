@@ -29,6 +29,21 @@ namespace LeagueClient.ClientUI.Controls {
     public ChampSelectPlayer(PlayerParticipant player, PlayerChampionSelectionDTO selection) : this() {
       if (player.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)
         Glow.Opacity = 1;
+
+      NameLabel.Content = player.SummonerName;
+      if (string.IsNullOrWhiteSpace(player.SummonerName))
+        NameLabel.Visibility = Visibility.Collapsed;
+      else
+        NameLabel.Visibility = Visibility.Visible;
+    }
+
+    public ChampSelectPlayer(ObfuscatedParticipant obfusc, PlayerChampionSelectionDTO selection) : this() {
+      DisplaySelection(selection);
+
+      NameLabel.Visibility = Visibility.Collapsed;
+    }
+
+    private void DisplaySelection(PlayerChampionSelectionDTO selection) {
       if (selection?.Spell1Id > 0 && selection?.Spell2Id > 0 && selection?.ChampionId > 0) {
         ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId));
         Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id));
@@ -43,9 +58,6 @@ namespace LeagueClient.ClientUI.Controls {
       } else {
         Unknown.Visibility = Obscure.Visibility = Visibility.Visible;
       }
-
-      NameLabel.Content = player.SummonerName;
-      NameLabel.Visibility = Visibility.Visible;
     }
 
     public ChampSelectPlayer(BotParticipant bot) : this() {
@@ -54,12 +66,6 @@ namespace LeagueClient.ClientUI.Controls {
       NameLabel.Visibility = Visibility.Visible;
       NameLabel.Content = champ.name;
       Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;
-    }
-
-    public ChampSelectPlayer(ObfuscatedParticipant obfusc) : this() {
-      ChampImage.Source = Spell1Image.Source = Spell2Image.Source = null;
-      NameLabel.Visibility = Visibility.Collapsed;
-      Unknown.Visibility = Obscure.Visibility = Visibility.Visible;
     }
   }
 }

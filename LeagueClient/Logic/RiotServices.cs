@@ -22,6 +22,7 @@ using LeagueClient.Logic.Riot.Team;
 namespace LeagueClient.Logic.Riot {
   public class RiotServices {
     public static event EventHandler<Exception> OnInvocationError;
+    public static RtmpSharp.Net.RtmpClient Client { get; set; }
 
     internal static Dictionary<string, Action<LcdsServiceProxyResponse>> Delegates { get; } = new Dictionary<string, Action<LcdsServiceProxyResponse>>();
 
@@ -1178,18 +1179,18 @@ namespace LeagueClient.Logic.Riot {
 
     public static Task<T> InvokeAsync<T>(string destination, string method, params object[] argument) {
       try {
-        return Client.Session.RtmpConn.InvokeAsync<T>("my-rtmps", destination, method, argument);
+        return Client.InvokeAsync<T>("my-rtmps", destination, method, argument);
       } catch (InvocationException e) {
         OnInvocationError?.Invoke(null, e);
         return null;
       }
     }
 
-    public static async Task<LoginQueueDto> GetAuthKey(String Username, String Password) {
+    public static async Task<LoginQueueDto> GetAuthKey(Region region, String Username, String Password) {
       string payload = "user=" + Username + ",password=" + Password;
       string query = "payload=" + payload;
 
-      var req = WebRequest.Create(Client.Region.LoginQueueURL + "login-queue/rest/queue/authenticate");
+      var req = WebRequest.Create(region.LoginQueueURL + "login-queue/rest/queue/authenticate");
       req.Method = "POST";
 
       string str;
