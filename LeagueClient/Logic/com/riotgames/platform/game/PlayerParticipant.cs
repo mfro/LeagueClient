@@ -76,5 +76,8 @@ namespace LeagueClient.Logic.Riot.Platform {
 
     [SerializedName("teamParticipantId")]
     public double TeamParticipantId { get; set; }
+
+    [SerializedName("pointSummary")]
+    public PointSummary PointSummary { get; set; }
   }
 }

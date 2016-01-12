@@ -41,10 +41,13 @@ namespace LeagueClient {
     public MainWindow() {
       Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
       InitializeComponent();
+      ((App) Application.Current).LoadResources();
       Loaded += (src, e) => Center();
 
       Client.Log("Pre-Init");
-      Start(Client.PreInitialize(this));
+      Client.PreInitialize();
+      Client.MainWindow = this;
+      Start();
     }
 
     private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
@@ -57,8 +60,8 @@ namespace LeagueClient {
       Client.Log("***UNHANDLED EXCEPTION***");
     }
 
-    public void Start(Task t = null) {
-      ContentFrame.Content = new LoginPage(t);
+    public void Start() {
+      ContentFrame.Content = new LoginPage();
     }
 
     public void LoginComplete() {

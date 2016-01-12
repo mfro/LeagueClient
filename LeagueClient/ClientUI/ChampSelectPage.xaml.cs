@@ -103,13 +103,17 @@ namespace LeagueClient.ClientUI {
     public async void GotGameData(GameDTO game) {
       var config = Client.Session.LoginPacket.GameTypeConfigs.FirstOrDefault(q => q.Id == game.GameTypeConfigId);
       LockInButt.IsEnabled = false;
+      var myChamp = game.PlayerChampionSelections
+        .FirstOrDefault(p => p.SummonerInternalName == Client.Session.LoginPacket.AllSummonerData.Summoner.InternalName);
+      var me = (PlayerParticipant) game.TeamOne.Concat(game.TeamTwo)
+        .FirstOrDefault(p => (p as PlayerParticipant)?.AccountId == Client.Session.LoginPacket.AllSummonerData.Summoner.AccountId);
+
       if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
         var turn = Dispatcher.MyInvoke(RenderPlayers, game);
         Popup.ChampSelector.IsReadOnly = !turn.IsMyTurn;
 
-        var me = game.PlayerChampionSelections.FirstOrDefault(p => p.SummonerInternalName == Client.Session.LoginPacket.AllSummonerData.Summoner.InternalName);
-        spell1 = LeagueData.GetSpellData(me.Spell1Id);
-        spell2 = LeagueData.GetSpellData(me.Spell2Id);
+        spell1 = LeagueData.GetSpellData(myChamp.Spell1Id);
+        spell2 = LeagueData.GetSpellData(myChamp.Spell2Id);
         Dispatcher.Invoke(() => {
           Spell1Image.Source = LeagueData.GetSpellImage(spell1);
           Spell2Image.Source = LeagueData.GetSpellImage(spell2);
@@ -157,6 +161,11 @@ namespace LeagueClient.ClientUI {
 
       }
 
+      if (game.GameType == GameConfig.AllRandom.Value) {
+        LockInButt.Content = $"{me.PointSummary.NumberOfRolls} / {me.PointSummary.MaxRolls}";
+        LockInButt.IsEnabled = me.PointSummary.NumberOfRolls > 0;
+      }
+
       MyTeam.Columns = OtherTeam.Columns = game.MaxNumPlayers / 2;
       UpdateHeader();
       last = game;
@@ -183,8 +192,8 @@ namespace LeagueClient.ClientUI {
         bool blue = game.TeamOne.Contains(thing);
 
         UserControl control;
-        var selection = game.PlayerChampionSelections.FirstOrDefault(c => c.SummonerInternalName == player.SummonerInternalName);
         if (player != null) {
+          var selection = game.PlayerChampionSelections?.FirstOrDefault(c => c.SummonerInternalName == player.SummonerInternalName);
           control = new ChampSelectPlayer(player, selection);
           if (player.PickTurn == game.PickTurn) {
             if (player.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId) {
@@ -196,7 +205,7 @@ namespace LeagueClient.ClientUI {
         } else if (bot != null) {
           control = new ChampSelectPlayer(bot);
         } else if (obfusc != null) {
-          control = new ChampSelectPlayer(obfusc, selection);
+          control = new ChampSelectPlayer(obfusc, null);
         } else {
           Client.Log(thing.GetType().Name);
           control = null;
@@ -211,23 +220,24 @@ namespace LeagueClient.ClientUI {
       if (OtherTeam.Children.Count == 0) OtherTeam.Visibility = Visibility.Collapsed;
 
       Ban1.Source = Ban2.Source = Ban3.Source = Ban4.Source = Ban5.Source = Ban6.Source = null;
-      Image[] myBans, otherBans;
+      Image[] blueBans, redBans;
       if (meBlue) {
-        myBans = new[] { Ban1, Ban2, Ban3 };
-        otherBans = new[] { Ban4, Ban5, Ban6 };
+        blueBans = new[] { Ban1, Ban2, Ban3 };
+        redBans = new[] { Ban4, Ban5, Ban6 };
       } else {
-        myBans = new[] { Ban4, Ban5, Ban6 };
-        otherBans = new[] { Ban1, Ban2, Ban3 };
+        blueBans = new[] { Ban4, Ban5, Ban6 };
+        redBans = new[] { Ban1, Ban2, Ban3 };
       }
       foreach (var thing in game.BannedChampions) {
         var champ = LeagueData.GetChampData(thing.ChampionId);
         var image = LeagueData.GetChampIconImage(champ);
-        if (thing.PickTurn % 2 == 0) {
-          //1, 3, 5
-          otherBans[thing.PickTurn / 2].Source = image;
+        int index = thing.PickTurn - 1;
+        if (index % 2 == 0) {
+          //0, 2, 4: Blue team's bans
+          blueBans[thing.PickTurn / 2].Source = image;
         } else {
-          //2, 4, 6
-          myBans[thing.PickTurn / 2].Source = image;
+          //1, 3, 5: Red team's bans
+          redBans[thing.PickTurn / 2].Source = image;
         }
       }
 

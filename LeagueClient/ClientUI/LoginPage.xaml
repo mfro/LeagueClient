@@ -12,7 +12,7 @@
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="50"/>
-      <ColumnDefinition Width="250"/>
+      <ColumnDefinition Width="auto" MinWidth="250"/>
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
     <Image Name="BackStatic" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center"/>

@@ -30,6 +30,8 @@ namespace LeagueClient.ClientUI.Controls {
       if (player.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)
         Glow.Opacity = 1;
 
+      DisplaySelection(selection);
+
       NameLabel.Content = player.SummonerName;
       if (string.IsNullOrWhiteSpace(player.SummonerName))
         NameLabel.Visibility = Visibility.Collapsed;

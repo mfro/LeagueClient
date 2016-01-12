@@ -62,30 +62,30 @@ namespace LeagueClient.ClientUI.Controls {
 
     #region Mouse Animation Handling
     private void Grid_MouseEnter(object sender, MouseEventArgs e) {
-      if (State != LoginAccountState.Normal) return;
 
-      MainBorder.BeginAnimation(MarginProperty, ContractSlow);
-      MainBorder.BeginAnimation(BorderThicknessProperty, ExpandSlow);
+      NameBorder.BeginStoryboard(App.FadeIn);
     }
 
     private void Grid_MouseLeave(object sender, MouseEventArgs e) {
-      MainBorder.BeginAnimation(MarginProperty, ExpandSlow);
-      MainBorder.BeginAnimation(BorderThicknessProperty, ContractSlow);
+      if (State == LoginAccountState.Loading) return;
+
+      NameBorder.BeginStoryboard(App.FadeOut);
     }
 
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
       if (e.ChangedButton != MouseButton.Left || State != LoginAccountState.Normal) return;
 
-      MainBorder.BeginAnimation(MarginProperty, ExpandFast);
+      var anim = new ThicknessAnimation(new Thickness(8, 8, 8, 5), ButtonDuration);
+      MainBorder.BeginAnimation(BorderThicknessProperty, anim);
     }
 
     private void Grid_MouseUp(object sender, MouseButtonEventArgs e) {
-      if (e.ChangedButton != MouseButton.Left) return;
+      if (e.ChangedButton != MouseButton.Left || state != LoginAccountState.Normal) return;
 
       Click?.Invoke(this, e);
 
-      //MainBorder.BeginAnimation(MarginProperty, ContractFast);
-      MainBorder.BeginAnimation(BorderThicknessProperty, ContractFast);
+      var anim = new ThicknessAnimation(new Thickness(5), ButtonDuration);
+      MainBorder.BeginAnimation(BorderThicknessProperty, anim);
     }
     #endregion
   }

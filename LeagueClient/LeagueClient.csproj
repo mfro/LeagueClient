@@ -214,7 +214,6 @@
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\InvitePrivileges.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\Inviter.cs" />
     <Compile Include="Logic\com\riotgames\platform\gameinvite\contract\RemovedFromLobbyNotification.cs" />
-    <Compile Include="Logic\com\riotgames\platform\game\AramPlayerParticipant.cs" />
     <Compile Include="Logic\com\riotgames\platform\harassment\HarassmentReport.cs" />
     <Compile Include="Logic\com\riotgames\platform\login\ClientVersionMismatchException.cs" />
     <Compile Include="Logic\com\riotgames\platform\messaging\ClientLoginKickNotification.cs" />
@@ -378,6 +377,7 @@
     <Compile Include="Logic\RiotServices.cs" />
     <Compile Include="Logic\Chat\RiotChat.cs" />
     <Compile Include="Logic\RiotVersion.cs" />
+    <Compile Include="Logic\Settings\GlobalSettings.cs" />
     <Compile Include="Logic\Settings\PatcherSettings.cs" />
     <Compile Include="Logic\Settings\LoginSettings.cs" />
     <Compile Include="Logic\Settings\SerializableDictionary.cs" />

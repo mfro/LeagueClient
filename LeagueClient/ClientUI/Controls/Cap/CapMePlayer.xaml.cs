@@ -49,17 +49,14 @@ namespace LeagueClient.ClientUI.Controls {
     public CapPlayer CapPlayer { get; set; }
     public ChampionDto.SkinDto Skin { get; set; }
 
-    private CapControlState editable;
+    private CapControlState editable = CapControlState.None;
 
     public CapMePlayer() {
       InitializeComponent();
     }
 
-    public CapMePlayer(CapPlayer player, CapControlState state) {
-      InitializeComponent();
+    public CapMePlayer(CapPlayer player, CapControlState state) : this() {
       if (!Client.Session.Connected) return;
-
-      editable = state;
 
       if (player == null) {
         CapPlayer = new CapPlayer(-1) { Status = CapStatus.Present };
@@ -69,6 +66,8 @@ namespace LeagueClient.ClientUI.Controls {
       } else {
         CapPlayer = player;
       }
+
+      Editable = state;
 
       Client.PopupSelector.SpellSelector.SpellSelected += Spell_Select;
       Client.PopupSelector.ChampSelector.SkinSelected += ChampSelector_SkinSelected;

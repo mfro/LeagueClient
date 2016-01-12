@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls">
-  <Border Name="MainBorder" Margin="5" Background="{StaticResource ForeBrush}" BorderBrush="{StaticResource ForeBrush}"
-          MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave"
+  <Border Name="MainBorder" Margin="5" BorderThickness="5" Background="{StaticResource ForeBrush}" BorderBrush="{StaticResource ForeBrush}"
+          MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave" Width="128" Cursor="Hand"
           MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp">
     <Grid>
       <Grid.RowDefinitions>
@@ -12,8 +12,10 @@
         <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
       <Image Name="ProfileIcon" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\6.png"/>
-      <Label Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Name="NameLabel">Stupendous Man</Label>
-      <my:Loader x:Name="Loader" Height="50" Width="50"/>
+      <Border Name="NameBorder" Background="{StaticResource ForeBrush}" VerticalAlignment="Bottom" Opacity="0">
+        <Label HorizontalAlignment="Center" Name="NameLabel" FontSize="14" Padding="0 3 0 0">Stupendous Man</Label>
+      </Border>
+      <my:Loader Visibility="Collapsed" x:Name="Loader" Height="50" Width="50"/>
     </Grid>
   </Border>
   <UserControl.ContextMenu>

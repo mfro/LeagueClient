@@ -101,13 +101,16 @@ namespace LeagueClient.Logic {
 
     #region Initailization
 
+    private const string SettingsKey = "GlobalSettings";
+    private static GlobalSettings settings = LoadSettings<GlobalSettings>(SettingsKey);
+
     private Client() { }
 
-    public static async Task PreInitialize(MainWindow window) {
+    public static async void PreInitialize() {
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
 
-      MainWindow = window;
+      if (!LeagueData.IsCurrent) LeagueData.Update();
 
       RiotAPI.UrlFormat = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
 
@@ -122,6 +125,12 @@ namespace LeagueClient.Logic {
       if (!File.Exists(FFMpegPath))
         using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
           ffmpeg.Write(Properties.Resources.ffmpeg, 0, LeagueClient.Properties.Resources.ffmpeg.Length);
+
+      Log(LeagueData.CurrentVersion);
+      Log($"Air: {Installed.AirVersion} / {Latest.AirVersion}");
+      Log($"Game: {Installed.GameVersion} / {Latest.GameVersion}");
+      Log($"Solution: {Installed.SolutionVersion} / {Latest.SolutionVersion}");
+      new Thread(CreateLoginTheme).Start();
     }
 
     public static async Task<Client> Initialize(string user, string pass) {
@@ -196,6 +205,33 @@ namespace LeagueClient.Logic {
       client.SummonerCache = new SummonerCache();
 
       return Session = client;
+    }
+
+    private static void CreateLoginTheme() {
+      if (!LoginTheme.Equals(settings.Theme) || !File.Exists(LoginVideoPath) || !File.Exists(LoginStaticPath)) {
+        var png = Latest.AirFiles.FirstOrDefault(f => f.Url.AbsolutePath.EndsWith($"/files/mod/lgn/themes/{LoginTheme}/cs_bg_champions.png"));
+        using (var web = new WebClient())
+          web.DownloadFile(png.Url, LoginStaticPath);
+
+        var file = Path.GetTempFileName();
+        using (var web = new WebClient()) {
+          var flv = Latest.AirFiles.FirstOrDefault(f => f.Url.AbsolutePath.EndsWith($"/files/mod/lgn/themes/{LoginTheme}/flv/login-loop.flv"));
+          web.DownloadFile(flv.Url, file);
+        }
+        var info = new ProcessStartInfo {
+          FileName = FFMpegPath,
+          Arguments = $"-i \"{file}\" \"{LoginVideoPath}\"",
+          UseShellExecute = false,
+          CreateNoWindow = true,
+          RedirectStandardError = true,
+          RedirectStandardOutput = true,
+        };
+        File.Delete(LoginVideoPath);
+        Process.Start(info).WaitForExit();
+        File.Delete(file);
+        settings.Theme = LoginTheme;
+        SaveSettings(SettingsKey, settings);
+      }
     }
 
     private static System.Timers.Timer HeartbeatTimer;
@@ -436,7 +472,7 @@ namespace LeagueClient.Logic {
         } else if (invite != null) {
           ShowInvite(invite);
         } else if (endofgame != null) {
-          Debugger.Break();
+
         } else {
           Log($"Receive [{e.Subtopic}, {e.ClientId}]: '{e.Body}'");
         }

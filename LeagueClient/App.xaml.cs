@@ -48,7 +48,7 @@ namespace LeagueClient {
     #endregion
 
     private void Application_Exit(object sender, ExitEventArgs e) {
-      if (Client.Session.Connected) {
+      if (Client.Session?.Connected == true) {
         Client.Session.Logout();
       }
     }

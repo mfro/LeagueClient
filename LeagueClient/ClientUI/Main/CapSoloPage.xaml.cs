@@ -50,6 +50,7 @@ namespace LeagueClient.ClientUI.Main {
 
       Client.Session.ChatManager.Status = ChatStatus.inTeamBuilder;
 
+      EnterQueueButt.Visibility = Visibility.Collapsed;
       queue = new QueueController(QueueInfoLabel, ChatStatus.inTeamBuilder, ChatStatus.inTeamBuilder);
       if (me != null) SetInQueue(true);
     }
@@ -77,6 +78,8 @@ namespace LeagueClient.ClientUI.Main {
         QueueInfoLabel.Visibility = Visibility.Collapsed;
         if (me.CapPlayer.CanBeReady()) {
           EnterQueueButt.BeginStoryboard(App.FadeIn);
+        } else {
+          EnterQueueButt.BeginStoryboard(App.FadeOut);
         }
       }
     }
