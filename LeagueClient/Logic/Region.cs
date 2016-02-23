@@ -28,6 +28,21 @@ namespace LeagueClient.Logic {
       SolutionListing = new Uri("http://l3cdn.riotgames.com/releases/live/solutions/lol_game_client_sln/releases/releaselisting_NA"),
 
     };
+    
+    public static readonly Region EUW = new Region
+        {
+            MainServer = "prod.euw1.lol.riotgames.com",
+            LoginQueueURL = "https://lq.euw1.lol.riotgames.com/",
+            ChatServer = "chat.euw1.lol.riotgames.com",
+            Platform = "EUW1",
+
+            UpdateBase = new Uri("http://l3cdn.riotgames.com/releases/live/"),
+            AirListing = new Uri("http://l3cdn.riotgames.com/releases/live/projects/lol_air_client/releases/releaselisting_EUW"),
+            GameListing = new Uri("http://l3cdn.riotgames.com/releases/live/projects/lol_game_client/releases/releaselisting_EUW"),
+            SolutionListing = new Uri("http://l3cdn.riotgames.com/releases/live/solutions/lol_game_client_sln/releases/releaselisting_EUW"),
+
+        };
+    
     public static readonly Region PBE = new Region {
       MainServer = "prod.pbe1.lol.riotgames.com",
       LoginQueueURL = "https://lq.pbe1.lol.riotgames.com/",
