@@ -16,6 +16,7 @@ namespace LeagueClient.Logic {
     public Version AirVersion { get; set; }
     public Version GameVersion { get; set; }
     public Version SolutionVersion { get; set; }
+    public Region Region { get; set; }
 
     public List<RiotFile> AirFiles { get; } = new List<RiotFile>();
 
@@ -23,16 +24,23 @@ namespace LeagueClient.Logic {
       AirVersion = air;
       GameVersion = game;
       SolutionVersion = solution;
-      using (var web = new WebClient()) {
-        var url = new Uri(region.UpdateBase, $"projects/lol_air_client/releases/{air}/packages/files/packagemanifest");
-        var manifest = web.DownloadString(url);
-        manifest = manifest.Replace("PKG1", "");
+      Region = region;
+    }
+
+    public IEnumerable<RiotFile> GetFiles(string end) => AirFiles.Where(f => f.Url.AbsolutePath.EndsWith(end));
+
+    private async Task GetManifest() {
+      var req = WebRequest.CreateHttp(new Uri(Region.UpdateBase, $"projects/lol_air_client/releases/{AirVersion}/packages/files/packagemanifest"));
+      using (var mem = new MemoryStream())
+      using (var res = await req.GetResponseAsync()) {
+        res.GetResponseStream().CopyTo(mem);
+        var manifest = Encoding.UTF8.GetString(mem.ToArray()).Replace("PKG1", "");
         var lines = manifest.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        AirFiles.AddRange(lines.Select(l => new RiotFile(l, region.UpdateBase)));
+        AirFiles.AddRange(lines.Select(l => new RiotFile(l, Region.UpdateBase)));
       }
     }
 
-    public static RiotVersion GetInstalledVersion(Region region, string LeagueDir) {
+    public static async Task<RiotVersion> GetInstalledVersion(Region region, string LeagueDir) {
       var airInstalled = Directory.EnumerateDirectories(Path.Combine(LeagueDir, AirPath));
       var airVersions = from dir in airInstalled
                         select Version.Parse(Path.GetFileName(dir)) into v
@@ -48,22 +56,25 @@ namespace LeagueClient.Logic {
                         select Version.Parse(Path.GetFileName(dir)) into v
                         orderby v descending
                         select v;
-      return new RiotVersion(airVersions.FirstOrDefault(), gameVersions.FirstOrDefault(), slnVersions.FirstOrDefault(), region);
+
+      var ver = new RiotVersion(airVersions.FirstOrDefault(), gameVersions.FirstOrDefault(), slnVersions.FirstOrDefault(), region);
+      await ver.GetManifest();
+      return ver;
     }
 
     public static async Task<RiotVersion> GetLatestVersion(Region region) {
-      using (var web = new WebClient()) {
-        var airList = await web.DownloadStringTaskAsync(region.AirListing);
-        var gameList = await web.DownloadStringTaskAsync(region.GameListing);
-        var solutionList = await web.DownloadStringTaskAsync(region.SolutionListing);
+      var airList = await Client.WebClient.DownloadStringTaskAsync(region.AirListing);
+      var gameList = await Client.WebClient.DownloadStringTaskAsync(region.GameListing);
+      var solutionList = await Client.WebClient.DownloadStringTaskAsync(region.SolutionListing);
 
-        Version airVersion, gameVersion, solutionVersion;
-        Version.TryParse(airList.Split('\n').FirstOrDefault(), out airVersion);
-        Version.TryParse(gameList.Split('\n').FirstOrDefault(), out gameVersion);
-        Version.TryParse(solutionList.Split('\n').FirstOrDefault(), out solutionVersion);
+      Version airVersion, gameVersion, solutionVersion;
+      Version.TryParse(airList.Split('\n').FirstOrDefault(), out airVersion);
+      Version.TryParse(gameList.Split('\n').FirstOrDefault(), out gameVersion);
+      Version.TryParse(solutionList.Split('\n').FirstOrDefault(), out solutionVersion);
 
-        return new RiotVersion(airVersion, gameVersion, solutionVersion, region);
-      }
+      var v = new RiotVersion(airVersion, gameVersion, solutionVersion, region);
+      await v.GetManifest();
+      return v;
     }
   }
 

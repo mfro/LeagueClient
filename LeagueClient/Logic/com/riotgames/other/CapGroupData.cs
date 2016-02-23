@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.com.riotgames.other {
-  [JSONSerializable]
-  public class CapGroupData {
+  public class CapGroupData : JSONSerializable {
     [JSONField("groupId")]
     public string GroupId { get; set; }
 

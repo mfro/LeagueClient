@@ -14,7 +14,7 @@ using agsXMPP.protocol.client;
 namespace LeagueClient.Logic.Chat {
   public class ChatFriend {
     public event EventHandler HistoryUpdated;
-    public Dictionary<string, object> Data { get; } = new Dictionary<string, object>();
+    //public Dictionary<string, object> Data { get; } = new Dictionary<string, object>();
 
     public InvitationRequest Invite { get; set; }
     public RosterItem User { get; }

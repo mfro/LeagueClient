@@ -61,6 +61,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void UpdateRunes() {
+      if (!LeagueData.IsCurrent) return;
       int i = 0;
       for (; i < 9; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/MarkDefault.png"));
       for (; i < 18; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/SealDefault.png"));

@@ -25,6 +25,7 @@ using MFroehlich.Parsing.JSON;
 using RtmpSharp.Messaging;
 using System.Threading;
 using System.Timers;
+using MFroehlich.League.Assets;
 
 namespace LeagueClient.ClientUI.Main {
   /// <summary>
@@ -58,6 +59,7 @@ namespace LeagueClient.ClientUI.Main {
       #region Queues
       queues = new List<Queue> {
       //queues[ClassicQueues] = new List<Queue> {
+        new Queue("Teambuilder Draft", 400, null, "Create Group", PlayTBD),
         new Queue("Teambuilder", 61, "Enter Soloqueue", "Create Lobby", PlayTeambuilder),
         new Queue("Blind Pick 5v5", 2, "Enter Soloqueue", "Create Lobby", PlayStandard),
         new Queue("Draft Pick 5v5", 14, "Enter Soloqueue", "Create Lobby", PlayStandard),
@@ -72,12 +74,16 @@ namespace LeagueClient.ClientUI.Main {
       //};
 
       //queues[RankedQueues] = new List<Queue> {
+        new Queue("Ranked Solo / Duo Queue", 410, null, "Create Group", PlayTBD),
         new Queue("Ranked Solo / Duo Queue", 4, "Enter Soloqueue", "Invite Duo Partner", PlayRanked),
         new Queue("Ranked Teams 5v5", 42, null, "Create Lobby", PlayRankedTeams),
         new Queue("Ranked Teams 3v3", 41, null, "Create Lobby", PlayRankedTeams),
       };
 
       #endregion
+
+      if (!Client.Installed.GameVersion.Equals(Client.Latest.GameVersion))
+        PatchGrid.Visibility = Visibility.Visible;
 
       queue = new QueueController(QueueLabel, ChatStatus.inQueue, ChatStatus.outOfGame);
       SummonersRift.Tag = GameMap.SummonersRift;
@@ -153,6 +159,15 @@ namespace LeagueClient.ClientUI.Main {
       var list = from item in queues
                  where Client.Session.AvailableQueues.ContainsKey(item.ID)
                  select item;
+
+#if DEBUG
+      foreach (var queue in Client.Session.AvailableQueues) {
+        if (!queues.Any(q => q.ID == queue.Key)) {
+
+        }
+      }
+#endif
+
       //((Grid) category.Key.Parent).Visibility = list.Count() > 0 ? Visibility.Visible : Visibility.Collapsed;
       Queues.ItemsSource = list;
     }
@@ -163,6 +178,18 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     #region Plays
+
+    private void PlayTBD(int button) {
+      Close?.Invoke(this, new EventArgs());
+
+      var lobby = new TBDLobbyPage();
+      RiotServices.GameInvitationService.CreateArrangedTeamLobby(selected.ID).ContinueWith(t => {
+        lobby.GotLobbyStatus(t.Result);
+      });
+      RiotServices.TeambuilderDraftService.CreateDraftPremade(selected.ID);
+      Client.Session.QueueManager.ShowPage(lobby);
+    }
+
     private void PlayTeambuilder(int button) {
       Close?.Invoke(this, new EventArgs());
       switch (button) {

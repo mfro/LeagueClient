@@ -55,30 +55,6 @@
     </Grid>
     <Border Background="{StaticResource Back1Brush}" Grid.ColumnSpan="10" MouseDown="Border_MouseDown"/>
 
-    <Grid Visibility="Collapsed" Grid.Row="1" Grid.RowSpan="10" Grid.ColumnSpan="10" Name="PatchingGrid">
-      <Grid.Resources>
-        <Style x:Key="LabelStyle" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-          <Setter Property="FontSize" Value="18"/>
-          <Setter Property="VerticalAlignment" Value="Center"/>
-          <Setter Property="Padding" Value="10 0 10 2"/>
-        </Style>
-      </Grid.Resources>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="35"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="30"/>
-        <RowDefinition Height="35"/>
-        <RowDefinition Height="30"/>
-        <RowDefinition Height="35"/>
-        <RowDefinition Height="40"/>
-      </Grid.RowDefinitions>
-      <Label Grid.Row="1" FontSize="42" FontFamily="Arial" Margin="40 0">Patching...</Label>
-      <my:MyProgressBar x:Name="OverallStatusBar" Grid.Row="3" Grid.Column="1" Value=".47" IndeterminateAnimationTime="1.8" IndeterminateBarWidth="90"/>
-      <Label Name="OverallStatusText" Grid.Row="3" Grid.Column="1" Style="{StaticResource LabelStyle}" HorizontalAlignment="Center">Patching Custom Client</Label>
-
-      <my:MyProgressBar x:Name="CurrentStatusBar" Grid.Row="5" Grid.Column="1" Value=".8" IndeterminateAnimationTime="1.8" IndeterminateBarWidth="90"/>
-      <Label Name="CurrentStatusText" Grid.Row="5" Grid.Column="1" Style="{StaticResource LabelStyle}"  HorizontalAlignment="Left">Downloading DataDragon</Label>
-      <Label Name="CurrentStatusProgress" Grid.Row="5" Grid.Column="1"  Style="{StaticResource LabelStyle}" HorizontalAlignment="Right">80%</Label>
-    </Grid>
+    <my:PatchProgressBar x:Name="Patch" Grid.RowSpan="100" Grid.ColumnSpan="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="15" Width="100" Height="100"/>
   </Grid>
 </Page>

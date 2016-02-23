@@ -20,7 +20,8 @@ namespace LeagueClient.Logic.Riot.Platform {
       var json = JSONParser.ParseObject(Json, 0);
 
       if (json.ContainsKey("broadcastMessages")) {
-        BroadcastMessages = ((JSONArray) json["broadcastMessages"]).Deserialize<List<BroadcastMessage>>();
+
+        BroadcastMessages = JSONDeserializer.Deserialize<List<BroadcastMessage>>(json["broadcastMessages"]);
       }
     }
 

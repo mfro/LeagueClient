@@ -24,9 +24,5 @@
         <Path Data="M 10 0 L 10 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False" Name="PlusPath"/>
       </Grid>
     </Button>
-
-    <!--<Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Margin="8" Background="{StaticResource Back1Brush}" ToolTip="View Profile">
-      <Path Data="M 5 14 C -5 -5 25 -5 15 14 L 19 16 L 19 20 L 1 20 L 1 16 Z" Fill="{StaticResource FontBrush}" IsHitTestVisible="False"/>
-    </Button>-->
   </Grid>
 </UserControl>

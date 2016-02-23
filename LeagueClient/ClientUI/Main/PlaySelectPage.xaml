@@ -138,5 +138,11 @@
         </Grid>
       </Grid>
     </Grid>
+
+    <Border Grid.RowSpan="10" Grid.ColumnSpan="10" Background="{StaticResource Back2Brush}" Name="PatchGrid" Visibility="Collapsed">
+      <Border HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Label FontSize="20">Out of date! Please run the Riot Patcher before continuing</Label>
+      </Border>
+    </Border>
   </Grid>
 </UserControl>

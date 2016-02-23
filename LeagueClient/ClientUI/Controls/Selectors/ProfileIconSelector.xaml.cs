@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
+using MFroehlich.League.DataDragon;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -33,8 +34,14 @@ namespace LeagueClient.ClientUI.Controls {
     public async void LoadIcons() {
       var icons = await RiotServices.SummonerIconService.GetSummonerIconInventory(Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId);
       var data = new List<object>();
-      foreach (var icon in icons.SummonerIcons.OrderByDescending(i => i.PurchaseDate))
-        data.Add(new IconInfo { Image = LeagueData.GetProfileIconImage(LeagueData.GetIconData(icon.IconId)), Icon = icon });
+      foreach (var icon in icons.SummonerIcons.OrderByDescending(i => i.PurchaseDate)) {
+        ProfileIconDto info;
+        if (LeagueData.IconData.Value.data.TryGetValue(icon.IconId.ToString(), out info)) {
+          var image = LeagueData.GetProfileIconImage(info);
+          if (image != null)
+            data.Add(new IconInfo { Image = image, Icon = icon });
+        }
+      }
       Dispatcher.Invoke(() => IconsGrid.ItemsSource = data);
     }
 

@@ -237,7 +237,7 @@ namespace LeagueClient.ClientUI.Main {
 
     #region LcdsMethods
 
-    private void groupUpdatedV3(JSONObject json) => GotGroupData(json.Deserialize<CapGroupData>());
+    private void groupUpdatedV3(JSONObject json) => GotGroupData(JSONDeserializer.Deserialize<CapGroupData>(json));
 
     private void gameStartFailedV1(JSONObject json) {
       Close?.Invoke(this, new EventArgs());
@@ -245,20 +245,20 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void candidateAcceptedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       if (found.ContainsKey(slot.SlotId))
         found[slot.SlotId].Status = CapStatus.Joining;
     }
 
     private void candidateDeclinedV2(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       found.Remove(slot.SlotId);
       DoTimeout(players[slot.SlotId], (int) json["penaltyInSeconds"]);
       Dispatcher.Invoke(UpdateList);
     }
 
     private void candidateFoundV2(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       var player = new CapPlayer(slot.SlotId);
       player.CapEvent += PlayerHandler;
       player.Champion = LeagueData.GetChampData(slot.ChampionId);
@@ -271,7 +271,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void groupCreatedV3(JSONObject json) {
-      GotGroupData(json.Deserialize<CapGroupData>());
+      GotGroupData(JSONDeserializer.Deserialize<CapGroupData>(json));
     }
 
     private void matchMadeV1(JSONObject json) {
@@ -285,14 +285,14 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void readinessIndicatedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       if ((bool) json["ready"]) players[slot.SlotId].Status = CapStatus.Ready;
       else players[slot.SlotId].Status = CapStatus.Present;
       Dispatcher.Invoke(UpdateList);
     }
 
     private void slotPopulatedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       slot.Status = "POPULATED";
       if (found.ContainsKey(slot.SlotId)) found.Remove(slot.SlotId);
       if (players[slot.SlotId] == null) {
@@ -310,7 +310,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void championPickedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       players[slot.SlotId].Champion = LeagueData.GetChampData(slot.ChampionId);
       Dispatcher.Invoke(UpdateList);
       foreach (var cap in players)
@@ -318,7 +318,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void spellsPickedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       if (slot.Spell1Id > 0) players[slot.SlotId].Spell1 = LeagueData.GetSpellData(slot.Spell1Id);
       if (slot.Spell2Id > 0) players[slot.SlotId].Spell2 = LeagueData.GetSpellData(slot.Spell2Id);
       foreach (var cap in players)
@@ -327,7 +327,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void roleSpecifiedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       players[slot.SlotId].Role = Role.Values[slot.Role];
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
@@ -335,7 +335,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void positionSpecifiedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       players[slot.SlotId].Position = Position.Values[slot.Position];
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
@@ -343,7 +343,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void advertisedRoleSpecifiedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       if (players[slot.SlotId] == null) {
         var player = players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
         player.CapEvent += PlayerHandler;
@@ -354,7 +354,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void advertisedPositionSpecifiedV1(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       if (players[slot.SlotId] == null) {
         var player = players[slot.SlotId] = new CapPlayer(slot.SlotId) { Status = CapStatus.ChoosingAdvert };
         player.CapEvent += PlayerHandler;
@@ -365,7 +365,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void playerRemovedV3(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       if (state == CapLobbyState.Inviting) {
         players[slot.SlotId] = null;
         Dispatcher.Invoke(UpdateList);
@@ -377,7 +377,7 @@ namespace LeagueClient.ClientUI.Main {
     }
 
     private void soloSearchedForAnotherGroupV2(JSONObject json) {
-      var slot = json.Deserialize<CapSlotData>();
+      var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       if (slot.SlotId == me.SlotId) {
         Dispatcher.Invoke(() => Client.Session.QueueManager.ShowPage(new CapSoloPage(me)));
         if (Close != null) Close(this, new EventArgs());

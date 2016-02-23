@@ -35,6 +35,7 @@ namespace LeagueClient.Logic {
     internal static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     internal static Client Session;
+    internal static WebClient WebClient = new WebClient();
 
     #region Constants
     internal static readonly Region Region = Region.NA;
@@ -114,13 +115,12 @@ namespace LeagueClient.Logic {
 
       RiotAPI.UrlFormat = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
 
-      Installed = RiotVersion.GetInstalledVersion(Region, RiotGamesDir);
+      Installed = await RiotVersion.GetInstalledVersion(Region, RiotGamesDir);
       Latest = await RiotVersion.GetLatestVersion(Region);
-      using (var web = new WebClient()) {
-        var theme = Latest.AirFiles.FirstOrDefault(f => f.Url.AbsolutePath.EndsWith("/files/theme.properties"));
-        var content = web.DownloadString(theme.Url);
-        LoginTheme = content.Substring("themeConfig=", ",");
-      }
+
+      var theme = Latest.GetFiles("/files/theme.properties").Single();
+      var content = await WebClient.DownloadStringTaskAsync(theme.Url);
+      LoginTheme = content.Substring("themeConfig=", ",");
 
       if (!File.Exists(FFMpegPath))
         using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
@@ -130,6 +130,7 @@ namespace LeagueClient.Logic {
       Log($"Air: {Installed.AirVersion} / {Latest.AirVersion}");
       Log($"Game: {Installed.GameVersion} / {Latest.GameVersion}");
       Log($"Solution: {Installed.SolutionVersion} / {Latest.SolutionVersion}");
+
       new Thread(CreateLoginTheme).Start();
     }
 

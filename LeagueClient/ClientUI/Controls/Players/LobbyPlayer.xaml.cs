@@ -23,7 +23,7 @@ namespace LeagueClient.ClientUI.Controls {
   /// <summary>
   /// Interaction logic for DefaultPlayer.xaml
   /// </summary>
-  public partial class LobbyPlayer : UserControl, INotifyPropertyChanged, ICollapsable {
+  public partial class LobbyPlayer : UserControl, INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
     public BitmapImage SummonerIcon {

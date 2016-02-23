@@ -317,6 +317,7 @@ namespace LeagueClient.ClientUI {
 
       if (CurrentPage != null) {
         CurrentPage.Close -= HandlePageClose;
+        CurrentPage.Dispose();
         CurrentPage = null;
         SubPageArea.Content = null;
         SubPageArea.Visibility = Visibility.Collapsed;

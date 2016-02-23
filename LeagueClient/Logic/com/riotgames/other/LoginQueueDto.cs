@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.com.riotgames.other {
-  [JSONSerializable]
-  public class LoginQueueDto {
+  public class LoginQueueDto : JSONSerializable {
     [JSONField("rate")]
     public int Rate { get; set; }
 
@@ -53,8 +52,7 @@ namespace LeagueClient.Logic.com.riotgames.other {
     public int Champ { get; set; }
   }
 
-  [JSONSerializable]
-  public class InGameCredentials {
+  public class InGameCredentials : JSONSerializable {
     [JSONField("inGame")]
     public bool InGame { get; set; }
 

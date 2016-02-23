@@ -30,7 +30,7 @@ namespace LeagueClient.ClientUI.Main {
     public PlayerProfile() {
       InitializeComponent();
 
-      if (Client.Session.Connected) {
+      if (Client.Session != null) {
         HistoryList.ItemsSource = history;
         Client.Session.SummonerCache.GetData(Client.Session.LoginPacket.AllSummonerData.Summoner.Name, GotSummoner);
       }

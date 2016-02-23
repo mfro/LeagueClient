@@ -9,10 +9,9 @@ using System.Reflection;
 using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.Riot.Platform {
-  [JSONSerializable]
   [Serializable]
   [SerializedName("com.riotgames.platform.systemstate.ClientSystemStatesNotification")]
-  public class ClientSystemStatesNotification : IExternalizable {
+  public class ClientSystemStatesNotification : JSONSerializable, IExternalizable {
     public Boolean championTradeThroughLCDS { get; set; }
 
     public Boolean practiceGameEnabled { get; set; }
@@ -113,7 +112,7 @@ namespace LeagueClient.Logic.Riot.Platform {
       Json = input.ReadUtf((int) input.ReadUInt32());
 
       var json = JSONParser.ParseObject(Json, 0);
-      var states = json.Deserialize<ClientSystemStatesNotification>();
+      var states = JSONDeserializer.Deserialize<ClientSystemStatesNotification>(json);
       foreach (PropertyInfo prop in typeof(ClientSystemStatesNotification).GetProperties()) {
         prop.SetValue(this, prop.GetValue(states));
       }

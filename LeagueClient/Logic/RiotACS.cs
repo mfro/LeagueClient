@@ -40,13 +40,12 @@ namespace LeagueClient.Logic {
         data = mem.ToArray();
       }
       if (typeof(System.Collections.IList).IsAssignableFrom(typeof(T)))
-        return JSONParser.ParseArray(data, 0).Deserialize<T>();
-      return JSONParser.ParseObject(data, 0).Deserialize<T>();
+        return JSONDeserializer.Deserialize<T>(JSONParser.ParseArray(data, 0));
+      return JSONDeserializer.Deserialize<T>(JSONParser.ParseObject(data, 0));
     }
 
     #region Deltas
 
-    [JSONSerializable]
     public class PlayerDeltas {
       [JSONField("originalAccountId")]
       public long OriginalAccountId { get; set; }
@@ -58,7 +57,6 @@ namespace LeagueClient.Logic {
       public List<GameDeltaInfo> Deltas { get; set; }
     }
 
-    [JSONSerializable]
     public class GameDeltaInfo {
       [JSONField("gamePlatformId")]
       public string Platform { get; set; }
@@ -70,7 +68,6 @@ namespace LeagueClient.Logic {
       public Delta Delta { get; set; }
     }
 
-    [JSONSerializable]
     public class Delta {
       [JSONField("gamePlatformId")]
       public string Platform { get; set; }
@@ -94,8 +91,7 @@ namespace LeagueClient.Logic {
     #endregion
 
     #region Games
-    [JSONSerializable]
-    public class PlayerHistory {
+    public class PlayerHistory : JSONSerializable {
       [JSONField("platformId")]
       public string Platform { get; set; }
 
@@ -109,8 +105,7 @@ namespace LeagueClient.Logic {
       public GameResponseInfo Games { get; set; }
     }
 
-    [JSONSerializable]
-    public class GameResponseInfo {
+    public class GameResponseInfo : JSONSerializable {
       [JSONField("gameIndexBegin")]
       public int GameIndexBegin { get; set; }
 
@@ -130,8 +125,7 @@ namespace LeagueClient.Logic {
       public List<Game> Games { get; set; }
     }
 
-    [JSONSerializable]
-    public class Game {
+    public class Game : JSONSerializable {
       [JSONField("gameId")]
       public long GameId { get; set; }
 
@@ -172,8 +166,7 @@ namespace LeagueClient.Logic {
       public List<ParticipantIdentity> ParticipantIdentities { get; set; }
     }
 
-    [JSONSerializable]
-    public class Participant {
+    public class Participant : JSONSerializable {
       [JSONField("participantId")]
       public int ParticipantId { get; set; }
 
@@ -205,8 +198,7 @@ namespace LeagueClient.Logic {
       public string HighestAchievedSeasonTier { get; set; }
     }
 
-    [JSONSerializable]
-    public class ParticipantStats {
+    public class ParticipantStats : JSONSerializable {
       [JSONField("participantId")]
       public Int32 ParticipantId { get; set; }
 
@@ -388,8 +380,7 @@ namespace LeagueClient.Logic {
       public Int32 TotalScoreRank { get; set; }
     }
 
-    [JSONSerializable]
-    public class Team {
+    public class Team : JSONSerializable {
       [JSONField("teamId")]
       public int TeamId { get; set; }
 
@@ -433,8 +424,7 @@ namespace LeagueClient.Logic {
       public List<RiotAPI.MatchAPI.BannedChampion> Bans { get; set; }
     }
 
-    [JSONSerializable]
-    public class ParticipantIdentity {
+    public class ParticipantIdentity : JSONSerializable {
       [JSONField("participantId")]
       public int ParticipantId { get; set; }
 
@@ -442,8 +432,7 @@ namespace LeagueClient.Logic {
       public Player Player { get; set; }
     }
 
-    [JSONSerializable]
-    public class Player {
+    public class Player : JSONSerializable {
       [JSONField("platformId")]
       public int ParticipantId { get; set; }
 

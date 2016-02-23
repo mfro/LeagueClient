@@ -140,9 +140,7 @@
         <Grid.RowDefinitions>
           <RowDefinition Height="*"/>
           <RowDefinition Height="auto"/>
-          <RowDefinition Height="40"/>
-          <RowDefinition Height="auto"/>
-          <RowDefinition Height="40"/>
+          <RowDefinition Height="*"/>
           <RowDefinition Height="auto"/>
           <RowDefinition Height="auto"/>
           <RowDefinition Height="auto"/>
@@ -150,26 +148,28 @@
           <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="3" Name="QueuerArea" Margin="-11 0"/>
-
+        <Border Grid.Row="1" Name="QueuerArea" Margin="-11 0">
+          <my:PatchProgressBar Width="100" Height="100"/>
+        </Border>
+        
         <!--<Button Grid.Row="3">Notifications  - 3</Button>-->
 
-        <Image Source="{StaticResource RPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="5"/>
-        <Label FontSize="14" Name="RPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 0 17 0" Grid.Row="5"/>
-        <Image Source="{StaticResource IPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="6"/>
-        <Label FontSize="14" Name="IPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 2 0 2" Grid.Row="6"/>
-        <Border Grid.Row="7" Background="Transparent">
+        <Image Source="{StaticResource RPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="3"/>
+        <Label FontSize="14" Name="RPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 0 17 0" Grid.Row="3"/>
+        <Image Source="{StaticResource IPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="4"/>
+        <Label FontSize="14" Name="IPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 2 0 2" Grid.Row="4"/>
+        <Border Grid.Row="5" Background="Transparent">
           <Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
             <Label FontSize="16" Name="CurrentStatus" Foreground="{StaticResource ForeBrush}" Content="Offline" Padding="0"/>
           </Viewbox>
         </Border>
-        <ComboBox Grid.Row="7" BorderThickness="0" Background="{StaticResource Back2Brush}" Name="ChatCombo" Opacity="0" SelectionChanged="ChatCombo_SelectionChanged"/>
-        <Border Grid.Row="8" Background="Transparent">
+        <ComboBox Grid.Row="5" BorderThickness="0" Background="{StaticResource Back2Brush}" Name="ChatCombo" Opacity="0" SelectionChanged="ChatCombo_SelectionChanged"/>
+        <Border Grid.Row="6" Background="Transparent">
           <Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
             <Label FontSize="18" Padding="0 0 0 5" Name="NameLabel">master mor</Label>
           </Viewbox>
         </Border>
-        <Image Width="128" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Grid.Row="9" MouseUp="ProfileIcon_Click" Name="ProfileIcon"/>
+        <Image Width="128" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Grid.Row="7" MouseUp="ProfileIcon_Click" Name="ProfileIcon"/>
       </Grid>
 
       <Grid Grid.Column="3" Grid.RowSpan="3" Margin="10 30">

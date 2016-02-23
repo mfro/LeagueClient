@@ -1,6 +1,30 @@
 ﻿using System.Collections.Generic;
 
 namespace LeagueClient.Logic {
+	public class TBDRole {
+    public static readonly Dictionary<string, TBDRole> Values = new Dictionary<string, TBDRole>();
+
+    public static readonly TBDRole
+      SUPPORT = new TBDRole("SUPPORT", "Support"),
+      JUNGLE = new TBDRole("JUNGLE", "Jungle"),
+      MIDDLE = new TBDRole("MIDDLE", "Middle"),
+      BOTTOM = new TBDRole("BOTTOM", "Bottom"),
+      TOP = new TBDRole("TOP", "Top"),
+      FILL = new TBDRole("FILL", "Fill");
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+
+		private TBDRole(string key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
 	public class Position {
     public static readonly Dictionary<string, Position> Values = new Dictionary<string, Position>();
 

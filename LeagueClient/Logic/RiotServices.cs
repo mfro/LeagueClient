@@ -844,12 +844,12 @@ namespace LeagueClient.Logic.Riot {
     }
 
     public static class CapService {
-      public const string Destination = "cap";
+      public const string ServiceName = "cap";
 
       private static Guid Invoke(string method, JSONObject args = null) {
         var str = (args == null) ? "{}" : JSON.Stringify(args);
         var id = Guid.NewGuid();
-        LcdsService.CallLCDS(id.ToString(), Destination, method, str);
+        LcdsService.CallLCDS(id.ToString(), ServiceName, method, str);
         return id;
       }
 
@@ -1020,6 +1020,189 @@ namespace LeagueClient.Logic.Riot {
         json["skinId"] = skinId;
         json["championId"] = championId;
         return Invoke("updateLastSelectedSkinForChampionV1", json);
+      }
+    }
+
+    public static class TeambuilderDraftService {
+      public const string ServiceName = "teambuilder-draft";
+
+      private static Guid Invoke(string method, JSONObject args = null) {
+        var str = (args == null) ? "{}" : JSON.Stringify(args);
+        var id = Guid.NewGuid();
+        LcdsService.CallLCDS(id.ToString(), ServiceName, method, str);
+        return id;
+      }
+
+      public static Guid AbandonLeaverBusterLowPriorityQueue(string accessTokenStr = null) {
+        var json = new JSONObject {
+          ["accessTokenStr"] = accessTokenStr,
+        };
+        return Invoke("abandonLeaverBusterLowPriorityQueueV1", json);
+      }
+
+      public static Guid CreateDraftPremade(int queueId) {
+        var json = new JSONObject {
+          ["queueId"] = queueId,
+        };
+        return Invoke("createDraftPremadeV1", json);
+      }
+
+      public static Guid IndicateAfkReadiness(bool afkReady) {
+        var json = new JSONObject {
+          ["afkReady"] = afkReady,
+        };
+        return Invoke("indicateAfkReadinessV1", json);
+      }
+
+      public static Guid JoinDraftPremade(string draftPremadeId) {
+        var json = new JSONObject {
+          ["draftPremadeId"] = draftPremadeId,
+        };
+        return Invoke("joinDraftPremadeV1", json);
+      }
+
+      public static Guid KickPlayer(int slotId) {
+        var json = new JSONObject {
+          ["slotId"] = slotId,
+        };
+        return Invoke("kickPlayerV1", json);
+      }
+
+      public static Guid LockChampionBan() {
+        var json = new JSONObject {
+        };
+        return Invoke("lockChampionBanV1", json);
+      }
+
+      public static Guid LockChampionPick() {
+        var json = new JSONObject {
+        };
+        return Invoke("lockChampionPickV1", json);
+      }
+
+      public static Guid PromoteToCaptain(int slotId) {
+        var json = new JSONObject {
+          ["slotId"] = slotId,
+        };
+        return Invoke("promoteToCaptainV1", json);
+      }
+
+      public static Guid QuitV2() {
+        var json = new JSONObject {
+        };
+        return Invoke("quitV2", json);
+      }
+
+      public static Guid RetrieveFeatureToggles() {
+        var json = new JSONObject {
+        };
+        return Invoke("retrieveFeatureToggles", json);
+      }
+
+      public static Guid SelectChampionBan(int championId) {
+        var json = new JSONObject {
+          ["championId"] = championId,
+        };
+        return Invoke("selectChampionBanV1", json);
+      }
+
+      public static Guid SelectChampionPick(int championId) {
+        var json = new JSONObject {
+          ["championId"] = championId,
+        };
+        return Invoke("selectChampionPickV1", json);
+      }
+
+      public static Guid SignalChampionPickIntent(int championId) {
+        var json = new JSONObject {
+          ["championId"] = championId,
+        };
+        return Invoke("signalChampionPickIntentV1", json);
+      }
+
+      public static Guid SpecifyDraftPositionPreferences(string firstPreference, string secondPreference) {
+        var json = new JSONObject {
+          ["firstPreference"] = firstPreference,
+          ["secondPreference"] = secondPreference,
+        };
+        return Invoke("specifyDraftPositionPreferencesV1", json);
+      }
+
+      public static Guid StartMatchmaking(string accessTokenStr = null) {
+        var json = new JSONObject {
+          ["accessTokenStr"] = accessTokenStr,
+        };
+        return Invoke("startMatchmakingV1", json);
+      }
+
+      public static Guid LeaveMatchmaking() {
+        var json = new JSONObject {
+        };
+        return Invoke("leaveMatchmakingV1", json);
+      }
+
+      public static Guid AcceptTrade(string tradeId) {
+        var json = new JSONObject {
+          ["tradeId"] = tradeId,
+        };
+        return Invoke("acceptTradeV1", json);
+      }
+
+      public static Guid DeclineTrade(string tradeId) {
+        var json = new JSONObject {
+          ["tradeId"] = tradeId,
+        };
+        return Invoke("declineTradeV1", json);
+      }
+
+      public static Guid GetWallet(long accountId) {
+        var json = new JSONObject {
+          ["accountId"] = accountId,
+        };
+        return Invoke("getWallet", json);
+      }
+
+      public static Guid GetItems(int championId, object region, object language) {
+        var json = new JSONObject {
+          ["tag"] = "champions_" + championId,
+          ["inventoryTypes"] = new JSONArray { "CHAMPION_SKIN" },
+          ["region"] = Logic.Client.Region.Platform,
+          ["language"] = new JSONArray { Logic.Client.Locale },
+        };
+        return Invoke("getItems", json);
+      }
+
+      public static Guid PickSkin(object skinId, object isNewlyPurchasedSkin) {
+        var json = new JSONObject {
+          ["skinId"] = skinId,
+          ["isNewlyPurchasedSkin"] = isNewlyPurchasedSkin,
+        };
+        return Invoke("pickSkinV1", json);
+      }
+
+      public static Guid PurchaseItem(long accountId, int itemId, string itemType, string currencyType, int cost) {
+        var json = new JSONObject {
+          ["accountId"] = accountId,
+          ["itemId"] = itemId,
+          ["itemType"] = itemType,
+          ["currencyType"] = currencyType,
+          ["cost"] = cost,
+          ["quantity"] = 1,
+        };
+        return Invoke("purchaseItem", json);
+      }
+
+      public static Guid RetrieveLatestTbdGameDto() {
+        var json = new JSONObject { };
+        return Invoke("retrieveLatestTbdGameDtoV1", json);
+      }
+
+      public static Guid PickSpells(int spell1Id, int spell2Id) {
+        var json = new JSONObject {
+          ["spell1Id"] = spell1Id,
+          ["spell2Id"] = spell2Id,
+        };
+        return Invoke("pickSpellsV1", json);
       }
     }
 
@@ -1206,7 +1389,7 @@ namespace LeagueClient.Logic.Riot {
 
       var json = JSONParser.ParseObject(str, 0);
 
-      return json.Deserialize<LoginQueueDto>();
+      return JSONDeserializer.Deserialize<LoginQueueDto>(json);
     }
 
     public static async Task<string> GetIpAddress() {

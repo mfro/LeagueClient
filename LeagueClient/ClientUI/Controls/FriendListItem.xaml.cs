@@ -20,6 +20,7 @@ using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
 using agsXMPP.protocol.client;
+using MFroehlich.League.DataDragon;
 
 namespace LeagueClient.ClientUI.Controls {
   /// <summary>
@@ -41,14 +42,27 @@ namespace LeagueClient.ClientUI.Controls {
 
     public void Update() {
       if (friend.Status == null) return;
-      NameText.Content = friend.User.Name;
+
+      long id = RiotChat.GetSummonerId(friend.User.Jid);
+      string name;
+      if (Client.Session.Settings.Nicknames.TryGetValue(id, out name)) {
+        NameText.ToolTip = friend.User.Name;
+      } else {
+        name = friend.User.Name;
+      }
+      //TODO Nicknames
+
+      NameText.Content = name;
       MsgText.Content = friend.Status.Message;
       if (string.IsNullOrWhiteSpace(friend.Status.Message)) {
         MsgText.Visibility = Visibility.Collapsed;
       } else {
         MsgText.Visibility = Visibility.Visible;
       }
-      SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(friend.Status.ProfileIcon));
+      ProfileIconDto dto;
+      if (LeagueData.IconData.Value.data.TryGetValue(friend.Status.ProfileIcon.ToString(), out dto)) {
+        SummonerIcon.Source = LeagueData.GetProfileIconImage(dto);
+      }
       switch (friend.Status.Show) {
         case ShowType.chat: StatusText.Foreground = NameText.Foreground = App.ChatBrush; break;
         case ShowType.away: StatusText.Foreground = NameText.Foreground = App.AwayBrush; break;

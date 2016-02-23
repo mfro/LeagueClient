@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.com.riotgames.other {
-  [JSONSerializable]
-  public class CapSlotData {
+  public class CapSlotData : JSONSerializable {
     [JSONField("slotId")]
     public int SlotId { get; set; }
 

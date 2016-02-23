@@ -6,8 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LeagueClient.Logic.com.riotgames.JSON {
-  [JSONSerializable]
-  public class ChampionMasteryDTO {
+  public class ChampionMasteryDTO : JSONSerializable {
     [JSONField("championId")]
     public int ChampionId { get; set; }
 

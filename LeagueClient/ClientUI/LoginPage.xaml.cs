@@ -175,9 +175,10 @@ namespace LeagueClient.ClientUI {
       if (!task.IsFaulted && task.Result != null) {
         Client.Session.ChatManager = new Logic.Chat.RiotChat();
         Client.SaveSettings(SettingsKey, settings);
+        Patch.Dispose();
         Dispatcher.Invoke(Client.MainWindow.LoginComplete);
         return;
-      } else if (task.IsFaulted) {
+      } else if (task.IsFaulted && !task.Exception.InnerException.Message.Contains("SSL error")) {
         var error = task.Exception.InnerException as InvocationException;
         var cause = error?.RootCause as RiotException;
       }

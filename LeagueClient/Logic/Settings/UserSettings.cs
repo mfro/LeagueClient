@@ -17,5 +17,6 @@ namespace LeagueClient.Logic.Settings {
     public string SummonerName { get; set; }
 
     public string StatusMessage { get; set; }
+    public SerializableDictionary<long, string> Nicknames { get; set; } = new SerializableDictionary<long, string>();
   }
 }

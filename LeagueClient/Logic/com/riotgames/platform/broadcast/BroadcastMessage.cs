@@ -1,8 +1,7 @@
 ﻿using MFroehlich.Parsing.JSON;
 
 namespace LeagueClient.Logic.Riot.Platform {
-  [JSONSerializable]
-  public class BroadcastMessage {
+  public class BroadcastMessage : JSONSerializable {
     [JSONField("id")]
     public int Id { get; set; }
     [JSONField("active")]
