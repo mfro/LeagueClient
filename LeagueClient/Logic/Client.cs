@@ -228,8 +228,7 @@ namespace LeagueClient.Logic {
           RedirectStandardOutput = true,
         };
         File.Delete(LoginVideoPath);
-        Process.Start(info).WaitForExit();
-        File.Delete(file);
+        Process.Start(info);
         settings.Theme = LoginTheme;
         SaveSettings(SettingsKey, settings);
       }

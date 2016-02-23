@@ -50,7 +50,9 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public LoginAccount(string login, string name, int profileicon) : this() {
-      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileicon));
+      try {
+        ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileicon));
+      } catch { }
       NameLabel.Content = name;
       Username = login;
       State = LoginAccountState.Normal;

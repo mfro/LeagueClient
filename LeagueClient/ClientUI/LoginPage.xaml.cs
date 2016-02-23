@@ -74,6 +74,8 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Account_Click(object sender, EventArgs e) {
+      if (!LeagueData.IsCurrent) return;
+
       AutoLoginToggle.IsChecked = true;
       var login = (sender as LoginAccount).Username;
       foreach (var obj in AccountList.Children)
@@ -92,6 +94,8 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Login_Click(object sender, RoutedEventArgs e) {
+      if (!LeagueData.IsCurrent) return;
+
       user = UserBox.Text;
       pass = PassBox.Password;
 
