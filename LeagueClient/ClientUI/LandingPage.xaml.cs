@@ -215,6 +215,7 @@ namespace LeagueClient.ClientUI {
     #endregion
 
     #region Interface
+
     bool IClientPage.HandleMessage(MessageReceivedEventArgs args) {
       if (CurrentPopup?.HandleMessage(args) ?? false) return true;
       if (CurrentInfo?.HandleMessage(args) ?? false) return true;
@@ -310,6 +311,7 @@ namespace LeagueClient.ClientUI {
       Client.Session.SummonerCache.GetData(summonerName, Profile.GotSummoner);
       Dispatcher.MyInvoke(ShowTab, Tab.Profile);
     }
+
     #endregion
 
     private void CloseSubPage() {

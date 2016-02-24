@@ -72,6 +72,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -96,6 +97,9 @@
       <DependentUpon>ChampMastery.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClientUI\Controls\EditButton.cs" />
+    <Compile Include="ClientUI\Controls\NewsItem.xaml.cs">
+      <DependentUpon>NewsItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClientUI\Controls\PatchProgressBar.xaml.cs">
       <DependentUpon>PatchProgressBar.xaml</DependentUpon>
     </Compile>
@@ -400,6 +404,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClientUI\Controls\ChampMastery.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientUI\Controls\NewsItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
