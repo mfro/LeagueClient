@@ -112,6 +112,7 @@ namespace LeagueClient.Logic {
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
 
+      DataDragon.Locale = Locale;
       if (!DataDragon.IsCurrent) DataDragon.Update();
 
       RiotAPI.UrlFormat = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
