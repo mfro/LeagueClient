@@ -60,7 +60,7 @@
             <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ShopTab" Content="{my:String Landing.Shop_Button}"/>
           </StackPanel>
         </Grid>
-        <Image Margin="0 0 0 0" Name="PlayTab" Grid.Row="1" Source="C:\Users\Max\Documents\PBE Source Files\ImagePack_misc\Image\lol-big.png"
+        <Image Margin="0 0 0 0" Name="PlayTab" Grid.Row="1" Source="pack://application:,,,/Resources/LeagueIcon.png"
                Cursor="Hand" MouseUp="Tab_Click" MouseEnter="PlayTab_MouseEnter" MouseLeave="PlayTab_MouseLeave">
           <Image.Effect>
             <DropShadowEffect x:Name="PlayTabGlow" Color="Black" ShadowDepth="0" BlurRadius="15"/>
@@ -150,7 +150,7 @@
 
         <Border Grid.Row="1" Name="QueuerArea" Margin="-11 0">
         </Border>
-        
+
         <!--<Button Grid.Row="3">Notifications  - 3</Button>-->
 
         <Image Source="{StaticResource RPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="3"/>

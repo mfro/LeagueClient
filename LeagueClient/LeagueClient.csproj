@@ -623,6 +623,7 @@
     <Resource Include="Media\ip.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\LeagueIcon.png" />
     <None Include="Resources\Gray.png" />
     <Resource Include="Resources\ProfileIcon.png" />
     <Resource Include="Resources\RankingIcon.png" />
