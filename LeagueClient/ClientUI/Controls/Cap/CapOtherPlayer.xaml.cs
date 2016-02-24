@@ -46,15 +46,15 @@ namespace LeagueClient.ClientUI.Controls {
       TimerText.Visibility = Visibility.Collapsed;
 
       if (Player.Champion != null)
-        ChampionImage.Source = LeagueData.GetChampIconImage(Player.Champion);
+        ChampionImage.Source = DataDragon.GetChampIconImage(Player.Champion).Load();
       else ChampionImage.Source = null;
 
       if (Player.Spell1 != null)
-        Spell1Image.Source = LeagueData.GetSpellImage(Player.Spell1);
+        Spell1Image.Source = DataDragon.GetSpellImage(Player.Spell1).Load();
       else Spell1Image.Source = null;
 
       if (Player.Spell2 != null)
-        Spell2Image.Source = LeagueData.GetSpellImage(Player.Spell2);
+        Spell2Image.Source = DataDragon.GetSpellImage(Player.Spell2).Load();
       else Spell2Image.Source = null;
 
       //Glow.Opacity = 0;

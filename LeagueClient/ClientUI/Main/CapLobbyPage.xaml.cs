@@ -64,8 +64,8 @@ namespace LeagueClient.ClientUI.Main {
         me = new CapPlayer(-1) { Status = CapStatus.Choosing };
 
       var spells = Client.Session.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
-      me.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
-      me.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
+      me.Spell1 = DataDragon.GetSpellData(spells.Spell1Id);
+      me.Spell2 = DataDragon.GetSpellData(spells.Spell2Id);
 
       FindAnotherButt.Visibility = Visibility.Collapsed;
       state = CapLobbyState.Inviting;
@@ -91,7 +91,7 @@ namespace LeagueClient.ClientUI.Main {
       ReadyButt.Visibility = Visibility.Collapsed;
       me.CapEvent += PlayerHandler;
 
-      Client.PopupSelector.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
+      Client.PopupSelector.SpellSelector.Spells = (from spell in DataDragon.SpellData.Value.data.Values
                                                    where spell.modes.Contains("CLASSIC")
                                                    select spell);
 
@@ -141,7 +141,7 @@ namespace LeagueClient.ClientUI.Main {
         players[me.SlotId] = me;
       }
 
-      if (data.InitialChampId > 0) me.Champion = LeagueData.GetChampData(data.InitialChampId);
+      if (data.InitialChampId > 0) me.Champion = DataDragon.GetChampData(data.InitialChampId);
       if (!data.InitialPosition?.Equals(Position.UNSELECTED.Key) ?? false)
         me.Position = Position.Values[data.InitialPosition];
       if (!data.InitialRole?.Equals(Role.UNSELECTED.Key) ?? false)
@@ -261,7 +261,7 @@ namespace LeagueClient.ClientUI.Main {
       var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
       var player = new CapPlayer(slot.SlotId);
       player.CapEvent += PlayerHandler;
-      player.Champion = LeagueData.GetChampData(slot.ChampionId);
+      player.Champion = DataDragon.GetChampData(slot.ChampionId);
       player.Role = Role.Values[slot.Role];
       player.Position = players[slot.SlotId].Position;
       player.TimeoutEnd = DateTime.Now.Add(TimeSpan.FromSeconds((int) json["autoDeclineCandidateTimeout"]));
@@ -311,7 +311,7 @@ namespace LeagueClient.ClientUI.Main {
 
     private void championPickedV1(JSONObject json) {
       var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
-      players[slot.SlotId].Champion = LeagueData.GetChampData(slot.ChampionId);
+      players[slot.SlotId].Champion = DataDragon.GetChampData(slot.ChampionId);
       Dispatcher.Invoke(UpdateList);
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
@@ -319,8 +319,8 @@ namespace LeagueClient.ClientUI.Main {
 
     private void spellsPickedV1(JSONObject json) {
       var slot = JSONDeserializer.Deserialize<CapSlotData>(json);
-      if (slot.Spell1Id > 0) players[slot.SlotId].Spell1 = LeagueData.GetSpellData(slot.Spell1Id);
-      if (slot.Spell2Id > 0) players[slot.SlotId].Spell2 = LeagueData.GetSpellData(slot.Spell2Id);
+      if (slot.Spell1Id > 0) players[slot.SlotId].Spell1 = DataDragon.GetSpellData(slot.Spell1Id);
+      if (slot.Spell2Id > 0) players[slot.SlotId].Spell2 = DataDragon.GetSpellData(slot.Spell2Id);
       foreach (var cap in players)
         if (cap?.Status == CapStatus.Ready) cap.Status = CapStatus.Present;
       Dispatcher.Invoke(UpdateList);
@@ -501,9 +501,9 @@ namespace LeagueClient.ClientUI.Main {
           capp.Status = CapStatus.Present;
           capp.Role = Role.Values[player.Role];
           capp.Position = Position.Values[player.Position];
-          if (player.ChampionId > 0) capp.Champion = LeagueData.GetChampData(player.ChampionId);
-          capp.Spell1 = LeagueData.GetSpellData(player.Spell1Id);
-          capp.Spell2 = LeagueData.GetSpellData(player.Spell2Id);
+          if (player.ChampionId > 0) capp.Champion = DataDragon.GetChampData(player.ChampionId);
+          capp.Spell1 = DataDragon.GetSpellData(player.Spell1Id);
+          capp.Spell2 = DataDragon.GetSpellData(player.Spell2Id);
           capp.SlotId = player.SlotId;
           capp.Name = player.SummonerName;
           break;
@@ -511,7 +511,7 @@ namespace LeagueClient.ClientUI.Main {
         //  capp.Status = CapStatus.Found;
         //  capp.Role = Role.Values[player["role"]];
         //  capp.Position = Position.Values[player["position"]];
-        //  capp.Champion = LeagueData.GetChampData(player["championId"]);
+        //  capp.Champion = DataDragon.GetChampData(player["championId"]);
         //break;
         default: break;
       }

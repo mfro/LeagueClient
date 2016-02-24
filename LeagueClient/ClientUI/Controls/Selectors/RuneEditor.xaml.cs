@@ -61,7 +61,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void UpdateRunes() {
-      if (!LeagueData.IsCurrent) return;
+      if (!DataDragon.IsCurrent) return;
       int i = 0;
       for (; i < 9; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/MarkDefault.png"));
       for (; i < 18; i++) Runes[i].Source = new BitmapImage(new Uri("pack://application:,,,/RiotAPI;component/Resources/SealDefault.png"));
@@ -70,8 +70,8 @@ namespace LeagueClient.ClientUI.Controls {
 
       foreach (var entry in page.SlotEntries) {
         var rune = Runes[entry.RuneSlotId - 1];
-        var data = LeagueData.RuneData.Value.data[entry.rune.ItemId.ToString()];
-        rune.Source = LeagueData.GetRuneImage(data);
+        var data = DataDragon.RuneData.Value.data[entry.rune.ItemId.ToString()];
+        rune.Source = DataDragon.GetRuneImage(data).Load();
         rune.Tag = entry;
         var grid = new Grid();
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -89,7 +89,7 @@ namespace LeagueClient.ClientUI.Controls {
       GlyphsList.Children.Clear();
       QuintsList.Children.Clear();
       foreach (var rune in runes) {
-        var data = LeagueData.RuneData.Value.data[rune.RuneId.ToString()];
+        var data = DataDragon.RuneData.Value.data[rune.RuneId.ToString()];
         int used = page.SlotEntries.Count(r => r.RuneId == rune.RuneId);
         if (rune.Quantity - used > 0) {
           var item = new RuneListItem(rune, rune.Quantity - used);

@@ -53,7 +53,7 @@ namespace LeagueClient.ClientUI.Controls {
       if (Client.Session.Connected)
         UpdateChampList();
       else
-        SetChampList(LeagueData.ChampData.Value.data.Values);
+        SetChampList(DataDragon.ChampData.Value.data.Values);
     }
 
 
@@ -61,7 +61,7 @@ namespace LeagueClient.ClientUI.Controls {
       var champs = new List<MyChampDto>();
       foreach (var riot in await RiotServices.InventoryService.GetAvailableChampions()) {
         if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
-        champs.Add(LeagueData.GetChampData(riot.ChampionId));
+        champs.Add(DataDragon.GetChampData(riot.ChampionId));
       }
       SetChampList(champs);
     }
@@ -77,7 +77,7 @@ namespace LeagueClient.ClientUI.Controls {
         save.Add(item.key);
         if (!groups.ContainsKey(item.tags[0]))
           groups[item.tags[0]] = new List<object>();
-        groups[item.tags[0]].Add(new { Image = LeagueData.GetChampIconImage(item), Name = item.name, Data = item });
+        groups[item.tags[0]].Add(new { Image = DataDragon.GetChampIconImage(item), Name = item.name, Data = item });
       }
       if (last != null && save.SequenceEqual(last)) return;
       last = save;
@@ -116,7 +116,7 @@ namespace LeagueClient.ClientUI.Controls {
       var images = new List<object>();
       foreach (var item in skins) {
         images.Add(new {
-          Image = LeagueData.GetChampLoadingImage(SelectedChampion, item.num),
+          Image = DataDragon.GetChampLoadingImage(SelectedChampion, item.num),
           Name = item.name,
           Data = item
         });

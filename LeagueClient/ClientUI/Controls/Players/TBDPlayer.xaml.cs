@@ -43,7 +43,7 @@ namespace LeagueClient.ClientUI.Controls {
       SummonerName = member.SummonerName;
       SummonerId = member.SummonerId;
 
-      ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileIconId));
+      ProfileIconImage.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(profileIconId)).Load();
       PlusPath.Visibility = member.HasInvitePower ? Visibility.Collapsed : Visibility.Visible;
       Client.Session.SummonerCache.GetData(member.SummonerName, GotSummoner);
 
@@ -63,7 +63,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void GotSummoner(SummonerCache.Item item) {
       Dispatcher.Invoke(() => {
-        ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
+        ProfileIconImage.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
         NameLabel.Content = SummonerName = item.Data.Summoner.Name;
       });
     }

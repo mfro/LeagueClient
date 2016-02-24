@@ -56,7 +56,7 @@ namespace LeagueClient.ClientUI {
       IPAmount.Content = Client.Session.LoginPacket.IpBalance.ToString();
       RPAmount.Content = Client.Session.LoginPacket.RpBalance.ToString();
       NameLabel.Content = Client.Session.LoginPacket.AllSummonerData.Summoner.Name;
-      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId));
+      ProfileIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId)).Load();
       Client.PopupSelector = Popup;
 
       OpenChats.ItemsSource = OpenChatsList;
@@ -193,7 +193,7 @@ namespace LeagueClient.ClientUI {
     private void IconSelector_IconSelected(object sender, Icon e) {
       Popup.BeginStoryboard(App.FadeOut);
       Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId = e.IconId;
-      ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(e.IconId));
+      ProfileIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(e.IconId)).Load();
     }
 
     private void Popup_Close(object sender, EventArgs e) {

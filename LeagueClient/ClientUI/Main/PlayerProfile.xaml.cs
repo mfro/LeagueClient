@@ -52,7 +52,7 @@ namespace LeagueClient.ClientUI.Main {
       SearchBox.BorderBrush = App.ForeBrush;
       HistoryList.SelectedItem = Selected = item;
       SummonerName.Content = item.Data.Summoner.Name;
-      SummonerIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
+      SummonerIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
 
       MatchesPane.Child = new MatchHistory(item);
       if (item.Data.SummonerLevel.Level < 30) {

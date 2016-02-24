@@ -30,15 +30,15 @@ namespace LeagueClient.ClientUI.Controls {
         var identity = game.ParticipantIdentities.FirstOrDefault(i => i.Player.AccountId == Client.Session.LoginPacket.AllSummonerData.Summoner.AccountId);
         var me = game.Participants.FirstOrDefault(p => p.ParticipantId == identity.ParticipantId);
 
-        var champ = LeagueData.GetChampData(me.ChampionId);
-        var spell1 = LeagueData.GetSpellData(me.Spell1Id);
-        var spell2 = LeagueData.GetSpellData(me.Spell2Id);
+        var champ = DataDragon.GetChampData(me.ChampionId);
+        var spell1 = DataDragon.GetSpellData(me.Spell1Id);
+        var spell2 = DataDragon.GetSpellData(me.Spell2Id);
 
-        ChampImage.Source = LeagueData.GetChampIconImage(champ);
-        Spell1Image.Source = LeagueData.GetSpellImage(spell1);
-        Spell2Image.Source = LeagueData.GetSpellImage(spell2);
+        ChampImage.Source = DataDragon.GetChampIconImage(champ).Load();
+        Spell1Image.Source = DataDragon.GetSpellImage(spell1).Load();
+        Spell2Image.Source = DataDragon.GetSpellImage(spell2).Load();
 
-        MapLabel.Content = LeagueData.GameMaps[game.MapId];
+        MapLabel.Content = DataDragon.GameMaps[game.MapId];
         if (game.GameType.Equals("CUSTOM_GAME")) {
           ModeLabel.Content = "Custom";
         } else if (game.GameType.Equals("TUTORIAL_GAME")) {
@@ -50,7 +50,7 @@ namespace LeagueClient.ClientUI.Controls {
         var items = new[] { me.Stats.Item0, me.Stats.Item1, me.Stats.Item2, me.Stats.Item3, me.Stats.Item4, me.Stats.Item5, me.Stats.Item6 };
         var images = new[] { Item0Image, Item1Image, Item2Image, Item3Image, Item4Image, Item5Image, Item6Image };
         for (int i = 0; i < items.Length; i++) {
-          images[i].Source = LeagueData.GetItemImage(items[i]);
+          images[i].Source = DataDragon.GetItemImage(items[i]).Load();
         }
 
         ScoreLabel.Content = $"{me.Stats.Kills} / {me.Stats.Deaths} / {me.Stats.Assists}";

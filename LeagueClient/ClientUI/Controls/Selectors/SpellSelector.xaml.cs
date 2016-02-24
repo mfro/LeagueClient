@@ -38,7 +38,7 @@ namespace LeagueClient.ClientUI.Controls {
     private void UpdateList() {
       var images = new List<object>();
       foreach (var item in _spells) {
-        images.Add(new { Image = LeagueData.GetSpellImage(item), Name = item.name, Data = item });
+        images.Add(new { Image = DataDragon.GetSpellImage(item), Name = item.name, Data = item });
       }
       SpellGrid.ItemsSource = images;
     }

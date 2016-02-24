@@ -47,13 +47,13 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void DisplaySelection(PlayerChampionSelectionDTO selection) {
       if (selection?.Spell1Id > 0 && selection?.Spell2Id > 0 && selection?.ChampionId > 0) {
-        ChampImage.Source = LeagueData.GetChampIconImage(LeagueData.GetChampData(selection.ChampionId));
-        Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id));
-        Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
+        ChampImage.Source = DataDragon.GetChampIconImage(DataDragon.GetChampData(selection.ChampionId)).Load();
+        Spell1Image.Source = DataDragon.GetSpellImage(DataDragon.GetSpellData(selection.Spell1Id)).Load();
+        Spell2Image.Source = DataDragon.GetSpellImage(DataDragon.GetSpellData(selection.Spell2Id)).Load();
         Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;
       } else if (selection?.Spell1Id > 0 && selection?.Spell2Id > 0) {
-        Spell1Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell1Id));
-        Spell2Image.Source = LeagueData.GetSpellImage(LeagueData.GetSpellData(selection.Spell2Id));
+        Spell1Image.Source = DataDragon.GetSpellImage(DataDragon.GetSpellData(selection.Spell1Id)).Load();
+        Spell2Image.Source = DataDragon.GetSpellImage(DataDragon.GetSpellData(selection.Spell2Id)).Load();
         Grid.SetColumnSpan(Unknown, 1);
         Grid.SetColumnSpan(Obscure, 1);
         Unknown.Visibility = Obscure.Visibility = Visibility.Visible;
@@ -63,8 +63,8 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public ChampSelectPlayer(BotParticipant bot) : this() {
-      var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
-      ChampImage.Source = LeagueData.GetChampIconImage(champ);
+      var champ = DataDragon.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
+      ChampImage.Source = DataDragon.GetChampIconImage(champ).Load();
       NameLabel.Visibility = Visibility.Visible;
       NameLabel.Content = champ.name;
       Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;

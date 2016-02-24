@@ -27,7 +27,10 @@ namespace LeagueClient.ClientUI.Controls {
       SizeChanged += (s, e) => Resize();
 
       Draw();
-      LeagueData.UpdateProgress += LeagueData_UpdateProgress;
+      if (DataDragon.IsCurrent) {
+        Visibility = Visibility.Collapsed;
+      }
+      DataDragon.UpdateProgress += DataDragon_UpdateProgress;
     }
 
     private void Resize() {
@@ -37,7 +40,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void Draw() {
-      var args = LeagueData.CurrentStatus ?? new LeagueData.ProgressEventArgs(LeagueData.UpdateStatus.Downloading, .66);
+      var args = DataDragon.CurrentStatus ?? new DataDragon.ProgressEventArgs(DataDragon.UpdateStatus.Downloading, .66);
       var angle = (Math.PI / 2) - (args.Progress * 2 * Math.PI);
       if (args.Progress < 0) {
         arc.Point = new Point(-.0001, -1);
@@ -48,22 +51,24 @@ namespace LeagueClient.ClientUI.Controls {
       }
 
       switch (args.Status) {
-        case LeagueData.UpdateStatus.Downloading:
+        case DataDragon.UpdateStatus.Downloading:
           StatusLabel.Content = "Downloading"; break;
-        case LeagueData.UpdateStatus.Extracting:
+        case DataDragon.UpdateStatus.Extracting:
           StatusLabel.Content = "Extracting"; break;
-        case LeagueData.UpdateStatus.Installing:
+        case DataDragon.UpdateStatus.Installing:
           StatusLabel.Content = "Installing"; break;
+        case DataDragon.UpdateStatus.Done:
+          BeginStoryboard(App.FadeOut); break;
       }
 
       if (args.Progress < 0) ProgressLabel.Content = "";
       else if (args.Progress < .01) ProgressLabel.Content = "0%";
       else ProgressLabel.Content = (args.Progress * 100).ToString("#") + "%";
     }
-    private void LeagueData_UpdateProgress(object sender, LeagueData.ProgressEventArgs e) => Dispatcher.Invoke(Draw);
+    private void DataDragon_UpdateProgress(object sender, DataDragon.ProgressEventArgs e) => Dispatcher.Invoke(Draw);
 
     public void Dispose() {
-      LeagueData.UpdateProgress -= LeagueData_UpdateProgress;
+      DataDragon.UpdateProgress -= DataDragon_UpdateProgress;
     }
   }
 }

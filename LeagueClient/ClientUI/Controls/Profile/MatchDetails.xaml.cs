@@ -32,25 +32,25 @@ namespace LeagueClient.ClientUI.Controls {
       var blue = new List<object>();
       var red = new List<object>();
       foreach (var player in game.Participants) {
-        var champ = LeagueData.GetChampData(player.ChampionId);
-        var spell1 = LeagueData.GetSpellData(player.Spell1Id);
-        var spell2 = LeagueData.GetSpellData(player.Spell2Id);
+        var champ = DataDragon.GetChampData(player.ChampionId);
+        var spell1 = DataDragon.GetSpellData(player.Spell1Id);
+        var spell2 = DataDragon.GetSpellData(player.Spell2Id);
 
         var items = new[] { player.Stats.Item0, player.Stats.Item1, player.Stats.Item2, player.Stats.Item3, player.Stats.Item4, player.Stats.Item5, player.Stats.Item6 };
 
         var item = new {
-          ChampImage = LeagueData.GetChampIconImage(champ),
-          Spell1Image = LeagueData.GetSpellImage(spell1),
-          Spell2Image = LeagueData.GetSpellImage(spell2),
+          ChampImage = DataDragon.GetChampIconImage(champ),
+          Spell1Image = DataDragon.GetSpellImage(spell1),
+          Spell2Image = DataDragon.GetSpellImage(spell2),
           Name = champ.name,
           Score = $"{player.Stats.Kills} / {player.Stats.Deaths} / {player.Stats.Assists}",
-          Item0Image = LeagueData.GetItemImage(items[0]),
-          Item1Image = LeagueData.GetItemImage(items[1]),
-          Item2Image = LeagueData.GetItemImage(items[2]),
-          Item3Image = LeagueData.GetItemImage(items[3]),
-          Item4Image = LeagueData.GetItemImage(items[4]),
-          Item5Image = LeagueData.GetItemImage(items[5]),
-          Item6Image = LeagueData.GetItemImage(items[6]),
+          Item0Image = DataDragon.GetItemImage(items[0]),
+          Item1Image = DataDragon.GetItemImage(items[1]),
+          Item2Image = DataDragon.GetItemImage(items[2]),
+          Item3Image = DataDragon.GetItemImage(items[3]),
+          Item4Image = DataDragon.GetItemImage(items[4]),
+          Item5Image = DataDragon.GetItemImage(items[5]),
+          Item6Image = DataDragon.GetItemImage(items[6]),
           CS = player.Stats.TotalMinionsKilled,
           Gold = (player.Stats.GoldEarned / 1000.0).ToString("#.#k")
         };

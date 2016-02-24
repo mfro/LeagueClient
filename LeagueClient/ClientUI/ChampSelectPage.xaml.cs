@@ -63,7 +63,7 @@ namespace LeagueClient.ClientUI {
       Popup.SpellSelector.SpellSelected += SpellSelector_SpellSelected;
       Popup.Close += Popup_Close;
 
-      Popup.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
+      Popup.SpellSelector.Spells = (from spell in DataDragon.SpellData.Value.data.Values
                                     where spell.modes.Contains(game.GameMode)
                                     select spell);
 
@@ -112,11 +112,11 @@ namespace LeagueClient.ClientUI {
         var turn = Dispatcher.MyInvoke(RenderPlayers, game);
         Popup.ChampSelector.IsReadOnly = !turn.IsMyTurn;
 
-        spell1 = LeagueData.GetSpellData(myChamp.Spell1Id);
-        spell2 = LeagueData.GetSpellData(myChamp.Spell2Id);
+        spell1 = DataDragon.GetSpellData(myChamp.Spell1Id);
+        spell2 = DataDragon.GetSpellData(myChamp.Spell2Id);
         Dispatcher.Invoke(() => {
-          Spell1Image.Source = LeagueData.GetSpellImage(spell1);
-          Spell2Image.Source = LeagueData.GetSpellImage(spell2);
+          Spell1Image.Source = DataDragon.GetSpellImage(spell1).Load();
+          Spell2Image.Source = DataDragon.GetSpellImage(spell2).Load();
         });
 
         LockInButt.IsEnabled = turn.IsMyTurn;
@@ -128,9 +128,9 @@ namespace LeagueClient.ClientUI {
           var champs = await RiotServices.GameService.GetChampionsForBan();
 
           if (turn.IsOurTurn) {
-            Popup.ChampSelector.SetChampList(champs.Where(c => c.EnemyOwned).Select(c => LeagueData.GetChampData(c.ChampionId)));
+            Popup.ChampSelector.SetChampList(champs.Where(c => c.EnemyOwned).Select(c => DataDragon.GetChampData(c.ChampionId)));
           } else {
-            Popup.ChampSelector.SetChampList(champs.Where(c => c.Owned).Select(c => LeagueData.GetChampData(c.ChampionId)));
+            Popup.ChampSelector.SetChampList(champs.Where(c => c.Owned).Select(c => DataDragon.GetChampData(c.ChampionId)));
           }
 
           if (turn.IsMyTurn) header = YouBanString;
@@ -229,15 +229,15 @@ namespace LeagueClient.ClientUI {
         redBans = new[] { Ban1, Ban2, Ban3 };
       }
       foreach (var thing in game.BannedChampions) {
-        var champ = LeagueData.GetChampData(thing.ChampionId);
-        var image = LeagueData.GetChampIconImage(champ);
+        var champ = DataDragon.GetChampData(thing.ChampionId);
+        var image = DataDragon.GetChampIconImage(champ);
         int index = thing.PickTurn - 1;
         if (index % 2 == 0) {
           //0, 2, 4: Blue team's bans
-          blueBans[thing.PickTurn / 2].Source = image;
+          blueBans[thing.PickTurn / 2].Source = image.Load();
         } else {
           //1, 3, 5: Red team's bans
-          redBans[thing.PickTurn / 2].Source = image;
+          redBans[thing.PickTurn / 2].Source = image.Load();
         }
       }
 
@@ -331,10 +331,10 @@ namespace LeagueClient.ClientUI {
       Popup.BeginStoryboard(App.FadeOut);
       if (doSpell1) {
         spell1 = e;
-        Spell1Image.Source = LeagueData.GetSpellImage(e);
+        Spell1Image.Source = DataDragon.GetSpellImage(e).Load();
       } else {
         spell2 = e;
-        Spell2Image.Source = LeagueData.GetSpellImage(e);
+        Spell2Image.Source = DataDragon.GetSpellImage(e).Load();
       }
       RiotServices.GameService.SelectSpells(spell1.key, spell2.key);
     }

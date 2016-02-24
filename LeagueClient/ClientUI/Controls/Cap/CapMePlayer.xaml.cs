@@ -61,8 +61,8 @@ namespace LeagueClient.ClientUI.Controls {
       if (player == null) {
         CapPlayer = new CapPlayer(-1) { Status = CapStatus.Present };
         var spells = Client.Session.LoginPacket.AllSummonerData.SummonerDefaultSpells.SummonerDefaultSpellMap["CLASSIC"];
-        CapPlayer.Spell1 = LeagueData.GetSpellData(spells.Spell1Id);
-        CapPlayer.Spell2 = LeagueData.GetSpellData(spells.Spell2Id);
+        CapPlayer.Spell1 = DataDragon.GetSpellData(spells.Spell1Id);
+        CapPlayer.Spell2 = DataDragon.GetSpellData(spells.Spell2Id);
       } else {
         CapPlayer = player;
       }
@@ -90,11 +90,11 @@ namespace LeagueClient.ClientUI.Controls {
       RoleText.Text = CapPlayer.Role?.Value;
 
       if (CapPlayer.Champion != null)
-        ChampionImage.Source = LeagueData.GetChampIconImage(CapPlayer.Champion);
+        ChampionImage.Source = DataDragon.GetChampIconImage(CapPlayer.Champion).Load();
       if (CapPlayer.Spell1 != null)
-        Spell1Image.Source = LeagueData.GetSpellImage(CapPlayer.Spell1);
+        Spell1Image.Source = DataDragon.GetSpellImage(CapPlayer.Spell1).Load();
       if (CapPlayer.Spell2 != null)
-        Spell2Image.Source = LeagueData.GetSpellImage(CapPlayer.Spell2);
+        Spell2Image.Source = DataDragon.GetSpellImage(CapPlayer.Spell2).Load();
 
       Check.Visibility = (CapPlayer.Status == CapStatus.Ready) ? Visibility.Visible : Visibility.Collapsed;
     }

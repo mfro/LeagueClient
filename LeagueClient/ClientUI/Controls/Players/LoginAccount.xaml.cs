@@ -51,7 +51,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     public LoginAccount(string login, string name, int profileicon) : this() {
       try {
-        ProfileIcon.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileicon));
+        ProfileIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(profileicon)).Load();
       } catch { }
       NameLabel.Content = name;
       Username = login;

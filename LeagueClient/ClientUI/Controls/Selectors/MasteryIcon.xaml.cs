@@ -37,7 +37,7 @@ namespace LeagueClient.ClientUI.Controls {
       get { return enabled; }
       set {
         enabled = value;
-        Icon.Source = LeagueData.GetMasteryImage(Data, !enabled);
+        Icon.Source = DataDragon.GetMasteryImage(Data, !enabled).Load();
         if (!enabled && points > 0) Points = 0;
       }
     }

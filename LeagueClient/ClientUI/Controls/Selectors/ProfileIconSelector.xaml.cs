@@ -36,10 +36,10 @@ namespace LeagueClient.ClientUI.Controls {
       var data = new List<object>();
       foreach (var icon in icons.SummonerIcons.OrderByDescending(i => i.PurchaseDate)) {
         ProfileIconDto info;
-        if (LeagueData.IconData.Value.data.TryGetValue(icon.IconId.ToString(), out info)) {
-          var image = LeagueData.GetProfileIconImage(info);
-          if (image != null)
-            data.Add(new IconInfo { Image = image, Icon = icon });
+        if (DataDragon.IconData.Value.data.TryGetValue(icon.IconId.ToString(), out info)) {
+          var image = DataDragon.GetProfileIconImage(info);
+          if (image.Exists)
+            data.Add(new IconInfo { Image = image.Load(), Icon = icon });
         }
       }
       Dispatcher.Invoke(() => IconsGrid.ItemsSource = data);

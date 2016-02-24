@@ -32,7 +32,7 @@ namespace LeagueClient.ClientUI.Controls {
     public ChampMastery(ChampionDto champ, int rank) {
       InitializeComponent();
 
-      ChampImage.Source = LeagueData.GetChampIconImage(champ);
+      ChampImage.Source = DataDragon.GetChampIconImage(champ).Load();
       RankImage.Source = new BitmapImage(new Uri($"pack://application:,,,/RiotAPI;component/Resources/ChampMastery{rank + 1}.png"));
     }
   }

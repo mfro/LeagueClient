@@ -60,8 +60,8 @@ namespace LeagueClient.ClientUI.Controls {
         MsgText.Visibility = Visibility.Visible;
       }
       ProfileIconDto dto;
-      if (LeagueData.IconData.Value.data.TryGetValue(friend.Status.ProfileIcon.ToString(), out dto)) {
-        SummonerIcon.Source = LeagueData.GetProfileIconImage(dto);
+      if (DataDragon.IconData.Value.data.TryGetValue(friend.Status.ProfileIcon.ToString(), out dto)) {
+        SummonerIcon.Source = DataDragon.GetProfileIconImage(dto).Load();
       }
       switch (friend.Status.Show) {
         case ShowType.chat: StatusText.Foreground = NameText.Foreground = App.ChatBrush; break;
@@ -84,7 +84,7 @@ namespace LeagueClient.ClientUI.Controls {
         StatusText.Content = QueueType.Values[friend.CurrentGameDTO.QueueTypeName].Value;
         if (!string.IsNullOrEmpty(friend.Status.Champion)) {
           ChampText.Visibility = Visibility.Visible;
-          ChampText.Content = LeagueData.ChampData.Value.data[friend.Status.Champion].name;
+          ChampText.Content = DataDragon.ChampData.Value.data[friend.Status.Champion].name;
         }
       } else StatusText.Content = friend.Status.GameStatus.Value;
       if (friend.Invite != null) {

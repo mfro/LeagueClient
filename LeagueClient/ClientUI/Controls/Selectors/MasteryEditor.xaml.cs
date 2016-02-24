@@ -30,9 +30,9 @@ namespace LeagueClient.ClientUI.Controls {
       resolve = new MasteryTree(UtilityTree);
 
       if (Client.Session.Connected) {
-        CreateTree(ferocity, LeagueData.MasteryData.Value.tree.Ferocity, 1);
-        CreateTree(cunning, LeagueData.MasteryData.Value.tree.Cunning, 2);
-        CreateTree(resolve, LeagueData.MasteryData.Value.tree.Resolve, 3);
+        CreateTree(ferocity, DataDragon.MasteryData.Value.tree.Ferocity, 1);
+        CreateTree(cunning, DataDragon.MasteryData.Value.tree.Cunning, 2);
+        CreateTree(resolve, DataDragon.MasteryData.Value.tree.Resolve, 3);
 
         Reset();
       }
@@ -122,7 +122,7 @@ namespace LeagueClient.ClientUI.Controls {
           var item = src[y][x];
           if (item == null) row.AddBlank();
           else {
-            var icon = new MasteryIcon(LeagueData.MasteryData.Value.data[item.masteryId], row);
+            var icon = new MasteryIcon(DataDragon.MasteryData.Value.data[item.masteryId], row);
             icon.MouseEnter += Icon_MouseEnter;
             icon.MouseLeave += Icon_MouseLeave;
             icon.Margin = new Thickness(HorizontalSpace / 2, 0, HorizontalSpace / 2, 0);

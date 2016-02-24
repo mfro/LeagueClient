@@ -30,9 +30,9 @@ namespace LeagueClient.ClientUI.Controls {
     public RuneListItem(SummonerRune item, int count) : this() {
       Rune = item;
 
-      var rune = LeagueData.RuneData.Value.data[item.RuneId.ToString()];
+      var rune = DataDragon.RuneData.Value.data[item.RuneId.ToString()];
       if (rune.rune.type.Equals("black")) RuneIcon.Width = RuneIcon.Height;
-      RuneIcon.Source = LeagueData.GetRuneImage(rune);
+      RuneIcon.Source = DataDragon.GetRuneImage(rune).Load();
       RuneName.Text = rune.name;
       RuneStats.Text = rune.description;
       RuneCount.Text = "x" + count;

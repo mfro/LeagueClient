@@ -66,7 +66,7 @@ namespace LeagueClient.ClientUI.Controls {
       
     public LobbyPlayer(PlayerParticipant player, bool expanded) : this() {
       Client.Session.SummonerCache.GetData(player.SummonerName, GotSummonerData);
-      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(player.ProfileIconId));
+      SummonerIcon = DataDragon.GetProfileIconImage(DataDragon.GetIconData(player.ProfileIconId)).Load();
       UserName = player.SummonerName;
 
       forceExpand = expanded;
@@ -87,8 +87,8 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     public LobbyPlayer(BotParticipant bot, bool expanded) : this() {
-      var champ = LeagueData.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
-      SummonerIcon = LeagueData.GetChampIconImage(champ);
+      var champ = DataDragon.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
+      SummonerIcon = DataDragon.GetChampIconImage(champ).Load();
       UserName = champ.name;
       RankString = bot.BotSkillLevelName;
 
@@ -99,7 +99,7 @@ namespace LeagueClient.ClientUI.Controls {
     }
 
     private void GotSummonerData(SummonerCache.Item item) {
-      SummonerIcon = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
+      SummonerIcon = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
 
       LevelString = "Level " + item.Data.SummonerLevel.Level;
 

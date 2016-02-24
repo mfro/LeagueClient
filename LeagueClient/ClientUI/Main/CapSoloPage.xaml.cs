@@ -38,7 +38,7 @@ namespace LeagueClient.ClientUI.Main {
 
     public CapSoloPage(CapPlayer me = null) {
       InitializeComponent();
-      Client.PopupSelector.SpellSelector.Spells = (from spell in LeagueData.SpellData.Value.data.Values
+      Client.PopupSelector.SpellSelector.Spells = (from spell in DataDragon.SpellData.Value.data.Values
                                                    where spell.modes.Contains("CLASSIC")
                                                    select spell);
 

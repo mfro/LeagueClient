@@ -17,7 +17,7 @@ namespace LeagueClient.Logic {
 
       public SummonerLeaguesDTO Leagues { get; private set; }
       public RiotACS.PlayerHistory MatchHistory { get; private set; }
-      public List<ChampionMasteryDTO> ChampionMastery { get; private set; }
+      //public List<ChampionMasteryDTO> ChampionMastery { get; private set; }
 
       public static async Task<Item> Generate(string summonerName) {
         try {
@@ -34,8 +34,8 @@ namespace LeagueClient.Logic {
           var item = new Item();
           item.Data = await RiotServices.SummonerService.GetAllPublicSummonerDataByAccount(accountId);
 
-          var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(item.Data.Summoner.SummonerId);
-          RiotServices.AddHandler(guid, res => item.ChampionMastery = JSONDeserializer.Deserialize<List<ChampionMasteryDTO>>(JSONParser.ParseArray(res.payload, 0)));
+          //var guid = RiotServices.ChampionMasteryService.GetAllChampionMasteries(item.Data.Summoner.SummonerId);
+          //RiotServices.AddHandler(guid, res => item.ChampionMastery = JSONDeserializer.Deserialize<List<ChampionMasteryDTO>>(JSONParser.ParseArray(res.payload, 0)));
 
           item.Leagues = await RiotServices.LeaguesService.GetAllLeaguesForPlayer(item.Data.Summoner.SummonerId);
           item.MatchHistory = await RiotACS.GetMatchHistory(Client.Region.Platform, item.Data.Summoner.AccountId);

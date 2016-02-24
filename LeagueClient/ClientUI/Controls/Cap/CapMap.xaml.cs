@@ -56,7 +56,7 @@ namespace LeagueClient.ClientUI.Controls {
     public CapMap() {
       InitializeComponent();
 
-      GameMap.Source = LeagueData.GetMapImage(11); // Summoner's Rift
+      GameMap.Source = DataDragon.GetMapImage(11).Load(); // Summoner's Rift
     }
 
     public void UpdateList(IEnumerable<CapPlayer> players) {
@@ -96,7 +96,7 @@ namespace LeagueClient.ClientUI.Controls {
           RadiusY = img.Height / 2,
           Center = new Point(img.Width / 2, img.Height / 2),
         };
-        img.Source = LeagueData.GetChampIconImage(item.Champion);
+        img.Source = DataDragon.GetChampIconImage(item.Champion).Load();
         Body.Children.Add(img);
       }
     }

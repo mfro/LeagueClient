@@ -39,7 +39,7 @@ namespace LeagueClient.ClientUI.Controls {
       NameLabel.Content = member.SummonerName;
       SummonerName = member.SummonerName;
       SummonerId = member.SummonerId;
-      ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(profileIconId));
+      ProfileIconImage.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(profileIconId)).Load();
       PlusPath.Visibility = member.HasInvitePower ? Visibility.Collapsed : Visibility.Visible;
       Client.Session.SummonerCache.GetData(member.SummonerName, GotSummoner);
     }
@@ -55,7 +55,7 @@ namespace LeagueClient.ClientUI.Controls {
 
     private void GotSummoner(SummonerCache.Item item) {
       Dispatcher.Invoke(() => {
-        ProfileIconImage.Source = LeagueData.GetProfileIconImage(LeagueData.GetIconData(item.Data.Summoner.ProfileIconId));
+        ProfileIconImage.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
         RankLabel.Content = "Level " + item.Data.SummonerLevel.Level;
         NameLabel.Content = item.Data.Summoner.Name;
         var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));

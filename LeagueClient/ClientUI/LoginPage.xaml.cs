@@ -74,7 +74,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Account_Click(object sender, EventArgs e) {
-      if (!LeagueData.IsCurrent) return;
+      if (!DataDragon.IsCurrent) return;
 
       AutoLoginToggle.IsChecked = true;
       var login = (sender as LoginAccount).Username;
@@ -94,7 +94,7 @@ namespace LeagueClient.ClientUI {
     }
 
     private void Login_Click(object sender, RoutedEventArgs e) {
-      if (!LeagueData.IsCurrent) return;
+      if (!DataDragon.IsCurrent) return;
 
       user = UserBox.Text;
       pass = PassBox.Password;
@@ -131,7 +131,7 @@ namespace LeagueClient.ClientUI {
 
     #region Patching
 
-    //private void LeagueData_Progress(string status, string detail, double progress) {
+    //private void DataDragon_Progress(string status, string detail, double progress) {
     //  OverallStatusText.Content = "Patching Custom Client";
     //  switch (status) {
     //    case "Downloading": OverallStatusBar.Value = .0; break;
@@ -167,26 +167,29 @@ namespace LeagueClient.ClientUI {
       Client.SaveSettings(SettingsKey, settings);
     }
 
-    private void Login(string user, string pass) {
+    private async void Login(string user, string pass) {
       Progress.Visibility = Visibility.Visible;
       LoginBar.IsIndeterminate = true;
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
-      Client.Initialize(user, pass).ContinueWith(HandleLogin);
-    }
+      try {
+        var client = await Client.Login(user, pass);
 
-    private void HandleLogin(Task<Client> task) {
-      if (!task.IsFaulted && task.Result != null) {
-        Client.Session.ChatManager = new Logic.Chat.RiotChat();
-        Client.SaveSettings(SettingsKey, settings);
-        Patch.Dispose();
-        Dispatcher.Invoke(Client.MainWindow.LoginComplete);
-        return;
-      } else if (task.IsFaulted && !task.Exception.InnerException.Message.Contains("SSL error")) {
-        var error = task.Exception.InnerException as InvocationException;
-        var cause = error?.RootCause as RiotException;
+        if (client != null) {
+          Client.Session.ChatManager = new Logic.Chat.RiotChat();
+          Client.SaveSettings(SettingsKey, settings);
+          Patch.Dispose();
+          Dispatcher.Invoke(Client.MainWindow.LoginComplete);
+          return;
+        }
+      } catch (Exception x) {
+        if (!x.InnerException.Message.Contains("SSL error")) {
+          var error = x.InnerException as InvocationException;
+          var cause = error?.RootCause as RiotException;
+        }
       }
-      Dispatcher.Invoke(Reset);
+
+      Reset();
     }
 
     private void Reset() {

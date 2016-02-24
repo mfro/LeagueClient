@@ -107,11 +107,12 @@ namespace LeagueClient.Logic {
 
     private Client() { }
 
-    public static async void PreInitialize() {
+    public static async void Initialize() {
+      Log("Initialize");
       if (!Directory.Exists(DataPath))
         Directory.CreateDirectory(DataPath);
 
-      if (!LeagueData.IsCurrent) LeagueData.Update();
+      if (!DataDragon.IsCurrent) DataDragon.Update();
 
       RiotAPI.UrlFormat = "https://na.api.pvp.net{0}&api_key=25434b55-24de-40eb-8632-f88cc02fea25";
 
@@ -126,7 +127,7 @@ namespace LeagueClient.Logic {
         using (var ffmpeg = new FileStream(FFMpegPath, FileMode.Create))
           ffmpeg.Write(Properties.Resources.ffmpeg, 0, LeagueClient.Properties.Resources.ffmpeg.Length);
 
-      Log(LeagueData.CurrentVersion);
+      Log(DataDragon.CurrentVersion);
       Log($"Air: {Installed.AirVersion} / {Latest.AirVersion}");
       Log($"Game: {Installed.GameVersion} / {Latest.GameVersion}");
       Log($"Solution: {Installed.SolutionVersion} / {Latest.SolutionVersion}");
@@ -134,7 +135,7 @@ namespace LeagueClient.Logic {
       new Thread(CreateLoginTheme).Start();
     }
 
-    public static async Task<Client> Initialize(string user, string pass) {
+    public static async Task<Client> Login(string user, string pass) {
       var client = new Client();
       client.LoginQueue = await RiotServices.GetAuthKey(Region, user, pass);
       if (client.LoginQueue.Token == null) return null;
@@ -148,7 +149,7 @@ namespace LeagueClient.Logic {
       var creds = new AuthenticationCredentials();
       creds.Username = user;
       creds.Password = pass;
-      creds.ClientVersion = LeagueData.CurrentVersion;
+      creds.ClientVersion = DataDragon.CurrentVersion;
       creds.Locale = Locale;
       creds.Domain = "lolclient.lol.riotgames.com";
       creds.AuthToken = client.LoginQueue.Token;
@@ -264,7 +265,7 @@ namespace LeagueClient.Logic {
       RiotChampions = new List<ChampionDTO>(Champs.Result);
       AvailableChampions = new List<MyChampDTO>();
       foreach (var item in Champs.Result)
-        AvailableChampions.Add(LeagueData.GetChampData(item.ChampionId));
+        AvailableChampions.Add(DataDragon.GetChampData(item.ChampionId));
     }
 
     private void GotQueues(Task<GameQueueConfig[]> Task) {

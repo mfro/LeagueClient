@@ -44,8 +44,7 @@ namespace LeagueClient {
       ((App) Application.Current).LoadResources();
       Loaded += (src, e) => Center();
 
-      Client.Log("Pre-Init");
-      Client.PreInitialize();
+      Client.Initialize();
       Client.MainWindow = this;
       Start();
     }
