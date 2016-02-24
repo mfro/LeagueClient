@@ -149,7 +149,6 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="1" Name="QueuerArea" Margin="-11 0">
-          <my:PatchProgressBar Width="100" Height="100"/>
         </Border>
         
         <!--<Button Grid.Row="3">Notifications  - 3</Button>-->

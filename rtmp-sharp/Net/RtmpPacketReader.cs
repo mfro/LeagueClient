@@ -91,6 +91,7 @@ namespace RtmpSharp.Net
             }
             catch (Exception ex)
             {
+                if (!Continue) return;
 #if DEBUG
                 System.Diagnostics.Debug.Print("Exception: {0} at {1}", ex, ex.StackTrace);
                 if (ex.InnerException != null)

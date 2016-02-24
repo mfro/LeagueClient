@@ -16,7 +16,7 @@
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
     <Image Name="BackStatic" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center"/>
-    <MediaElement Name="BackAnim" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center" LoadedBehavior="Manual" MediaEnded="MediaElement_MediaEnded"/>
+    <MediaElement Name="BackAnim" Grid.RowSpan="50" Grid.ColumnSpan="50" Stretch="UniformToFill" VerticalAlignment="Center" LoadedBehavior="Manual" MediaOpened="BackAnim_MediaOpened"/>
     <UniformGrid Grid.Row="2" Grid.Column="1" Columns="2" Margin="0 0 -10 0" VerticalAlignment="Top" Name="AccountList" Visibility="Collapsed">
       <Button Name="AddAccountButt" Click="AddAccountButt_Click" VerticalAlignment="Top" Margin="5 5 5 5">Other Account</Button>
     </UniformGrid>

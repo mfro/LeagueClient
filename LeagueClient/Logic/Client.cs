@@ -282,6 +282,7 @@ namespace LeagueClient.Logic {
     #endregion
 
     #region Riot Client Methods
+
     public void JoinGame() {
       //"8394" "LoLPatcher.exe" "" "ip port key id"
       if (Process.GetProcessesByName("League of Legends").Length > 0) {
@@ -335,6 +336,7 @@ namespace LeagueClient.Logic {
       ChatManager?.Dispose();
       MainWindow.Start();
     }
+
     #endregion
 
     #region Runes and Masteries

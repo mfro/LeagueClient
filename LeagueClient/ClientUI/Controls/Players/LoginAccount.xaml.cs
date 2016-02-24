@@ -38,7 +38,9 @@ namespace LeagueClient.ClientUI.Controls {
     public LoginAccountState State {
       get { return state; }
       set {
-        Loader.Visibility = value == LoginAccountState.Loading ? Visibility.Visible : Visibility.Collapsed;
+        if (value == LoginAccountState.Loading) {
+          LoadingBorder.BeginStoryboard((Storyboard) LoadingBorder.FindResource("LoaderStory"));
+        } else LoadingBorder.Margin = new Thickness(-5, -5, 123, 118);
         state = value;
       }
     }

@@ -66,6 +66,22 @@ namespace LeagueClient.ClientUI {
       BackAnim.Play();
     }
 
+    private void VideoLoop() {
+      try {
+        while (true) {
+          var duration = Dispatcher.Invoke(() => {
+            int diff = (int) (BackAnim.NaturalDuration.TimeSpan.TotalMilliseconds - BackAnim.Position.TotalMilliseconds);
+            if (diff < 100) {
+              BackAnim.Position = TimeSpan.FromSeconds(0);
+              BackAnim.Play();
+            } else if (diff < 2000) return diff - 10;
+            return 2000;
+          });
+          Thread.Sleep(duration);
+        }
+      } catch { }
+    }
+
     #region UI Handlers
     private void Account_Remove(object sender, EventArgs e) {
       AccountList.Children.Remove(sender as UIElement);
@@ -122,11 +138,6 @@ namespace LeagueClient.ClientUI {
       LoginGrid.BeginStoryboard(App.FadeOut);
       AccountList.BeginStoryboard(App.FadeIn);
     }
-
-    private void MediaElement_MediaEnded(object sender, RoutedEventArgs e) {
-      BackAnim.Position = TimeSpan.FromSeconds(0);
-      BackAnim.Play();
-    }
     #endregion
 
     #region Patching
@@ -167,29 +178,26 @@ namespace LeagueClient.ClientUI {
       Client.SaveSettings(SettingsKey, settings);
     }
 
-    private async void Login(string user, string pass) {
+    private void Login(string user, string pass) {
       Progress.Visibility = Visibility.Visible;
       LoginBar.IsIndeterminate = true;
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
-      try {
-        var client = await Client.Login(user, pass);
+      Client.Login(user, pass).ContinueWith(HandleLogin);
+    }
 
-        if (client != null) {
-          Client.Session.ChatManager = new Logic.Chat.RiotChat();
-          Client.SaveSettings(SettingsKey, settings);
-          Patch.Dispose();
-          Dispatcher.Invoke(Client.MainWindow.LoginComplete);
-          return;
-        }
-      } catch (Exception x) {
-        if (!x.InnerException.Message.Contains("SSL error")) {
-          var error = x.InnerException as InvocationException;
-          var cause = error?.RootCause as RiotException;
-        }
+    private void HandleLogin(Task<Client> obj) {
+      if (!obj.IsFaulted && obj.Result != null) {
+        Client.Session.ChatManager = new Logic.Chat.RiotChat();
+        Client.SaveSettings(SettingsKey, settings);
+        Patch.Dispose();
+        Dispatcher.Invoke(Client.MainWindow.LoginComplete);
+        return;
+      } else if (obj.IsFaulted && !obj.Exception.InnerException.Message.Contains("SSL error")) {
+        var error = obj.Exception.InnerException as InvocationException;
+        var cause = error?.RootCause as RiotException;
       }
-
-      Reset();
+      Dispatcher.Invoke(Reset);
     }
 
     private void Reset() {
@@ -207,5 +215,7 @@ namespace LeagueClient.ClientUI {
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = true;
       PassBox.Focus();
     }
+
+    private void BackAnim_MediaOpened(object sender, RoutedEventArgs e) => new Thread(VideoLoop) { IsBackground = true }.Start();
   }
 }

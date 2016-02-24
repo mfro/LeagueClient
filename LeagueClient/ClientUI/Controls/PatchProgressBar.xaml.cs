@@ -2,6 +2,7 @@
 using MFroehlich.League.Assets;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,8 @@ namespace LeagueClient.ClientUI.Controls {
       SizeChanged += (s, e) => Resize();
 
       Draw();
+      if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+
       if (DataDragon.IsCurrent) {
         Visibility = Visibility.Collapsed;
       }
@@ -50,6 +53,7 @@ namespace LeagueClient.ClientUI.Controls {
         arc.IsLargeArc = args.Progress >= .5;
       }
 
+      if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
       switch (args.Status) {
         case DataDragon.UpdateStatus.Downloading:
           StatusLabel.Content = "Downloading"; break;

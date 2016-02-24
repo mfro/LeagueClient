@@ -51,8 +51,6 @@ namespace LeagueClient.ClientUI.Main {
     private void WaitForGameClient() {
       game.WaitForExit();
 
-      Console.WriteLine("POOP");
-
       Dispatcher.Invoke(() => {
         ReconnectGrid.Visibility = Visibility.Visible;
         ReconnectButton.Content = "Reconnect";

@@ -47,11 +47,9 @@ namespace LeagueClient.ClientUI.Main {
 
     public event EventHandler Close;
 
-    //private Thread update;
     private Queue selected;
     private QueueController queue;
     private List<Queue> queues;
-    //private Dictionary<ListBox, List<Queue>> queues = new Dictionary<ListBox, List<Queue>>();
 
     public PlaySelectPage() {
       InitializeComponent();
@@ -87,8 +85,6 @@ namespace LeagueClient.ClientUI.Main {
 
       queue = new QueueController(QueueLabel, ChatStatus.inQueue, ChatStatus.outOfGame);
       SummonersRift.Tag = GameMap.SummonersRift;
-      //update = new Thread(UpdateLoop) { IsBackground = true, Name = "PlaySelectUpdateLoop" };
-      //update.Start();
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
@@ -299,22 +295,6 @@ namespace LeagueClient.ClientUI.Main {
       PopupPanel.BeginStoryboard(App.FadeOut);
     }
     #endregion
-
-    //private class QueueCategory : IEnumerable<Queue> {
-    //  public string Name { get; }
-    //  public string Description { get; }
-    //  public List<Queue> Queues { get; } = new List<Queue>();
-
-    //  public QueueCategory(string name, string description) {
-    //    Name = name;
-    //    Description = description;
-    //  }
-
-    //  public void Add(Queue q) => Queues.Add(q);
-
-    //  public IEnumerator<Queue> GetEnumerator() => Queues.GetEnumerator();
-    //  IEnumerator IEnumerable.GetEnumerator() => Queues.GetEnumerator();
-    //}
 
     private class Queue {
       public string Name { get; }
