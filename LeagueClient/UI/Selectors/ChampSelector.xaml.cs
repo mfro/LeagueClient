@@ -77,7 +77,7 @@ namespace LeagueClient.UI.Selectors {
         save.Add(item.key);
         if (!groups.ContainsKey(item.tags[0]))
           groups[item.tags[0]] = new List<object>();
-        groups[item.tags[0]].Add(new { Image = DataDragon.GetChampIconImage(item), Name = item.name, Data = item });
+        groups[item.tags[0]].Add(new { Image = DataDragon.GetChampIconImage(item).Load(), Name = item.name, Data = item });
       }
       if (last != null && save.SequenceEqual(last)) return;
       last = save;
