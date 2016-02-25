@@ -48,6 +48,6 @@ namespace LeagueClient.Logic.com.riotgames.other {
     public string SummonerName { get; set; }
 
     [JSONField("draftPositionPreferences")]
-    public List<string> draftPositionPreferences { get; set; }
+    public List<string> Positions { get; set; }
   }
 }

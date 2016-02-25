@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:my="clr-namespace:LeagueClient.ClientUI.Controls"
+             xmlns:util="clr-namespace:LeagueClient.UI.Util"
              StartupUri="MainWindow.xaml" Exit="Application_Exit">
   <Application.Resources>
     <ScaleTransform x:Key="CheckboxScale" ScaleX="2" ScaleY="2"/>
@@ -153,7 +153,7 @@
         </Setter.Value>
       </Setter>
     </Style>
-    <Style TargetType="my:HintedTextBox" BasedOn="{StaticResource Control}">
+    <Style TargetType="util:HintedTextBox" BasedOn="{StaticResource Control}">
       <Setter Property="Padding" Value="0 1"/>
       <Setter Property="FontSize" Value="12"/>
       <Setter Property="BorderThickness" Value="1"/>
@@ -161,7 +161,7 @@
       <Setter Property="BorderBrush" Value="{StaticResource ForeBrush}"/>
       <Setter Property="Template">
         <Setter.Value>
-          <ControlTemplate TargetType="my:HintedTextBox">
+          <ControlTemplate TargetType="util:HintedTextBox">
             <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
               <ScrollViewer Name="PART_ContentHost"/>
             </Border>
@@ -379,7 +379,7 @@
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="Padding" Value="4 2"/>
     </Style>
-    <Style TargetType="my:EditButton" BasedOn="{StaticResource {x:Type Button}}">
+    <Style TargetType="util:EditButton" BasedOn="{StaticResource {x:Type Button}}">
       <Setter Property="Padding" Value="0"/>
       <Setter Property="Width" Value="20"/>
       <Setter Property="Height" Value="20"/>

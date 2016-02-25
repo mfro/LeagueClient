@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="LeagueClient.UI.ChampSelect.ChampSelectPlayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource ForeBrush}">
+  <Grid Margin="8">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="100"/>
+      <RowDefinition Height="auto"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="100"/>
+      <ColumnDefinition Width="8"/>
+      <ColumnDefinition Width="46"/>
+    </Grid.ColumnDefinitions>
+    <Image Name="ChampImage" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Blitzcrank.png"/>
+    <Image Name="Spell1Image" Grid.Column="2" VerticalAlignment="Top" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerFlash.png"/>
+    <Image Name="Spell2Image" Grid.Column="2" VerticalAlignment="Bottom" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png"/>
+    <Label Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontSize="16" Padding="0" Margin="0 0 0 -4" Name="NameLabel" Visibility="Collapsed">KombatProwess</Label>
+    <Border Background="{StaticResource Back1Brush}" Grid.ColumnSpan="3" Name="Obscure"/>
+
+    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource Control}" Grid.ColumnSpan="3"
+                  FontSize="90" Name="Unknown" Margin="0 0 0 10">?</TextBlock>
+  </Grid>
+  <UserControl.Effect>
+    <DropShadowEffect Color="{StaticResource ChatColor}" ShadowDepth="0" BlurRadius="10" Opacity="0" x:Name="Glow"/>
+  </UserControl.Effect>
+</UserControl>

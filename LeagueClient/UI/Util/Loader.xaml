@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="LeagueClient.UI.Util.Loader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+  <UserControl.Resources>
+    <Style TargetType="Border">
+      <Setter Property="Background" Value="White"/>
+    </Style>
+  </UserControl.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition/>
+      <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+
+    <Border Grid.Column="0" Name="Section1"/>
+    <Border Grid.Column="1" Name="Section2" Height="200"/>
+    <Border Grid.Column="2" Name="Section3" Height="150"/>
+  </Grid>
+</UserControl>

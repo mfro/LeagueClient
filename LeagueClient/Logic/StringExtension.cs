@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 
-namespace LeagueClient.ClientUI.Controls {
+namespace LeagueClient.UI.Util {
   public class StringExtension : MarkupExtension {
 
     public StringExtension(string path) {

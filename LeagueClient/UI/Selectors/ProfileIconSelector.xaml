@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="LeagueClient.UI.Selectors.ProfileIconSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+  <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <ItemsControl Name="IconsGrid">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2" Width="60" 
+                    Margin="0 0 4 4" Cursor="Hand" MouseUp="Icon_Click">
+              <Image Source="{Binding Image}"/>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel Margin="0 0 0 -4" HorizontalAlignment="Left"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

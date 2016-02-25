@@ -1,0 +1,9 @@
+﻿<UserControl x:Class="LeagueClient.UI.Util.MyProgressBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             Background="{StaticResource Back1Brush}" ClipToBounds="True"
+             SnapsToDevicePixels="True">
+  <UserControl Background="{Binding Foreground}" Name="Bar" HorizontalAlignment="Left" Width="0" SnapsToDevicePixels="True"/>
+</UserControl>

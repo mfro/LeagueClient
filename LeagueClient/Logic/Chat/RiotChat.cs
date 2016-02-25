@@ -13,12 +13,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
-using LeagueClient.ClientUI.Controls;
 using agsXMPP;
 using agsXMPP.protocol.client;
 using agsXMPP.protocol.iq.roster;
 using agsXMPP.protocol.x.muc;
 using System.IO;
+using LeagueClient.UI.Main.Friends;
 
 namespace LeagueClient.Logic.Chat {
   public sealed class RiotChat : IDisposable {

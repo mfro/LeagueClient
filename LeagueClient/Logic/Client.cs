@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Xml;
-using LeagueClient.ClientUI.Controls;
-using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.com.riotgames.other;
@@ -29,6 +27,8 @@ using System.Xml.Serialization;
 using System.Net;
 using System.Text;
 using System.Windows;
+using LeagueClient.UI.Selectors;
+using LeagueClient.UI.Main;
 
 namespace LeagueClient.Logic {
   public class Client {

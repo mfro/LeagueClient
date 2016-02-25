@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="LeagueClient.UI.Main.Cap.CapMap"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+  <UserControl.Resources>
+    <Style TargetType="Image" x:Key="Image">
+      <Setter Property="VerticalAlignment" Value="Top"/>
+      <Setter Property="HorizontalAlignment" Value="Left"/>
+      <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+    </Style>
+  </UserControl.Resources>
+  <Grid>
+    <Image Name="GameMap" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Top" Stretch="Fill"/>
+    <Grid Name="Body"/>
+  </Grid>
+</UserControl>

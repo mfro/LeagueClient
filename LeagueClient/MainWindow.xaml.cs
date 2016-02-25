@@ -13,20 +13,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MFroehlich.League.Assets;
-using LeagueClient.ClientUI;
 using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Net;
 using System.Security.Cryptography;
-using LeagueClient.ClientUI.Controls;
 using LeagueClient.Logic;
 using System.Windows.Threading;
 using RtmpSharp.Messaging;
-using LeagueClient.ClientUI.Main;
 using System.Xml.Serialization;
 using System.IO;
 using LeagueClient.Logic.Settings;
 using System.Threading;
+using LeagueClient.UI;
+using LeagueClient.UI.ChampSelect;
+using LeagueClient.UI.Main;
+using LeagueClient.UI.Login;
 
 namespace LeagueClient {
   /// <summary>
@@ -34,7 +35,6 @@ namespace LeagueClient {
   /// </summary>
   public partial class MainWindow : Window {
     private IClientPage currentPage;
-
     private ChampSelectPage champselect;
     private LandingPage landing;
 

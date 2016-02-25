@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="LeagueClient.UI.Selectors.ChampSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:util="clr-namespace:LeagueClient.UI.Util"
+             xmlns:local="clr-namespace:LeagueClient.UI.Selectors">
+  <Grid Name="parentGrid">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Button Grid.Column="1" Margin="0 0 0 4" Padding="8 2" Width="90" Name="ChampButt" Click="ChampButt_Click" HorizontalAlignment="Left">Champions</Button>
+    <util:HintedTextBox Grid.Column="1" Margin="0 0 0 4" Padding="1 1" Width="200" x:Name="SearchBox" HorizontalAlignment="Right" Hint="Search" KeyUp="SearchBox_KeyUp"/>
+    <Grid Name="ChampSelect" Visibility="Visible" Grid.Column="1" Grid.Row="1">
+      <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <StackPanel Name="GroupsList">
+          <StackPanel.Resources>
+            <Style TargetType="ItemsControl">
+              <Setter Property="Margin" Value="0 0 0 8"/>
+              <Setter Property="ItemTemplate">
+                <Setter.Value>
+                  <DataTemplate>
+                    <Border BorderBrush="Transparent" BorderThickness="2" Width="80" Margin="0 0 8 8" ToolTip="{Binding Name}" MouseUp="Champion_Select" MouseEnter="Champ_Hover">
+                      <Image Source="{Binding Image}"/>
+                    </Border>
+                  </DataTemplate>
+                </Setter.Value>
+              </Setter>
+              <Setter Property="ItemsPanel">
+                <Setter.Value>
+                  <ItemsPanelTemplate>
+                    <UniformGrid VerticalAlignment="Top" Columns="10" Margin="0 0 0 -8"/>
+                  </ItemsPanelTemplate>
+                </Setter.Value>
+              </Setter>
+              <!--<Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                  <Style TargetType="ContentPresenter">
+                    <Setter Property="AllowDrop" Value="True"/>
+                    <EventSetter Event="Drop" Handler="ItemsControl_Drop"/>
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Item_PreviewMouseLeftButtonDown"/>
+                  </Style>
+                </Setter.Value>
+              </Setter>-->
+            </Style>
+          </StackPanel.Resources>
+          
+          
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+    <Grid Name="SkinSelect" Visibility="Collapsed" Grid.Column="1" Grid.Row="1">
+      <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" Name="SkinScroll" Grid.Row="1">
+        <Grid MouseWheel="SkinGrid_Scroll" Background="Transparent">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <ItemsControl Name="SkinsGrid" Grid.Column="1">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border BorderBrush="{StaticResource ForeBrush}" BorderThickness="2"
+                  Margin="0 0 4 0" Cursor="Hand" ToolTip="{Binding Name}" MouseUp="Skin_Select">
+                  <Image Source="{Binding Image}"/>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Margin="4 0 -4 0" Background="Transparent" MinWidth="650" Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </Grid>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
+</UserControl>

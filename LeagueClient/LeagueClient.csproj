@@ -90,126 +90,123 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml.cs">
+    <Compile Include="UI\Main\Cap\CapOtherPlayer.xaml.cs">
       <DependentUpon>CapOtherPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\ChampMastery.xaml.cs">
+    <Compile Include="UI\ChampSelect\ChampMastery.xaml.cs">
       <DependentUpon>ChampMastery.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\EditButton.cs" />
-    <Compile Include="ClientUI\Controls\NewsItem.xaml.cs">
+    <Compile Include="UI\Util\EditButton.cs" />
+    <Compile Include="UI\Main\Home\NewsItem.xaml.cs">
       <DependentUpon>NewsItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\PatchProgressBar.xaml.cs">
+    <Compile Include="UI\Login\PatchProgressBar.xaml.cs">
       <DependentUpon>PatchProgressBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Players\LobbyPlayer2.xaml.cs">
+    <Compile Include="UI\Main\Lobbies\LobbyPlayer2.xaml.cs">
       <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Players\TBDPlayer.xaml.cs">
+    <Compile Include="UI\Main\Lobbies\TBDPlayer.xaml.cs">
       <DependentUpon>TBDPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Profile\RedMatchDetailsPlayer.xaml.cs">
+    <Compile Include="UI\Main\Profile\RedMatchDetailsPlayer.xaml.cs">
       <DependentUpon>RedMatchDetailsPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Profile\BlueMatchDetailPlayer.xaml.cs">
+    <Compile Include="UI\Main\Profile\BlueMatchDetailPlayer.xaml.cs">
       <DependentUpon>BlueMatchDetailPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Profile\MatchDetails.xaml.cs">
+    <Compile Include="UI\Main\Profile\MatchDetails.xaml.cs">
       <DependentUpon>MatchDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Profile\MatchHistory.xaml.cs">
+    <Compile Include="UI\Main\Profile\MatchHistory.xaml.cs">
       <DependentUpon>MatchHistory.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Profile\MatchHistoryItem.xaml.cs">
+    <Compile Include="UI\Main\Profile\MatchHistoryItem.xaml.cs">
       <DependentUpon>MatchHistoryItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Selectors\MasteryIcon.xaml.cs">
+    <Compile Include="UI\Selectors\MasteryIcon.xaml.cs">
       <DependentUpon>MasteryIcon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Selectors\ProfileIconSelector.xaml.cs">
+    <Compile Include="UI\Selectors\ProfileIconSelector.xaml.cs">
       <DependentUpon>ProfileIconSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Selectors\RuneEditor.xaml.cs">
+    <Compile Include="UI\Selectors\RuneEditor.xaml.cs">
       <DependentUpon>RuneEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Selectors\RuneListItem.xaml.cs">
+    <Compile Include="UI\Selectors\RuneListItem.xaml.cs">
       <DependentUpon>RuneListItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\DebugWindow.xaml.cs">
-      <DependentUpon>DebugWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ClientUI\LandingPage.xaml.cs">
+    <Compile Include="UI\Main\LandingPage.xaml.cs">
       <DependentUpon>LandingPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\HomePage.xaml.cs">
+    <Compile Include="UI\Main\Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\PlayerProfile.xaml.cs">
+    <Compile Include="UI\Main\Profile\PlayerProfile.xaml.cs">
       <DependentUpon>PlayerProfile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\TBDLobbyPage.xaml.cs">
+    <Compile Include="UI\Main\Lobbies\TBDLobbyPage.xaml.cs">
       <DependentUpon>TBDLobbyPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\com\riotgames\other\TBDGroupData.cs" />
     <Compile Include="Logic\StringExtension.cs" />
     <Compile Include="Logic\Chat\ChatFriend.cs" />
     <Compile Include="Logic\Client.cs" />
-    <Compile Include="ClientUI\ChampSelectPage.xaml.cs">
+    <Compile Include="UI\ChampSelect\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Queue\BingeQueuer.xaml.cs">
+    <Compile Include="UI\Main\Alerts\BingeQueuer.xaml.cs">
       <DependentUpon>BingeQueuer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Players\ChampSelectPlayer.xaml.cs">
+    <Compile Include="UI\ChampSelect\ChampSelectPlayer.xaml.cs">
       <DependentUpon>ChampSelectPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Players\InvitedPlayer.xaml.cs">
+    <Compile Include="UI\Main\Lobbies\InvitedPlayer.xaml.cs">
       <DependentUpon>InvitedPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Loader.xaml.cs">
+    <Compile Include="UI\Util\Loader.xaml.cs">
       <DependentUpon>Loader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Players\LobbyPlayer.xaml.cs">
+    <Compile Include="UI\Main\Lobbies\LobbyPlayer.xaml.cs">
       <DependentUpon>LobbyPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Queue\DefaultQueuePopup.xaml.cs">
+    <Compile Include="UI\Main\Alerts\DefaultQueuePopup.xaml.cs">
       <DependentUpon>DefaultQueuePopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Players\LoginAccount.xaml.cs">
+    <Compile Include="UI\Login\LoginAccount.xaml.cs">
       <DependentUpon>LoginAccount.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\OkAlert.xaml.cs">
+    <Compile Include="UI\Main\Alerts\OkAlert.xaml.cs">
       <DependentUpon>OkAlert.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Selectors\PopupSelector.xaml.cs">
+    <Compile Include="UI\Selectors\PopupSelector.xaml.cs">
       <DependentUpon>PopupSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\GameInviteAlert.xaml.cs">
+    <Compile Include="UI\Main\Alerts\GameInviteAlert.xaml.cs">
       <DependentUpon>GameInviteAlert.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\IClientPage.cs" />
-    <Compile Include="ClientUI\Controls\Selectors\ChampSelector.xaml.cs">
+    <Compile Include="UI\IClientPage.cs" />
+    <Compile Include="UI\Selectors\ChampSelector.xaml.cs">
       <DependentUpon>ChampSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\ChatConversation.xaml.cs">
+    <Compile Include="UI\Main\Friends\ChatConversation.xaml.cs">
       <DependentUpon>ChatConversation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\FriendListItem.xaml.cs">
+    <Compile Include="UI\Main\Friends\FriendListItem.xaml.cs">
       <DependentUpon>FriendListItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\HintedTextBox.cs" />
-    <Compile Include="ClientUI\Main\CustomCreatePage.xaml.cs">
+    <Compile Include="UI\Util\HintedTextBox.cs" />
+    <Compile Include="UI\Main\Custom\CustomCreatePage.xaml.cs">
       <DependentUpon>CustomCreatePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\CustomLobbyPage.xaml.cs">
+    <Compile Include="UI\Main\Custom\CustomLobbyPage.xaml.cs">
       <DependentUpon>CustomLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\DefaultLobbyPage.xaml.cs">
+    <Compile Include="UI\Main\Lobbies\DefaultLobbyPage.xaml.cs">
       <DependentUpon>DefaultLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\IClientSubPage.cs" />
-    <Compile Include="ClientUI\Main\InGamePage.xaml.cs">
+    <Compile Include="UI\Main\IClientSubPage.cs" />
+    <Compile Include="UI\Main\InGamePage.xaml.cs">
       <DependentUpon>InGamePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Enums\RiotEnums.cs">
@@ -238,34 +235,34 @@
     <Compile Include="Logic\Region.cs" />
     <Compile Include="Logic\Queueing\CapPlayer.cs" />
     <Compile Include="Logic\Queueing\IQueuePopup.cs" />
-    <Compile Include="ClientUI\Controls\Selectors\MasteryEditor.xaml.cs">
+    <Compile Include="UI\Selectors\MasteryEditor.xaml.cs">
       <DependentUpon>MasteryEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\MyProgressBar.xaml.cs">
+    <Compile Include="UI\Util\MyProgressBar.xaml.cs">
       <DependentUpon>MyProgressBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Selectors\SpellSelector.xaml.cs">
+    <Compile Include="UI\Selectors\SpellSelector.xaml.cs">
       <DependentUpon>SpellSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Cap\CapMap.xaml.cs">
+    <Compile Include="UI\Main\Cap\CapMap.xaml.cs">
       <DependentUpon>CapMap.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Cap\CapMePlayer.xaml.cs">
+    <Compile Include="UI\Main\Cap\CapMePlayer.xaml.cs">
       <DependentUpon>CapMePlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Controls\Cap\CapSoloQueuePopup.xaml.cs">
+    <Compile Include="UI\Main\Cap\CapSoloQueuePopup.xaml.cs">
       <DependentUpon>CapSoloQueuePopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\LoginPage.xaml.cs">
+    <Compile Include="UI\Login\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\PlaySelectPage.xaml.cs">
+    <Compile Include="UI\Main\PlaySelectPage.xaml.cs">
       <DependentUpon>PlaySelectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\CapLobbyPage.xaml.cs">
+    <Compile Include="UI\Main\Cap\CapLobbyPage.xaml.cs">
       <DependentUpon>CapLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClientUI\Main\CapSoloPage.xaml.cs">
+    <Compile Include="UI\Main\Cap\CapSoloPage.xaml.cs">
       <DependentUpon>CapSoloPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Queueing\IQueueInfo.cs" />
@@ -399,195 +396,191 @@
     <Compile Include="Logic\Strings.cs" />
     <Compile Include="Logic\SummonerCache.cs" />
     <Compile Include="Logic\Settings\UserSettings.cs" />
-    <Page Include="ClientUI\Controls\Cap\CapOtherPlayer.xaml">
+    <Page Include="UI\Main\Cap\CapOtherPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\ChampMastery.xaml">
+    <Page Include="UI\ChampSelect\ChampMastery.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\NewsItem.xaml">
+    <Page Include="UI\Main\Home\NewsItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\PatchProgressBar.xaml">
+    <Page Include="UI\Login\PatchProgressBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Players\LobbyPlayer2.xaml">
+    <Page Include="UI\Main\Lobbies\LobbyPlayer2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Players\TBDPlayer.xaml">
+    <Page Include="UI\Main\Lobbies\TBDPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Profile\RedMatchDetailsPlayer.xaml">
+    <Page Include="UI\Main\Profile\RedMatchDetailsPlayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ClientUI\Controls\Profile\BlueMatchDetailPlayer.xaml">
+    <Page Include="UI\Main\Profile\BlueMatchDetailPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Profile\MatchDetails.xaml">
+    <Page Include="UI\Main\Profile\MatchDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Profile\MatchHistory.xaml">
+    <Page Include="UI\Main\Profile\MatchHistory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Profile\MatchHistoryItem.xaml">
+    <Page Include="UI\Main\Profile\MatchHistoryItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\MasteryIcon.xaml">
+    <Page Include="UI\Selectors\MasteryIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\RuneEditor.xaml">
+    <Page Include="UI\Selectors\RuneEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\RuneListItem.xaml">
+    <Page Include="UI\Selectors\RuneListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\ChampSelectPage.xaml">
+    <Page Include="UI\ChampSelect\ChampSelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Queue\BingeQueuer.xaml">
+    <Page Include="UI\Main\Alerts\BingeQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Players\ChampSelectPlayer.xaml">
+    <Page Include="UI\ChampSelect\ChampSelectPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Players\InvitedPlayer.xaml">
+    <Page Include="UI\Main\Lobbies\InvitedPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Loader.xaml">
+    <Page Include="UI\Util\Loader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Players\LobbyPlayer.xaml">
+    <Page Include="UI\Main\Lobbies\LobbyPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Queue\DefaultQueuePopup.xaml">
+    <Page Include="UI\Main\Alerts\DefaultQueuePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Players\LoginAccount.xaml">
+    <Page Include="UI\Login\LoginAccount.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\OkAlert.xaml">
+    <Page Include="UI\Main\Alerts\OkAlert.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\PopupSelector.xaml">
+    <Page Include="UI\Selectors\PopupSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\ProfileIconSelector.xaml">
+    <Page Include="UI\Selectors\ProfileIconSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\GameInviteAlert.xaml">
+    <Page Include="UI\Main\Alerts\GameInviteAlert.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\ChampSelector.xaml">
+    <Page Include="UI\Selectors\ChampSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\ChatConversation.xaml">
+    <Page Include="UI\Main\Friends\ChatConversation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\FriendListItem.xaml">
+    <Page Include="UI\Main\Friends\FriendListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\MasteryEditor.xaml">
+    <Page Include="UI\Selectors\MasteryEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\MyProgressBar.xaml">
+    <Page Include="UI\Util\MyProgressBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Selectors\SpellSelector.xaml">
+    <Page Include="UI\Selectors\SpellSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Cap\CapMap.xaml">
+    <Page Include="UI\Main\Cap\CapMap.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Cap\CapMePlayer.xaml">
+    <Page Include="UI\Main\Cap\CapMePlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Controls\Cap\CapSoloQueuePopup.xaml">
+    <Page Include="UI\Main\Cap\CapSoloQueuePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\DebugWindow.xaml">
+    <Page Include="UI\Login\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\LoginPage.xaml">
+    <Page Include="UI\Main\Custom\CustomCreatePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\CustomCreatePage.xaml">
+    <Page Include="UI\Main\Custom\CustomLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\CustomLobbyPage.xaml">
+    <Page Include="UI\Main\Lobbies\DefaultLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\DefaultLobbyPage.xaml">
+    <Page Include="UI\Main\Home\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\HomePage.xaml">
+    <Page Include="UI\Main\InGamePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\InGamePage.xaml">
+    <Page Include="UI\Main\LandingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\LandingPage.xaml">
+    <Page Include="UI\Main\Profile\PlayerProfile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\PlayerProfile.xaml">
+    <Page Include="UI\Main\PlaySelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\PlaySelectPage.xaml">
+    <Page Include="UI\Main\Cap\CapLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\CapLobbyPage.xaml">
+    <Page Include="UI\Main\Cap\CapSoloPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientUI\Main\CapSoloPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ClientUI\Main\TBDLobbyPage.xaml">
+    <Page Include="UI\Main\Lobbies\TBDLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

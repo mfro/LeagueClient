@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LeagueClient.ClientUI.Controls;
-using LeagueClient.ClientUI.Main;
 using LeagueClient.Logic.Cap;
 using LeagueClient.Logic.Riot.Platform;
+using LeagueClient.UI.Main;
 
 namespace LeagueClient.Logic.Queueing {
   public interface IQueueManager {

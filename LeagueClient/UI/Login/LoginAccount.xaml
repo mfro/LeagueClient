@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="LeagueClient.UI.Login.LoginAccount"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:local="clr-namespace:LeagueClient.UI.Login">
+  <UserControl.Resources>
+    <Storyboard x:Key="LoaderStory" RepeatBehavior="Forever">
+      <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="Margin">
+        <LinearThicknessKeyFrame KeyTime="0:0:0" Value="-5 -5 98 118"/>
+        <LinearThicknessKeyFrame KeyTime="0:0:0.4" Value="98 -5 -5 118"/>
+        <LinearThicknessKeyFrame KeyTime="0:0:0.5" Value="118 -5 -5 98"/>
+        <LinearThicknessKeyFrame KeyTime="0:0:0.9" Value="118 98 -5 -5"/>
+        <LinearThicknessKeyFrame KeyTime="0:0:1" Value="98 118 -5 -5"/>
+        <LinearThicknessKeyFrame KeyTime="0:0:1.4" Value="-5 118 98 -5"/>
+        <LinearThicknessKeyFrame KeyTime="0:0:1.5" Value="-5 98 118 -5"/>
+        <LinearThicknessKeyFrame KeyTime="0:0:1.9" Value="-5 -5 118 98"/>
+        
+        <LinearThicknessKeyFrame KeyTime="0:0:2" Value="-5 -5 98 118"/>
+      </ThicknessAnimationUsingKeyFrames>
+    </Storyboard>
+  </UserControl.Resources>
+  <Border Name="MainBorder" Margin="5" BorderThickness="5" Background="{StaticResource ForeBrush}" BorderBrush="{StaticResource ForeBrush}"
+          MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave" Width="128" Cursor="Hand"
+          MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp" ClipToBounds="True">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <Border Name="LoadingBorder" Background="{StaticResource FocusBrush}" Margin="-5 -5 123 118">
+      </Border>
+
+      <Image Name="ProfileIcon" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\6.png"/>
+      <Border Name="NameBorder" Background="{StaticResource ForeBrush}" VerticalAlignment="Bottom" Opacity="0">
+        <Label HorizontalAlignment="Center" Name="NameLabel" FontSize="14" Padding="0 3 0 0">Stupendous Man</Label>
+      </Border>
+    </Grid>
+  </Border>
+  <UserControl.ContextMenu>
+    <ContextMenu>
+      <MenuItem Click="MenuItem_Click" Header="Remove"/>
+    </ContextMenu>
+  </UserControl.ContextMenu>
+</UserControl>

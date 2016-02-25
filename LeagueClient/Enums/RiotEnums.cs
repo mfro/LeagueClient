@@ -5,7 +5,8 @@ namespace LeagueClient.Logic {
     public static readonly Dictionary<string, TBDRole> Values = new Dictionary<string, TBDRole>();
 
     public static readonly TBDRole
-      SUPPORT = new TBDRole("SUPPORT", "Support"),
+      UNSELECTED = new TBDRole("UNSELECTED", "?"),
+      UTILITY = new TBDRole("UTILITY", "Support"),
       JUNGLE = new TBDRole("JUNGLE", "Jungle"),
       MIDDLE = new TBDRole("MIDDLE", "Middle"),
       BOTTOM = new TBDRole("BOTTOM", "Bottom"),
