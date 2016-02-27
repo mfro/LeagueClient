@@ -12,9 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using LeagueClient.Logic;
+using RiotClient.Riot.Platform;
+using RiotClient;
 
 namespace LeagueClient.UI.ChampSelect {
   /// <summary>
@@ -27,7 +28,7 @@ namespace LeagueClient.UI.ChampSelect {
     }
 
     public ChampSelectPlayer(PlayerParticipant player, PlayerChampionSelectionDTO selection) : this() {
-      if (player.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)
+      if (player.SummonerId == Session.Current.Account.SummonerID)
         Glow.Opacity = 1;
 
       DisplaySelection(selection);
@@ -45,6 +46,14 @@ namespace LeagueClient.UI.ChampSelect {
       NameLabel.Visibility = Visibility.Collapsed;
     }
 
+    public ChampSelectPlayer(BotParticipant bot) : this() {
+      var champ = DataDragon.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
+      ChampImage.Source = DataDragon.GetChampIconImage(champ).Load();
+      NameLabel.Visibility = Visibility.Visible;
+      NameLabel.Content = champ.name;
+      Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;
+    }
+
     private void DisplaySelection(PlayerChampionSelectionDTO selection) {
       if (selection?.Spell1Id > 0 && selection?.Spell2Id > 0 && selection?.ChampionId > 0) {
         ChampImage.Source = DataDragon.GetChampIconImage(DataDragon.GetChampData(selection.ChampionId)).Load();
@@ -60,14 +69,6 @@ namespace LeagueClient.UI.ChampSelect {
       } else {
         Unknown.Visibility = Obscure.Visibility = Visibility.Visible;
       }
-    }
-
-    public ChampSelectPlayer(BotParticipant bot) : this() {
-      var champ = DataDragon.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
-      ChampImage.Source = DataDragon.GetChampIconImage(champ).Load();
-      NameLabel.Visibility = Visibility.Visible;
-      NameLabel.Content = champ.name;
-      Unknown.Visibility = Obscure.Visibility = Visibility.Collapsed;
     }
   }
 }

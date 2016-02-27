@@ -1,0 +1,122 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+using System.Collections.Generic;
+
+namespace RiotClient {
+<#
+	
+	foreach(var e in new[] { "TBDRole", "Position", "Role", "QueueType", "SpectatorState", "GameMode", "ReportReason", "RankedTier" }) {
+
+#>
+	public class <#= e #> {
+    public static readonly Dictionary<string, <#= e #>> Values = new Dictionary<string, <#= e #>>();
+
+    public static readonly <#= e #>
+<#
+		var filename = this.Host.ResolvePath(e + ".txt");
+		var lines = File.ReadAllLines(filename);
+		for(int i = 0; i < lines.Count(); i++) {
+			var things = lines[i].Split('=');
+			Write(string.Format("      {0} = new {2}(\"{0}\", \"{1}\")", things[0].Trim(), things[1].Trim(), e));
+
+			if(i + 1 < lines.Count()) WriteLine(",");
+			else WriteLine(";");
+		}
+#>
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+
+		private <#= e #>(string key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
+<#
+
+	}
+	
+	foreach(var e in new[] { "GameConfig" }) {
+
+#>
+	public class <#= e #> {
+    public static readonly Dictionary<int, <#= e #>> Values = new Dictionary<int, <#= e #>>();
+
+    public static readonly <#= e #>
+<#
+		var filename = this.Host.ResolvePath(e + ".txt");
+		var lines = File.ReadAllLines(filename);
+		for(int i = 0; i < lines.Count(); i++) {
+			var things = lines[i].Split('=');
+			Write(string.Format("      {0} = new {3}({1}, \"{2}\")", things[0].Trim(), things[1].Trim(), things[2].Trim(), e));
+
+			if(i + 1 < lines.Count()) WriteLine(",");
+			else WriteLine(";");
+		}
+#>
+
+    public int Key { get; private set; }
+    public string Value { get; private set; }
+
+		private <#= e #>(int key, string value) {
+			Key = key; Value = value;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+
+<#
+	
+	}
+
+	foreach(var e in new[] { "ChatStatus" }) {
+
+#>
+	public class <#= e #> {
+    public static readonly Dictionary<string, <#= e #>> Values = new Dictionary<string, <#= e #>>();
+
+    public static readonly <#= e #>
+<#
+		var filename = this.Host.ResolvePath(e + ".txt");
+		var lines = File.ReadAllLines(filename);
+		for(int i = 0; i < lines.Count(); i++) {
+			var things = lines[i].Split('=');
+			Write(string.Format("      {0} = new {3}(\"{0}\", \"{1}\", {2})", things[0].Trim(), things[1].Trim(), lines.Count() - i, e));
+
+			if(i + 1 < lines.Count()) WriteLine(",");
+			else WriteLine(";");
+		}
+#>
+
+    public string Key { get; private set; }
+    public string Value { get; private set; }
+    public int Priority { get; private set; }
+
+		private <#= e #>(string key, string value, int priority) {
+			Key = key; Value = value; Priority = priority;
+			Values.Add(key, this);
+		}
+
+    public override string ToString() {
+      return Value;
+    }
+	}
+<#
+
+}
+
+#>
+}

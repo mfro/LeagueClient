@@ -1,7 +1,7 @@
 ﻿using LeagueClient.Logic;
-using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
+using RiotClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace LeagueClient.UI.Main.Profile {
 
       Loaded += (src, e) => {
         var game = DataContext as RiotACS.Game;
-        var identity = game.ParticipantIdentities.FirstOrDefault(i => i.Player.AccountId == Client.Session.LoginPacket.AllSummonerData.Summoner.AccountId);
+        var identity = game.ParticipantIdentities.FirstOrDefault(i => i.Player.AccountId == Session.Current.Account.AccountID);
         var me = game.Participants.FirstOrDefault(p => p.ParticipantId == identity.ParticipantId);
 
         var champ = DataDragon.GetChampData(me.ChampionId);
@@ -54,7 +54,7 @@ namespace LeagueClient.UI.Main.Profile {
         }
 
         ScoreLabel.Content = $"{me.Stats.Kills} / {me.Stats.Deaths} / {me.Stats.Assists}";
-        var date = Client.Epoch.AddMilliseconds(game.GameCreation);
+        var date = Session.Epoch.AddMilliseconds(game.GameCreation);
 
         DateLabel.Content = date.ToString("M / d / yyyy");
         TimeLabel.Content = date.ToString("h:mm tt");

@@ -2,6 +2,7 @@
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using MFroehlich.League.RiotAPI;
+using RiotClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;

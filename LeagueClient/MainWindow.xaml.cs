@@ -13,8 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MFroehlich.League.Assets;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Net;
 using System.Security.Cryptography;
 using LeagueClient.Logic;
@@ -28,13 +26,14 @@ using LeagueClient.UI;
 using LeagueClient.UI.ChampSelect;
 using LeagueClient.UI.Main;
 using LeagueClient.UI.Login;
+using RiotClient;
+using RiotClient.Lobbies;
 
 namespace LeagueClient {
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class MainWindow : Window {
-    private IClientPage currentPage;
     private ChampSelectPage champselect;
     private LandingPage landing;
 
@@ -44,19 +43,19 @@ namespace LeagueClient {
       ((App) Application.Current).LoadResources();
       Loaded += (src, e) => Center();
 
-      Client.Initialize();
+      Session.Initialize();
       Client.MainWindow = this;
       Start();
     }
 
     private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
-      Client.Log("***UNHANDLED EXCEPTION***");
-      Client.Log("***UNHANDLED EXCEPTION***");
-      Client.Log("***UNHANDLED EXCEPTION***");
-      Client.Log(e.Exception);
-      Client.Log("***UNHANDLED EXCEPTION***");
-      Client.Log("***UNHANDLED EXCEPTION***");
-      Client.Log("***UNHANDLED EXCEPTION***");
+      Session.Log("***UNHANDLED EXCEPTION***");
+      Session.Log("***UNHANDLED EXCEPTION***");
+      Session.Log("***UNHANDLED EXCEPTION***");
+      Session.Log(e.Exception);
+      Session.Log("***UNHANDLED EXCEPTION***");
+      Session.Log("***UNHANDLED EXCEPTION***");
+      Session.Log("***UNHANDLED EXCEPTION***");
     }
 
     public void Start() {
@@ -65,19 +64,14 @@ namespace LeagueClient {
 
     public void LoginComplete() {
       var page = landing = new LandingPage();
-      Client.Session.QueueManager = landing;
+      Client.QueueManager = landing;
       ContentFrame.Content = page;
-      currentPage = page;
 
-      if (Client.Session.LoginQueue.InGameCredentials?.InGame ?? false) {
-        Client.Session.Credentials = Client.Session.LoginQueue.InGameCredentials;
-        Client.Session.JoinGame();
-        Client.Session.LoginQueue.InGameCredentials.InGame = false;
+      if (Session.Current.LoginQueue.InGameCredentials?.InGame ?? false) {
+        Session.Current.Credentials = Session.Current.LoginQueue.InGameCredentials;
+        Session.Current.JoinGame();
+        Session.Current.LoginQueue.InGameCredentials.InGame = false;
       }
-    }
-
-    public bool HandleMessage(MessageReceivedEventArgs e) {
-      return currentPage?.HandleMessage(e) ?? false;
     }
 
     public void Center() {
@@ -87,18 +81,16 @@ namespace LeagueClient {
       Top = (sHeight / 2) - (Height / 2);
     }
 
-    public void BeginChampionSelect(GameDTO game) {
+    public void BeginChampionSelect(Game game) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(BeginChampionSelect, game); return; }
 
-      Client.Session.QueueManager.ShowPage(new InGamePage(true));
+      Client.QueueManager.ShowPage(new InGamePage(true));
       champselect = new ChampSelectPage(game);
 
-      currentPage = champselect;
       champselect.ChampSelectCompleted += Champselect_ChampSelectCompleted;
 
       ContentFrame.Content = champselect;
-      Client.Session.ChatManager.Status = ChatStatus.championSelect;
-      RiotServices.GameService.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
+      Session.Current.ChatManager.Status = ChatStatus.championSelect;
     }
 
     private void Champselect_ChampSelectCompleted(object sender, EventArgs e) {
@@ -106,7 +98,6 @@ namespace LeagueClient {
 
       ShowLandingPage();
 
-      currentPage = landing;
       champselect.ChampSelectCompleted -= Champselect_ChampSelectCompleted;
       champselect = null;
     }

@@ -15,87 +15,78 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
 using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
+using RiotClient.Riot.Platform;
+using RiotClient.Lobbies;
 
 namespace LeagueClient.UI.Main.Alerts {
   /// <summary>
   /// Interaction logic for DefaultQueuePopup.xaml
   /// </summary>
   public partial class DefaultQueuePopup : UserControl, IQueuePopup {
-    public event EventHandler<QueueEventArgs> Close;
+    public event EventHandler<QueueEventArgsa> Close;
 
     public GameDTO GameData { get; private set; }
+    public Queue Queue { get; }
 
-    public DefaultQueuePopup() {
+    public DefaultQueuePopup(Queue queue) {
       InitializeComponent();
+
+      Queue = queue;
+
+      queue.QueuePopped += Queue_QueuePopped;
+      queue.QueuePopUpdated += Queue_QueuePopUpdated;
+      queue.EnteredChampSelect += Queue_EnteredChampSelect;
+      queue.QueueCancelled += Queue_QueueCancelled;
     }
 
-    public DefaultQueuePopup(GameDTO game) : this() {
-      GotGameData(game);
+    private void Queue_QueuePopped(object sender, GameDTO e) {
+      TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(e.JoinTimerDuration)));
     }
 
-    private void Time_Elapsed(object sender, ElapsedEventArgs e) {
-      (sender as IDisposable).Dispose();
-    }
-
-    private void GotGameData(GameDTO game) {
-      if (GameData == null) {
-        TimeoutBar.AnimateProgress(1, 0, new Duration(TimeSpan.FromSeconds(game.JoinTimerDuration)));
-        var time = new Timer(game.JoinTimerDuration);
-        time.Start();
-        time.Elapsed += Time_Elapsed;
-      }
-      GameData = game;
-      if (game.GameState.Equals("JOINING_CHAMP_SELECT")) {
+    private void Queue_QueuePopUpdated(object sender, Queue.QueuePopPlayerState[] e) {
+      Dispatcher.Invoke(() => {
         ParticipantPanel.Children.Clear();
-        foreach (char player in game.StatusOfParticipants) {
+        foreach (var state in e) {
           var border = new Border { Width = 16, Height = 20 };
           border.BorderBrush = App.ForeBrush;
           border.BorderThickness = new Thickness(1);
           border.Margin = new Thickness(2, 0, 2, 0);
-          switch (player) {
-            case '0':
+          switch (state) {
+            case Queue.QueuePopPlayerState.None:
               border.Background = App.Back1Brush;
               break;
-            case '1':
+            case Queue.QueuePopPlayerState.Accepted:
               border.Background = App.ChatBrush;
               break;
-            case '2':
+            case Queue.QueuePopPlayerState.Declined:
               border.Background = App.AwayBrush;
               break;
             default: break;
           }
           ParticipantPanel.Children.Add(border);
         }
-      } else if (game.GameState.Contains("CHAMP_SELECT")) {
-        Close?.Invoke(this, new QueueEventArgs(QueuePopOutcome.Accepted));
-        Client.MainWindow.BeginChampionSelect(game);
-      } else if (game.GameState.Equals("TERMINATED")) {
-        Close?.Invoke(this, new QueueEventArgs(QueuePopOutcome.Cancelled));
-      } else { }
+      });
     }
 
-    public bool HandleMessage(MessageReceivedEventArgs e) {
-      var game = e.Body as GameDTO;
-      if (game != null) {
-        Dispatcher.MyInvoke(GotGameData, game);
-        return true;
-      }
-      return false;
+    private void Queue_EnteredChampSelect(object sender, Game e) {
+      Client.MainWindow.BeginChampionSelect(e);
+    }
+
+    private void Queue_QueueCancelled(object sender, object e) {
+      Close?.Invoke(this, new QueueEventArgsa(QueuePopOutcome.Cancelled));
     }
 
     private void Accept_Click(object sender, RoutedEventArgs e) {
-      RiotServices.GameService.AcceptPoppedGame(true);
+      Queue.React(true);
       AcceptButt.IsEnabled = DeclineButt.IsEnabled = false;
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) {
-      RiotServices.GameService.AcceptPoppedGame(false);
+      Queue.React(false);
       AcceptButt.IsEnabled = DeclineButt.IsEnabled = false;
     }
 

@@ -1,7 +1,6 @@
 ﻿using LeagueClient.Logic;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
+using RiotClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,9 +28,9 @@ namespace LeagueClient.UI.Main.Profile {
     public PlayerProfile() {
       InitializeComponent();
 
-      if (Client.Session != null) {
+      if (Session.Current != null) {
         HistoryList.ItemsSource = history;
-        Client.Session.SummonerCache.GetData(Client.Session.LoginPacket.AllSummonerData.Summoner.Name, GotSummoner);
+        Session.Current.SummonerCache.GetData(Session.Current.Account.Name, GotSummoner);
       }
     }
 
@@ -50,13 +49,19 @@ namespace LeagueClient.UI.Main.Profile {
     private void LoadSummoner(SummonerCache.Item item) {
       SearchBox.BorderBrush = App.ForeBrush;
       HistoryList.SelectedItem = Selected = item;
-      SummonerName.Content = item.Data.Summoner.Name;
-      SummonerIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
 
-      MatchesPane.Child = new MatchHistory(item);
-      if (item.Data.SummonerLevel.Level < 30) {
+      if (item.Data != null) {
+        SummonerName.Content = item.Data.Summoner.Name;
+        SummonerIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
+      }
+
+      if (item.MatchHistory != null) {
+        MatchesPane.Child = new MatchHistory(item);
+      }
+
+      if (item.Data != null && item.Data.SummonerLevel.Level < 30) {
         SummonerRank.Content = "Level " + item.Data.SummonerLevel;
-      } else {
+      } else if (item.Leagues != null) {
         var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
         if (league != null) SummonerRank.Content = RankedTier.Values[league.Tier] + " " + league.Rank;
       }
@@ -65,7 +70,7 @@ namespace LeagueClient.UI.Main.Profile {
 
     private void SearchBox_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key == Key.Enter && SearchBox.Text.Trim().Length > 0) {
-        Client.Session.SummonerCache.GetData(SearchBox.Text, GotSummoner);
+        Session.Current.SummonerCache.GetData(SearchBox.Text, GotSummoner);
       }
     }
 

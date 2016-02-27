@@ -15,6 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
+using RiotClient.Chat;
+using RiotClient;
 
 namespace LeagueClient.UI.Main.Friends {
   /// <summary>
@@ -46,7 +48,7 @@ namespace LeagueClient.UI.Main.Friends {
     public ChatConversation() {
       InitializeComponent();
 
-      if (Client.Session.Connected) {
+      if (Session.Current.Connected) {
         Loaded += (src, e) => {
           friend = (ChatFriend) DataContext;
           ChatHistory.Text = friend.History;

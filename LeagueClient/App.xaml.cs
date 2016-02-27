@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using LeagueClient.Logic;
-using LeagueClient.Logic.Riot;
 using MFroehlich.Parsing;
 using System.Windows.Input;
+using RiotClient;
 
 namespace LeagueClient {
   /// <summary>
@@ -48,8 +48,8 @@ namespace LeagueClient {
     #endregion
 
     private void Application_Exit(object sender, ExitEventArgs e) {
-      if (Client.Session?.Connected == true) {
-        Client.Session.Logout();
+      if (Session.Current?.Connected == true) {
+        Session.Current.Logout();
       }
     }
   }

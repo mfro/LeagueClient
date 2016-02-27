@@ -1,7 +1,9 @@
 ﻿using LeagueClient.Logic;
-using LeagueClient.Logic.Riot.Platform;
 using LeagueClient.Logic.Settings;
 using MFroehlich.League.Assets;
+using RiotClient;
+using RiotClient.Riot.Platform;
+using RiotClient.Settings;
 using RtmpSharp.Messaging;
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -25,7 +28,7 @@ namespace LeagueClient.UI.Login {
   /// </summary>
   public partial class LoginPage : Page {
     private const string SettingsKey = "LoginSettings";
-    private static LoginSettings settings = Client.LoadSettings<LoginSettings>(SettingsKey);
+    private static LoginSettings settings = Session.LoadSettings<LoginSettings>(SettingsKey);
 
     private int tries;
     private string user;
@@ -38,7 +41,7 @@ namespace LeagueClient.UI.Login {
 
       if (settings.Accounts.Count > 0) {
         foreach (var name in settings.Accounts) {
-          var user = Client.LoadSettings<UserSettings>(name);
+          var user = Session.LoadSettings<UserSettings>(name);
           var login = new LoginAccount(user.Username, user.SummonerName, user.ProfileIcon);
           login.Click += Account_Click;
           login.Remove += Account_Remove;
@@ -51,17 +54,16 @@ namespace LeagueClient.UI.Login {
     }
 
     private void LoadBackground() {
-      if (File.Exists(Client.LoginStaticPath) && BackStatic.Source == null) {
+      if (File.Exists(Session.LoginStaticPath) && BackStatic.Source == null) {
         var image = new BitmapImage();
         image.BeginInit();
         image.CacheOption = BitmapCacheOption.OnLoad;
-        image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-        image.UriSource = new Uri(Client.LoginStaticPath);
+        image.UriSource = new Uri(Session.LoginStaticPath);
         image.EndInit();
         BackStatic.Source = image;
       }
-      if (File.Exists(Client.LoginVideoPath) && BackAnim.Source == null)
-        BackAnim.Source = new Uri(Client.LoginVideoPath);
+      if (File.Exists(Session.LoginVideoPath) && BackAnim.Source == null)
+        BackAnim.Source = new Uri(Session.LoginVideoPath);
       BackAnim.Play();
     }
 
@@ -73,7 +75,7 @@ namespace LeagueClient.UI.Login {
             if (diff < 100) {
               BackAnim.Position = TimeSpan.FromSeconds(0);
               BackAnim.Play();
-            } else if (diff < 2000) return diff - 10;
+            } else if (diff < 2000) return diff - 50;
             return 2000;
           });
           Thread.Sleep(duration);
@@ -82,10 +84,11 @@ namespace LeagueClient.UI.Login {
     }
 
     #region UI Handlers
+
     private void Account_Remove(object sender, EventArgs e) {
       AccountList.Children.Remove(sender as UIElement);
       settings.Accounts.Remove(((LoginAccount) sender).Username);
-      Client.SaveSettings(SettingsKey, settings);
+      Session.SaveSettings(SettingsKey, settings);
     }
 
     private void Account_Click(object sender, EventArgs e) {
@@ -97,7 +100,7 @@ namespace LeagueClient.UI.Login {
         if (obj is LoginAccount) ((LoginAccount) obj).State = LoginAccountState.Readonly;
       (sender as LoginAccount).State = LoginAccountState.Loading;
 
-      var account = Client.LoadSettings<UserSettings>(login);
+      var account = Session.LoadSettings<UserSettings>(login);
       var raw = account.Password;
       var decrypted = ProtectedData.Unprotect(Convert.FromBase64String(raw), null, DataProtectionScope.CurrentUser);
       var junk = "";
@@ -167,14 +170,14 @@ namespace LeagueClient.UI.Login {
     #endregion
 
     private void SaveAccount(string name, string pass) {
-      var account = Client.LoadSettings<UserSettings>(name);
+      var account = Session.LoadSettings<UserSettings>(name);
       var rawPass = ProtectedData.Protect(Encoding.UTF8.GetBytes(pass), null, DataProtectionScope.CurrentUser);
       account.Password = Convert.ToBase64String(rawPass);
       account.Username = name;
 
       settings.Accounts.Add(name);
-      Client.SaveSettings(name, account);
-      Client.SaveSettings(SettingsKey, settings);
+      Session.SaveSettings(name, account);
+      Session.SaveSettings(SettingsKey, settings);
     }
 
     private void Login(string user, string pass) {
@@ -182,19 +185,19 @@ namespace LeagueClient.UI.Login {
       LoginBar.IsIndeterminate = true;
       LoginButt.IsEnabled = UserBox.IsEnabled = PassBox.IsEnabled = AutoLoginToggle.IsEnabled = false;
 
-      Client.Login(user, pass).ContinueWith(HandleLogin);
+      Session.Login(user, pass).ContinueWith(HandleLogin);
     }
 
-    private void HandleLogin(Task<Client> obj) {
+    private void HandleLogin(Task<Session> obj) {
       if (!obj.IsFaulted && obj.Result != null) {
-        Client.Session.ChatManager = new Logic.Chat.RiotChat();
-        Client.SaveSettings(SettingsKey, settings);
+        Session.SaveSettings(SettingsKey, settings);
         Patch.Dispose();
         Dispatcher.Invoke(Client.MainWindow.LoginComplete);
         return;
+      } else if (obj.IsFaulted && obj.Exception.InnerException is AuthenticationException) {
+        //TODO Authentication Exception
       } else if (obj.IsFaulted && !obj.Exception.InnerException.Message.Contains("SSL error")) {
-        var error = obj.Exception.InnerException as InvocationException;
-        var cause = error?.RootCause as RiotException;
+        Session.ThrowException(obj.Exception.InnerException, "Login");
       }
       Dispatcher.Invoke(Reset);
     }

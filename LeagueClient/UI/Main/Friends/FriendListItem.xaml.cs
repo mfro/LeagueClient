@@ -15,12 +15,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
 using agsXMPP.protocol.client;
 using MFroehlich.League.DataDragon;
+using RiotClient.Chat;
+using RiotClient;
 
 namespace LeagueClient.UI.Main.Friends {
   /// <summary>
@@ -32,9 +32,9 @@ namespace LeagueClient.UI.Main.Friends {
     public FriendListItem() {
       InitializeComponent();
 
-      if (Client.Session.Connected)
+      if (Session.Current.Connected)
         Loaded += (src, e) => {
-          Client.Session.ChatManager.Tick += (src2, e2) => Dispatcher.Invoke(Update);
+          Session.Current.ChatManager.Tick += (src2, e2) => Dispatcher.Invoke(Update);
           friend = (ChatFriend) DataContext;
           Update();
         };
@@ -45,7 +45,7 @@ namespace LeagueClient.UI.Main.Friends {
 
       long id = RiotChat.GetSummonerId(friend.User.Jid);
       string name;
-      if (Client.Session.Settings.Nicknames.TryGetValue(id, out name)) {
+      if (Session.Current.Settings.Nicknames.TryGetValue(id, out name)) {
         NameText.ToolTip = friend.User.Name;
       } else {
         name = friend.User.Name;
@@ -73,12 +73,12 @@ namespace LeagueClient.UI.Main.Friends {
       if (friend.CurrentGameDTO != null) {
         TimeText.Visibility = Visibility.Visible;
         if (friend.CurrentGameInfo == null) {
-          long time = friend.Status.TimeStamp - Client.GetMilliseconds();
+          long time = friend.Status.TimeStamp - Session.GetMilliseconds();
           TimeText.Content = "~" + TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
         } else if (friend.CurrentGameInfo.gameStartTime == 0) {
           TimeText.Content = "Loading";
         } else {
-          long time = friend.CurrentGameInfo.gameStartTime - Client.GetMilliseconds();
+          long time = friend.CurrentGameInfo.gameStartTime - Session.GetMilliseconds();
           TimeText.Content = TimeSpan.FromMilliseconds(time).ToString("m\\:ss");
         }
         StatusText.Content = QueueType.Values[friend.CurrentGameDTO.QueueTypeName].Value;
@@ -94,16 +94,16 @@ namespace LeagueClient.UI.Main.Friends {
     }
 
     private void Invite_Click(object sender, RoutedEventArgs e) {
-      RiotServices.GameInvitationService.Invite(friend.Cache.Data.Summoner.SummonerId);
+      Session.Current.CurrentLobby.Invite(friend.Cache.Data.Summoner.SummonerId);
     }
 
     private void ViewProfile_Click(object sender, RoutedEventArgs e) {
-      Client.Session.QueueManager.ViewProfile(friend.Cache.Data.Summoner.Name);
+      Client.QueueManager.ViewProfile(friend.Cache.Data.Summoner.Name);
     }
 
     private void DeclineButt_Click(object sender, RoutedEventArgs e) {
       if (friend.Invite == null) return;
-      RiotServices.GameInvitationService.Decline(friend.Invite.InvitationId);
+      friend.Invite.Decline();
       friend.Invite = null;
       AcceptButt.BeginStoryboard(App.FadeOut);
       DeclineButt.BeginStoryboard(App.FadeOut);
@@ -111,7 +111,7 @@ namespace LeagueClient.UI.Main.Friends {
 
     private void AcceptButt_Click(object sender, RoutedEventArgs e) {
       if (friend.Invite == null) return;
-      Client.Session.QueueManager.AcceptInvite(friend.Invite);
+      Client.QueueManager.JoinLobby(friend.Invite.Accept());
       friend.Invite = null;
       AcceptButt.BeginStoryboard(App.FadeOut);
       DeclineButt.BeginStoryboard(App.FadeOut);

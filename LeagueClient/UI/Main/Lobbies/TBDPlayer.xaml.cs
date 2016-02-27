@@ -1,6 +1,7 @@
 ﻿using LeagueClient.Logic;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
+using RiotClient;
+using RiotClient.Lobbies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.Logic.com.riotgames.other;
 
 namespace LeagueClient.UI.Main.Lobbies {
   /// <summary>
@@ -27,47 +27,44 @@ namespace LeagueClient.UI.Main.Lobbies {
     public event EventHandler<RoleChangedEventArgs> RoleSelected;
     public bool CanControl { get; set; }
 
-    public long SummonerId { get; }
-    public string SummonerName { get; private set; }
+    private TBDLobby.TBDLobbyMember slot;
 
     public TBDPlayer() {
       InitializeComponent();
     }
 
-    public TBDPlayer(bool isSelf, bool amCaptain, Member member, int profileIconId) : this() {
+    public TBDPlayer(bool amCaptain, TBDLobby.TBDLobbyMember slot, int profileIconId) : this() {
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
-      CanControl = !isSelf && amCaptain;
+      CanControl = !slot.IsMe && amCaptain;
 
-      NameLabel.Content = member.SummonerName;
-      SummonerName = member.SummonerName;
-      SummonerId = member.SummonerId;
+      this.slot = slot;
+      slot.Changed += Slot_Changed;
+
+      NameLabel.Content = slot.Name;
 
       ProfileIconImage.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(profileIconId)).Load();
-      PlusPath.Visibility = member.HasInvitePower ? Visibility.Collapsed : Visibility.Visible;
-      Client.Session.SummonerCache.GetData(member.SummonerName, GotSummoner);
+      PlusPath.Visibility = slot.HasInvitePower ? Visibility.Collapsed : Visibility.Visible;
+      Session.Current.SummonerCache.GetData(slot.Name, GotSummoner);
 
-      PrimaryCombo.Visibility = SecondaryCombo.Visibility = isSelf ? Visibility.Visible : Visibility.Collapsed;
+      PrimaryCombo.Visibility = SecondaryCombo.Visibility = slot.IsMe ? Visibility.Visible : Visibility.Collapsed;
 
       PrimaryCombo.ItemsSource = TBDRole.Values.Values;
       SecondaryCombo.ItemsSource = TBDRole.Values.Values;
       SecondaryCombo.IsEnabled = false;
     }
 
-    public void SetSlotData(TBDSlotData slotData) {
-      var primary = TBDRole.Values[slotData.Positions[0]];
-      var secondary = TBDRole.Values[slotData.Positions[1]];
+    private void Slot_Changed(object sender, EventArgs e) {
+      PrimaryLabel.Content = slot.PrimaryRole;
+      SecondaryLabel.Content = slot.SecondaryRole;
+      SecondaryCombo.IsEnabled = slot.PrimaryRole != TBDRole.UNSELECTED && slot.PrimaryRole != TBDRole.FILL;
+      SecondaryLabel.Visibility = slot.PrimaryRole == TBDRole.FILL ? Visibility.Collapsed : Visibility.Visible;
 
-      PrimaryLabel.Content = primary;
-      SecondaryLabel.Content = secondary;
-      SecondaryCombo.IsEnabled = primary != TBDRole.UNSELECTED && primary != TBDRole.FILL;
-      SecondaryLabel.Visibility = primary == TBDRole.FILL ? Visibility.Collapsed : Visibility.Visible;
-
-      PrimaryCombo.ItemsSource = TBDRole.Values.Values.Where(role => role != secondary && role != TBDRole.UNSELECTED);
-      SecondaryCombo.ItemsSource = TBDRole.Values.Values.Where(role => role != primary && role != TBDRole.UNSELECTED);
+      PrimaryCombo.ItemsSource = TBDRole.Values.Values.Where(role => role != slot.SecondaryRole && role != TBDRole.UNSELECTED);
+      SecondaryCombo.ItemsSource = TBDRole.Values.Values.Where(role => role != slot.PrimaryRole && role != TBDRole.UNSELECTED);
     }
 
     private void UserControl_MouseEnter(object sender, MouseEventArgs e) {
-      if (CanControl && SummonerId != Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)
+      if (CanControl && slot.SummonerID != Session.Current.Account.SummonerID)
         KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Visible;
     }
 
@@ -78,7 +75,7 @@ namespace LeagueClient.UI.Main.Lobbies {
     private void GotSummoner(SummonerCache.Item item) {
       Dispatcher.Invoke(() => {
         ProfileIconImage.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
-        NameLabel.Content = SummonerName = item.Data.Summoner.Name;
+        NameLabel.Content = item.Data.Summoner.Name;
       });
     }
 

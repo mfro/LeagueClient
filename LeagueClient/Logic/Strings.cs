@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 
 namespace LeagueClient.Logic {
   public class Strings {
-
-    public static Strings en_US { get; } = new Strings {
-      Cap = new CapStrings {
-        Player_Select_Advertising = "Select position and role",
-        Player_Searching = "Searching",
-        Player_Found = "Candidate found",
-        Player_Joining = "Candidate joining",
-        Player_Kicked = "Player Kicked",
-        //TODO Strings
-      },
-      Landing = new LandingStrings {
-        Logout_Button = "Logout",
-        Home_Button = "Home",
-        Profile_Button = "Profile",
-        Shop_Button = "Shop",
+    public static Dictionary<string, Strings> Localizations = new Dictionary<string, Strings> {
+      ["en_US"] = new Strings {
+        Cap = new CapStrings {
+          Player_Select_Advertising = "Select position and role",
+          Player_Searching = "Searching",
+          Player_Found = "Candidate found",
+          Player_Joining = "Candidate joining",
+          Player_Kicked = "Player Kicked",
+          //TODO Strings
+        },
+        Landing = new LandingStrings {
+          Logout_Button = "Logout",
+          Home_Button = "Home",
+          Profile_Button = "Profile",
+          Shop_Button = "Shop",
+        }
       }
     };
 

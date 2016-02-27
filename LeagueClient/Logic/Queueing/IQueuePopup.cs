@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
 
 namespace LeagueClient.Logic.Queueing {
   public interface IQueuePopup {
-    event EventHandler<QueueEventArgs> Close;
+    event EventHandler<QueueEventArgsa> Close;
 
     System.Windows.Controls.Control Control { get; }
-
-    bool HandleMessage(MessageReceivedEventArgs args);
   }
 
-  public class QueueEventArgs : EventArgs {
+  public class QueueEventArgsa : EventArgs {
     public QueuePopOutcome Outcome { get; }
-    public QueueEventArgs(QueuePopOutcome outcome) {
+    public QueueEventArgsa(QueuePopOutcome outcome) {
       Outcome = outcome;
     }
   }

@@ -52,7 +52,6 @@ namespace LeagueClient.UI.Main.Alerts {
     }
 
     public Control Control => this;
-    public bool HandleMessage(MessageReceivedEventArgs args) => false;
     public void Dispose() => timer.Dispose();
   }
 }

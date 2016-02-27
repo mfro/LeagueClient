@@ -1,4 +1,5 @@
 ﻿using LeagueClient.Logic;
+using RiotClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace LeagueClient.UI.Main.Home {
     public NewsItem(XmlElement xml) {
       InitializeComponent();
 
-      var root = new Uri("http://" + new Uri(Client.Region.NewsURL).Host);
+      var root = new Uri("http://" + new Uri(Session.Region.NewsURL).Host);
       foreach (XmlElement node in xml.ChildNodes) {
         switch (node.Name) {
           case "title":

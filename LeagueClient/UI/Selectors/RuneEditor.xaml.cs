@@ -14,9 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using LeagueClient.Logic;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
+using RiotClient.Riot.Platform;
+using RiotClient;
 
 namespace LeagueClient.UI.Selectors {
   /// <summary>
@@ -33,19 +33,19 @@ namespace LeagueClient.UI.Selectors {
       InitializeComponent();
       CreateList();
 
-      if (Client.Session.Connected)
+      if (Session.Current.Connected)
         Reset();
     }
 
     public async void Reset() {
-      PageList.ItemsSource = Client.Session.Runes.BookPages;
-      this.runes = (await RiotServices.SummonerRuneService.GetSummonerRuneInventory(Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId)).SummonerRunes;
-      LoadPage(Client.Session.SelectedRunePage);
+      PageList.ItemsSource = Session.Current.Account.Runes.BookPages;
+      runes = await Session.Current.Account.GetRuneInventory();
+      LoadPage(Session.Current.Account.SelectedRunePage);
     }
 
-    public async Task Save() {
+    public void Save() {
       if (!unsaved) return;
-      await RiotServices.SpellBookService.SaveSpellBook(Client.Session.Runes);
+      Session.Current.Account.SaveRunes();
       Dispatcher.Invoke(() => Changed.Text = "");
       unsaved = false;
     }
@@ -57,7 +57,7 @@ namespace LeagueClient.UI.Selectors {
       unsaved = false;
       PageNameBox.Text = page.Name;
       UpdateRunes();
-      Client.Session.SelectRunePage(page);
+      Session.Current.Account.SelectRunePage(page);
     }
 
     private void UpdateRunes() {
@@ -164,6 +164,7 @@ namespace LeagueClient.UI.Selectors {
     }
 
     #region Event Listeners
+
     private void PageList_MouseWheel(object sender, MouseWheelEventArgs e) {
       if (e.Delta > 0) BookScroll.LineLeft();
       else BookScroll.LineRight();
@@ -175,7 +176,7 @@ namespace LeagueClient.UI.Selectors {
       if (page != null) LoadPage(page);
     }
 
-    private async void SaveButt_Click(object sender, RoutedEventArgs e) => await Save();
+    private void SaveButt_Click(object sender, RoutedEventArgs e) => Save();
 
     private void ResetButt_Click(object sender, RoutedEventArgs e) {
       page.SlotEntries.Clear();
@@ -190,6 +191,7 @@ namespace LeagueClient.UI.Selectors {
       unsaved = false;
       UpdateRunes();
     }
+
     #endregion
   }
 }

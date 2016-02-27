@@ -16,9 +16,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
+using RiotClient.Riot.Platform;
+using RiotClient;
+using RiotClient.Lobbies;
 
 namespace LeagueClient.UI.Main.Custom {
   /// <summary>
@@ -48,7 +49,7 @@ namespace LeagueClient.UI.Main.Custom {
       CrystalScar.Tag = GameMap.TheCrystalScar;
       TwistedTreeline.Tag = GameMap.TheTwistedTreeline;
       HowlingAbyss.Tag = GameMap.HowlingAbyss;
-      foreach(var border in new[] { SummonersRift, CrystalScar, TwistedTreeline, HowlingAbyss }) {
+      foreach (var border in new[] { SummonersRift, CrystalScar, TwistedTreeline, HowlingAbyss }) {
         border.MouseEnter += Border_MouseEnter;
         border.MouseLeave += Border_MouseLeave;
         border.MouseUp += Border_MouseUp;
@@ -58,7 +59,7 @@ namespace LeagueClient.UI.Main.Custom {
       Spectators.SelectedItem = SpectatorState.ALL;
       GameType.ItemsSource = new[] { GameConfig.Blind, GameConfig.Draft, GameConfig.AllRandom };
       GameType.SelectedItem = GameConfig.Blind;
-      GameName.Text = Client.Session.LoginPacket.AllSummonerData.Summoner.Name + "'s Game";
+      GameName.Text = Session.Current.Account.Name + "'s Game";
       GameName.CaretIndex = GameName.Text.Length;
       Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, (Func<bool>) GameName.Focus);
 
@@ -92,17 +93,12 @@ namespace LeagueClient.UI.Main.Custom {
         case 12:
         case 14: config.GameMode = "ARAM"; break;
       }
-      GameDTO game = null;
-      try {
-        game = await RiotServices.GameService.CreatePracticeGame(config);
-      } catch { }
 
-      if (game?.Name == null) {
+      try {
+        var lobby = await CustomLobby.Create(config);
+        Client.QueueManager.JoinLobby(lobby);
+      } catch {
         ErrorLabel.Visibility = Visibility.Visible;
-        return;
-      } else {
-        Close?.Invoke(this, new EventArgs());
-        Client.Session.QueueManager.ShowPage(new CustomLobbyPage(game));
       }
     }
 

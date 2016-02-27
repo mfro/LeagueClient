@@ -10,7 +10,5 @@ namespace LeagueClient.Logic.Queueing {
     event EventHandler Popped;
 
     System.Windows.Controls.Control Control { get; }
-
-    bool HandleMessage(MessageReceivedEventArgs args);
   }
 }

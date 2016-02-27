@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RiotClient.Lobbies;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,24 +13,28 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.Logic.Riot.Platform;
 
 namespace LeagueClient.UI.Main.Lobbies {
   /// <summary>
   /// Interaction logic for InvitedPlayer.xaml
   /// </summary>
   public partial class InvitedPlayer : UserControl {
+    private LobbyInvitee player;
 
-    public InvitedPlayer() {
+    public InvitedPlayer(LobbyInvitee player) {
       InitializeComponent();
+
+      this.player = player;
+      this.player.Changed += (s, e) => Dispatcher.Invoke(Update);
+      Update();
     }
 
-    public InvitedPlayer(Invitee player) : this() {
-      NameText.Content = player.SummonerName;
-      switch (player.InviteeState) {
+    private void Update() {
+      NameText.Content = player.Name;
+      switch (player.State) {
+        case "QUIT": StateText.Content = "Quit"; break;
         case "PENDING": StateText.Content = "Pending"; break;
         case "ACCEPTED": StateText.Content = "Accepted"; break;
-        case "QUIT": StateText.Content = "Quit"; break;
         case "DECLINED": StateText.Content = "Declined"; break;
         default: break;
       }

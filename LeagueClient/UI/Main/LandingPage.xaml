@@ -47,7 +47,7 @@
       <!--<Path Grid.Column="1" Stroke="{StaticResource FontBrush}" Name="Arrows" Data="M 0 0 L 10 8 L 0 16 M 120 0 L 110 8 L 120 16" Margin="15 95 15 0" VerticalAlignment="Top"/>-->
 
       <!--Tabs-->
-      <Grid MouseLeave="Border_MouseLeave">
+      <Grid>
         <Grid.RowDefinitions>
           <RowDefinition Height="*"/>
           <RowDefinition Height="auto"/>
@@ -64,7 +64,7 @@
             <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ShopTab" Content="{util:String Landing.Shop_Button}"/>
           </StackPanel>
         </Grid>
-        <Image Margin="0 0 0 0" Name="PlayTab" Grid.Row="1" Source="pack://application:,,,/Resources/LeagueIcon.png"
+        <Image Margin="0 0 0 0" Name="PlayTab" Grid.Row="1" Source="pack://application:,,,/RiotClient;component/Resources/LeagueIcon.png"
                Cursor="Hand" MouseUp="Tab_Click" MouseEnter="PlayTab_MouseEnter" MouseLeave="PlayTab_MouseLeave">
           <Image.Effect>
             <DropShadowEffect x:Name="PlayTabGlow" Color="Black" ShadowDepth="0" BlurRadius="15"/>

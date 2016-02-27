@@ -1,4 +1,5 @@
 ﻿using LeagueClient.Logic;
+using RiotClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +28,9 @@ namespace LeagueClient.UI.Main.Home {
     }
 
     private async void FetchNews() {
-      Client.WebClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36");
+      Session.WebClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36");
 
-      var data = await Client.WebClient.DownloadStringTaskAsync(Client.Region.NewsURL);
+      var data = await Session.WebClient.DownloadStringTaskAsync(Session.Region.NewsURL);
       XmlDocument xml = new XmlDocument();
       xml.LoadXml(data);
 

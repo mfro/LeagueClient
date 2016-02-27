@@ -1,4 +1,5 @@
 ﻿using LeagueClient.Logic;
+using RiotClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace LeagueClient.UI.Main.Profile {
     private async void MatchHistoryItem_MouseUp(object sender, MouseButtonEventArgs e) {
       var game = ((MatchHistoryItem) sender).DataContext as RiotACS.Game;
       if (game != null) {
-        var details = RiotACS.GetMatchDetails(Client.Region.Platform, game.GameId);
+        var details = RiotACS.GetMatchDetails(Session.Region.Platform, game.GameId);
         var deltas = await RiotACS.GetDeltas();
         var delta = deltas.Deltas.FirstOrDefault(d => d.GameId == game.GameId).Delta;
 

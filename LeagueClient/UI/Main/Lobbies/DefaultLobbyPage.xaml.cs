@@ -15,11 +15,12 @@ using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Queueing;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
 using System.Timers;
 using LeagueClient.UI.Main.Alerts;
+using RiotClient.Riot.Platform;
+using RiotClient.Lobbies;
+using RiotClient;
 
 namespace LeagueClient.UI.Main.Lobbies {
   /// <summary>
@@ -28,175 +29,132 @@ namespace LeagueClient.UI.Main.Lobbies {
   public sealed partial class DefaultLobbyPage : Page, IClientSubPage {
     public event EventHandler Close;
 
-    private MatchMakerParams mmp;
     private GameQueueConfig config;
     private ChatRoom chatRoom;
-    private LobbyStatus lobby;
+    private DefaultLobby lobby;
 
-    private QueueController queue;
+    private QueueController queueTimer;
+    private Queue queue;
 
-    public DefaultLobbyPage() {
+    public DefaultLobbyPage(DefaultLobby lobby) {
       InitializeComponent();
-    }
 
-    public DefaultLobbyPage(MatchMakerParams mmp) : this() {
-      this.mmp = mmp;
-      chatRoom = new ChatRoom(SendBox, ChatHistory, ChatSend, ChatScroller);
+      this.lobby = lobby;
+      chatRoom = new ChatRoom(lobby, SendBox, ChatHistory, ChatSend, ChatScroller);
 
-      //InviteButton.Visibility = Visibility.Hidden;
+      lobby.PlayerInvited += Lobby_PlayerInvited;
+      lobby.MemberJoined += Lobby_MemberJoined;
+      lobby.MemberLeft += Lobby_MemberLeft;
 
-      config = Client.Session.AvailableQueues[mmp.QueueIds[0]];
+      lobby.QueueEntered += Lobby_QueueEntered;
+      lobby.QueueLeft += Lobby_QueueLeft;
+
+      lobby.LeftLobby += Lobby_LeftLobby;
+      lobby.Loaded += Lobby_Loaded;
+
+      lobby.CatchUp();
+
+      config = Session.Current.AvailableQueues[lobby.QueueID];
       var map = GameMap.Maps.FirstOrDefault(m => config.SupportedMapIds.Contains(m.MapId));
 
-      MapImage.Source = GameMap.Images[map];
+      MapImage.Source = new BitmapImage(GameMap.Images[map]);
       MapLabel.Content = map.DisplayName;
       QueueLabel.Content = GameConfig.Values[config.GameTypeConfigId].Value;
       ModeLabel.Content = config.Ranked ? "Ranked" : ModeLabel.Content = GameMode.Values[config.GameMode].Value;
       TeamSizeLabel.Content = $"{config.NumPlayersPerTeam}v{config.NumPlayersPerTeam}";
     }
 
-    #region RTMP Messages
-    public bool HandleMessage(MessageReceivedEventArgs args) {
-      var lobby = args.Body as LobbyStatus;
-      var notify = args.Body as GameNotification;
-      var invite = args.Body as InvitePrivileges;
-      var queue = args.Body as SearchingForMatchNotification;
-      var msg = args.Body as SimpleDialogMessage;
-      var game = args.Body as GameDTO;
+    private void Lobby_MemberJoined(object sender, MemberEventArgs e) {
+      Dispatcher.Invoke(() => {
+        var player = new LobbyPlayer2(lobby.IsCaptain, e.Member, 0);
+        PlayerList.Children.Add(player);
 
-      if (lobby != null) {
-        GotLobbyStatus(lobby);
-        return true;
-      } else if (invite != null) {
-        Client.Session.CanInviteFriends = invite.canInvite;
-        return true;
-      } else if (queue != null) {
-        EnterQueue(queue);
-        return true;
-      } else if (notify != null) {
-        SetInQueue(false);
-        return true;
-      } else if (msg != null) {
-        if (msg.titleCode.Equals("ready_check.penalty.applied")) {
-          //TODO Failed to accept notifcation
-          return true;
+        var players = PlayerList.Children.Cast<LobbyPlayer2>().ToList();
+        foreach (var control in players) {
+          PlayerList.Children.Remove(control);
+          int index = lobby.GetIndex(control.Member);
+          PlayerList.Children.Insert(index, control);
         }
-      } else if (game != null) {
-        Dispatcher.Invoke(() => {
-          var popup = new DefaultQueuePopup(game);
-          popup.Close += (src, e) => SetInQueue(false);
-          Client.Session.QueueManager.ShowQueuePopup(popup);
-        });
-        return true;
-      }
-
-      return false;
+      });
     }
 
-    public void GotLobbyStatus(LobbyStatus lobby) {
-      this.lobby = lobby;
+    private void Lobby_MemberLeft(object sender, MemberEventArgs e) {
+      Dispatcher.Invoke(() => {
+        var player = PlayerList.Children.Cast<LobbyPlayer2>().FirstOrDefault(p => p.Member == e.Member);
+        PlayerList.Children.Remove(player);
+      });
+    }
 
-      bool owner = lobby.Owner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
-      Client.Session.ChatManager.Status = owner ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame;
+    private void Lobby_PlayerInvited(object sender, InviteeEventArgs e) {
+      Dispatcher.Invoke(() => {
+        var player = new InvitedPlayer(e.Invitee);
+        InviteList.Children.Add(player);
+      });
+    }
 
-      mmp.InvitationId = lobby.InvitationID;
-      mmp.Team = lobby.Members.Select(m => (int) m.SummonerId).ToList();
+    private void Lobby_QueueEntered(object sender, QueueEventArgs e) {
+      queueTimer.Start();
+      queue = e.Queue;
+      Dispatcher.Invoke(() => {
+        foreach (var control in PlayerList.Children)
+          ((LobbyPlayer2) control).CanControl = false;
 
-      if (!chatRoom.IsJoined) {
-        chatRoom.JoinChat(RiotChat.GetLobbyRoom(lobby.InvitationID, lobby.ChatKey), lobby.ChatKey);
-        queue = new QueueController(QueueTimeLabel, ChatStatus.inQueue, owner ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame);
-      }
+        QuitButton.Content = "Cancel";
+        StartButton.Visibility = Visibility.Collapsed;
+        QueueTimeLabel.Visibility = Visibility.Visible;
+      });
+    }
+
+    private void Lobby_QueueLeft(object sender, EventArgs e) {
+      queueTimer.Cancel();
+      queue = null;
+      Dispatcher.Invoke(() => {
+        foreach (var control in PlayerList.Children)
+          ((LobbyPlayer2) control).CanControl = lobby.IsCaptain;
+
+        QuitButton.Content = "Quit";
+        QueueTimeLabel.Visibility = Visibility.Collapsed;
+        StartButton.Visibility = lobby.IsCaptain ? Visibility.Visible : Visibility.Hidden;
+      });
+    }
+
+    private void Lobby_LeftLobby(object sender, EventArgs e) {
+      Close?.Invoke(this, new EventArgs());
+    }
+
+    private void Lobby_Loaded(object sender, EventArgs e) {
+      queueTimer = new QueueController(QueueTimeLabel, ChatStatus.inQueue, lobby.IsCaptain ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame);
+      Session.Current.ChatManager.Status = lobby.IsCaptain ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame;
 
       Dispatcher.Invoke(() => {
         LoadingGrid.Visibility = Visibility.Collapsed;
-        InviteList.Children.Clear();
-        foreach (var player in lobby.InvitedPlayers.Where(p => !p.InviteeState.Equals("CREATOR"))) {
-          InviteList.Children.Add(new InvitedPlayer(player));
-        }
-        PlayerList.Children.Clear();
-        foreach (var player in lobby.Members) {
-          var user = RiotChat.GetUser(player.SummonerId);
-          int icon = Client.Session.Settings.ProfileIcon;
-          if (!owner && chatRoom.Statuses.ContainsKey(user)) icon = chatRoom.Statuses[RiotChat.GetUser(player.SummonerId)].ProfileIcon;
-
-          var control = new LobbyPlayer2(owner, player, icon);
-          control.GiveInviteClicked += GiveInviteClicked;
-          control.KickClicked += KickClicked;
-          PlayerList.Children.Add(control);
-        }
-
-        StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
-        Client.Session.CanInviteFriends = owner;
+        StartButton.Visibility = lobby.IsCaptain ? Visibility.Visible : Visibility.Hidden;
       });
     }
-    #endregion
 
     #region UI Events
-    private void GiveInviteClicked(object sender, EventArgs e) {
-      var member = lobby.Members.FirstOrDefault(m => m.SummonerId == ((LobbyPlayer2) sender).SummonerId);
-      if (member.HasInvitePower)
-        RiotServices.GameInvitationService.RevokeInvitePrivileges(member.SummonerId);
-      else
-        RiotServices.GameInvitationService.GrantInvitePrivileges(member.SummonerId);
-      member.HasInvitePower = !member.HasInvitePower;
-    }
 
-    private void KickClicked(object sender, EventArgs e) {
-      throw new NotImplementedException();
-    }
-
-    private async void StartButton_Click(object sender, RoutedEventArgs e) {
-      var search = await RiotServices.MatchmakerService.AttachTeamToQueue(mmp);
-      EnterQueue(search);
+    private void StartButton_Click(object sender, RoutedEventArgs e) {
+      lobby.EnterQueue();
     }
 
     private void QuitButton_Click(object sender, RoutedEventArgs e) {
-      if (queue.InQueue) {
-        RiotServices.MatchmakerService.PurgeFromQueues();
-        SetInQueue(false);
+      if (queue == null) {
+        lobby.Quit();
       } else {
-        Dispose();
-        Close?.Invoke(this, new EventArgs());
+        lobby.LeaveQueue();
       }
+
     }
     #endregion
 
-    private void SetInQueue(bool inQueue) {
-      Dispatcher.Invoke(() => {
-        foreach (var control in PlayerList.Children)
-          ((LobbyPlayer2) control).CanControl = !inQueue;
-      });
-
-      if (inQueue) {
-        queue.Start();
-        Dispatcher.Invoke(() => {
-          QuitButton.Content = "Cancel";
-          StartButton.Visibility = Visibility.Collapsed;
-          QueueTimeLabel.Visibility = Visibility.Visible;
-        });
-      } else {
-        queue.Cancel();
-        Dispatcher.Invoke(() => {
-          QuitButton.Content = "Quit";
-          QueueTimeLabel.Visibility = Visibility.Collapsed;
-          bool owner = lobby.Owner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
-          StartButton.Visibility = owner ? Visibility.Visible : Visibility.Hidden;
-        });
-      }
-    }
-
-    private void EnterQueue(SearchingForMatchNotification search) {
-      if (Client.Session.QueueManager.AttachToQueue(search))
-        SetInQueue(true);
-    }
-
-    public Page Page => this;
+    Page IClientSubPage.Page => this;
 
     public void Dispose() {
-      RiotServices.GameInvitationService.Leave();
-      chatRoom.Dispose();
-      queue.Dispose();
-      Client.Session.ChatManager.Status = ChatStatus.outOfGame;
+      lobby.Quit();
+      //RiotServices.GameInvitationService.Leave();
+      //queue.Dispose();
+      Session.Current.ChatManager.Status = ChatStatus.outOfGame;
     }
   }
 }

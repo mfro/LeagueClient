@@ -7,12 +7,12 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using LeagueClient.Logic;
 using System.Windows.Threading;
+using RiotClient.Riot.Platform;
+using RiotClient;
 
 namespace LeagueClient.UI.Selectors {
   /// <summary>
@@ -29,7 +29,7 @@ namespace LeagueClient.UI.Selectors {
       cunning = new MasteryTree(DefenseTree);
       resolve = new MasteryTree(UtilityTree);
 
-      if (Client.Session.Connected) {
+      if (Session.Current.Connected) {
         CreateTree(ferocity, DataDragon.MasteryData.Value.tree.Ferocity, 1);
         CreateTree(cunning, DataDragon.MasteryData.Value.tree.Cunning, 2);
         CreateTree(resolve, DataDragon.MasteryData.Value.tree.Resolve, 3);
@@ -39,13 +39,13 @@ namespace LeagueClient.UI.Selectors {
     }
 
     public void Reset() {
-      PageList.ItemsSource = Client.Session.Masteries.BookPages;
-      var page = Client.Session.Masteries.BookPages.FirstOrDefault(p => p.Current);
-      if (page == null) LoadPage(Client.Session.Masteries.BookPages[0]);
+      PageList.ItemsSource = Session.Current.Account.Masteries.BookPages;
+      var page = Session.Current.Account.Masteries.BookPages.FirstOrDefault(p => p.Current);
+      if (page == null) LoadPage(Session.Current.Account.Masteries.BookPages[0]);
       else LoadPage(page);
     }
 
-    public async Task Save() {
+    public void Save() {
       if (!unsaved) return;
       page.TalentEntries.Clear();
       foreach (var icon in Icons.Values) {
@@ -55,7 +55,7 @@ namespace LeagueClient.UI.Selectors {
           TalentId = icon.Data.id
         });
       }
-      await RiotServices.MasteryBookService.SaveMasteryBook(Client.Session.Masteries);
+      Session.Current.Account.SaveMasteries();
       if (System.Threading.Thread.CurrentThread == Dispatcher.Thread) Changed.Text = "";
       else Dispatcher.Invoke(() => Changed.Text = "");
       unsaved = false;
@@ -78,7 +78,7 @@ namespace LeagueClient.UI.Selectors {
       CheckPoints();
       unsaved = false;
       Changed.Text = "";
-      Client.Session.SelectMasteryPage(page);
+      Session.Current.Account.SelectMasteryPage(page);
     }
 
     private MasteryTree ferocity;
@@ -175,8 +175,8 @@ namespace LeagueClient.UI.Selectors {
     }
 
     #region Button Event Listeners
-    private async void SaveButt_Click(object sender, RoutedEventArgs e) {
-      await Save();
+    private void SaveButt_Click(object sender, RoutedEventArgs e) {
+      Save();
     }
 
     private void ResetButt_Click(object sender, RoutedEventArgs e) {
@@ -187,7 +187,7 @@ namespace LeagueClient.UI.Selectors {
     }
 
     private void DeleteButt_Click(object sender, RoutedEventArgs e) {
-      Client.Session.DeleteMasteryPage(Client.Session.SelectedMasteryPage);
+      Session.Current.Account.DeleteMasteryPage(Session.Current.Account.SelectedMasteryPage);
     }
 
     private void RevertButt_Click(object sender, RoutedEventArgs e) {

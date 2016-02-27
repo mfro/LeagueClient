@@ -17,20 +17,21 @@ using System.Windows.Threading;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Queueing;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using RtmpSharp.Messaging;
 using agsXMPP;
 using LeagueClient.UI.Main.Custom;
 using LeagueClient.UI.Selectors;
+using RiotClient.Lobbies;
+using RiotClient.Riot.Platform;
+using RiotClient;
 
 namespace LeagueClient.UI.ChampSelect {
   /// <summary>
   /// Interaction logic for ChampSelect.xaml
   /// </summary>
-  public sealed partial class ChampSelectPage : Page, IClientPage, IDisposable {
+  public sealed partial class ChampSelectPage : Page, IDisposable {
     public event EventHandler ChampSelectCompleted;
 
     private const string
@@ -46,67 +47,58 @@ namespace LeagueClient.UI.ChampSelect {
     private State state;
     private string header;
     private GameDTO last;
+    private Game game;
 
-    public ChampSelectPage() {
+    public ChampSelectPage(Game game) {
       InitializeComponent();
-    }
 
-    public ChampSelectPage(GameDTO game) : this() {
-      chatRoom = new ChatRoom(ChatBox, ChatHistory, ChatButt, ChatScroller);
-      chatRoom.JoinChat(new Jid(game.RoomName.ToLower() + ".pvp.net"), game.RoomPassword);
+      this.game = game;
+      //chatRoom = new ChatRoom(ChatBox, ChatHistory, ChatButt, ChatScroller);
+      game.GameStarted += Game_GameStarted;
+      game.Updated += (s, e) => Dispatcher.Invoke(Update);
+      Update();
 
       Popup.ChampSelector.ChampSelected += ChampsGrid_ChampSelected;
       Popup.ChampSelector.SkinSelected += ChampsGrid_SkinSelected;
-      GotGameData(game);
       UpdateBooks();
 
       Popup.SpellSelector.SpellSelected += SpellSelector_SpellSelected;
       Popup.Close += Popup_Close;
 
       Popup.SpellSelector.Spells = (from spell in DataDragon.SpellData.Value.data.Values
-                                    where spell.modes.Contains(game.GameMode)
+                                    where spell.modes.Contains(game.Data.GameMode)
                                     select spell);
 
-      var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
+      var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.Data.MapId);
 
-      var config = Client.Session.LoginPacket.GameTypeConfigs.FirstOrDefault(g => g.Id == game.GameTypeConfigId);
+      var config = Session.Current.Account.LoginPacket.GameTypeConfigs.FirstOrDefault(g => g.Id == game.Data.GameTypeConfigId);
       if (config.MaxAllowableBans == 0) {
         MyBansGrid.Visibility = OtherBansGrid.Visibility = Visibility.Collapsed;
       }
 
       MapLabel.Content = map.DisplayName;
-      ModeLabel.Content = ModeLabel.Content = GameMode.Values[game.GameMode].Value;
-      QueueLabel.Content = GameConfig.Values[game.GameTypeConfigId];
-      TeamSizeLabel.Content = $"{game.MaxNumPlayers / 2}v{game.MaxNumPlayers / 2}";
+      ModeLabel.Content = ModeLabel.Content = GameMode.Values[game.Data.GameMode].Value;
+      QueueLabel.Content = GameConfig.Values[game.Data.GameTypeConfigId];
+      TeamSizeLabel.Content = $"{game.Data.MaxNumPlayers / 2}v{game.Data.MaxNumPlayers / 2}";
+    }
+
+    private void Game_GameStarted(object sender, PlayerCredentialsDto creds) {
+      ChampSelectCompleted?.Invoke(this, new EventArgs());
+      Session.Current.Credentials = creds;
+      Session.Current.JoinGame();
+      Dispose();
     }
 
     #region RTMP Messages
 
-    bool IClientPage.HandleMessage(MessageReceivedEventArgs args) {
-      PlayerCredentialsDto creds;
-      GameDTO game;
-
-      if ((game = args.Body as GameDTO) != null) {
-        Dispatcher.MyInvoke(GotGameData, game);
-        return true;
-      } else if ((creds = args.Body as PlayerCredentialsDto) != null) {
-        ChampSelectCompleted?.Invoke(this, new EventArgs());
-        Client.Session.Credentials = creds;
-        Client.Session.JoinGame();
-        Dispose();
-        return true;
-      }
-
-      return false;
-    }
-
-    public async void GotGameData(GameDTO game) {
-      var config = Client.Session.LoginPacket.GameTypeConfigs.FirstOrDefault(q => q.Id == game.GameTypeConfigId);
+    private async void Update() {
+      var game = this.game.Data;
+      var config = Session.Current.Account.LoginPacket.GameTypeConfigs.FirstOrDefault(q => q.Id == game.GameTypeConfigId);
       LockInButt.IsEnabled = false;
       var myChamp = game.PlayerChampionSelections
-        .FirstOrDefault(p => p.SummonerInternalName == Client.Session.LoginPacket.AllSummonerData.Summoner.InternalName);
+        .FirstOrDefault(p => p.SummonerInternalName == Session.Current.Account.LoginPacket.AllSummonerData.Summoner.InternalName);
       var me = (PlayerParticipant) game.TeamOne.Concat(game.TeamTwo)
-        .FirstOrDefault(p => (p as PlayerParticipant)?.AccountId == Client.Session.LoginPacket.AllSummonerData.Summoner.AccountId);
+        .FirstOrDefault(p => (p as PlayerParticipant)?.AccountId == Session.Current.Account.AccountID);
 
       if (game.GameState.Equals("CHAMP_SELECT") || game.GameState.Equals("PRE_CHAMP_SELECT")) {
         var turn = Dispatcher.MyInvoke(RenderPlayers, game);
@@ -125,7 +117,7 @@ namespace LeagueClient.UI.ChampSelect {
           if (last?.PickTurn != game.PickTurn) SetTimer(config.BanTimerDuration - 2);
           if (turn.IsMyTurn) state = State.Banning;
           else state = State.Watching;
-          var champs = await RiotServices.GameService.GetChampionsForBan();
+          var champs = await this.game.GetChampionsForBan();
 
           if (turn.IsOurTurn) {
             Popup.ChampSelector.SetChampList(champs.Where(c => c.EnemyOwned).Select(c => DataDragon.GetChampData(c.ChampionId)));
@@ -153,10 +145,10 @@ namespace LeagueClient.UI.ChampSelect {
         Popup.ChampSelector.IsReadOnly = true;
         header = PostString;
       } else if (game.GameState.Equals("TEAM_SELECT")) {
-        Dispatcher.Invoke(() => {
-          var page = new CustomLobbyPage(game);
-          Client.Session.QueueManager.ShowPage(page);
-        });
+        //Dispatcher.Invoke(() => {
+        //  var page = new CustomLobbyPage(game);
+        //  Session.Current.QueueManager.ShowPage(page);
+        //});
       } else {
 
       }
@@ -174,17 +166,17 @@ namespace LeagueClient.UI.ChampSelect {
     #endregion
 
     private void UpdateBooks() {
-      RunesBox.ItemsSource = Client.Session.Runes.BookPages;
-      RunesBox.SelectedItem = Client.Session.SelectedRunePage;
-      MasteriesBox.ItemsSource = Client.Session.Masteries.BookPages;
-      MasteriesBox.SelectedItem = Client.Session.SelectedMasteryPage;
+      RunesBox.ItemsSource = Session.Current.Account.Runes.BookPages;
+      RunesBox.SelectedItem = Session.Current.Account.SelectedRunePage;
+      MasteriesBox.ItemsSource = Session.Current.Account.Masteries.BookPages;
+      MasteriesBox.SelectedItem = Session.Current.Account.SelectedMasteryPage;
     }
 
     private TurnInfo RenderPlayers(GameDTO game) {
       var turn = new TurnInfo();
       MyTeam.Children.Clear();
       OtherTeam.Children.Clear();
-      bool meBlue = game.TeamOne.Any(p => (p as PlayerParticipant)?.AccountId == Client.Session.LoginPacket.AllSummonerData.Summoner.AccountId);
+      bool meBlue = game.TeamOne.Any(p => (p as PlayerParticipant)?.AccountId == Session.Current.Account.AccountID);
       foreach (var thing in game.TeamOne.Concat(game.TeamTwo)) {
         var player = thing as PlayerParticipant;
         var bot = thing as BotParticipant;
@@ -196,7 +188,7 @@ namespace LeagueClient.UI.ChampSelect {
           var selection = game.PlayerChampionSelections?.FirstOrDefault(c => c.SummonerInternalName == player.SummonerInternalName);
           control = new ChampSelectPlayer(player, selection);
           if (player.PickTurn == game.PickTurn) {
-            if (player.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId) {
+            if (player.SummonerId == Session.Current.Account.SummonerID) {
               turn.IsMyTurn = turn.IsOurTurn = true;
             } else if (meBlue == blue) {
               turn.IsOurTurn = true;
@@ -207,7 +199,7 @@ namespace LeagueClient.UI.ChampSelect {
         } else if (obfusc != null) {
           control = new ChampSelectPlayer(obfusc, null);
         } else {
-          Client.Log(thing.GetType().Name);
+          Session.Log(thing.GetType().Name);
           control = null;
         }
 
@@ -247,6 +239,7 @@ namespace LeagueClient.UI.ChampSelect {
 
     private int counter;
     private Timer timer;
+
     private void SetTimer(int time) {
       timer?.Dispose();
 
@@ -278,17 +271,17 @@ namespace LeagueClient.UI.ChampSelect {
       switch (state) {
         case State.Watching: throw new InvalidOperationException("Attempted to select a champion out of turn");
         case State.Picking:
-          RiotServices.GameService.SelectChampion(e.key);
+          game.SelectChampion(e.key);
           break;
         case State.Banning:
-          RiotServices.GameService.BanChampion(e.key);
+          game.BanChampion(e.key);
           break;
       }
     }
 
     private void ChampsGrid_SkinSelected(object sender, ChampionDto.SkinDto e) {
       if (state != State.Banning)
-        RiotServices.GameService.SelectChampionSkin(Popup.ChampSelector.SelectedChampion.key, e.id);
+        game.SelectSkin(Popup.ChampSelector.SelectedChampion.key, e.id);
     }
 
     private void GameStatusLabel_MouseUp(object sender, MouseButtonEventArgs e) {
@@ -298,7 +291,7 @@ namespace LeagueClient.UI.ChampSelect {
 
     private void LockIn_Click(object sender, RoutedEventArgs e) {
       if (state == State.Picking)
-        RiotServices.GameService.ChampionSelectCompleted();
+        game.LockIn();
     }
 
     bool doSpell1;
@@ -336,18 +329,17 @@ namespace LeagueClient.UI.ChampSelect {
         spell2 = e;
         Spell2Image.Source = DataDragon.GetSpellImage(e).Load();
       }
-      RiotServices.GameService.SelectSpells(spell1.key, spell2.key);
+      game.SelectSpells(spell1.key, spell2.key);
     }
 
     private void Masteries_Selected(object sender, SelectionChangedEventArgs e) {
       if (MasteriesBox.SelectedIndex < 0) return;
-      Client.Session.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
-      RiotServices.MasteryBookService.SaveMasteryBook(Client.Session.Masteries);
+      Session.Current.Account.SelectMasteryPage((MasteryBookPageDTO) MasteriesBox.SelectedItem);
     }
 
     private void Runes_Selected(object sender, SelectionChangedEventArgs e) {
       if (RunesBox.SelectedIndex < 0) return;
-      Client.Session.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);
+      Session.Current.Account.SelectRunePage((SpellBookPageDTO) RunesBox.SelectedItem);
     }
 
     private void Popup_Close(object sender, EventArgs e) {
@@ -359,7 +351,7 @@ namespace LeagueClient.UI.ChampSelect {
 
     public void Dispose() {
       timer.Dispose();
-      chatRoom.Dispose();
+      //chatRoom.Dispose();
     }
 
     private enum State {

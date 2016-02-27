@@ -15,9 +15,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
+using RiotClient.Riot.Platform;
+using RiotClient;
+using RiotClient.Lobbies;
 
 namespace LeagueClient.UI.Main.Lobbies {
   /// <summary>
@@ -25,6 +26,7 @@ namespace LeagueClient.UI.Main.Lobbies {
   /// </summary>
   public partial class LobbyPlayer : UserControl, INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
+    public CustomLobby.CustomLobbyMember Member { get; }
 
     public BitmapImage SummonerIcon {
       get { return summonerIcon; }
@@ -48,7 +50,7 @@ namespace LeagueClient.UI.Main.Lobbies {
       set {
         if (value) Expand();
         else if (!IsMouseOver) Contract();
-        
+
         SetField(ref forceExpand, value);
       }
     }
@@ -60,56 +62,44 @@ namespace LeagueClient.UI.Main.Lobbies {
 
     private bool forceExpand;
 
-    public LobbyPlayer() {
+    public LobbyPlayer(CustomLobby.CustomLobbyMember member) {
       InitializeComponent();
-    }
-      
-    public LobbyPlayer(PlayerParticipant player, bool expanded) : this() {
-      Client.Session.SummonerCache.GetData(player.SummonerName, GotSummonerData);
-      SummonerIcon = DataDragon.GetProfileIconImage(DataDragon.GetIconData(player.ProfileIconId)).Load();
-      UserName = player.SummonerName;
 
-      forceExpand = expanded;
-      if (!expanded) {
+      this.Member = member;
+      member.Changed += (s, e) => Update();
+      Update();
+
+      forceExpand = true;
+      if (!forceExpand) {
         Image.Height = Image.Width = 0;
         LevelText.Height = 0;
       }
     }
 
-    public LobbyPlayer(Member member, bool expanded) : this() {
-      Client.Session.SummonerCache.GetData(member.SummonerName, GotSummonerData);
-
-      forceExpand = expanded;
-      if (!expanded) {
-        Image.Height = Image.Width = 0;
-        LevelText.Height = 0;
-      }
-    }
-
-    public LobbyPlayer(BotParticipant bot, bool expanded) : this() {
-      var champ = DataDragon.ChampData.Value.data[bot.SummonerInternalName.Split('_')[1]];
-      SummonerIcon = DataDragon.GetChampIconImage(champ).Load();
-      UserName = champ.name;
-      RankString = bot.BotSkillLevelName;
-
-      forceExpand = expanded;
-      if (!expanded) {
-        Image.Height = Image.Width = 0;
+    private void Update() {
+      if (Member.IsBot) {
+        var champ = DataDragon.ChampData.Value.data[Member.Name.Split('_')[1]];
+        SummonerIcon = DataDragon.GetChampIconImage(champ).Load();
+        UserName = champ.name;
+      } else {
+        Session.Current.SummonerCache.GetData(Member.Name, GotSummonerData);
+        UserName = Member.Name;
       }
     }
 
     private void GotSummonerData(SummonerCache.Item item) {
-      SummonerIcon = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
-
-      LevelString = "Level " + item.Data.SummonerLevel.Level;
-
-      var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
-      if (league != null) {
-        LevelString = RankedTier.Values[league.Tier] + " " + league.Rank;
+      if (item.Data != null) {
+        SummonerIcon = DataDragon.GetProfileIconImage(DataDragon.GetIconData(item.Data.Summoner.ProfileIconId)).Load();
+        LevelString = "Level " + item.Data.SummonerLevel.Level;
+        UserName = item.Data.Summoner.Name;
       }
 
-      UserName = item.Data.Summoner.Name;
-      RankString = "Challenjour";
+      if (item.Leagues != null) {
+        var league = item.Leagues.SummonerLeagues.FirstOrDefault(l => l.Queue.Equals(QueueType.RANKED_SOLO_5x5.Key));
+        if (league != null) {
+          RankString = RankedTier.Values[league.Tier] + " " + league.Rank;
+        }
+      }
     }
 
     private void SetField<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string name = null) {
@@ -141,7 +131,7 @@ namespace LeagueClient.UI.Main.Lobbies {
     }
 
     private void This_MouseLeave(object sender, MouseEventArgs e) {
-      if(!ForceExpand) Contract();
+      if (!ForceExpand) Contract();
     }
   }
 }

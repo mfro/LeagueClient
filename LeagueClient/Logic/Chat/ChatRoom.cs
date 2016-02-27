@@ -1,6 +1,7 @@
 ﻿using agsXMPP;
 using agsXMPP.protocol.client;
 using agsXMPP.protocol.x.muc;
+using RiotClient.Lobbies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,68 +15,47 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace LeagueClient.Logic.Chat {
-  public sealed class ChatRoom : IDisposable {
+  public sealed class ChatRoom {
     private TextBox input;
     private RichTextBox output;
     private Button send;
     private ScrollViewer scroller;
 
-    private Jid chatRoom;
+    private Lobby lobby;
     private Dispatcher dispatch = Application.Current.Dispatcher;
 
-    public bool IsJoined { get; private set; }
-    public Dictionary<string, LeagueStatus> Statuses { get; } = new Dictionary<string, LeagueStatus>();
-    public Dictionary<string, Item> Users { get; } = new Dictionary<string, Item>();
-
-    public ChatRoom(TextBox input, RichTextBox output, Button send, ScrollViewer scroller) {
+    public ChatRoom(Lobby lobby, TextBox input, RichTextBox output, Button send, ScrollViewer scroller) {
       this.input = input;
       this.output = output;
       this.send = send;
       this.scroller = scroller;
+      this.lobby = lobby;
 
       input.KeyUp += TextBox_KeyUp;
       send.Click += Button_Click;
+
+      lobby.ChatMessage += Lobby_ChatMessage;
+      lobby.ChatStatus += Lobby_ChatStatus;
     }
 
-    public void JoinChat(Jid jid, string pass = null) {
-      if (IsJoined) return;
-      chatRoom = jid;
-      Client.Session.ChatManager.JoinRoom(jid, pass);
-      Client.Session.ChatManager.PresenceRecieved += ChatManager_PresenceRecieved;
-      Client.Session.ChatManager.MessageReceived += ChatManager_MessageReceived;
-      IsJoined = true;
+    private void Lobby_ChatMessage(object sender, ChatMessageEventArgs e) {
+      dispatch.Invoke(() => {
+        var tr = new TextRange(output.Document.ContentEnd, output.Document.ContentEnd);
+        tr.Text = e.From + ": ";
+        tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.CornflowerBlue);
+        tr = new TextRange(output.Document.ContentEnd, output.Document.ContentEnd);
+        tr.Text = e.Message + '\n';
+        tr.ApplyPropertyValue(TextElement.ForegroundProperty, App.FontBrush);
+        if (scroller.VerticalOffset == scroller.ScrollableHeight)
+          scroller.ScrollToBottom();
+      });
     }
 
-    private void ChatManager_MessageReceived(object sender, Message e) {
-      if (!e.From.User.Equals(chatRoom.User) || e.Type != MessageType.groupchat) return;
-
-      Application.Current.Dispatcher.MyInvoke(ShowChatMessage, e.From.Resource, e.Body);
-    }
-
-    private void ChatManager_PresenceRecieved(object sender, Presence e) {
-      if (!e.From.User.Equals(chatRoom.User)) return;
-      if (e.Status == null && e.Type == PresenceType.available) {
-        Client.Session.ChatManager.SendPresence();
-        return;
-      }
-
-      var user = e.MucUser.Item;
-      if (e.Type == PresenceType.available) {
-        if (!Users.ContainsKey(user.Jid.User)) Application.Current.Dispatcher.MyInvoke(ShowLobbyMessage, $"{e.From.Resource} has joined the lobby");
-        Statuses[user.Jid.User] = new LeagueStatus(e.Status, e.Show);
-        Users[user.Jid.User] = user;
+    private void Lobby_ChatStatus(object sender, ChatStatusEventArgs e) {
+      if (e.IsOnline) {
+        dispatch.MyInvoke(ShowLobbyMessage, $"{e.From} has joined the lobby");
       } else {
-        if (Users.ContainsKey(user.Jid.User)) Application.Current.Dispatcher.MyInvoke(ShowLobbyMessage, $"{e.From.Resource} has left the lobby");
-        Statuses.Remove(user.Jid.User);
-        Users.Remove(user.Jid.User);
-      }
-    }
-
-    public void Dispose() {
-      if (IsJoined) {
-        Client.Session.ChatManager.LeaveRoom(chatRoom);
-        Client.Session.ChatManager.PresenceRecieved -= ChatManager_PresenceRecieved;
-        Client.Session.ChatManager.MessageReceived -= ChatManager_MessageReceived;
+        dispatch.MyInvoke(ShowLobbyMessage, $"{e.From} has left the lobby");
       }
     }
 
@@ -89,19 +69,8 @@ namespace LeagueClient.Logic.Chat {
 
     private void SendMessage() {
       if (string.IsNullOrWhiteSpace(input.Text)) return;
-      Client.Session.ChatManager.SendMessage(chatRoom, input.Text, MessageType.groupchat);
+      lobby.SendMessage(input.Text);
       input.Text = "";
-    }
-
-    private void ShowChatMessage(string user, string message) {
-      var tr = new TextRange(output.Document.ContentEnd, output.Document.ContentEnd);
-      tr.Text = user + ": ";
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.CornflowerBlue);
-      tr = new TextRange(output.Document.ContentEnd, output.Document.ContentEnd);
-      tr.Text = message + '\n';
-      tr.ApplyPropertyValue(TextElement.ForegroundProperty, App.FontBrush);
-      if (scroller.VerticalOffset == scroller.ScrollableHeight)
-        scroller.ScrollToBottom();
     }
 
     private void TextBox_KeyUp(object sender, KeyEventArgs e) {

@@ -12,14 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
-using LeagueClient.Logic.com.riotgames.other;
 using MFroehlich.Parsing.JSON;
 using LeagueClient.Logic;
 using System.Reflection;
-using LeagueClient.Logic.Riot;
 using LeagueClient.Logic.Chat;
+using RiotClient.Lobbies;
 
 namespace LeagueClient.UI.Main.Lobbies {
   /// <summary>
@@ -28,120 +26,66 @@ namespace LeagueClient.UI.Main.Lobbies {
   public partial class TBDLobbyPage : Page, IClientSubPage {
     public event EventHandler Close;
 
-    private LobbyStatus lobby;
-    private TBDGroupData data;
+    private TBDLobby lobby;
     private ChatRoom chat;
 
-    private TBDPlayer[] players = new TBDPlayer[5];
-    private TBDSlotData mySlot => data.Phase.Slots[data.Phase.MySlot];
-    private TBDPlayer myPlayer => players[data.Phase.MySlot];
-
-    public TBDLobbyPage() {
+    public TBDLobbyPage(TBDLobby lobby) {
       InitializeComponent();
+      this.lobby = lobby;
       LoadingGrid.Visibility = Visibility.Visible;
 
-      chat = new ChatRoom(SendBox, ChatHistory, SendButt, ChatScroller);
+      chat = new ChatRoom(lobby, SendBox, ChatHistory, SendButt, ChatScroller);
+      lobby.Loaded += Lobby_Loaded;
+      lobby.MemberJoined += Lobby_MemberJoined;
+      lobby.OnRemovedFromService += Lobby_RemovedFromService;
+
+      lobby.CatchUp();
     }
 
-    private void FirstInit() {
-      if (chat.IsJoined) return;
+    #region | Lobby Events |
+
+    private void Lobby_Loaded(object sender, EventArgs e) {
+      Dispatcher.Invoke(() => {
+        LoadingGrid.Visibility = Visibility.Collapsed;
+
+        var spots = new[] { Pos0, Pos1, Pos2, Pos3, Pos4 };
+        foreach (var spot in spots) spot.Child = null;
+      });
     }
 
-    private void UpdateSlots() {
-      bool isOwner = lobby.Owner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
+    private void Lobby_MemberJoined(object sender, MemberEventArgs e) {
       var spots = new[] { Pos0, Pos1, Pos2, Pos3, Pos4 };
 
-      foreach (var border in spots) border.Child = null;
-      for (int i = 0; i < lobby.Members.Length; i++) {
-        var member = lobby.Members[i];
-        var position = spots[i];
-        bool isSelf = member.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
-        players[i] = new TBDPlayer(isSelf, isOwner, member, Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId);
-        players[i].SetSlotData(data.Phase.Slots[i]);
-        players[i].RoleSelected += TBDLobbyPage_RoleSelected;
-        position.Child = players[i];
-      }
+      Dispatcher.Invoke(() => {
+        var member = e.Member as TBDLobby.TBDLobbyMember;
+        var player = new TBDPlayer(lobby.IsCaptain, member, 0);
 
-      LoadingGrid.Visibility = Visibility.Collapsed;
+        spots[member.SlotID].Child = player;
+      });
     }
 
-    public void GotLobbyStatus(LobbyStatus obj) {
-      lobby = obj;
+    #endregion
 
-      if (data != null) {
-        FirstInit();
-        Dispatcher.Invoke(UpdateSlots);
-      }
-    }
+    #region | LCDS Events |
 
-    public bool HandleMessage(MessageReceivedEventArgs args) {
-      var lcds = args.Body as LcdsServiceProxyResponse;
-
-      if (lcds != null && lcds.serviceName == RiotServices.TeambuilderDraftService.ServiceName) {
-        if (lcds.status.Equals("OK")) {
-          JSONObject json = null;
-          if (!string.IsNullOrEmpty(lcds.payload)) json = JSONParser.ParseObject(lcds.payload, 0);
-          var method = GetMethod(lcds);
-          if (method != null)
-            method(json);
-          else { }
-          return true;
-        } else if (!lcds.status.Equals("ACK")) {
-          Client.Log(lcds.status + ": " + lcds.payload);
-          RiotServices.TeambuilderDraftService.QuitV2();
-        }
-      }
-      return false;
-    }
-
-    private void QuitButton_Click(object sender, RoutedEventArgs e) {
-      RiotServices.TeambuilderDraftService.QuitV2();
-    }
-
-    private void TBDLobbyPage_RoleSelected(object sender, RoleChangedEventArgs e) {
-      mySlot.Positions[e.RoleIndex] = e.Role.Key;
-      RiotServices.TeambuilderDraftService.SpecifyDraftPositionPreferences(mySlot.Positions[0], mySlot.Positions[1]);
-    }
-
-    #region LCDS
-
-    private static readonly Dictionary<string, string> MethodNames = new Dictionary<string, string> {
-
-    };
-
-    private Action<JSONObject> GetMethod(LcdsServiceProxyResponse response) {
-      JSONObject json = null;
-      if (response.payload != null) {
-        json = JSONParser.ParseObject(response.payload, 0);
-      }
-      Client.Log(response.methodName + ": " + response.payload);
-      var name = response.methodName;
-      if (MethodNames.ContainsKey(name)) name = MethodNames[name];
-      var method = GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
-      if (method != null)
-        return (Action<JSONObject>) method.CreateDelegate(typeof(Action<JSONObject>), this);
-      else return null;
-    }
-
-    private void tbdGameDtoV1(JSONObject arg) {
-      data = JSONDeserializer.Deserialize<TBDGroupData>(arg);
-
-      if (lobby != null) {
-        FirstInit();
-        Dispatcher.Invoke(UpdateSlots);
-      }
-    }
-
-    private void removedFromServiceV1(JSONObject arg) {
+    private void Lobby_RemovedFromService(object sender, TBDLobby.RemovedFromServiceEventArgs e) {
       Close?.Invoke(this, new EventArgs());
     }
 
     #endregion
 
+    private void QuitButton_Click(object sender, RoutedEventArgs e) {
+      lobby.Quit();
+    }
+
+    private void TBDPlayer_RoleSelected(object sender, RoleChangedEventArgs e) {
+      lobby.SetRole(e.RoleIndex, e.Role);
+    }
+
     public Page Page => this;
 
     public void Dispose() {
-      RiotServices.GameInvitationService.Leave();
+      lobby.Quit();
     }
   }
 }

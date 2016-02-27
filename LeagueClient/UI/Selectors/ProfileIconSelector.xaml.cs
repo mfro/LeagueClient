@@ -13,26 +13,26 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
-using LeagueClient.Logic.Riot;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
+using RiotClient;
 
 namespace LeagueClient.UI.Selectors {
   /// <summary>
   /// Interaction logic for ProfileIconSelector.xaml
   /// </summary>
   public partial class ProfileIconSelector : UserControl {
-    public event EventHandler<Logic.Riot.Platform.Icon> IconSelected;
+    public event EventHandler<RiotClient.Riot.Platform.Icon> IconSelected;
 
     public ProfileIconSelector() {
       InitializeComponent();
 
-      if (Client.Session.Connected)
+      if (Session.Current.Connected)
         LoadIcons();
     }
 
     public async void LoadIcons() {
-      var icons = await RiotServices.SummonerIconService.GetSummonerIconInventory(Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId);
+      var icons = await Session.Current.Account.GetSummonerIconInventory();
       var data = new List<object>();
       foreach (var icon in icons.SummonerIcons.OrderByDescending(i => i.PurchaseDate)) {
         ProfileIconDto info;
@@ -47,14 +47,12 @@ namespace LeagueClient.UI.Selectors {
 
     private void Icon_Click(object sender, MouseButtonEventArgs e) {
       var data = ((sender as Border).DataContext as IconInfo).Icon;
-      Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId = Client.Session.Settings.ProfileIcon = data.IconId;
       IconSelected?.Invoke(this, data);
-      RiotServices.SummonerService.UpdateProfileIconId(data.IconId);
     }
 
     private class IconInfo {
       public BitmapImage Image { get; set; }
-      public Logic.Riot.Platform.Icon Icon { get; set; }
+      public RiotClient.Riot.Platform.Icon Icon { get; set; }
     }
   }
 }

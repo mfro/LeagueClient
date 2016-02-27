@@ -15,9 +15,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
 using LeagueClient.Logic.Queueing;
-using LeagueClient.Logic.Riot.Platform;
 using RtmpSharp.Messaging;
 using System.Diagnostics;
+using RiotClient;
+using RiotClient.Riot.Platform;
 
 namespace LeagueClient.UI.Main {
   /// <summary>
@@ -60,18 +61,18 @@ namespace LeagueClient.UI.Main {
     private void ReconnectButton_Click(object sender, RoutedEventArgs e) {
       if (champSelect)
         Client.MainWindow.ShowChampSelect();
-      else Client.Session.JoinGame();
+      else Session.Current.JoinGame();
     }
 
     public bool HandleMessage(MessageReceivedEventArgs args) {
       var game = args.Body as GameDTO;
       if (game != null) {
         if (game.GameState.Equals("TERMINATED_IN_ERROR")) {
-          Client.Session.ChatManager.Status = ChatStatus.outOfGame;
+          Session.Current.ChatManager.Status = ChatStatus.outOfGame;
           Close?.Invoke(this, new EventArgs());
           return true;
         } else if (game.GameState.Equals("TERMINATED")) {
-          Client.Session.ChatManager.Status = ChatStatus.outOfGame;
+          Session.Current.ChatManager.Status = ChatStatus.outOfGame;
           Close?.Invoke(this, new EventArgs());
           return true;
         }

@@ -2,11 +2,7 @@
 using LeagueClient.Logic;
 using LeagueClient.Logic.Chat;
 using LeagueClient.Logic.Queueing;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
-using LeagueClient.Logic.Riot.Team;
 using LeagueClient.UI.Main.Alerts;
-using LeagueClient.UI.Main.Cap;
 using LeagueClient.UI.Main.Custom;
 using LeagueClient.UI.Main.Friends;
 using LeagueClient.UI.Main.Lobbies;
@@ -14,6 +10,10 @@ using LeagueClient.UI.Selectors;
 using MFroehlich.League.Assets;
 using MFroehlich.League.RiotAPI;
 using MFroehlich.Parsing.JSON;
+using RiotClient;
+using RiotClient.Chat;
+using RiotClient.Lobbies;
+using RiotClient.Riot.Platform;
 using RtmpSharp.Messaging;
 using System;
 using System.Collections.Generic;
@@ -36,12 +36,13 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace LeagueClient.UI.Main {
   /// <summary>
   /// Interaction logic for LandingPage.xaml
   /// </summary>
-  public sealed partial class LandingPage : Page, IClientPage, IQueueManager {
+  public sealed partial class LandingPage : Page, IQueueManager {
     public IQueueInfo CurrentInfo { get; private set; }
     public IQueuePopup CurrentPopup { get; private set; }
     public IClientSubPage CurrentPage { get; private set; }
@@ -50,27 +51,34 @@ namespace LeagueClient.UI.Main {
     public LandingPage() {
       InitializeComponent();
 
-      Client.Session.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
-      Client.Session.ChatManager.MessageReceived += ChatManager_MessageReceived;
+      Session.Current.ChatManager.StatusUpdated += ChatManager_StatusUpdated;
+      Session.Current.ChatManager.MessageReceived += ChatManager_MessageReceived;
 
       ChatCombo.ItemsSource = Enum.GetValues(typeof(ChatMode));
       ChatCombo.SelectedItem = ChatMode.Chat;
 
       ShowTab(Tab.Home);
-      IPAmount.Content = Client.Session.LoginPacket.IpBalance.ToString();
-      RPAmount.Content = Client.Session.LoginPacket.RpBalance.ToString();
-      NameLabel.Content = Client.Session.LoginPacket.AllSummonerData.Summoner.Name;
-      ProfileIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId)).Load();
+      IPAmount.Content = Session.Current.Account.IP;
+      RPAmount.Content = Session.Current.Account.RP;
+      NameLabel.Content = Session.Current.Account.Name;
+      ProfileIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(Session.Current.Account.ProfileIconID)).Load();
       Client.PopupSelector = Popup;
 
       OpenChats.ItemsSource = OpenChatsList;
       Popup.IconSelector.IconSelected += IconSelector_IconSelected;
-      FriendsList.ItemsSource = Client.Session.ChatManager.FriendList;
+
+      Session.Current.ChatManager.FriendListChanged += ChatManager_FriendListChanged;
+    }
+
+    private void ChatManager_FriendListChanged(object sender, EventArgs e) {
+      Dispatcher.Invoke(() => {
+        FriendsList.ItemsSource = Session.Current.ChatManager.FriendList;
+      });
     }
 
     private void ChatManager_MessageReceived(object sender, Message e) {
-      if (!Client.Session.ChatManager.Friends.ContainsKey(e.From.User)) return;
-      var friend = Client.Session.ChatManager.Friends[e.From.User];
+      if (!Session.Current.ChatManager.Friends.ContainsKey(e.From.User)) return;
+      var friend = Session.Current.ChatManager.Friends[e.From.User];
       if (!OpenChatsList.Contains(friend)) Dispatcher.Invoke(() => OpenChatsList.Add(friend));
     }
 
@@ -102,28 +110,21 @@ namespace LeagueClient.UI.Main {
     }
 
     #region Tab Events
-    //private bool forceExpand;
+
     private static readonly Duration slide = new Duration(TimeSpan.FromMilliseconds(200));
 
     private void Tab_Click(object sender, RoutedEventArgs e) {
-      //if (sender == PlayTab && Keyboard.IsKeyDown(Key.LeftShift)) {
-      //  forceExpand = !forceExpand;
-      //} else 
-      if (sender == LogoutTab) Client.Session.Logout();
-      else if (sender == PlayTab) ShowTab(Tab.Play);
+      if (sender == LogoutTab) {
+        Session.Current.Logout();
+        Client.MainWindow.Start();
+      } else if (sender == PlayTab) ShowTab(Tab.Play);
       else if (sender == HomeTab) ShowTab(Tab.Home);
       else if (sender == ProfileTab) ShowTab(Tab.Profile);
       else if (sender == ShopTab) {
-        RiotServices.LoginService.GetStoreUrl().ContinueWith(t => {
-          System.Diagnostics.Process.Start(t.Result);
-        });
+        //TODO RiotServices.LoginService.GetStoreUrl().ContinueWith(t => {
+        //  System.Diagnostics.Process.Start(t.Result);
+        //});
       }
-
-      //if (!forceExpand) {
-      //  var shrink = new ThicknessAnimation(new Thickness(0), slide);
-      //  PlayExpandUp.BeginAnimation(MarginProperty, shrink);
-      //  PlayExpandDown.BeginAnimation(MarginProperty, shrink);
-      //}
     }
 
     private void ShowTab(Tab tab) {
@@ -138,32 +139,20 @@ namespace LeagueClient.UI.Main {
 
     private void PlayTab_MouseEnter(object sender, MouseEventArgs e) {
       PlayTabGlow.Color = App.FocusColor;
-      //var top = new ThicknessAnimation(new Thickness(0, -65, 0, 0), slide);
-      //PlayExpandUp.BeginAnimation(MarginProperty, top);
-      //var bot = new ThicknessAnimation(new Thickness(0, 0, 0, -120), slide);
-      //PlayExpandDown.BeginAnimation(MarginProperty, bot);
     }
 
     private void PlayTab_MouseLeave(object sender, MouseEventArgs e) {
       PlayTabGlow.Color = Colors.Black;
-    }
-
-    private void Border_MouseLeave(object sender, MouseEventArgs e) {
-      //if (!forceExpand) {
-      //  var shrink = new ThicknessAnimation(new Thickness(0), slide);
-      //  PlayExpandUp.BeginAnimation(MarginProperty, shrink);
-      //  PlayExpandDown.BeginAnimation(MarginProperty, shrink);
-      //}
     }
     #endregion
 
     #region Other Events
 
     private void Info_Popped(object sender, EventArgs e) {
-      Client.Session.QueueManager.ShowInfo(null);
+      Client.QueueManager.ShowInfo(null);
     }
 
-    private void CurrentPopup_Close(object sender, QueueEventArgs e) {
+    private void CurrentPopup_Close(object sender, QueueEventArgsa e) {
       Dispatcher.Invoke(() => PopupPanel.BeginStoryboard(App.FadeOut));
       CurrentPopup.Close -= CurrentPopup_Close;
       CurrentPopup = null;
@@ -186,7 +175,7 @@ namespace LeagueClient.UI.Main {
     }
 
     private void ChatCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      Client.Session.ChatManager.ChatMode = (ChatMode) ChatCombo.SelectedItem;
+      Session.Current.ChatManager.ChatMode = (ChatMode) ChatCombo.SelectedItem;
     }
 
     private void ProfileIcon_Click(object sender, MouseButtonEventArgs e) {
@@ -196,7 +185,7 @@ namespace LeagueClient.UI.Main {
 
     private void IconSelector_IconSelected(object sender, Icon e) {
       Popup.BeginStoryboard(App.FadeOut);
-      Client.Session.LoginPacket.AllSummonerData.Summoner.ProfileIconId = e.IconId;
+      Session.Current.Account.SetSummonerIcon(e.IconId);
       ProfileIcon.Source = DataDragon.GetProfileIconImage(DataDragon.GetIconData(e.IconId)).Load();
     }
 
@@ -220,13 +209,6 @@ namespace LeagueClient.UI.Main {
 
     #region Interface
 
-    bool IClientPage.HandleMessage(MessageReceivedEventArgs args) {
-      if (CurrentPopup?.HandleMessage(args) ?? false) return true;
-      if (CurrentInfo?.HandleMessage(args) ?? false) return true;
-      if (CurrentPage != null) return CurrentPage.HandleMessage(args);
-      return PlayPage.HandleMessage(args);
-    }
-
     void IQueueManager.ShowQueuePopup(IQueuePopup popup) {
       CurrentPopup = popup;
       CurrentPopup.Close += CurrentPopup_Close;
@@ -236,18 +218,18 @@ namespace LeagueClient.UI.Main {
     }
 
     void IQueueManager.ShowPage() {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.Invoke(Client.Session.QueueManager.ShowPage); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.Invoke(Client.QueueManager.ShowPage); return; }
 
       ShowTab(Tab.Play);
     }
 
     void IQueueManager.ShowPage(IClientSubPage page) {
-      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(Client.Session.QueueManager.ShowPage, page); return; }
+      if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(Client.QueueManager.ShowPage, page); return; }
 
       CloseSubPage();
       page.Close += HandlePageClose;
       CurrentPage = page;
-      SubPageArea.Content = page?.Page;
+      SubPageArea.Content = page.Page;
       SubPageArea.Visibility = Visibility.Visible;
       ShowTab(Tab.Play);
     }
@@ -264,55 +246,53 @@ namespace LeagueClient.UI.Main {
       }
     }
 
-    bool IQueueManager.AttachToQueue(SearchingForMatchNotification result) {
-      if (result.PlayerJoinFailures != null) {
-        var leaver = result.PlayerJoinFailures[0];
-        bool me = leaver.Summoner.SummonerId == Client.Session.LoginPacket.AllSummonerData.Summoner.SummonerId;
-        switch (leaver.ReasonFailed) {
-          case "LEAVER_BUSTER":
-            //TODO Leaverbuster
-            break;
-          case "QUEUE_DODGER":
-            Dispatcher.Invoke(() => Client.Session.QueueManager.ShowInfo(new BingeQueuer(leaver.PenaltyRemainingTime, me ? null : leaver.Summoner.Name)));
-            break;
-        }
-        return false;
-      } else if (result.JoinedQueues != null) {
-        return true;
-      } else return false;
+    void IQueueManager.JoinLobby(Lobby lobby) {
+      var tbd = lobby as TBDLobby;
+      var def = lobby as DefaultLobby;
+      var custom = lobby as CustomLobby;
+
+      IClientSubPage page;
+      if (tbd != null) {
+        page = new TBDLobbyPage(tbd);
+      } else if (def != null) {
+        page = new DefaultLobbyPage(def);
+      } else if (custom != null) {
+        page = new CustomLobbyPage(custom);
+      } else
+        throw new Exception("Unknown lobby type " + lobby);
+
+      Client.QueueManager.ShowPage(page);
     }
 
-    void IQueueManager.AcceptInvite(InvitationRequest invite) {
-      var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
-      var metaData = JSONParser.ParseObject(invite.GameMetaData, 0);
-      if ((int) metaData["gameTypeConfigId"] == 12) {
-        var lobby = new CapLobbyPage(false);
-        task.ContinueWith(t => lobby.GotLobbyStatus(task.Result));
-        RiotServices.CapService.JoinGroupAsInvitee((string) metaData["groupFinderId"]);
-        Client.Session.QueueManager.ShowPage(lobby);
-      } else {
-        switch ((string) metaData["gameType"]) {
-          case "PRACTICE_GAME":
-            var custom = new CustomLobbyPage();
-            task.ContinueWith(t => custom.GotLobbyStatus(task.Result));
-            Client.Session.QueueManager.ShowPage(custom);
-            break;
-          case "NORMAL_GAME":
-            var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] } });
-            task.ContinueWith(t => normal.GotLobbyStatus(task.Result));
-            Client.Session.QueueManager.ShowPage(normal);
-            break;
-          case "RANKED_TEAM_GAME":
-            var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] }, TeamId = new TeamId { FullId = (string) metaData["rankedTeamId"] } });
-            task.ContinueWith(t => ranked.GotLobbyStatus(task.Result));
-            Client.Session.QueueManager.ShowPage(ranked);
-            break;
-        }
-      }
-    }
+    //var task = RiotServices.GameInvitationService.Accept(invite.InvitationId);
+    //var metaData = JSONParser.ParseObject(invite.GameMetaData, 0);
+    //if ((int) metaData["gameTypeConfigId"] == 12) {
+    //  var lobby = new CapLobbyPage(false);
+    //  task.ContinueWith(t => lobby.GotLobbyStatus(task.Result));
+    //  RiotServices.CapService.JoinGroupAsInvitee((string) metaData["groupFinderId"]);
+    //  Session.Current.QueueManager.ShowPage(lobby);
+    //} else {
+    //  switch ((string) metaData["gameType"]) {
+    //    case "PRACTICE_GAME":
+    //      var custom = new CustomLobbyPage();
+    //      task.ContinueWith(t => custom.GotLobbyStatus(task.Result));
+    //      Session.Current.QueueManager.ShowPage(custom);
+    //      break;
+    //    case "NORMAL_GAME":
+    //      var normal = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] } });
+    //      task.ContinueWith(t => normal.GotLobbyStatus(task.Result));
+    //      Session.Current.QueueManager.ShowPage(normal);
+    //      break;
+    //    case "RANKED_TEAM_GAME":
+    //      var ranked = new DefaultLobbyPage(new MatchMakerParams { QueueIds = new[] { (int) metaData["queueId"] }, TeamId = new TeamId { FullId = (string) metaData["rankedTeamId"] } });
+    //      task.ContinueWith(t => ranked.GotLobbyStatus(task.Result));
+    //      Session.Current.QueueManager.ShowPage(ranked);
+    //      break;
+    //  }
+    //}
 
     void IQueueManager.ViewProfile(string summonerName) {
-      Client.Session.SummonerCache.GetData(summonerName, Profile.GotSummoner);
+      Session.Current.SummonerCache.GetData(summonerName, Profile.GotSummoner);
       Dispatcher.MyInvoke(ShowTab, Tab.Profile);
     }
 

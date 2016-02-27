@@ -15,12 +15,5 @@ namespace LeagueClient.UI.Main {
     /// The page object to render
     /// </summary>
     System.Windows.Controls.Page Page { get; }
-
-    /// <summary>
-    /// Handles a message recieved from the RTMP connection
-    /// </summary>
-    /// <param name="args">The message recieved</param>
-    /// <returns>True if the message was handled, false to continue propagation</returns>
-    bool HandleMessage(MessageReceivedEventArgs args);
   }
 }

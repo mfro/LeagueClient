@@ -14,11 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LeagueClient.Logic;
-using LeagueClient.Logic.Riot;
-using LeagueClient.Logic.Riot.Platform;
 using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using MyChampDto = MFroehlich.League.DataDragon.ChampionDto;
+using RiotClient;
 
 namespace LeagueClient.UI.Selectors {
   /// <summary>
@@ -50,7 +49,7 @@ namespace LeagueClient.UI.Selectors {
     public ChampSelector() {
       InitializeComponent();
       SkinScroll.ScrollToHorizontalOffset(290);
-      if (Client.Session.Connected)
+      if (Session.Current.Connected)
         UpdateChampList();
       else
         SetChampList(DataDragon.ChampData.Value.data.Values);
@@ -59,7 +58,7 @@ namespace LeagueClient.UI.Selectors {
 
     public async void UpdateChampList() {
       var champs = new List<MyChampDto>();
-      foreach (var riot in await RiotServices.InventoryService.GetAvailableChampions()) {
+      foreach (var riot in await Session.Current.Account.GetAvailableChampions()) {
         if ((!riot.Owned && !riot.FreeToPlay) || riot.Banned) continue;
         champs.Add(DataDragon.GetChampData(riot.ChampionId));
       }
@@ -102,16 +101,6 @@ namespace LeagueClient.UI.Selectors {
       SkinSelect.Visibility = Visibility.Collapsed;
     }
 
-    //private void Item_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-    //  var box = sender as ContentPresenter;
-    //  DragDrop.DoDragDrop(box, box.DataContext, DragDropEffects.Move);
-    //}
-
-    //private void ItemsControl_Drop(object sender, DragEventArgs e) {
-    //  var data = e.Data.GetData(typeof(object));
-    //  var target = (sender as ContentPresenter).DataContext;
-    //}
-
     private void UpdateSkinList() {
       var images = new List<object>();
       foreach (var item in skins) {
@@ -147,7 +136,7 @@ namespace LeagueClient.UI.Selectors {
         SelectedChampion = data;
       }
 
-      var riotDto = Client.Session.RiotChampions.FirstOrDefault(c => c.ChampionId == data.key);
+      var riotDto = Session.Current.RiotChampions.FirstOrDefault(c => c.ChampionId == data.key);
       skins.Clear();
       foreach (var item in SelectedChampion.skins) {
         var riot = riotDto.ChampionSkins.FirstOrDefault(s => s.SkinId == item.id);
