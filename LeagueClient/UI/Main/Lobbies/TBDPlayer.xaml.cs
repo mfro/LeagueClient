@@ -27,13 +27,13 @@ namespace LeagueClient.UI.Main.Lobbies {
     public event EventHandler<RoleChangedEventArgs> RoleSelected;
     public bool CanControl { get; set; }
 
-    private TBDLobby.TBDLobbyMember slot;
+    private TBDLobbyMember slot;
 
     public TBDPlayer() {
       InitializeComponent();
     }
 
-    public TBDPlayer(bool amCaptain, TBDLobby.TBDLobbyMember slot, int profileIconId) : this() {
+    public TBDPlayer(bool amCaptain, TBDLobbyMember slot, int profileIconId) : this() {
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;
       CanControl = !slot.IsMe && amCaptain;
 

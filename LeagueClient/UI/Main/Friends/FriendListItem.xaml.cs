@@ -94,7 +94,7 @@ namespace LeagueClient.UI.Main.Friends {
     }
 
     private void Invite_Click(object sender, RoutedEventArgs e) {
-      Session.Current.CurrentLobby.Invite(friend.Cache.Data.Summoner.SummonerId);
+      Session.Current.SendInvite(friend.Cache.Data.Summoner.SummonerId);
     }
 
     private void ViewProfile_Click(object sender, RoutedEventArgs e) {

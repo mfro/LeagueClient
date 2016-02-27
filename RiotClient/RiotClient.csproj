@@ -195,13 +195,13 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Extensions.cs" />
-    <Compile Include="Lobbies\CustomGame.cs" />
     <Compile Include="Lobbies\CustomLobby.cs" />
-    <Compile Include="Lobbies\DefaultLobby.cs" />
-    <Compile Include="Lobbies\Game.cs" />
+    <Compile Include="Lobbies\GameLobby.cs" />
+    <Compile Include="Lobbies\GroupChat.cs" />
     <Compile Include="Lobbies\Invitation.cs" />
     <Compile Include="Lobbies\Lobby.cs" />
     <Compile Include="Lobbies\Queue.cs" />
+    <Compile Include="Lobbies\QueueLobby.cs" />
     <Compile Include="Lobbies\TBDLobby.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

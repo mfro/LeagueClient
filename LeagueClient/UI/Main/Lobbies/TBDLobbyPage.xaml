@@ -18,19 +18,14 @@
         </Style>
       </StackPanel.Resources>
       <Border Name="Pos3" Margin="0 0 10 0" Width="120">
-        <local:TBDPlayer/>
       </Border>
       <Border Name="Pos1" Margin="0 0 10 0" Width="120">
-        <local:TBDPlayer/>
       </Border>
       <Border Name="Pos0" Margin="0 0 10 0">
-        <local:TBDPlayer/>
       </Border>
       <Border Name="Pos2" Margin="0 0 10 0" Width="120">
-        <local:TBDPlayer/>
       </Border>
       <Border Name="Pos4" Margin="0 0 10 0" Width="120">
-        <local:TBDPlayer/>
       </Border>
     </StackPanel>
 

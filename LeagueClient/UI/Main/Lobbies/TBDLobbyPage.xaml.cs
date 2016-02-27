@@ -34,10 +34,9 @@ namespace LeagueClient.UI.Main.Lobbies {
       this.lobby = lobby;
       LoadingGrid.Visibility = Visibility.Visible;
 
-      chat = new ChatRoom(lobby, SendBox, ChatHistory, SendButt, ChatScroller);
       lobby.Loaded += Lobby_Loaded;
       lobby.MemberJoined += Lobby_MemberJoined;
-      lobby.OnRemovedFromService += Lobby_RemovedFromService;
+      //lobby.OnRemovedFromService += Lobby_RemovedFromService;
 
       lobby.CatchUp();
     }
@@ -47,9 +46,7 @@ namespace LeagueClient.UI.Main.Lobbies {
     private void Lobby_Loaded(object sender, EventArgs e) {
       Dispatcher.Invoke(() => {
         LoadingGrid.Visibility = Visibility.Collapsed;
-
-        var spots = new[] { Pos0, Pos1, Pos2, Pos3, Pos4 };
-        foreach (var spot in spots) spot.Child = null;
+        chat = new ChatRoom(lobby.ChatLobby, SendBox, ChatHistory, SendButt, ChatScroller);
       });
     }
 
@@ -57,7 +54,7 @@ namespace LeagueClient.UI.Main.Lobbies {
       var spots = new[] { Pos0, Pos1, Pos2, Pos3, Pos4 };
 
       Dispatcher.Invoke(() => {
-        var member = e.Member as TBDLobby.TBDLobbyMember;
+        var member = e.Member as TBDLobbyMember;
         var player = new TBDPlayer(lobby.IsCaptain, member, 0);
 
         spots[member.SlotID].Child = player;
@@ -68,24 +65,24 @@ namespace LeagueClient.UI.Main.Lobbies {
 
     #region | LCDS Events |
 
-    private void Lobby_RemovedFromService(object sender, TBDLobby.RemovedFromServiceEventArgs e) {
-      Close?.Invoke(this, new EventArgs());
-    }
+    //private void Lobby_RemovedFromService(object sender, TBDLobby.RemovedFromServiceEventArgs e) {
+    //  Close?.Invoke(this, new EventArgs());
+    //}
 
     #endregion
 
     private void QuitButton_Click(object sender, RoutedEventArgs e) {
-      lobby.Quit();
+      lobby.Dispose();
     }
 
     private void TBDPlayer_RoleSelected(object sender, RoleChangedEventArgs e) {
-      lobby.SetRole(e.RoleIndex, e.Role);
+      //lobby.SetRole(e.RoleIndex, e.Role);
     }
 
     public Page Page => this;
 
     public void Dispose() {
-      lobby.Quit();
+      lobby.Dispose();
     }
   }
 }

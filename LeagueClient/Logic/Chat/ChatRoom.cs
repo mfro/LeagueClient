@@ -21,10 +21,10 @@ namespace LeagueClient.Logic.Chat {
     private Button send;
     private ScrollViewer scroller;
 
-    private Lobby lobby;
+    private GroupChat lobby;
     private Dispatcher dispatch = Application.Current.Dispatcher;
 
-    public ChatRoom(Lobby lobby, TextBox input, RichTextBox output, Button send, ScrollViewer scroller) {
+    public ChatRoom(GroupChat lobby, TextBox input, RichTextBox output, Button send, ScrollViewer scroller) {
       this.input = input;
       this.output = output;
       this.send = send;

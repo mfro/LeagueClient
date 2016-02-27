@@ -81,7 +81,7 @@ namespace LeagueClient {
       Top = (sHeight / 2) - (Height / 2);
     }
 
-    public void BeginChampionSelect(Game game) {
+    public void BeginChampionSelect(GameLobby game) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(BeginChampionSelect, game); return; }
 
       Client.QueueManager.ShowPage(new InGamePage(true));

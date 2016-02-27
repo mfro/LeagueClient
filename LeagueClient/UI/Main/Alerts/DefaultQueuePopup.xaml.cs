@@ -72,7 +72,7 @@ namespace LeagueClient.UI.Main.Alerts {
       });
     }
 
-    private void Queue_EnteredChampSelect(object sender, Game e) {
+    private void Queue_EnteredChampSelect(object sender, GameLobby e) {
       Client.MainWindow.BeginChampionSelect(e);
     }
 

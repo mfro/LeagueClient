@@ -31,18 +31,16 @@ namespace LeagueClient.UI.Main.Lobbies {
 
     private GameQueueConfig config;
     private ChatRoom chatRoom;
-    private DefaultLobby lobby;
+    private QueueLobby lobby;
 
     private QueueController queueTimer;
     private Queue queue;
 
-    public DefaultLobbyPage(DefaultLobby lobby) {
+    public DefaultLobbyPage(QueueLobby lobby) {
       InitializeComponent();
 
       this.lobby = lobby;
-      chatRoom = new ChatRoom(lobby, SendBox, ChatHistory, ChatSend, ChatScroller);
 
-      lobby.PlayerInvited += Lobby_PlayerInvited;
       lobby.MemberJoined += Lobby_MemberJoined;
       lobby.MemberLeft += Lobby_MemberLeft;
 
@@ -66,14 +64,20 @@ namespace LeagueClient.UI.Main.Lobbies {
 
     private void Lobby_MemberJoined(object sender, MemberEventArgs e) {
       Dispatcher.Invoke(() => {
-        var player = new LobbyPlayer2(lobby.IsCaptain, e.Member, 0);
-        PlayerList.Children.Add(player);
+        var member = e.Member as QueueLobbyMember;
+        if (member != null) {
+          var player = new LobbyPlayer2(lobby.IsCaptain, member, 0);
+          PlayerList.Children.Add(player);
 
-        var players = PlayerList.Children.Cast<LobbyPlayer2>().ToList();
-        foreach (var control in players) {
-          PlayerList.Children.Remove(control);
-          int index = lobby.GetIndex(control.Member);
-          PlayerList.Children.Insert(index, control);
+          var players = PlayerList.Children.Cast<LobbyPlayer2>().ToList();
+          foreach (var control in players) {
+            PlayerList.Children.Remove(control);
+            int index = lobby.Members.IndexOf(control.Member);
+            PlayerList.Children.Insert(index, control);
+          }
+        } else {
+          var player = new InvitedPlayer(e.Member as LobbyInvitee);
+          InviteList.Children.Add(player);
         }
       });
     }
@@ -82,13 +86,6 @@ namespace LeagueClient.UI.Main.Lobbies {
       Dispatcher.Invoke(() => {
         var player = PlayerList.Children.Cast<LobbyPlayer2>().FirstOrDefault(p => p.Member == e.Member);
         PlayerList.Children.Remove(player);
-      });
-    }
-
-    private void Lobby_PlayerInvited(object sender, InviteeEventArgs e) {
-      Dispatcher.Invoke(() => {
-        var player = new InvitedPlayer(e.Invitee);
-        InviteList.Children.Add(player);
       });
     }
 
@@ -127,6 +124,7 @@ namespace LeagueClient.UI.Main.Lobbies {
       Session.Current.ChatManager.Status = lobby.IsCaptain ? ChatStatus.hostingNormalGame : ChatStatus.outOfGame;
 
       Dispatcher.Invoke(() => {
+        chatRoom = new ChatRoom(lobby.ChatLobby, SendBox, ChatHistory, ChatSend, ChatScroller);
         LoadingGrid.Visibility = Visibility.Collapsed;
         StartButton.Visibility = lobby.IsCaptain ? Visibility.Visible : Visibility.Hidden;
       });
@@ -135,25 +133,24 @@ namespace LeagueClient.UI.Main.Lobbies {
     #region UI Events
 
     private void StartButton_Click(object sender, RoutedEventArgs e) {
-      lobby.EnterQueue();
+      lobby.StartQueue();
     }
 
     private void QuitButton_Click(object sender, RoutedEventArgs e) {
       if (queue == null) {
-        lobby.Quit();
+        lobby.Dispose();
       } else {
-        lobby.LeaveQueue();
+        lobby.CancelQueue();
       }
 
     }
+
     #endregion
 
     Page IClientSubPage.Page => this;
 
     public void Dispose() {
-      lobby.Quit();
-      //RiotServices.GameInvitationService.Leave();
-      //queue.Dispose();
+      lobby.Dispose();
       Session.Current.ChatManager.Status = ChatStatus.outOfGame;
     }
   }

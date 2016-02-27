@@ -47,7 +47,6 @@ namespace RiotClient {
 
     public event EventHandler<InvitationRequest> Invited;
 
-    public Game CurrentGame { get; internal set; }
     public Queue CurrentQueue { get; internal set; }
     public Lobby CurrentLobby { get; internal set; }
     public RiotChat ChatManager { get; internal set; }
@@ -298,6 +297,14 @@ namespace RiotClient {
       }
     }
 
+    public void SendInvite(long summoner) {
+      if (CurrentLobby is QueueLobby) {
+        (CurrentLobby as QueueLobby).Invite(summoner);
+      } else if (CurrentLobby is CustomLobby) {
+        (CurrentLobby as CustomLobby).Invite(summoner);
+      }
+    }
+
     public void Logout() {
       if (Connected) {
         try {
@@ -306,8 +313,8 @@ namespace RiotClient {
           HeartbeatTimer.Dispose();
           new Thread(async () => {
             Connected = false;
-            CurrentQueue?.Leave();
-            CurrentLobby?.Quit();
+            CurrentQueue?.Cancel();
+            CurrentLobby?.Dispose();
             await RiotServices.LoginService.Logout();
             await RtmpConn.LogoutAsync();
             RtmpConn.Close();
@@ -374,9 +381,6 @@ namespace RiotClient {
 
     public void RtmpConn_MessageReceived(object sender, MessageReceivedEventArgs e) {
       try {
-        if (CurrentGame != null && CurrentGame.HandleMessage(e))
-          return;
-
         if (CurrentQueue != null && CurrentQueue.HandleMessage(e))
           return;
 

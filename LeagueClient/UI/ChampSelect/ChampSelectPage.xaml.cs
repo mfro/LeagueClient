@@ -47,15 +47,17 @@ namespace LeagueClient.UI.ChampSelect {
     private State state;
     private string header;
     private GameDTO last;
-    private Game game;
+    private GameLobby game;
 
-    public ChampSelectPage(Game game) {
+    public ChampSelectPage(GameLobby game) {
       InitializeComponent();
 
       this.game = game;
-      //chatRoom = new ChatRoom(ChatBox, ChatHistory, ChatButt, ChatScroller);
+
+      game.GameCancelled += Game_LeftChampSelect;
       game.GameStarted += Game_GameStarted;
-      game.Updated += (s, e) => Dispatcher.Invoke(Update);
+      game.Updated += Updated;
+      game.Loaded += Game_Loaded;
       Update();
 
       Popup.ChampSelector.ChampSelected += ChampsGrid_ChampSelected;
@@ -82,14 +84,32 @@ namespace LeagueClient.UI.ChampSelect {
       TeamSizeLabel.Content = $"{game.Data.MaxNumPlayers / 2}v{game.Data.MaxNumPlayers / 2}";
     }
 
+    #region RTMP Messages
+
+    private void Game_Loaded(object sender, EventArgs e) {
+      chatRoom = new ChatRoom(game.ChatLobby, ChatBox, ChatHistory, ChatButt, ChatScroller);
+    }
+
+    private void Updated(object sender, EventArgs e) => Dispatcher.Invoke(Update);
+
+    private void Game_LeftChampSelect(object sender, object e) {
+      Dispatcher.Invoke(() => {
+        ChampSelectCompleted?.Invoke(this, new EventArgs());
+        Dispose();
+        if (e is CustomLobby) {
+          Client.QueueManager.ShowPage(new CustomLobbyPage(e as CustomLobby));
+        } else {
+
+        }
+      });
+    }
+
     private void Game_GameStarted(object sender, PlayerCredentialsDto creds) {
       ChampSelectCompleted?.Invoke(this, new EventArgs());
       Session.Current.Credentials = creds;
       Session.Current.JoinGame();
       Dispose();
     }
-
-    #region RTMP Messages
 
     private async void Update() {
       var game = this.game.Data;
@@ -144,11 +164,6 @@ namespace LeagueClient.UI.ChampSelect {
         state = State.Watching;
         Popup.ChampSelector.IsReadOnly = true;
         header = PostString;
-      } else if (game.GameState.Equals("TEAM_SELECT")) {
-        //Dispatcher.Invoke(() => {
-        //  var page = new CustomLobbyPage(game);
-        //  Session.Current.QueueManager.ShowPage(page);
-        //});
       } else {
 
       }
@@ -351,6 +366,11 @@ namespace LeagueClient.UI.ChampSelect {
 
     public void Dispose() {
       timer.Dispose();
+
+      game.GameCancelled -= Game_LeftChampSelect;
+      game.GameStarted -= Game_GameStarted;
+      game.Updated -= Updated;
+      game.Loaded -= Game_Loaded;
       //chatRoom.Dispose();
     }
 

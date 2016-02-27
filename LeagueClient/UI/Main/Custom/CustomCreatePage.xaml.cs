@@ -95,8 +95,8 @@ namespace LeagueClient.UI.Main.Custom {
       }
 
       try {
-        var lobby = await CustomGame.Create(config);
-        Client.QueueManager.JoinLobby(lobby.Lobby);
+        var lobby = await CustomLobby.CreateLobby(config);
+        Client.QueueManager.JoinLobby(lobby);
       } catch {
         ErrorLabel.Visibility = Visibility.Visible;
       }

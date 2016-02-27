@@ -24,9 +24,9 @@ namespace LeagueClient.UI.Main.Lobbies {
   public partial class LobbyPlayer2 : UserControl {
     public bool CanControl { get; set; }
 
-    public LobbyMember Member { get; }
+    public QueueLobbyMember Member { get; }
 
-    public LobbyPlayer2(bool amCaptain, LobbyMember member, int profileIconId) {
+    public LobbyPlayer2(bool amCaptain, QueueLobbyMember member, int profileIconId) {
       InitializeComponent();
 
       KickButton.Visibility = GiveInviteButt.Visibility = Visibility.Collapsed;

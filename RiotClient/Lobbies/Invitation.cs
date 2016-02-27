@@ -24,10 +24,9 @@ namespace RiotClient.Lobbies {
       } else {
         switch ((string) metadata["gameType"]) {
           case "PRACTICE_GAME":
-            var game = CustomGame.Join(this);
-            return game.Lobby;
+            return CustomLobby.Join(this);
           case "NORMAL_GAME":
-            return DefaultLobby.Join(this, (int) metadata["queueId"]);
+            return QueueLobby.Join(this, (int) metadata["queueId"]);
           default:
             throw new Exception("Lobby type not found: " + invite.InviteType);
         }

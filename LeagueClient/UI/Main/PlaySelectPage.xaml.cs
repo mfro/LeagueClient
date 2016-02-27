@@ -108,15 +108,16 @@ namespace LeagueClient.UI.Main {
         Dispatcher.Invoke(() => {
           CreateCustomButton.Visibility = JoinCustomButton.Visibility = QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Collapsed;
           QueueLabel.Visibility = CancelButton.Visibility = Visibility.Visible;
+          Queues.IsEnabled = !inQueue;
         });
       } else {
         queueTimer.Cancel();
         Dispatcher.Invoke(() => {
           CreateCustomButton.Visibility = JoinCustomButton.Visibility = QueueButton1.Visibility = QueueButton2.Visibility = Visibility.Visible;
           QueueLabel.Visibility = CancelButton.Visibility = Visibility.Collapsed;
+          Queues.IsEnabled = !inQueue;
         });
       }
-      Queues.IsEnabled = !inQueue;
     }
 
     private void QueueList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -163,7 +164,7 @@ namespace LeagueClient.UI.Main {
     private void PlayTBD(int button) {
       Close?.Invoke(this, new EventArgs());
 
-      var lobby = TBDLobby.Create(selected.ID);
+      var lobby = TBDLobby.CreateLobby(selected.ID);
       Client.QueueManager.JoinLobby(lobby);
     }
 
@@ -182,10 +183,10 @@ namespace LeagueClient.UI.Main {
 
     private async void PlayStandard(int button) {
       Close?.Invoke(this, new EventArgs());
-      var mmp = new MatchMakerParams { QueueIds = new[] { selected.ID } };
       switch (button) {
         case 0:
           try {
+            var mmp = new MatchMakerParams { QueueIds = new[] { selected.ID } };
             queue = await Queue.Create(mmp);
             queue.QueuePopped += Queue_QueuePopped;
             queue.QueueCancelled += Queue_QueueCancelled;
@@ -195,7 +196,7 @@ namespace LeagueClient.UI.Main {
           }
           break;
         case 1:
-          var lobby = DefaultLobby.Create(mmp);
+          var lobby = QueueLobby.CreateLobby(selected.ID);
           Client.QueueManager.JoinLobby(lobby);
           break;
       }
@@ -203,10 +204,10 @@ namespace LeagueClient.UI.Main {
 
     private async void PlayRanked(int button) {
       Close?.Invoke(this, new EventArgs());
-      var mmp = new MatchMakerParams { QueueIds = new[] { selected.ID } };
       switch (button) {
         case 0:
           try {
+            var mmp = new MatchMakerParams { QueueIds = new[] { selected.ID } };
             queue = await Queue.Create(mmp);
             queue.QueuePopped += Queue_QueuePopped;
             queue.QueueCancelled += Queue_QueueCancelled;
@@ -217,7 +218,7 @@ namespace LeagueClient.UI.Main {
           break;
         case 1:
           //TODO Ranked Duo Lobby
-          var lobby = DefaultLobby.Create(mmp);
+          var lobby = QueueLobby.CreateLobby(selected.ID);
           Client.QueueManager.JoinLobby(lobby);
           break;
       }
@@ -274,7 +275,7 @@ namespace LeagueClient.UI.Main {
     }
 
     private void CancelButton_Click(object sender, RoutedEventArgs e) {
-      queue.Leave();
+      queue.Cancel();
       SetInQueue(false);
     }
 

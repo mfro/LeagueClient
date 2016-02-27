@@ -248,7 +248,7 @@ namespace LeagueClient.UI.Main {
 
     void IQueueManager.JoinLobby(Lobby lobby) {
       var tbd = lobby as TBDLobby;
-      var def = lobby as DefaultLobby;
+      var def = lobby as QueueLobby;
       var custom = lobby as CustomLobby;
 
       IClientSubPage page;
@@ -257,7 +257,7 @@ namespace LeagueClient.UI.Main {
       } else if (def != null) {
         page = new DefaultLobbyPage(def);
       } else if (custom != null) {
-        page = new CustomLobbyPage(custom.Game);
+        page = new CustomLobbyPage(custom);
       } else
         throw new Exception("Unknown lobby type " + lobby);
 

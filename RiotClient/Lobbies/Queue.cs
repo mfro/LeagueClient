@@ -10,7 +10,7 @@ namespace RiotClient.Lobbies {
   public class Queue {
     public event EventHandler<GameDTO> QueuePopped;
     public event EventHandler<QueuePopPlayerState[]> QueuePopUpdated;
-    public event EventHandler<Game> EnteredChampSelect;
+    public event EventHandler<GameLobby> EnteredChampSelect;
     public event EventHandler QueueCancelled;
 
     public bool HasPopped { get; private set; }
@@ -55,7 +55,7 @@ namespace RiotClient.Lobbies {
       RiotServices.GameService.AcceptPoppedGame(accept);
     }
 
-    public void Leave() {
+    public void Cancel() {
       RiotServices.MatchmakerService.CancelFromQueueIfPossible(Session.Current.Account.SummonerID);
       RiotServices.MatchmakerService.PurgeFromQueues();
       OnQueueCancelled();
@@ -109,7 +109,7 @@ namespace RiotClient.Lobbies {
     }
 
     protected void OnEnteredChampSelect(GameDTO game) {
-      EnteredChampSelect?.Invoke(this, new Game(game));
+      EnteredChampSelect?.Invoke(this, GameLobby.EnterChampSelect(game));
     }
 
     protected void OnQueueCancelled() {
