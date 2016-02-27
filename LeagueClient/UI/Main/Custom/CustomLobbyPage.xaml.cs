@@ -30,15 +30,11 @@ namespace LeagueClient.UI.Main.Custom {
   public sealed partial class CustomLobbyPage : Page, IClientSubPage {
     public event EventHandler Close;
 
-    public GameDTO GameDto { get; private set; }
-
-    private CustomLobby lobby;
+    private CustomGame lobby;
     private ChatRoom chatRoom;
     private bool hasStarted;
 
-    #region Constructors
-
-    public CustomLobbyPage(CustomLobby lobby) {
+    public CustomLobbyPage(CustomGame lobby) {
       InitializeComponent();
 
       this.lobby = lobby;
@@ -46,27 +42,29 @@ namespace LeagueClient.UI.Main.Custom {
       lobby.MemberJoined += Lobby_MemberJoined;
       lobby.MemberChangedTeam += Lobby_MemberChangedTeam;
       lobby.MemberLeft += Lobby_MemberLeft;
-      lobby.LeftLobby += Lobby_LeftLobby;
-      lobby.GotGameDTO += Lobby_GotGameDTO;
-      lobby.Loaded += Lobby_Loaded;
+      lobby.Lobby.LeftLobby += Lobby_LeftLobby;
+      lobby.Lobby.Loaded += Lobby_Loaded;
+      lobby.Lobby.PlayerInvited += Lobby_PlayerInvited;
 
       lobby.EnteredChampSelect += Lobby_EnteredChampSelect;
+      lobby.Updated += Lobby_GotGameDTO;
 
       lobby.CatchUp();
 
-      chatRoom = new ChatRoom(lobby, SendBox, ChatHistory, ChatSend, ChatScroller);
+      chatRoom = new ChatRoom(lobby.Lobby, SendBox, ChatHistory, ChatSend, ChatScroller);
       Session.Current.ChatManager.Status = ChatStatus.hostingPracticeGame;
     }
 
     private void Lobby_Loaded(object sender, EventArgs e) {
       Dispatcher.Invoke(() => {
-        StartButt.Visibility = lobby.IsCaptain ? Visibility.Visible : Visibility.Collapsed;
+        StartButt.Visibility = lobby.Lobby.IsCaptain ? Visibility.Visible : Visibility.Collapsed;
         LoadingGrid.Visibility = Visibility.Collapsed;
       });
     }
 
-    private void Lobby_GotGameDTO(object sender, GameDTO game) {
+    private void Lobby_GotGameDTO(object sender, EventArgs args) {
       Dispatcher.Invoke(() => {
+        var game = lobby.Data;
         var map = GameMap.Maps.FirstOrDefault(m => m.MapId == game.MapId);
 
         MapImage.Source = new BitmapImage(GameMap.Images[map]);
@@ -77,37 +75,35 @@ namespace LeagueClient.UI.Main.Custom {
       });
     }
 
-    private void Lobby_MemberJoined(object sender, MemberEventArgs e) {
+    private void Lobby_MemberJoined(object sender, GameMemberEventArgs e) {
       Dispatcher.Invoke(() => {
-        var member = e.Member as CustomLobby.CustomLobbyMember;
         StackPanel stack;
 
-        if (member.Team == 0) stack = BlueTeam;
-        else if (member.Team == 1) stack = RedTeam;
+        if (e.Member.Team == 0) stack = BlueTeam;
+        else if (e.Member.Team == 1) stack = RedTeam;
         else throw new Exception("UNEXPECTED TEAM");
 
-        var player = new LobbyPlayer(member);
+        var player = new LobbyPlayer(e.Member);
         stack.Children.Add(player);
 
-        if (member == lobby.Me) {
+        if (e.Member.IsMe) {
           RedJoin.Visibility = BlueJoin.Visibility = Visibility.Collapsed;
-          if (member.Team != 0) BlueJoin.Visibility = Visibility.Visible;
-          if (member.Team != 1) RedJoin.Visibility = Visibility.Visible;
+          if (e.Member.Team != 0) BlueJoin.Visibility = Visibility.Visible;
+          if (e.Member.Team != 1) RedJoin.Visibility = Visibility.Visible;
         }
 
         Sort();
       });
     }
 
-    private void Lobby_MemberChangedTeam(object sender, MemberEventArgs e) {
+    private void Lobby_MemberChangedTeam(object sender, GameMemberEventArgs e) {
       Dispatcher.Invoke(() => {
-        var member = e.Member as CustomLobby.CustomLobbyMember;
         StackPanel stack;
         StackPanel other;
 
-        if (member.Team == 1) {
+        if (e.Member.Team == 1) {
           stack = BlueTeam; other = RedTeam;
-        } else if (member.Team == 0) {
+        } else if (e.Member.Team == 0) {
           stack = RedTeam; other = BlueTeam;
         } else throw new Exception("UNEXPECTED TEAM");
 
@@ -115,23 +111,22 @@ namespace LeagueClient.UI.Main.Custom {
         stack.Children.Remove(player);
         other.Children.Add(player);
 
-        if (member == lobby.Me) {
+        if (e.Member.IsMe) {
           RedJoin.Visibility = BlueJoin.Visibility = Visibility.Collapsed;
-          if (member.Team != 0) BlueJoin.Visibility = Visibility.Visible;
-          if (member.Team != 1) RedJoin.Visibility = Visibility.Visible;
+          if (e.Member.Team != 0) BlueJoin.Visibility = Visibility.Visible;
+          if (e.Member.Team != 1) RedJoin.Visibility = Visibility.Visible;
         }
 
         Sort();
       });
     }
 
-    private void Lobby_MemberLeft(object sender, MemberEventArgs e) {
+    private void Lobby_MemberLeft(object sender, GameMemberEventArgs e) {
       Dispatcher.Invoke(() => {
-        var member = e.Member as CustomLobby.CustomLobbyMember;
         StackPanel stack;
 
-        if (member.Team == 0) stack = BlueTeam;
-        else if (member.Team == 1) stack = RedTeam;
+        if (e.Member.Team == 0) stack = BlueTeam;
+        else if (e.Member.Team == 1) stack = RedTeam;
         else throw new Exception("UNEXPECTED TEAM");
 
         var player = stack.Children.Cast<LobbyPlayer>().FirstOrDefault(p => p.Member == e.Member);
@@ -143,28 +138,39 @@ namespace LeagueClient.UI.Main.Custom {
       Close?.Invoke(this, new EventArgs());
     }
 
-    private void Lobby_EnteredChampSelect(object sender, Game game) {
+    private void Lobby_PlayerInvited(object sender, InviteeEventArgs e) {
+      Dispatcher.Invoke(() => {
+        var player = new InvitedPlayer(e.Invitee);
+        InviteList.Children.Add(player);
+      });
+    }
+
+    private void Lobby_EnteredChampSelect(object sender, EventArgs game) {
       hasStarted = true;
-      Client.MainWindow.BeginChampionSelect(game);
+      Client.MainWindow.BeginChampionSelect(lobby);
     }
 
     private void Sort() {
-      foreach (var panel in new[] { BlueTeam, RedTeam }) {
-        var players = panel.Children.Cast<LobbyPlayer>().ToList();
-        foreach (var player in players) {
-          panel.Children.Remove(player);
-          int index = lobby.GetIndex(player.Member);
-          panel.Children.Insert(index, player);
-        }
+      var players = BlueTeam.Children.Cast<LobbyPlayer>().ToList();
+      foreach (var player in players) {
+        BlueTeam.Children.Remove(player);
+        int index = lobby.TeamOne.IndexOf(player.Member);
+        BlueTeam.Children.Insert(index, player);
+      }
+
+      players = RedTeam.Children.Cast<LobbyPlayer>().ToList();
+      foreach (var player in players) {
+        RedTeam.Children.Remove(player);
+        int index = lobby.TeamTwo.IndexOf(player.Member);
+        RedTeam.Children.Insert(index, player);
       }
     }
-
-    #endregion
 
     #region UI Events
 
     private void RedJoin_Click(object sender, RoutedEventArgs e) {
-      if (((CustomLobby.CustomLobbyMember) lobby.Me).Team == 2) {
+      var me = lobby.AllMembers.SingleOrDefault(m => m.IsMe);
+      if (me.Team == 2) {
         lobby.SwitchToPlayer(2);
       } else {
         lobby.SwitchTeams();
@@ -172,7 +178,8 @@ namespace LeagueClient.UI.Main.Custom {
     }
 
     private void BlueJoin_Click(object sender, RoutedEventArgs e) {
-      if (((CustomLobby.CustomLobbyMember) lobby.Me).Team == 2) {
+      var me = lobby.AllMembers.SingleOrDefault(m => m.IsMe);
+      if (me.Team == 2) {
         lobby.SwitchToPlayer(1);
       } else {
         lobby.SwitchTeams();
@@ -198,6 +205,17 @@ namespace LeagueClient.UI.Main.Custom {
     public void Dispose() {
       if (!hasStarted)
         lobby.Quit();
+
+      lobby.MemberJoined -= Lobby_MemberJoined;
+      lobby.MemberChangedTeam -= Lobby_MemberChangedTeam;
+      lobby.MemberLeft -= Lobby_MemberLeft;
+      lobby.Lobby.LeftLobby -= Lobby_LeftLobby;
+      lobby.Lobby.Loaded -= Lobby_Loaded;
+      lobby.Lobby.PlayerInvited -= Lobby_PlayerInvited;
+
+      lobby.EnteredChampSelect -= Lobby_EnteredChampSelect;
+      lobby.Updated -= Lobby_GotGameDTO;
+
       Session.Current.ChatManager.Status = ChatStatus.outOfGame;
     }
   }

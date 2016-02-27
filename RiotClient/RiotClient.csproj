@@ -195,6 +195,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Lobbies\CustomGame.cs" />
     <Compile Include="Lobbies\CustomLobby.cs" />
     <Compile Include="Lobbies\DefaultLobby.cs" />
     <Compile Include="Lobbies\Game.cs" />

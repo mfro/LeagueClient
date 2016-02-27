@@ -257,7 +257,7 @@ namespace LeagueClient.UI.Main {
       } else if (def != null) {
         page = new DefaultLobbyPage(def);
       } else if (custom != null) {
-        page = new CustomLobbyPage(custom);
+        page = new CustomLobbyPage(custom.Game);
       } else
         throw new Exception("Unknown lobby type " + lobby);
 

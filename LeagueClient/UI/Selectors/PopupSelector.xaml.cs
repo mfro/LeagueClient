@@ -30,7 +30,6 @@ namespace LeagueClient.UI.Selectors {
         selector = value;
         switch (value) {
           case Selector.Champions:
-            ChampSelector.UpdateChampList();
             MasteryEditor.Visibility = Visibility.Collapsed;
             SpellSelector.Visibility = Visibility.Collapsed;
             IconSelector.Visibility = Visibility.Collapsed;

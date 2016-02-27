@@ -24,7 +24,8 @@ namespace RiotClient.Lobbies {
       } else {
         switch ((string) metadata["gameType"]) {
           case "PRACTICE_GAME":
-            return CustomLobby.Join(this);
+            var game = CustomGame.Join(this);
+            return game.Lobby;
           case "NORMAL_GAME":
             return DefaultLobby.Join(this, (int) metadata["queueId"]);
           default:

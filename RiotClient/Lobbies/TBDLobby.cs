@@ -102,6 +102,7 @@ namespace RiotClient.Lobbies {
       }
 
       foreach (var id in left) {
+        OnMemberLeft(Members[id]);
         Members.Remove(id);
       }
 

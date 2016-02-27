@@ -26,7 +26,7 @@ namespace LeagueClient.UI.Main.Lobbies {
   /// </summary>
   public partial class LobbyPlayer : UserControl, INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-    public CustomLobby.CustomLobbyMember Member { get; }
+    public GameMember Member { get; }
 
     public BitmapImage SummonerIcon {
       get { return summonerIcon; }
@@ -62,7 +62,7 @@ namespace LeagueClient.UI.Main.Lobbies {
 
     private bool forceExpand;
 
-    public LobbyPlayer(CustomLobby.CustomLobbyMember member) {
+    public LobbyPlayer(GameMember member) {
       InitializeComponent();
 
       this.Member = member;
