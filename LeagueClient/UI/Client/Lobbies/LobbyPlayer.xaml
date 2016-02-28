@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Lobbies.LobbyPlayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             Background="{StaticResource ForeBrush}" MouseEnter="This_MouseEnter" MouseLeave="This_MouseLeave">
+  <Grid Margin="4">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Image Width="52" Height="52" Source="{Binding SummonerIcon}" Name="Image"/>
+
+    <Label Grid.Column="1" Content="{Binding UserName}"/>
+    <Label Grid.Column="1" VerticalAlignment="Bottom" Content="{Binding LevelString}" Height="20" Name="LevelText"/>
+    
+    <Label Grid.Column="1" HorizontalAlignment="Right" Content="{Binding RankString}"/>
+  </Grid>
+</UserControl>

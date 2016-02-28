@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Profile.MatchHistoryItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <UserControl.Resources>
+    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+      <Setter Property="FontSize" Value="16"/>
+    </Style>
+  </UserControl.Resources>
+  <Border Padding="4" Background="{StaticResource ForeBrush}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="64"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="90"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="90"/>
+      </Grid.ColumnDefinitions>
+      
+      <Border Grid.Column="0" Background="{StaticResource ChatBrush}"/>
+      
+      <Image Grid.Column="2" Name="ChampImage" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Aatrox.png"/>
+
+      <Grid Grid.Column="4" Width="30">
+        <Grid.RowDefinitions>
+          <RowDefinition/>
+          <RowDefinition Height="4"/>
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Image Name="Spell1Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerFlash.png"/>
+        <Image Name="Spell2Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\spell\SummonerDot.png" Grid.Row="2"/>
+      </Grid>
+
+      <Grid Grid.Column="6">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label Name="MapLabel" HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="0">Summoner's Rift</Label>
+        <Label Name="ModeLabel" HorizontalAlignment="Left" VerticalAlignment="top" Padding="0" Grid.Row="1" FontSize="14">Normal (Blind Pick)</Label>
+      </Grid>
+
+      <StackPanel Grid.Column="8" Orientation="Horizontal">
+        <StackPanel.Resources>
+          <Style TargetType="Image">
+            <Setter Property="Width" Value="35"/>
+            <Setter Property="Margin" Value="4 0 0 0"/>
+          </Style>
+        </StackPanel.Resources>
+        <Image Name="Item0Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\item\3742.png"/>
+        <Image Name="Item1Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\item\3742.png"/>
+        <Image Name="Item2Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\item\3742.png"/>
+        <Image Name="Item3Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\item\3742.png"/>
+        <Image Name="Item4Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\item\3742.png"/>
+        <Image Name="Item5Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\item\3742.png"/>
+        <Image Name="Item6Image" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\item\3361.png"/>
+      </StackPanel>
+
+      <Label Grid.Column="10" Name="ScoreLabel" VerticalAlignment="Center" HorizontalAlignment="Center">50 / 0 / 0</Label>
+
+      <Grid Grid.Column="12">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label Name="DateLabel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="0" FontSize="14">12 / 25 / 2015</Label>
+        <Label Name="TimeLabel" HorizontalAlignment="Right" VerticalAlignment="top" Padding="0" Grid.Row="1" FontSize="12">12:59 PM</Label>
+      </Grid>
+    </Grid>
+  </Border>
+</UserControl>

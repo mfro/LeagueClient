@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Lobbies.TBDPlayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border Padding="5" Background="{StaticResource Back1Brush}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <Image MaxWidth="120" Grid.ColumnSpan="2" Name="ProfileIconImage" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\984.png"/>
+
+      <Grid Grid.ColumnSpan="2">
+        <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Right" Background="#B50000" ToolTip="Kick from group" Click="Kick_Click" Name="KickButton" Width="30" Height="30">
+          <Path Data="M 0 0 L 20 20 M 20 0 L 0 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+        </Button>
+
+        <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Background="#018A26" ToolTip="Give invite powers" Click="GiveInvite_Click" Name="GiveInviteButt" Width="30" Height="30">
+          <Grid Width="20" Height="20">
+            <Path Data="M 0 10 L 20 10" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+            <Path Data="M 10 0 L 10 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False" Name="PlusPath"/>
+          </Grid>
+        </Button>
+      </Grid>
+      
+      <Label Grid.Row="1" FontSize="14" Grid.ColumnSpan="2" HorizontalAlignment="Center" Name="NameLabel">Stupendous Man</Label>
+      <Label Grid.Row="2" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0 2 0 1" Name="PrimaryLabel">?</Label>
+      <Label Grid.Row="2" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0 2 0 1" Name="SecondaryLabel" Grid.Column="1">?</Label>
+      <ComboBox Grid.Row="2" BorderThickness="0" Background="{StaticResource Back2Brush}" Name="PrimaryCombo" Opacity="0" SelectionChanged="PrimaryCombo_SelectionChanged"/>
+      <ComboBox Grid.Row="2" BorderThickness="0" Background="{StaticResource Back2Brush}" Name="SecondaryCombo" Opacity="0" SelectionChanged="SecondaryCombo_SelectionChanged" Grid.Column="1"/>
+    </Grid>
+  </Border>
+</UserControl>

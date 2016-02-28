@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Profile.ChampMastery"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border Padding="4" Background="{StaticResource ForeBrush}" VerticalAlignment="Top" HorizontalAlignment="Left">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <Image Name="ChampImage" Width="100" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\champion\Ahri.png"/>
+      <Border Grid.Row="1">
+        <Image Name="RankImage" Width="80" Margin="0 -11 0 -9" Source="pack://application:,,,/RiotAPI;component/Resources/ChampMastery5.png"/>
+      </Border>
+    </Grid>
+  </Border>
+</UserControl>

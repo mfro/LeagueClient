@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Home.HomePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:LeagueClient.UI.Client.Home"
+             Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}">
+  <Grid>
+    <Grid Name="NewsGrid">
+      <ScrollViewer>
+        <ItemsControl Name="NewsList" Background="Transparent" BorderThickness="0" Margin="0 0 10 -10">
+          <ItemsControl.Resources>
+            <Style TargetType="local:NewsItem">
+              <Setter Property="Margin" Value="0 0 0 10"/>
+            </Style>
+          </ItemsControl.Resources>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+
+  </Grid>
+</UserControl>

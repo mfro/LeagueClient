@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Alerts.BingeQueuer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+  <Grid Name="QueuePane" Width="128">
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Label Grid.Row="0">Queue Dodger</Label>
+    <TextBlock Style="{StaticResource Control}" Padding="5 5" TextWrapping="Wrap" Grid.Row="1" Name="Body">You have dodged too many games recently</TextBlock>
+    <Label Grid.Row="2">Remaining:</Label>
+    <Label Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3 0" Name="ElapsedText">99:99</Label>
+  </Grid>
+</UserControl>

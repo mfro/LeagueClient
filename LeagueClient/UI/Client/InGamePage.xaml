@@ -1,0 +1,21 @@
+﻿<Page x:Class="LeagueClient.UI.Client.InGamePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      Width="{StaticResource PageWidth}" Height="{StaticResource PageHeight}">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="{StaticResource Back1Brush}" Width="300" Height="100" Grid.Row="1">
+      <Label FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center">Currently In Game</Label>
+    </Grid>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Background="{StaticResource ForeBrush}" Width="300" Grid.Row="2" Name="ReconnectGrid">
+      <Button Name="ReconnectButton" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="35 5" Click="ReconnectButton_Click" Margin="00 20">Champion Select</Button>
+      <!--<Button Name="QuitButton" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="30 5" Click="QuitButton_Click" Margin="0 20 20 20" Visibility="Collapsed">Quit</Button>-->
+    </Grid>
+  </Grid>
+</Page>

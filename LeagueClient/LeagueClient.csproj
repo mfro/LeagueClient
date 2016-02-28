@@ -55,18 +55,21 @@
     <ApplicationIcon>ikonica-lol.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="agsXMPP">
-      <HintPath>..\..\..\Libraries\agsXMPP.dll</HintPath>
+    <Reference Include="agsXMPP, Version=1.3.1.0, Culture=neutral, PublicKeyToken=ff839b81f1debe86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\agsXMPP.dll</HintPath>
     </Reference>
-    <Reference Include="Parsing">
-      <HintPath>..\..\..\Libraries\Parsing.dll</HintPath>
+    <Reference Include="Parsing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\Parsing.dll</HintPath>
     </Reference>
     <Reference Include="RiotAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Libraries\RiotAPI.dll</HintPath>
+      <HintPath>..\libs\RiotAPI.dll</HintPath>
     </Reference>
-    <Reference Include="SharpZipLib">
-      <HintPath>..\..\..\Libraries\SharpZipLib.dll</HintPath>
+    <Reference Include="SharpZipLib, Version=0.81.0.1407, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -90,35 +93,35 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="UI\Main\Profile\ChampMastery.xaml.cs">
+    <Compile Include="UI\Client\Profile\ChampMastery.xaml.cs">
       <DependentUpon>ChampMastery.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Util\EditButton.cs" />
-    <Compile Include="UI\Main\Home\NewsItem.xaml.cs">
+    <Compile Include="UI\Client\Home\NewsItem.xaml.cs">
       <DependentUpon>NewsItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Login\PatchProgressBar.xaml.cs">
       <DependentUpon>PatchProgressBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Lobbies\LobbyPlayer2.xaml.cs">
+    <Compile Include="UI\Client\Lobbies\LobbyPlayer2.xaml.cs">
       <DependentUpon>LobbyPlayer2.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Lobbies\TBDPlayer.xaml.cs">
+    <Compile Include="UI\Client\Lobbies\TBDPlayer.xaml.cs">
       <DependentUpon>TBDPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Profile\RedMatchDetailsPlayer.xaml.cs">
+    <Compile Include="UI\Client\Profile\RedMatchDetailsPlayer.xaml.cs">
       <DependentUpon>RedMatchDetailsPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Profile\BlueMatchDetailPlayer.xaml.cs">
+    <Compile Include="UI\Client\Profile\BlueMatchDetailPlayer.xaml.cs">
       <DependentUpon>BlueMatchDetailPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Profile\MatchDetails.xaml.cs">
+    <Compile Include="UI\Client\Profile\MatchDetails.xaml.cs">
       <DependentUpon>MatchDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Profile\MatchHistory.xaml.cs">
+    <Compile Include="UI\Client\Profile\MatchHistory.xaml.cs">
       <DependentUpon>MatchHistory.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Profile\MatchHistoryItem.xaml.cs">
+    <Compile Include="UI\Client\Profile\MatchHistoryItem.xaml.cs">
       <DependentUpon>MatchHistoryItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Selectors\MasteryIcon.xaml.cs">
@@ -133,74 +136,74 @@
     <Compile Include="UI\Selectors\RuneListItem.xaml.cs">
       <DependentUpon>RuneListItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\LandingPage.xaml.cs">
+    <Compile Include="UI\Client\LandingPage.xaml.cs">
       <DependentUpon>LandingPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Home\HomePage.xaml.cs">
+    <Compile Include="UI\Client\Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Profile\PlayerProfile.xaml.cs">
+    <Compile Include="UI\Client\Profile\PlayerProfile.xaml.cs">
       <DependentUpon>PlayerProfile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Lobbies\TBDLobbyPage.xaml.cs">
+    <Compile Include="UI\Client\Lobbies\TBDLobbyPage.xaml.cs">
       <DependentUpon>TBDLobbyPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\StringExtension.cs" />
-    <Compile Include="Logic\Client.cs" />
+    <Compile Include="Logic\LoLClient.cs" />
     <Compile Include="UI\ChampSelect\ChampSelectPage.xaml.cs">
       <DependentUpon>ChampSelectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Alerts\BingeQueuer.xaml.cs">
+    <Compile Include="UI\Client\Alerts\BingeQueuer.xaml.cs">
       <DependentUpon>BingeQueuer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\ChampSelect\ChampSelectPlayer.xaml.cs">
       <DependentUpon>ChampSelectPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Lobbies\InvitedPlayer.xaml.cs">
+    <Compile Include="UI\Client\Lobbies\InvitedPlayer.xaml.cs">
       <DependentUpon>InvitedPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Util\Loader.xaml.cs">
       <DependentUpon>Loader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Lobbies\LobbyPlayer.xaml.cs">
+    <Compile Include="UI\Client\Lobbies\LobbyPlayer.xaml.cs">
       <DependentUpon>LobbyPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Alerts\DefaultQueuePopup.xaml.cs">
+    <Compile Include="UI\Client\Alerts\DefaultQueuePopup.xaml.cs">
       <DependentUpon>DefaultQueuePopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Login\LoginAccount.xaml.cs">
       <DependentUpon>LoginAccount.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Alerts\OkAlert.xaml.cs">
+    <Compile Include="UI\Client\Alerts\OkAlert.xaml.cs">
       <DependentUpon>OkAlert.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Selectors\PopupSelector.xaml.cs">
       <DependentUpon>PopupSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Alerts\GameInviteAlert.xaml.cs">
+    <Compile Include="UI\Client\Alerts\GameInviteAlert.xaml.cs">
       <DependentUpon>GameInviteAlert.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Selectors\ChampSelector.xaml.cs">
       <DependentUpon>ChampSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Friends\ChatConversation.xaml.cs">
+    <Compile Include="UI\Client\Friends\ChatConversation.xaml.cs">
       <DependentUpon>ChatConversation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Friends\FriendListItem.xaml.cs">
+    <Compile Include="UI\Client\Friends\FriendListItem.xaml.cs">
       <DependentUpon>FriendListItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Util\HintedTextBox.cs" />
-    <Compile Include="UI\Main\Custom\CustomCreatePage.xaml.cs">
+    <Compile Include="UI\Client\Custom\CustomCreatePage.xaml.cs">
       <DependentUpon>CustomCreatePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Custom\CustomLobbyPage.xaml.cs">
+    <Compile Include="UI\Client\Custom\CustomLobbyPage.xaml.cs">
       <DependentUpon>CustomLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\Lobbies\DefaultLobbyPage.xaml.cs">
+    <Compile Include="UI\Client\Lobbies\DefaultLobbyPage.xaml.cs">
       <DependentUpon>DefaultLobbyPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\IClientSubPage.cs" />
-    <Compile Include="UI\Main\InGamePage.xaml.cs">
+    <Compile Include="UI\Client\IClientSubPage.cs" />
+    <Compile Include="UI\Client\InGamePage.xaml.cs">
       <DependentUpon>InGamePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Chat\ChatRoom.cs" />
@@ -218,7 +221,7 @@
     <Compile Include="UI\Login\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Main\PlaySelectPage.xaml.cs">
+    <Compile Include="UI\Client\PlaySelectPage.xaml.cs">
       <DependentUpon>PlaySelectPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Queueing\IQueueInfo.cs" />
@@ -226,11 +229,11 @@
     <Compile Include="Logic\Alert.cs" />
     <Compile Include="Logic\Settings\LoginSettings.cs" />
     <Compile Include="Logic\Strings.cs" />
-    <Page Include="UI\Main\Profile\ChampMastery.xaml">
+    <Page Include="UI\Client\Profile\ChampMastery.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Home\NewsItem.xaml">
+    <Page Include="UI\Client\Home\NewsItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -238,31 +241,31 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Lobbies\LobbyPlayer2.xaml">
+    <Page Include="UI\Client\Lobbies\LobbyPlayer2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Lobbies\TBDPlayer.xaml">
+    <Page Include="UI\Client\Lobbies\TBDPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Profile\RedMatchDetailsPlayer.xaml">
+    <Page Include="UI\Client\Profile\RedMatchDetailsPlayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\Main\Profile\BlueMatchDetailPlayer.xaml">
+    <Page Include="UI\Client\Profile\BlueMatchDetailPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Profile\MatchDetails.xaml">
+    <Page Include="UI\Client\Profile\MatchDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Profile\MatchHistory.xaml">
+    <Page Include="UI\Client\Profile\MatchHistory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Profile\MatchHistoryItem.xaml">
+    <Page Include="UI\Client\Profile\MatchHistoryItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -282,7 +285,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Alerts\BingeQueuer.xaml">
+    <Page Include="UI\Client\Alerts\BingeQueuer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -290,7 +293,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Lobbies\InvitedPlayer.xaml">
+    <Page Include="UI\Client\Lobbies\InvitedPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -298,11 +301,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Lobbies\LobbyPlayer.xaml">
+    <Page Include="UI\Client\Lobbies\LobbyPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Alerts\DefaultQueuePopup.xaml">
+    <Page Include="UI\Client\Alerts\DefaultQueuePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -310,7 +313,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Alerts\OkAlert.xaml">
+    <Page Include="UI\Client\Alerts\OkAlert.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -322,7 +325,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Alerts\GameInviteAlert.xaml">
+    <Page Include="UI\Client\Alerts\GameInviteAlert.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -330,11 +333,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Friends\ChatConversation.xaml">
+    <Page Include="UI\Client\Friends\ChatConversation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Friends\FriendListItem.xaml">
+    <Page Include="UI\Client\Friends\FriendListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -354,39 +357,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Custom\CustomCreatePage.xaml">
+    <Page Include="UI\Client\Custom\CustomCreatePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Custom\CustomLobbyPage.xaml">
+    <Page Include="UI\Client\Custom\CustomLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Lobbies\DefaultLobbyPage.xaml">
+    <Page Include="UI\Client\Lobbies\DefaultLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Home\HomePage.xaml">
+    <Page Include="UI\Client\Home\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\InGamePage.xaml">
+    <Page Include="UI\Client\InGamePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\LandingPage.xaml">
+    <Page Include="UI\Client\LandingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Profile\PlayerProfile.xaml">
+    <Page Include="UI\Client\Profile\PlayerProfile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\PlaySelectPage.xaml">
+    <Page Include="UI\Client\PlaySelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Main\Lobbies\TBDLobbyPage.xaml">
+    <Page Include="UI\Client\Lobbies\TBDLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -474,10 +477,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy "$(SolutionDir)..\..\Libraries\SharpZipLib.dll" "$(SolutionDir)libs" /C /Y
-xcopy "$(SolutionDir)..\..\Libraries\agsXMPP.dll" "$(SolutionDir)libs" /C /Y
-xcopy "$(SolutionDir)..\..\Libraries\Parsing.dll" "$(SolutionDir)libs" /C /Y
-xcopy "$(SolutionDir)..\..\Libraries\RiotAPI.dll" "$(SolutionDir)libs" /C /Y</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

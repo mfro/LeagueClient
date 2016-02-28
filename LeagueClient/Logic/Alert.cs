@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using LeagueClient.UI.Main.Alerts;
+using LeagueClient.UI.Client.Alerts;
 using RiotClient.Riot.Platform;
 
 namespace LeagueClient.Logic {

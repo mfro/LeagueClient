@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Home.NewsItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Cursor="Hand">
+  <Border Background="{StaticResource Back1Brush}" MouseUp="Border_MouseUp">
+    <Grid Margin="10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition/>
+      </Grid.ColumnDefinitions>
+      <Image Name="NewsIcon" Width="150" Margin="0 0 10 0" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+      <TextBlock Grid.Column="1" Style="{StaticResource Control}" Name="DescriptionText" FontSize="14" TextWrapping="Wrap">
+        Hello darkness my old friend
+      </TextBlock>
+    </Grid>
+    <Border.Triggers>
+      <EventTrigger RoutedEvent="MouseEnter">
+        <BeginStoryboard Storyboard="{StaticResource OldButtonHover}"/>
+      </EventTrigger>
+      <EventTrigger RoutedEvent="MouseLeave">
+        <BeginStoryboard Storyboard="{StaticResource OldButtonLeave}"/>
+      </EventTrigger>
+    </Border.Triggers>
+  </Border>
+</UserControl>

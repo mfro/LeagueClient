@@ -33,14 +33,17 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="agsXMPP">
-      <HintPath>..\..\..\Libraries\agsXMPP.dll</HintPath>
+    <Reference Include="agsXMPP, Version=1.3.1.0, Culture=neutral, PublicKeyToken=ff839b81f1debe86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\agsXMPP.dll</HintPath>
     </Reference>
-    <Reference Include="Parsing">
-      <HintPath>..\..\..\Libraries\Parsing.dll</HintPath>
+    <Reference Include="Parsing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\Parsing.dll</HintPath>
     </Reference>
-    <Reference Include="RiotAPI">
-      <HintPath>..\..\..\Libraries\RiotAPI.dll</HintPath>
+    <Reference Include="RiotAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\RiotAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -274,6 +277,12 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy "$(SolutionDir)..\..\Libraries\SharpZipLib.dll" "$(SolutionDir)libs" /C /Y
+xcopy "$(SolutionDir)..\..\Libraries\agsXMPP.dll" "$(SolutionDir)libs" /C /Y
+xcopy "$(SolutionDir)..\..\Libraries\Parsing.dll" "$(SolutionDir)libs" /C /Y
+xcopy "$(SolutionDir)..\..\Libraries\RiotAPI.dll" "$(SolutionDir)libs" /C /Y</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

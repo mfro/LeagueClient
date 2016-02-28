@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LeagueClient.UI.Main;
+using LeagueClient.UI.Client;
 using RiotClient.Lobbies;
 
 namespace LeagueClient.Logic.Queueing {

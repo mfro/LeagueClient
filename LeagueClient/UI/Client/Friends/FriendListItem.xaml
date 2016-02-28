@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Friends.FriendListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Background="{StaticResource Back1Brush}" Cursor="Hand">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Image Name="SummonerIcon" Width="80" Height="80" Margin="8" RenderOptions.BitmapScalingMode="HighQuality" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png"/>
+
+    <Grid Grid.Row="1" Background="Transparent" Margin="8" MouseEnter="Champ_MouseEnter" MouseLeave="Champ_MouseLeave">
+      <Button Style="{StaticResource HoverButton}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Background="#B50000" ToolTip="Decline invite" Click="DeclineButt_Click" Name="DeclineButt" Width="30" Height="30" Visibility="Collapsed" Opacity="0">
+        <Path Data="M 0 0 L 20 20 M 20 0 L 0 20" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+      </Button>
+
+      <Button Style="{StaticResource HoverButton}" HorizontalAlignment="Left" Background="#018A26" ToolTip="Accept invite" Click="AcceptButt_Click" Name="AcceptButt" Padding="0" Width="30" Height="30" Visibility="Collapsed" Opacity="0">
+        <Path Data="M 1 10 L 8 17 L 22 2" StrokeThickness="4" Stroke="{StaticResource FontBrush}" IsHitTestVisible="False"/>
+      </Button>
+    </Grid>
+
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <Label Name="NameText" Padding="0 2" FontSize="16" Grid.Row="0" VerticalAlignment="Top">KombatProwess</Label>
+      
+      <Label Name="MsgText" Padding="0" FontSize="12" Grid.Row="1">New computer :D</Label>
+      <Label Name="ChampText" Padding="8 0" FontSize="12" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">Annie</Label>
+      
+      <Label Name="StatusText" Padding="0 0 8 5" FontSize="12" Grid.Row="2" VerticalAlignment="Bottom">Creating Normal Game</Label>
+      <Label Name="TimeText" Padding="0 0 8 5" FontSize="12" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right">19:99</Label>
+    </Grid>
+  </Grid>
+  <UserControl.Triggers>
+    <EventTrigger RoutedEvent="MouseDown">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonPress}"/>
+    </EventTrigger>
+    <EventTrigger RoutedEvent="MouseUp">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonRelease}"/>
+    </EventTrigger>
+    <EventTrigger RoutedEvent="MouseEnter">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonHover}"/>
+    </EventTrigger>
+    <EventTrigger RoutedEvent="MouseLeave">
+      <BeginStoryboard Storyboard="{StaticResource OldButtonLeave}"/>
+    </EventTrigger>
+  </UserControl.Triggers>
+  <UserControl.ContextMenu>
+    <ContextMenu>
+      <MenuItem Header="Invite to game" Click="Invite_Click"/>
+      <MenuItem Header="View profile" Click="ViewProfile_Click"/>
+    </ContextMenu>
+  </UserControl.ContextMenu>
+</UserControl>

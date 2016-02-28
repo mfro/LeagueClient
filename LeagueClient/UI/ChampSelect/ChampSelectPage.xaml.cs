@@ -21,7 +21,7 @@ using MFroehlich.League.Assets;
 using MFroehlich.League.DataDragon;
 using RtmpSharp.Messaging;
 using agsXMPP;
-using LeagueClient.UI.Main.Custom;
+using LeagueClient.UI.Client.Custom;
 using LeagueClient.UI.Selectors;
 using RiotClient.Lobbies;
 using RiotClient.Riot.Platform;
@@ -97,7 +97,7 @@ namespace LeagueClient.UI.ChampSelect {
         ChampSelectCompleted?.Invoke(this, new EventArgs());
         Dispose();
         if (e is CustomLobby) {
-          Client.QueueManager.ShowPage(new CustomLobbyPage(e as CustomLobby));
+          LoLClient.QueueManager.ShowPage(new CustomLobbyPage(e as CustomLobby));
         } else {
 
         }
@@ -272,9 +272,9 @@ namespace LeagueClient.UI.ChampSelect {
 
     #region Event Listeners
 
-    private void Border_MouseDown(object sender, MouseButtonEventArgs e) => Client.MainWindow.DragMove();
+    private void Border_MouseDown(object sender, MouseButtonEventArgs e) => LoLClient.MainWindow.DragMove();
 
-    private void BackButton_Click(object sender, RoutedEventArgs e) => Client.MainWindow.ShowLandingPage();
+    private void BackButton_Click(object sender, RoutedEventArgs e) => LoLClient.MainWindow.ShowLandingPage();
 
     private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
       try {

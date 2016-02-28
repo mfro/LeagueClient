@@ -1,0 +1,199 @@
+﻿<Page x:Class="LeagueClient.UI.Client.LandingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:util="clr-namespace:LeagueClient.UI.Util"
+      xmlns:local="clr-namespace:LeagueClient.UI.Client"
+      xmlns:home="clr-namespace:LeagueClient.UI.Client.Home"
+      xmlns:selectors="clr-namespace:LeagueClient.UI.Selectors"
+      xmlns:profile="clr-namespace:LeagueClient.UI.Client.Profile"
+      xmlns:friends="clr-namespace:LeagueClient.UI.Client.Friends"
+      KeyUp="Page_KeyUp"
+      SnapsToDevicePixels="True" Width="{StaticResource Width}" Height="{StaticResource Height}">
+  <Page.Resources>
+    <Style TargetType="Button" x:Key="TabButton" BasedOn="{StaticResource {x:Type Button}}">
+      <!--<Setter Property="Background" Value="{StaticResource Back2Brush}"/>-->
+      <Setter Property="Padding" Value="0 6"/>
+      <Setter Property="FontSize" Value="16"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <!--<Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Background="{TemplateBinding Background}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.Foreground="{StaticResource FontBrush}"
+                                TextBlock.FontSize="{TemplateBinding FontSize}" Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"/>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>-->
+    </Style>
+    <Style TargetType="Border" x:Key="Separator">
+      <Setter Property="BorderThickness" Value="1 1 0 0"/>
+      <Setter Property="BorderBrush" Value="{StaticResource FontBrush}"/>
+      <Setter Property="Opacity" Value=".25"/>
+    </Style>
+  </Page.Resources>
+  <Border Background="{StaticResource Back2Brush}">
+    <Grid Margin="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="200"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="180"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="300"/>
+      </Grid.ColumnDefinitions>
+      <Border Grid.RowSpan="2" Grid.ColumnSpan="3" Background="Transparent" MouseDown="Grid_MouseDown" Margin="5,0,-5,0"/>
+      <!--<Path Grid.Column="1" Stroke="{StaticResource FontBrush}" Name="Arrows" Data="M 0 0 L 10 8 L 0 16 M 120 0 L 110 8 L 120 16" Margin="15 95 15 0" VerticalAlignment="Top"/>-->
+
+      <!--Tabs-->
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Width="100" Height="0" Grid.Row="1" Background="{StaticResource ForeBrush}">
+          <StackPanel Width="100" Name="PlayExpandUp" Grid.Row="1" Margin="0 -70 0 0" Background="{StaticResource ForeBrush}">
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="LogoutTab" Content="{util:String Landing.Logout_Button}"/>
+          </StackPanel>
+          <StackPanel Name="PlayExpandDown" Margin="0 0 0 -130" VerticalAlignment="Bottom">
+            <Border Height="100" Background="{StaticResource ForeBrush}"/>
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="HomeTab" Content="{util:String Landing.Home_Button}"/>
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ProfileTab" Content="{util:String Landing.Profile_Button}"/>
+            <Button Click="Tab_Click" Style="{StaticResource TabButton}" Name="ShopTab" Content="{util:String Landing.Shop_Button}"/>
+          </StackPanel>
+        </Grid>
+        <Image Margin="0 0 0 0" Name="PlayTab" Grid.Row="1" Source="pack://application:,,,/RiotClient;component/Resources/LeagueIcon.png"
+               Cursor="Hand" MouseUp="Tab_Click" MouseEnter="PlayTab_MouseEnter" MouseLeave="PlayTab_MouseLeave">
+          <Image.Effect>
+            <DropShadowEffect x:Name="PlayTabGlow" Color="Black" ShadowDepth="0" BlurRadius="15"/>
+          </Image.Effect>
+        </Image>
+      </Grid>
+
+      <!--Pages-->
+      <Border  Grid.Column="1" Grid.RowSpan="2" ClipToBounds="True" Margin="0 30 00 60" Height="{StaticResource PageHeight}" Width="{StaticResource PageWidth}">
+        <UniformGrid Columns="1" Margin="0 -630 0 0" Name="SlidingGrid">
+          <Grid>
+            <local:PlaySelectPage x:Name="PlayPage"/>
+            <Frame Background="{StaticResource Back2Brush}" Name="SubPageArea" Visibility="Collapsed"/>
+          </Grid>
+
+          <!--<Grid Margin="0 0 0 0">
+            <Grid.Resources>
+              <Style TargetType="ItemsControl">
+                <Setter Property="Margin" Value="0 0 0 10"/>
+                <Setter Property="ItemTemplate">
+                  <Setter.Value>
+                    <DataTemplate>
+                      <my:FriendListItem2 DataContext="{Binding}" MouseUp="Friend_MouseUp" Margin="0 0 10 10"/>
+                    </DataTemplate>
+                  </Setter.Value>
+                </Setter>
+                <Setter Property="ItemsPanel">
+                  <Setter.Value>
+                    <ItemsPanelTemplate>
+                      <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="auto"/>
+              <RowDefinition Height="auto"/>
+              <RowDefinition Height="auto"/>
+              <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <ItemsControl Grid.Row="1" Name="ChatList"/>
+            <ItemsControl Grid.Row="2" Name="DndList"/>
+            <ItemsControl Grid.Row="3" Name="AwayList"/>
+          </Grid>-->
+
+          <Grid>
+            <home:HomePage/>
+          </Grid>
+
+          <profile:PlayerProfile x:Name="Profile"/>
+        </UniformGrid>
+      </Border>
+
+      <!--Chats-->
+      <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Margin="0 26">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="239*"/>
+          <ColumnDefinition Width="829*"/>
+        </Grid.ColumnDefinitions>
+        <ItemsControl Name="OpenChats" Grid.ColumnSpan="2">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <friends:ChatConversation DataContext="{Binding}" ChatClosed="ChatConversation_ChatClosed" ChatOpened="ChatConversation_ChatOpened" Margin="-160 0 0 0"/>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" Margin="160 0 0 0"/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+        </ItemsControl>
+      </Grid>
+
+      <!--Profile-->
+      <Grid Grid.Row="1" Grid.Column="0" Margin="26">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="1" Name="QueuerArea" Margin="-11 0">
+        </Border>
+
+        <!--<Button Grid.Row="3">Notifications  - 3</Button>-->
+
+        <Image Source="{StaticResource RPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="3"/>
+        <Label FontSize="14" Name="RPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 0 17 0" Grid.Row="3"/>
+        <Image Source="{StaticResource IPIcon}" Width="15" Height="15" HorizontalAlignment="Left" Grid.Row="4"/>
+        <Label FontSize="14" Name="IPAmount" VerticalAlignment="Bottom" Content="100000" Margin="17 2 0 2" Grid.Row="4"/>
+        <Border Grid.Row="5" Background="Transparent">
+          <Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
+            <Label FontSize="16" Name="CurrentStatus" Foreground="{StaticResource ForeBrush}" Content="Offline" Padding="0"/>
+          </Viewbox>
+        </Border>
+        <ComboBox Grid.Row="5" BorderThickness="0" Background="{StaticResource Back2Brush}" Name="ChatCombo" Opacity="0" SelectionChanged="ChatCombo_SelectionChanged"/>
+        <Border Grid.Row="6" Background="Transparent">
+          <Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
+            <Label FontSize="18" Padding="0 0 0 5" Name="NameLabel">master mor</Label>
+          </Viewbox>
+        </Border>
+        <Image Width="128" Source="C:\Users\Max\AppData\Roaming\MFro\LeagueAssets\img\profileicon\937.png" Grid.Row="7" MouseUp="ProfileIcon_Click" Name="ProfileIcon"/>
+      </Grid>
+
+      <Grid Grid.Column="3" Grid.RowSpan="3" Margin="10 30">
+        <ScrollViewer VerticalScrollBarVisibility="Visible">
+          <ItemsControl Name="FriendsList">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <friends:FriendListItem DataContext="{Binding}" MouseUp="Friend_MouseUp" Margin="0 0 0 10"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Margin="0 0 10 -10"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </ScrollViewer>
+      </Grid>
+
+      <selectors:PopupSelector Grid.RowSpan="10" Grid.ColumnSpan="10" x:Name="Popup" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Opacity="0" Close="Popup_Close"/>
+      <Border Grid.ColumnSpan="100" Grid.RowSpan="100" Name="PopupPanel" Background="#4F101010" Visibility="Collapsed"/>
+    </Grid>
+  </Border>
+</Page>

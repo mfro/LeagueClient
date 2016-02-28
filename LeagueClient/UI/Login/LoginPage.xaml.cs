@@ -126,8 +126,8 @@ namespace LeagueClient.UI.Login {
 
     private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
       if (e.ChangedButton == MouseButton.Left)
-        if (e.ClickCount == 2) Client.MainWindow.Center();
-        else Client.MainWindow.DragMove();
+        if (e.ClickCount == 2) LoLClient.MainWindow.Center();
+        else LoLClient.MainWindow.DragMove();
     }
 
     private void AddAccountButt_Click(object sender, RoutedEventArgs e) {
@@ -192,7 +192,7 @@ namespace LeagueClient.UI.Login {
       if (!obj.IsFaulted && obj.Result != null) {
         Session.SaveSettings(SettingsKey, settings);
         Patch.Dispose();
-        Dispatcher.Invoke(Client.MainWindow.LoginComplete);
+        Dispatcher.Invoke(LoLClient.MainWindow.LoginComplete);
         return;
       } else if (obj.IsFaulted && obj.Exception.InnerException is AuthenticationException) {
         //TODO Authentication Exception

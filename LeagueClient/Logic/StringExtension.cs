@@ -19,8 +19,8 @@ namespace LeagueClient.UI.Util {
     public override object ProvideValue(IServiceProvider serviceProvider) {
       try {
         var paths = Path.Split('.');
-        var prop = Client.Strings.GetType().GetProperty(paths[0]);
-        object strings = prop.GetValue(Client.Strings);
+        var prop = LoLClient.Strings.GetType().GetProperty(paths[0]);
+        object strings = prop.GetValue(LoLClient.Strings);
 
         prop = strings.GetType().GetProperty(paths[1]);
         var value = prop.GetValue(strings);

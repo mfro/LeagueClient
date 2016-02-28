@@ -24,7 +24,7 @@ using LeagueClient.Logic.Settings;
 using System.Threading;
 using LeagueClient.UI;
 using LeagueClient.UI.ChampSelect;
-using LeagueClient.UI.Main;
+using LeagueClient.UI.Client;
 using LeagueClient.UI.Login;
 using RiotClient;
 using RiotClient.Lobbies;
@@ -44,7 +44,7 @@ namespace LeagueClient {
       Loaded += (src, e) => Center();
 
       Session.Initialize();
-      Client.MainWindow = this;
+      LoLClient.MainWindow = this;
       Start();
     }
 
@@ -64,7 +64,7 @@ namespace LeagueClient {
 
     public void LoginComplete() {
       var page = landing = new LandingPage();
-      Client.QueueManager = landing;
+      LoLClient.QueueManager = landing;
       ContentFrame.Content = page;
 
       if (Session.Current.LoginQueue.InGameCredentials?.InGame ?? false) {
@@ -84,7 +84,7 @@ namespace LeagueClient {
     public void BeginChampionSelect(GameLobby game) {
       if (Thread.CurrentThread != Dispatcher.Thread) { Dispatcher.MyInvoke(BeginChampionSelect, game); return; }
 
-      Client.QueueManager.ShowPage(new InGamePage(true));
+      LoLClient.QueueManager.ShowPage(new InGamePage(true));
       champselect = new ChampSelectPage(game);
 
       champselect.ChampSelectCompleted += Champselect_ChampSelectCompleted;

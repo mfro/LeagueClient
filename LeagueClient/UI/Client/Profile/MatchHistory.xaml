@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Profile.MatchHistory"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:LeagueClient.UI.Client.Profile">
+  <Grid>
+    <ScrollViewer>
+      <ItemsControl Name="MatchList" Margin="0 0 10 0">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <local:MatchHistoryItem MouseUp="MatchHistoryItem_MouseUp"/>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+    <Border Name="Details"/>
+  </Grid>
+</UserControl>

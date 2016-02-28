@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Profile.MatchDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:local="clr-namespace:LeagueClient.UI.Client.Profile">
+  <Grid Background="{StaticResource Back2Brush}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Margin="0 10 0 10" Background="{StaticResource Back1Brush}">
+      <Button HorizontalAlignment="Left" BorderThickness="0" Width="100" Padding="10 5" Margin="10 0 0 0" Click="OverviewButton_Click">Overview</Button>
+      <Button HorizontalAlignment="Left" BorderThickness="0" Width="100" Padding="10 5" Margin="10 0 0 0" Click="GraphsButton_Click">Graphs</Button>
+    </StackPanel>
+    
+    <Button HorizontalAlignment="Right" BorderThickness="0" Width="100" Padding="10 5" Margin="10" Click="BackButton_Click" Name="BackButton">Back</Button>
+    <Grid Name="Overview" Grid.Row="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+      </Grid>
+      <Grid VerticalAlignment="Bottom" Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <ItemsControl Name="BlueTeam">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <local:BlueMatchDetailPlayer/>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <ItemsControl Name="RedTeam" Grid.Column="1">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <local:RedMatchDetailPlayer/>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Grid>
+    </Grid>
+  </Grid>
+</UserControl>

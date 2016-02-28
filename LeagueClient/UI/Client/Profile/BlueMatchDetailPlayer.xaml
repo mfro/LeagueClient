@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="LeagueClient.UI.Client.Profile.BlueMatchDetailPlayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="64">
+  <UserControl.Resources>
+    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+      <Setter Property="FontSize" Value="16"/>
+    </Style>
+  </UserControl.Resources>
+  <Border Padding="4" Background="{StaticResource ForeBrush}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="0"/>
+        <ColumnDefinition Width="0"/>
+        <ColumnDefinition Width="56"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="30"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="40"/>
+      </Grid.ColumnDefinitions>
+
+      <Image Grid.Column="2" Source="{Binding ChampImage}"/>
+
+      <Grid Grid.Column="4" Width="26">
+        <Grid.RowDefinitions>
+          <RowDefinition/>
+          <RowDefinition Height="4"/>
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Image Source="{Binding Spell1Image}"/>
+        <Image Source="{Binding Spell2Image}" Grid.Row="2"/>
+      </Grid>
+
+      <Grid Grid.Column="6">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label Content="{Binding Name}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="0" FontSize="14"/>
+        <Label Content="{Binding Score}" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="0" FontSize="14"/>
+      </Grid>
+
+      <Grid Grid.Column="8">
+        <Grid.Resources>
+          <Style TargetType="Image">
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Margin" Value="4 0 0 0"/>
+          </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="30"/>
+          <ColumnDefinition Width="30"/>
+          <ColumnDefinition Width="30"/>
+          <ColumnDefinition Width="30"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="4"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Image Source="{Binding Item0Image}" Grid.Column="0"/>
+        <Image Source="{Binding Item1Image}" Grid.Column="1"/>
+        <Image Source="{Binding Item2Image}" Grid.Column="2"/>
+        <Image Source="{Binding Item3Image}" Grid.Row="2" Grid.Column="0"/>
+        <Image Source="{Binding Item4Image}" Grid.Row="2" Grid.Column="1"/>
+        <Image Source="{Binding Item5Image}" Grid.Row="2" Grid.Column="2"/>
+        <Image Source="{Binding Item6Image}" Grid.Column="3" Grid.RowSpan="3"/>
+      </Grid>
+
+      <Label Content="{Binding CS}" Grid.Column="10" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" FontSize="14"/>
+      <Label Content="{Binding Gold}" Grid.Column="12" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" FontSize="14"/>
+    </Grid>
+  </Border>
+</UserControl>

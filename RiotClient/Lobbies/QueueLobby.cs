@@ -130,23 +130,23 @@ namespace RiotClient.Lobbies {
         ChatLobby = new GroupChat(RiotChat.GetLobbyRoom(status.InvitationID, status.ChatKey), status.ChatKey);
       }
 
-      var goneMembers = new List<QueueLobbyMember>(Members);
+      var todo = status.Members.ToDictionary(m => m.SummonerId);
 
-      foreach (var raw in status.Members) {
-        QueueLobbyMember member = Members.SingleOrDefault(m => m.SummonerID == raw.SummonerId);
-        if (member != null) {
+      foreach (var member in Members) {
+        Member raw;
+        if (todo.TryGetValue(member.SummonerID, out raw)) {
           member.Update(raw);
-          goneMembers.Remove(member);
+          todo.Remove(member.SummonerID);
         } else {
-          member = new QueueLobbyMember(raw, this);
-          Members.Add(member);
-          OnMemberJoined(member);
+          Members.Remove(member);
+          OnMemberLeft(member);
         }
       }
 
-      foreach (var member in goneMembers) {
-        Members.Remove(member);
-        OnMemberLeft(member);
+      foreach (var raw in todo.Values) {
+        var member = new QueueLobbyMember(raw, this);
+        Members.Add(member);
+        OnMemberJoined(member);
       }
 
       foreach (var raw in status.InvitedPlayers) {
