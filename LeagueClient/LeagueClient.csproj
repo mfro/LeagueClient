@@ -473,6 +473,12 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy "$(SolutionDir)..\..\Libraries\SharpZipLib.dll" "$(SolutionDir)libs" /C /Y
+xcopy "$(SolutionDir)..\..\Libraries\agsXMPP.dll" "$(SolutionDir)libs" /C /Y
+xcopy "$(SolutionDir)..\..\Libraries\Parsing.dll" "$(SolutionDir)libs" /C /Y
+xcopy "$(SolutionDir)..\..\Libraries\RiotAPI.dll" "$(SolutionDir)libs" /C /Y</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

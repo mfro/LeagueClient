@@ -386,8 +386,6 @@ namespace RiotClient {
 
         if (CurrentLobby != null && CurrentLobby.HandleMessage(e))
           return;
-
-
       } catch (Exception x) {
         ThrowException(x, "Exception while dispatching message");
       }

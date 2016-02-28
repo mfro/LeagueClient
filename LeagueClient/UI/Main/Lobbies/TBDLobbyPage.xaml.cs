@@ -18,6 +18,7 @@ using LeagueClient.Logic;
 using System.Reflection;
 using LeagueClient.Logic.Chat;
 using RiotClient.Lobbies;
+using RiotClient;
 
 namespace LeagueClient.UI.Main.Lobbies {
   /// <summary>
@@ -51,13 +52,17 @@ namespace LeagueClient.UI.Main.Lobbies {
     }
 
     private void Lobby_MemberJoined(object sender, MemberEventArgs e) {
-      var spots = new[] { Pos0, Pos1, Pos2, Pos3, Pos4 };
-
       Dispatcher.Invoke(() => {
         var member = e.Member as TBDLobbyMember;
-        var player = new TBDPlayer(lobby.IsCaptain, member, 0);
+        if (member != null) {
+          var spots = new[] { Pos0, Pos1, Pos2, Pos3, Pos4 };
 
-        spots[member.SlotID].Child = player;
+          var player = new TBDPlayer(lobby.IsCaptain, member, 0);
+
+          spots[member.SlotID].Child = player;
+        } else {
+          Session.Log("Invite: " + e.Member.Name);
+        }
       });
     }
 
