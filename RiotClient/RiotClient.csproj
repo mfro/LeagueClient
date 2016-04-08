@@ -37,14 +37,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\agsXMPP.dll</HintPath>
     </Reference>
-    <Reference Include="Parsing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Parsing.dll</HintPath>
-    </Reference>
-    <Reference Include="RiotAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\RiotAPI.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -198,6 +190,14 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Extensions.cs" />
+    <None Include="Lobbies2\CustomLobby.cs" />
+    <None Include="Lobbies2\Game.cs" />
+    <None Include="Lobbies2\GroupChat.cs" />
+    <None Include="Lobbies2\Invitation.cs" />
+    <None Include="Lobbies2\ILobby.cs" />
+    <None Include="Lobbies2\Queue.cs" />
+    <None Include="Lobbies2\QueueLobby.cs" />
+    <None Include="Lobbies2\TBDGame.cs" />
     <Compile Include="Lobbies\CustomLobby.cs" />
     <Compile Include="Lobbies\GameLobby.cs" />
     <Compile Include="Lobbies\GroupChat.cs" />
@@ -224,6 +224,14 @@
     <Compile Include="SummonerCache.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Parsing\Parsing.csproj">
+      <Project>{6cc2ab6c-8d74-4965-b19c-7526d32c2097}</Project>
+      <Name>Parsing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\RiotAPI\RiotAPI.csproj">
+      <Project>{68a7ca3c-c11e-4237-95e7-b6ca129dae61}</Project>
+      <Name>RiotAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\rtmp-sharp\rtmp-sharp.csproj">
       <Project>{aa1a4f5d-3bd4-4832-9f5d-90727007727e}</Project>
       <Name>rtmp-sharp</Name>
@@ -278,10 +286,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy "$(SolutionDir)..\..\Libraries\SharpZipLib.dll" "$(SolutionDir)libs" /C /Y
-xcopy "$(SolutionDir)..\..\Libraries\agsXMPP.dll" "$(SolutionDir)libs" /C /Y
-xcopy "$(SolutionDir)..\..\Libraries\Parsing.dll" "$(SolutionDir)libs" /C /Y
-xcopy "$(SolutionDir)..\..\Libraries\RiotAPI.dll" "$(SolutionDir)libs" /C /Y</PreBuildEvent>
+    <PreBuildEvent>xcopy "%25userprofile%25\Documents\.NET Libraries\SharpZipLib.dll" "$(SolutionDir)libs" /C /Y
+xcopy "%25userprofile%25\Documents\.NET Libraries\agsXMPP.dll" "$(SolutionDir)libs" /C /Y
+exit 0</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

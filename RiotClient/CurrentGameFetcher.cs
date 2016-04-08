@@ -11,11 +11,14 @@ using System.Threading.Tasks;
 using CurrentGame = MFroehlich.League.RiotAPI.RiotAPI.CurrentGameAPI.CurrentGameInfo;
 
 namespace RiotClient {
-
   public static class CurrentGameFetcher {
-    public static async void FetchGame(long summonerId, Action<CurrentGame> callback) {
-      CurrentGame game;
+    private static List<long> inProgress = new List<long>();
 
+    public static async void FetchGame(long summonerId, Action<CurrentGame> callback) {
+      if (inProgress.Contains(summonerId)) return;
+      inProgress.Add(summonerId);
+
+      CurrentGame game;
       while (true) {
         try {
           game = await RiotAPI.CurrentGameAPI.BySummonerAsync(Session.Region.Platform, summonerId);
@@ -29,6 +32,8 @@ namespace RiotClient {
         if (game.gameStartTime == 0) await Task.Delay(20000);
         else break;
       }
+
+      inProgress.Remove(summonerId);
     }
   }
 }

@@ -59,14 +59,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\agsXMPP.dll</HintPath>
     </Reference>
-    <Reference Include="Parsing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Parsing.dll</HintPath>
-    </Reference>
-    <Reference Include="RiotAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\RiotAPI.dll</HintPath>
-    </Reference>
     <Reference Include="SharpZipLib, Version=0.81.0.1407, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\SharpZipLib.dll</HintPath>
@@ -462,6 +454,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Parsing\Parsing.csproj">
+      <Project>{6cc2ab6c-8d74-4965-b19c-7526d32c2097}</Project>
+      <Name>Parsing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\RiotAPI\RiotAPI.csproj">
+      <Project>{68a7ca3c-c11e-4237-95e7-b6ca129dae61}</Project>
+      <Name>RiotAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RiotClient\RiotClient.csproj">
       <Project>{c0dbec10-6a80-47e4-8da2-a9d4513d4952}</Project>
       <Name>RiotClient</Name>

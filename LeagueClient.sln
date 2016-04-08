@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeagueClient", "LeagueClient\LeagueClient.csproj", "{76C6060D-BFC1-4741-B7E3-BAE09634CB64}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiotClient", "RiotClient\RiotClient.csproj", "{C0DBEC10-6A80-47E4-8DA2-A9D4513D4952}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{B8B5CEA2-DDB5-476E-8071-1CE1708B555A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parsing", "..\Libraries\Parsing\Parsing.csproj", "{6CC2AB6C-8D74-4965-B19C-7526D32C2097}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiotAPI", "..\Libraries\RiotAPI\RiotAPI.csproj", "{68A7CA3C-C11E-4237-95E7-B6CA129DAE61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,14 @@ Global
 		{C0DBEC10-6A80-47E4-8DA2-A9D4513D4952}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0DBEC10-6A80-47E4-8DA2-A9D4513D4952}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0DBEC10-6A80-47E4-8DA2-A9D4513D4952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CC2AB6C-8D74-4965-B19C-7526D32C2097}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CC2AB6C-8D74-4965-B19C-7526D32C2097}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CC2AB6C-8D74-4965-B19C-7526D32C2097}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CC2AB6C-8D74-4965-B19C-7526D32C2097}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68A7CA3C-C11E-4237-95E7-B6CA129DAE61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68A7CA3C-C11E-4237-95E7-B6CA129DAE61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68A7CA3C-C11E-4237-95E7-B6CA129DAE61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68A7CA3C-C11E-4237-95E7-B6CA129DAE61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

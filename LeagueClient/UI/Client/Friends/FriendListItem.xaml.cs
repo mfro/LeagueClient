@@ -84,7 +84,10 @@ namespace LeagueClient.UI.Client.Friends {
         StatusText.Content = QueueType.Values[friend.CurrentGameDTO.QueueTypeName].Value;
         if (!string.IsNullOrEmpty(friend.Status.Champion)) {
           ChampText.Visibility = Visibility.Visible;
-          ChampText.Content = DataDragon.ChampData.Value.data[friend.Status.Champion].name;
+          if (friend.Status.Champion == "Random")
+            ChampText.Content = "Random";
+          else
+            ChampText.Content = DataDragon.ChampData.Value.data[friend.Status.Champion].name;
         }
       } else StatusText.Content = friend.Status.GameStatus.Value;
       if (friend.Invite != null) {
